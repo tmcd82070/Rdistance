@@ -1,4 +1,4 @@
-F.automated.CDS <- function( dist, group.size=1, area, total.trans.len, w.lo=0, w.hi=max(dist), 
+F.automated.CDS <- function( dist, group.size=1, area=1, total.trans.len=1, w.lo=0, w.hi=max(dist), 
             likelihoods=c("halfnorm", "hazrate", "uniform","negexp","gamma"), 
             series=c("cosine", "hermite", "simple"), 
             expansions=0:3, plot=T ){
@@ -7,7 +7,7 @@ F.automated.CDS <- function( dist, group.size=1, area, total.trans.len, w.lo=0, 
 #
 #   Input:
 #   dist = vector of perpendicular distances off transect
-#   group.size = vector of group sizes for every element in dist
+#   group.size = vector of group sizes for every element in dist, replicated as necessary
 #   area = area of the study area, in units of u^2 (e.g., if u = meters, this is square meters)
 #   total.trans.len = total length of all transects in the study area, in units of u (e.g., if u=methers, this is meters)
 #   w.lo = minimum sighting distance from the transect.  Sometimes called left-truncation value. 
@@ -50,6 +50,8 @@ f.save.result <- function(results, dfunc, like, ser, expan, plot){
     list(results=results, k=k)
 }
 
+wwarn <- options()$warn
+options(warn=-1)
 
 fit.table <- NULL
 cat("Likelihood\tSeries\tExpans\tConverged?\tAIC\n")
@@ -101,22 +103,28 @@ for( like in likelihoods){
 #-------------------
 #   Now choose best distance function.  Re-fit, and estimate abundance
 
+if( sum( fit.table$converge != 0 ) > 0 ) cat("Note: Some models did not converge or had parameters at their boundaries.\n")
+
 fit.table$aic <- ifelse(fit.table$converge == 0, fit.table$aic, Inf )
 fit.table <- fit.table[ order(fit.table$aic), ]
 
 dfunc <- F.dfunc.estim(dist, likelihood=fit.table$like[1], w.lo=w.lo, w.hi=w.hi, expansions=fit.table$expansions[1], series=fit.table$series[1])
-
 
 if( plot ) {
     plot(dfunc)
     mtext("BEST FITTING FUNCTION", side=3, cex=1.5, line=3)
 }
 
-cat("\n\n---------------- Brainless CDS Abundance estimate -------------------------------\n")
-abund <- F.abund.estim( dfunc, group.size, area, total.trans.len )
+cat("\n\n---------------- Final Automated CDS Abundance estimate -------------------------------\n")
+if( missing( group.size )){
+    abund <- F.abund.estim( dfunc, avg.group.size=1, area=area, tot.trans.len=total.trans.len )
+} else {
+    abund <- F.abund.estim( dfunc, group.sizes=group.size, area=area, tot.trans.len=total.trans.len )
+}    
 print(abund)
 
-if( sum( fit.table$converge != 0 ) > 0 ) cat("IGNORE ANY WARNINGS RESULTING FROM FAILED MODELS\n")
+
+options(warn=wwarn)
 
 abund
 }

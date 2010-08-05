@@ -29,8 +29,13 @@ if( is.null( obj$g.x.scl ) ){
     x0 <- obj$x.scl
 }
 f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi )
-
-yscl <- g.at.x0 / f.at.x0
+if(is.na(f.at.x0) | (f.at.x0 <= 0)){
+    #   can happen when parameters at the border of parameter space
+    yscl <- 1.0
+    warning("Y intercept missing or zero. One or more parameters likely at their boundaries. Caution.")
+} else {
+    yscl <- g.at.x0 / f.at.x0
+}
 ybarhgts <- cnts$density * yscl
 y <- y * yscl
 
@@ -46,13 +51,18 @@ bar.mids <- barplot( ybarhgts, space=0, density=0, ylim=y.lims, xlim=x.limits, b
 xticks <- axTicks(1)
 axis( 1, at=xticks,  labels=xticks * xscl, line=.5 )
 title( xlab="Distance", ylab="Probability of detection" )
+if( obj$expansions == 0 ){
+    title(main=paste( obj$like.form, ", ", obj$expansions, " expansions", sep=""))
+} else {
+    title(main=paste( obj$like.form, ", ", obj$series, " expansion, ", obj$expansions, " expansions", sep=""))
+}
 
 #   These 3 lines plot a polygon for the density function
 #x.poly <- c(0, x/xscl, (x/xscl)[length(x)] )
 #y.poly <- c(0, y, 0)
 #polygon( x.poly, y.poly, density=15, border="red", lwd=2 )
 
-#   This places a single line on over the histogram
+#   This places a single line over the histogram
 lines( x/xscl, y, col="red", lwd=2 )
 
 #   These two add vertical lines at 0 and w

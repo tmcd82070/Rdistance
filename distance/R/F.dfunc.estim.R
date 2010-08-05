@@ -9,17 +9,13 @@ F.dfunc.estim<-function(dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist), exp
 
 call <- match.call()
 
-
-nLL<- match.fun(paste( likelihood, ".nLL", sep=""))
-
-
 #   Set starting values and limits for parameters
 strt.lims <- F.start.limits( likelihood, expansions, w.lo, w.hi, dist )
 
 #   Minimize the negative sum of the loglikelihood.
-fit<- nlminb(strt.lims$start, nLL,  lower=strt.lims$lowlimit,
+fit<- nlminb(strt.lims$start, F.nLL,  lower=strt.lims$lowlimit,
       upper=strt.lims$uplimit, control=list(trace=0,iter.max=1000), 
-      dist=dist, w.lo=w.lo, w.hi=w.hi, expansions=expansions, series=series) 
+      dist=dist, like=likelihood, w.lo=w.lo, w.hi=w.hi, expansions=expansions, series=series) 
 
 #   Assign names to parameters here
 names(fit$par) <- strt.lims$names

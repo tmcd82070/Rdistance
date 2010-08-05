@@ -1,4 +1,4 @@
-gamma.like <- function(a, dist, w.lo=0, w.hi=max(dist), scale = TRUE, ...){
+gamma.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE){
 #
 #   Compute gamma likelihood.
 #
@@ -6,8 +6,8 @@ gamma.like <- function(a, dist, w.lo=0, w.hi=max(dist), scale = TRUE, ...){
 #       a = vector of model coefficient and r gamma shape parameter
 #       dist = vector of distance observations
 #       w = strip half width
-#       series = type of expansion to apply
-#       expansions = number of expansion terms
+#       series = type of expansion to apply, does not apply to gamma yet
+#       expansions = number of expansion terms, does not apply to gamma yet
 #       scale = whether to scale the likelihood. 
 #
 #   See comments in uniform.like.r
