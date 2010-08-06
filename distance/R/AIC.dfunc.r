@@ -1,5 +1,7 @@
-AIC.dfunc <- function( obj, ..., k=2 ){
+AIC.dfunc <- function( obj, k=2, n=length(obj$dist), ...  ){
 
-obj$loglik + k*length(coef(obj))
+p <- length(coef(obj))
+
+obj$loglik + k*p + (2*p*(p+1)) / (n - p - 1)
 
 }
