@@ -1,104 +1,70 @@
 \name{ESW}
 \alias{ESW}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
-}
+
+\title{Effective Strip Width for estimated distance functions}
+
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Computes effective strip width (ESW) for estimated distance functions.
 }
+
 \usage{
 ESW(obj)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{obj}{
-%%     ~~Describe \code{obj} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+  \item{obj}{An estimated distance function object.  An estimated distance 
+  function object has class 'dfunc', and is usually produced by a call to 
+  \code{F.dfunc.estim}. The estimated distance function may optionally contain 
+  a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
+  is assumed.}
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\details{The effective strip width (ESW) of a distance function is its integral. 
+That is, ESW is the area under the 
+distance function from its left-truncation limit (\code{obj$w.lo}) to its 
+right-truncation limit (\code{obj$w.hi}). 
+\if{latex}{In mathematical notation, 
+\deqn{ESW = \int_{w.lo}^{w.hi} g(x)dx,}
+where \eqn{g(x)} is the height of the distance function at distance \eqn{x}, 
+and \eqn{w.lo} and \eqn{w.hi}
+are the lower and upper truncation limits used during the survey.  }
+
+The name \emph{effective strip width} derives from the fact that under perfect detection, 
+area under the distance function is the half-width of the strip transect.  This means
+that if \code{obj$w.lo} = 0 and \eqn{g(x)} = 1,
+area under the distance function is the half-width of the transect (i.e., \code{obj$w.hi}).  When 
+detection is not perfect, less than the total half-width is \emph{effectively} covered.  
+The width that observers \emph{effectively} cover is the ESW.  Buckland et al. 
+show why area under the distance function can be interpreted as the ESW.  
+
+The trapazoid rule is used to numerically integrate under the distance function 
+in \code{obj} from \code{obj$w.lo} to \code{obj$w.hi}. Two-hundred trapazoids are 
+used in the approximation.  In some rare cases, this 
+may not be enough.  In these cases, the code for this function can be inspected and modified 
+to up this number. 
+}
+
+\value{
+A scalar equal to the area under the distance function from \code{obj$w.lo} to \code{obj$w.hi}. }
+
+\references{
+Buckland et al. 
+}
+
+\author{
+Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link{F.dfunc.estim}}
 }
+
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function( obj ){
-#
-#   obj = a dfunc object.  It may optionally contain a g0 component.
-#       if no g0, assume g0 = 1
-#
-#   Note, For the classic distance functions, the intergral from 0 to w of g(x) = ESW 
-#   is the ratio g(x) / f(x) for any x.  If we know g(0), we can compute f(0), and 
-#   take the ratio g(0) / f(0).  However, in general and for other distance functions
-#   we will do numerical integration.  This is a bit slower, and a bit less accurate in 
-#   some cases, but is more general.  This allows user defined distance functions to be 
-#   added easily. 
-
-like <- match.fun(paste( obj$like.form, ".like", sep=""))
-
-if( (obj$like.form == "hazrate") & (obj$x.scl == obj$w.lo) ){
-    x <- seq( obj$w.lo + 1e-6*(obj$w.hi - obj$w.lo), obj$w.hi, length=200)
-  } else {
-    x <- seq( obj$w.lo, obj$w.hi, length=200)
-  }
-
-y <- like( obj$parameters, x - obj$w.lo, series=obj$series, expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi )
-#print(y)
-
-
-if( is.null( obj$g.x.scl ) ){
-    #   Assume g0 = 1
-    g.at.x0 <- 1
-    x0 <- 0
-    warning("g0 unspecified.  Assumed 1.")
-  } else {
-    g.at.x0 <- obj$g.x.scl
-    x0 <- obj$x.scl
-  }
-f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi )
-
-y <- y * g.at.x0 / f.at.x0
-
-
-esw <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # Trapazoid rule.  Use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
-
-### This is correct. It works provided g(x) and x are stored in obj. 
-### This routine evaluates f(x) using like(), 
-### and then takes ratio of g(x) / f(x). 
-#esw2 <- g.at.x0 / f.at.x0
-
-#print( c(esw2, esw))
-
-esw
-
-  }
+x <- rnorm(1000) * 100
+x <- x[ 0 < x & x < 100 ]
+fit <- F.dfunc.estim(x, w.lo=0, w.hi=100)
+ESW(fit)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+\keyword{ modeling }
+
