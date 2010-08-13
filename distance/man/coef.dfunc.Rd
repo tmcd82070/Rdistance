@@ -33,11 +33,7 @@ in this vector vary depending on the form of the distance function and expansion
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
 \code{\link{AIC}}, \code{\link{F.dfunc.estim}}
