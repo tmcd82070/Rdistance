@@ -1,0 +1,75 @@
+\name{integration.constant}
+\alias{integration.constant}
+
+\title{
+    Compute the integration constance for distance density functions.
+}
+\description{
+    Using numerical integration, compute the area under a given distance 
+    function between two limits (w.lo and w.hi). 
+}
+\usage{
+integration.constant(density, w.lo, w.hi, ...)
+}
+
+\arguments{
+  \item{density}{
+    A likelihood function for which the integration constant is sought. This function 
+    must be capable of evaluating values between \code{w.lo} and \code{w.hi}. This 
+    function must have the following parameters: 
+    \itemize{
+        \item \samp{a} = Parameter vector.
+        \item \samp{dist} = Vector of distances.
+        \item \samp{w.lo} = Lower limit or left truncation value.
+        \item \samp{w.hi} = Upper limit or right truncation value.
+        \item \samp{series} = Form of the series expansions, if any.
+        \item \samp{expansions} = Number of expansion terms.
+        \item \samp{scale} = Whether to scale function to integrate to 1.
+    }
+  }
+  \item{w.lo}{
+    The lower limit of integration, or the left truncation value for perpendicular distances.
+    }
+  \item{w.hi}{
+    The upper limit of integration, or the right truncation value for perpendicular distances.
+    }
+  \item{\dots}{
+    Additional parameters to the likelihood function \code{density}.
+    }
+}
+
+\details{
+    The trapazoid rule is used to numerically integrate \code{density} from \code{w.lo} to \code{w.hi}. 
+    Two-hundred (200) trapazoids are used in the integration.  The number of trapazoids to use is fixed and 
+    cannot be changed without re-writing the routine.
+}
+\value{
+    A scalar that is the area under \code{density} between \code{w.lo} and \code{w.hi}. 
+    This scalar can be used as divisor to scale density  such that it integrates to 1.0. If x = density(\ldots), then 
+    x / \code{integration.constant(density, \ldots)} will integrate to 1.0. 
+
+}
+
+\author{
+    Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+}
+
+\seealso{
+\code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}
+}
+
+\examples{
+
+#   The following result should be approximately 75
+scl <- integration.constant(uniform.like, w.lo=0, w.hi=100, a=c(75,25))
+print(scl)
+
+#   Check that likelihood / scl integrates to 1.0
+x <- seq(0,100,length=200)
+y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
+int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapazoid rule, should be 1.0
+print(int.y)
+ 
+}
+
+\keyword{ models }
