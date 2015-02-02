@@ -1,9 +1,9 @@
-F.dfunc.estim2=function (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist,na.rm=T), 
+F.dfunc.estim = function (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist,na.rm=TRUE), 
           expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1, 
           observer = "both", warn = TRUE) 
 {
   
-  #### I changed the default w.hi so that it does not return NA if dist contains NA
+  #### Augustine changed the default w.hi so that it does not return NA if dist contains NA
   
   dist2=dist #Store with NAs
   dist=dist[!is.na(dist)] #Remove NAs for maximizing likelihood
