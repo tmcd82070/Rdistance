@@ -26,6 +26,20 @@ covs <- read.csv("Sparrows.Covariates.csv")
 
 
 
+# Add NA rows to counts where no sparrows were observed
+unique(covs$TranID)
+absences <- data.frame(table(counts$TranID))
+absences <- as.character(absences[absences$Freq==0, 1])
+
+(toadd <- data.frame(matrix(nrow=length(absences), ncol=ncol(counts))))
+toadd[, 1] <- absences
+names(toadd) <- names(counts)
+
+counts <- rbind(counts, toadd)
+
+
+
+
 
 # Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
 counts$PerpDist <- perp.dists(obs.dist=counts$SightDist, obs.angle=counts$SightAngle, digits=1)
