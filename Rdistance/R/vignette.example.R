@@ -34,8 +34,8 @@ load("C:/Users/jcarlis3/Box Sync/Classes/s8_Spr_15/DistanceSampling/Rdistance/Rd
 
 # Add NA rows to counts where no sparrows were observed
 length(unique(sparrows.covs$TranID))  # unique IDs for all transects surveyed (even if no sparrow recorded)
-absences <- data.frame(table(sparrows.counts$TranID))  # Note sparrows not observed at all transects
-absences <- as.character(absences[absences$Freq==0, 1])
+(absences <- data.frame(table(sparrows.counts$TranID)))  # Note sparrows not observed at all transects
+(absences <- as.character(absences[absences$Freq==0, 1]))
 
 (toadd <- data.frame(matrix(nrow=length(absences), ncol=ncol(sparrows.counts))))
 toadd[, 1] <- absences
