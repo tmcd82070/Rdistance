@@ -1,35 +1,62 @@
 # Vignette for the Rdistance Package
-# An example distance-sampling analysis workflow using the Rdistance package
+# Distance-sampling analysis in Rdistance
 
 # Prepared by:
-# Jason Carlisle
-# WY Cooperative Fish & Wildlife Research Unit
+# Jason D. Carlisle
+# Wyoming Cooperative Fish & Wildlife Research Unit, University of Wyoming
 # and intern at WEST, Inc.
 # jason.d.carlisle@gmail.com
+# Assistance from Trent L. McDonald, WEST, Inc.
 
-# Assistance from Trent McDonald, WEST, Inc.
-
-# Last updated 2/2/2015
-
+# Last updated 2/16/2015
 
 
-# Source current functions from CarlisleWorkspace branch
-fundir <- "C:/Users/jcarlis3/Box Sync/Classes/s8_Spr_15/DistanceSampling/Rdistance/Rdistance/R"
-source(paste(fundir, "perp.dists.R", sep="/"))
-source(paste(fundir, "F.dfunc.estim.R", sep="/"))
+# ## USE CURRENT GITHUB VERSION OF THE PACKAGE
+# # Install devtools in order to install development version of Rdistance from GitHub
+# require(devtools)
+# 
+# # Some functionality of devtools depends on Rtools.  install_github() apparently does not.
+# # If needed, download Rtools from web at http://cran.r-project.org/bin/windows/Rtools/
+# # For R version 3.1.2, use Rtools31.exe
+# 
+# # This works and will install the master branch; however, the CarlisleWorkspace brance is where we're developing
+# install_github("tmcd82070/Rdistance/Rdistance@master")  # master branch
+# 
+# # This doesn't work (with or without Rtools installed)
+# # Appears to be some sort of cyclic namespace dependency -- not sure how to fix
+# install_github("tmcd82070/Rdistance/Rdistance@CarlisleWorkspace")  # CarlisleWorkspace branch
 
 
-# Load or Install/load the Rdistance package (currently version 1.1)
-if(!require(Rdistance)) { 
-    install.packages("Rdistance")
-    require(Rdistance)
-}
 
 
-# Load example dataset
-load("C:/Users/jcarlis3/Box Sync/Classes/s8_Spr_15/DistanceSampling/Rdistance/Rdistance/data/sparrows.rda")
+
+# Set working directory to the CarlisleWorkspace branch saved on local machine
+# This will be replaced with the GitHub option above once I figure it out.
+packdir <- "C:/Users/jcarlis3/Box Sync/Classes/s8_Spr_15/DistanceSampling/Rdistance/Rdistance"  # Carlisle desktop
+
+
+
+# Load example dataset (two data.frames)
+load(paste(packdir, "data", "sparrows.rda", sep="/"))
 
 # data(sparrows)
+
+
+
+
+
+# Source current functions (under development)
+source(paste(packdir, "R", "perp.dists.R", sep="/"))
+source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
+
+
+# # Load or Install/load the Rdistance package (currently version 1.1)
+# if(!require(Rdistance)) { 
+#     install.packages("Rdistance")
+#     require(Rdistance)
+# }
+
+
 
 
 # Add NA rows to counts where no sparrows were observed
