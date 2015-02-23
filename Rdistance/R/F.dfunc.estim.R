@@ -10,8 +10,7 @@ F.dfunc.estim = function (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(di
   
   
   call <- match.call()
-  strt.lims <- F.start.limits(likelihood, expansions, w.lo, 
-                              w.hi, dist)
+  strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist)
   fit <- nlminb(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, 
                 upper = strt.lims$uplimit, control = list(trace = 0, 
                                                           iter.max = 1000), dist = dist, like = likelihood, 

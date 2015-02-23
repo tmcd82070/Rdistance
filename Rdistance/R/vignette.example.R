@@ -8,7 +8,7 @@
 # jason.d.carlisle@gmail.com
 # Assistance from Trent L. McDonald, WEST, Inc.
 
-# Last updated 2/16/2015
+# Last updated 2/23/2015
 
 
 # ## USE CURRENT GITHUB VERSION OF THE PACKAGE
@@ -32,7 +32,7 @@
 
 # Set working directory to the CarlisleWorkspace branch saved on local machine
 # This will be replaced with the GitHub option above once I figure it out.
-packdir <- "C:/Users/jcarlis3/Box Sync/Classes/s8_Spr_15/DistanceSampling/Rdistance/Rdistance"  # Carlisle desktop
+packdir <- "C:/R_Code/Rdistance/Rdistance"  # Carlisle laptop
 
 
 
