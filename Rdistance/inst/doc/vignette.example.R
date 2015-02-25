@@ -33,7 +33,7 @@
 # Set working directory to the CarlisleWorkspace branch saved on local machine
 # This will be replaced with the GitHub option above once I figure it out.
 packdir <- "C:/R_Code/Rdistance/Rdistance"  # Carlisle laptop
-
+packdir <- "C:/Users/tmcdonald/Google Drive/Documents/Programs/Rdistance/Rdistance"
 
 
 # Load example dataset (two data.frames)
@@ -93,7 +93,6 @@ summary(x)
 (dfunc <- F.dfunc.estim(x, likelihood="uniform", w.hi=150))
 # (dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))
 # (dfunc <- F.dfunc.estim(x, likelihood="hazrate", w.hi=150))
-
 
 # 72 transects surveyed, each 500 m
 # area=10000 converts to density per ha (for dist measured in m)
