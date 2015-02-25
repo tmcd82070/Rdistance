@@ -8,46 +8,25 @@
 # jason.d.carlisle@gmail.com
 # Assistance from Trent L. McDonald, WEST, Inc.
 
-# Last updated 2/23/2015
+# Last updated 2/25/2015
 
 
-# ## USE CURRENT GITHUB VERSION OF THE PACKAGE
-# # Install devtools in order to install development version of Rdistance from GitHub
-# require(devtools)
-# 
-# # Some functionality of devtools depends on Rtools.  install_github() apparently does not.
-# # If needed, download Rtools from web at http://cran.r-project.org/bin/windows/Rtools/
-# # For R version 3.1.2, use Rtools31.exe
-# 
-# # This works and will install the master branch; however, the CarlisleWorkspace brance is where we're developing
-# install_github("tmcd82070/Rdistance/Rdistance@master")  # master branch
-# 
-# # This doesn't work (with or without Rtools installed)
-# # Appears to be some sort of cyclic namespace dependency -- not sure how to fix
-# install_github("tmcd82070/Rdistance/Rdistance@CarlisleWorkspace")  # CarlisleWorkspace branch
+## USE CURRENT GITHUB VERSION OF THE PACKAGE
+# Install devtools in order to install development version of Rdistance from GitHub
+require(devtools)
+
+# Some functionality of devtools depends on Rtools.  install_github() apparently does not.
+# If needed though, download Rtools from web at http://cran.r-project.org/bin/windows/Rtools/
+# For R version 3.1.2, use Rtools31.exe
+
+# Install the development version of Rdistance from the CarlisleWorkspace branch on GitHub
+install_github("tmcd82070/Rdistance/Rdistance@CarlisleWorkspace")
+
+require(Rdistance)
+
+data(sparrows)
 
 
-
-
-
-# Set working directory to the CarlisleWorkspace branch saved on local machine
-# This will be replaced with the GitHub option above once I figure it out.
-packdir <- "C:/R_Code/Rdistance/Rdistance"  # Carlisle laptop
-packdir <- "C:/Users/tmcdonald/Google Drive/Documents/Programs/Rdistance/Rdistance"
-
-
-# Load example dataset (two data.frames)
-load(paste(packdir, "data", "sparrows.rda", sep="/"))
-
-# data(sparrows)
-
-
-
-
-
-# Source current functions (under development)
-source(paste(packdir, "R", "perp.dists.R", sep="/"))
-source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
 
 
 # # Load or Install/load the Rdistance package (currently version 1.1)
@@ -59,17 +38,17 @@ source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
 
 
 
-# Add NA rows to counts where no sparrows were observed
-length(unique(sparrows.covs$TranID))  # unique IDs for all transects surveyed (even if no sparrow recorded)
-(absences <- data.frame(table(sparrows.counts$TranID)))  # Note sparrows not observed at all transects
-(absences <- as.character(absences[absences$Freq==0, 1]))
-
-(toadd <- data.frame(matrix(nrow=length(absences), ncol=ncol(sparrows.counts))))
-toadd[, 1] <- absences
-names(toadd) <- names(sparrows.counts)
-
-# Append NA rows
-sparrows.counts <- rbind(sparrows.counts, toadd)
+# # Add NA rows to counts where no sparrows were observed
+# length(unique(sparrows.covs$TranID))  # unique IDs for all transects surveyed (even if no sparrow recorded)
+# (absences <- data.frame(table(sparrows.counts$TranID)))  # Note sparrows not observed at all transects
+# (absences <- as.character(absences[absences$Freq==0, 1]))
+# 
+# (toadd <- data.frame(matrix(nrow=length(absences), ncol=ncol(sparrows.counts))))
+# toadd[, 1] <- absences
+# names(toadd) <- names(sparrows.counts)
+# 
+# # Append NA rows
+# sparrows.counts <- rbind(sparrows.counts, toadd)
 
 
 
@@ -166,3 +145,23 @@ F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi=150,
 # # Read in example datasets
 # counts <- read.csv("Sparrows.Counts.csv")
 # covs <- read.csv("Sparrows.Covariates.csv")
+
+
+# # Set working directory to the CarlisleWorkspace branch saved on local machine
+# # This will be replaced with the GitHub option above once I figure it out.
+# packdir <- "C:/R_Code/Rdistance/Rdistance"  # Carlisle laptop
+# packdir <- "C:/Users/tmcdonald/Google Drive/Documents/Programs/Rdistance/Rdistance"
+# 
+# 
+# # Load example dataset (two data.frames)
+# load(paste(packdir, "data", "sparrows.rda", sep="/"))
+# 
+# # data(sparrows)
+# 
+# 
+# 
+# 
+# 
+# # Source current functions (under development)
+# source(paste(packdir, "R", "perp.dists.R", sep="/"))
+# source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
