@@ -8,3 +8,4 @@ Maintainer: Trent McDonald <tmcdonald@west-inc.com>
 Description: Analysis of line transect surveys.  Estimates distance-based sightability functions and abundances.
 License: GNU General Public License
 Imports:  boot, quantreg, KernSmooth
+LazyData:  true
