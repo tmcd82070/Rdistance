@@ -35,7 +35,7 @@ source(paste(packdir, "R", "F.df.adaptive.boot.R", sep="/"))  # the input 'stati
 # , then source in the file kernel_analysis again. (currently 5 phase plugin is selected. jg/11/5/10).
 
 # 2.) Run the code. 
-F.DF_adaptive(obs.data=tees,W1=0,W2=4,n=142,stripwidth=4,transect_length=210)
+F.DF_adaptive(obs.data=tees, W1=0, W2=4, n=142, stripwidth=4, transect_length=210)
 
 # For this example W1 is minimum sighting distance, W2 is max sighting distance, stripwidth is the half-width as observations
 # were made on only one side of the transect line.
@@ -48,7 +48,7 @@ if(!require(boot)) {
 }
 
 
-tees.dpi.boot<- boot(data=tees,statistic=F.DF_Adaptive_boot,W1=0,W2=4,n=142,stripwidth=4,transect_length=210,R=1000)
+tees.dpi.boot <- boot(data=tees, statistic=F.DF_Adaptive_boot, W1=0, W2=4, n=142, stripwidth=4, transect_length=210, R=1000)
 tees.dpi.boot.ci<- boot.ci(tees.dpi.boot,conf= 0.95,type="all")
 tees.dpi.boot.ci
 
