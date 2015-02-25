@@ -1,4 +1,4 @@
-F.abund.estim2=function(dfunc, avg.group.size = 1, group.sizes, area = 1, 
+F.abund.estim=function(dfunc, avg.group.size = 1, group.sizes, area = 1, 
           ci = 0.95, R = 500, plot.bs = FALSE, 
           transects = NULL, transect.lengths=NULL) 
 {

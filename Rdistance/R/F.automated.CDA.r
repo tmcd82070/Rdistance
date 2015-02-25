@@ -1,4 +1,4 @@
-F.automated.CDA2=function (dist, group.size = 1, area = 1, transects = NULL, transect.lengths=NULL, 
+F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, transect.lengths=NULL, 
           w.lo = 0, w.hi = max(dist,na.rm=T), likelihoods = c("halfnorm", "hazrate", 
                                                       "uniform", "negexp", "Gamma"), series = c("cosine", "hermite", 
                                                                                                 "simple"), expansions = 0:3, plot = TRUE, ...) 
