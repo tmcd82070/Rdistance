@@ -11,6 +11,8 @@
 # Last updated 2/25/2015
 
 
+
+
 ## USE CURRENT GITHUB VERSION OF THE PACKAGE
 # Install devtools in order to install development version of Rdistance from GitHub
 require(devtools)
@@ -24,16 +26,11 @@ install_github("tmcd82070/Rdistance/Rdistance@CarlisleWorkspace")
 
 require(Rdistance)
 
+# Load the example sparrows dataset
 data(sparrows)
 
 
 
-
-# # Load or Install/load the Rdistance package (currently version 1.1)
-# if(!require(Rdistance)) { 
-#     install.packages("Rdistance")
-#     require(Rdistance)
-# }
 
 
 
@@ -57,11 +54,15 @@ data(sparrows)
 # Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
 sparrows.counts$PerpDist <- perp.dists(obs.dist=sparrows.counts$SightDist, obs.angle=sparrows.counts$SightAngle, digits=1)
 
+# Remove sight distance and angle
+sparrows.counts <- sparrows.counts[, -c(3, 4)]
+
 # Save vector of distances (includes NAs)
 x <- sparrows.counts$PerpDist
 
 # Examine the histogram of distances
 hist(x)
+rug(x)
 summary(x)
 
 
@@ -69,8 +70,8 @@ summary(x)
 
 # Fit detection function
 ?F.dfunc.estim
-(dfunc <- F.dfunc.estim(x, likelihood="uniform", w.hi=150))
-# (dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))
+# (dfunc <- F.dfunc.estim(x, likelihood="uniform", w.hi=150))
+(dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))
 # (dfunc <- F.dfunc.estim(x, likelihood="hazrate", w.hi=150))
 
 # 72 transects surveyed, each 500 m
@@ -78,6 +79,7 @@ summary(x)
 ?F.abund.estim
 #(fit <- F.abund.estim(dfunc, group.sizes=sparrows.counts$Number, tot.trans.len=(72*500), area=10000, plot.bs=TRUE))
 (fit <- F.abund.estim(dfunc, tot.trans.len=(72*500), area=10000, R=200, plot.bs=TRUE))
+F.abund.estim(dfunc)
 print(fit)
 str(fit)
 
@@ -165,3 +167,11 @@ F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi=150,
 # # Source current functions (under development)
 # source(paste(packdir, "R", "perp.dists.R", sep="/"))
 # source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
+
+
+# # Load or Install/load the Rdistance package (currently version 1.1)
+# if(!require(Rdistance)) { 
+#     install.packages("Rdistance")
+#     require(Rdistance)
+# }
+
