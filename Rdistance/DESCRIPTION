@@ -1,10 +1,10 @@
 Package: Rdistance
 Type: Package
 Title: Distance sampling analyses
-Version: 1.1
-Date: 2012-12-01
+Version: 1.1.1
+Date: 2015-02-26
 Author: Trent McDonald, with contributions from Ryan Nielson, James Griswald, and Patrick McCann.
 Maintainer: Trent McDonald <tmcdonald@west-inc.com>
 Description: Analysis of line transect surveys.  Estimates distance-based sightability functions and abundances.
 License: GNU General Public License
-Imports:  boot, quantreg, KernSmooth
+Imports:  quantreg, KernSmooth, SparseM
