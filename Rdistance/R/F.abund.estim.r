@@ -1,15 +1,19 @@
 F.abund.estim <- function(dfunc, distdata, covdata,
                           area=1, ci=0.95, R=500,
                           bs.method="transects", plot.bs=FALSE){
-  # the alternative bs.method would be observations (aka detections)
-#   dfunc=dfunc
-#   distdata=dists.df
-#   covdata=covs.df
-#   area=10000
-#   plot.bs=TRUE
-#   ci=0.95
-#   bs.method="transects"
-#   R=500
+  # the alternative bs.method would be observations (aka detections), but not programmed yet
+   
+  
+  
+  # test values for use in development
+#    dfunc=dfunc
+#    distdata=dists.df
+#    covdata=covs.df
+#    area=10000
+#    plot.bs=TRUE
+#    ci=0.95
+#    bs.method="transects"
+#    R=500
   
   # original arguments (2/26/15)  
 #   F.abund.estim <- function(dfunc, avg.group.size=1, group.sizes, area=1, 
@@ -38,21 +42,21 @@ F.abund.estim <- function(dfunc, distdata, covdata,
   }
   
   #Apply truncation specified in dfunc object (including dists equal to w.lo and w.hi)
-  distdata <- distdata[distdata$dists >= dfunc$w.lo & distdata$dists <= dfunc$w.hi, ]
+  (distdata <- distdata[distdata$dists >= dfunc$w.lo & distdata$dists <= dfunc$w.hi, ])
 
-  # sample size
-  n <- nrow(distdata)
+  # sample size (number of detections, NOT individuals)
+  (n <- nrow(distdata))
   
   # group sizes
-  n.tot <- sum(distdata$groupsize)
-  avg.group.size <- mean(distdata$groupsize)
+  (n.tot <- sum(distdata$groupsize))  # number of individuals
+  (avg.group.size <- mean(distdata$groupsize))
 
   # total transect length and ESW
-  tot.trans.len <- sum(covdata$length)  
-  esw <- ESW(dfunc)  #get effective strip width
+  (tot.trans.len <- sum(covdata$length))
+  (esw <- ESW(dfunc))  #get effective strip width
 
   # estimate abundance
-  n.hat <- n.tot * area/(2 * esw * tot.trans.len)
+  (n.hat <- n.tot * area/(2 * esw * tot.trans.len))
   
   # store output
   ans <- dfunc
@@ -87,9 +91,21 @@ F.abund.estim <- function(dfunc, distdata, covdata,
         # sample rows, with replacement, from site covariates
         new.covdata <- covdata[sample(nrow(covdata), nrow(covdata), replace=TRUE), ]
         
+        new.trans <- as.character(new.covdata$siteID)  # which transects were sampled?
+        trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
+        
         # subset distance data from these transects
         new.trans <- unique(droplevels(new.covdata$siteID))
-        new.distdata <- distdata[distdata$siteID %in% new.trans, ]
+        new.distdata <- distdata[distdata$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
+        
+        # replicate according to freqency in new sample
+        # merge to add Freq column to indicate how many times to repeat each row
+        red <- merge(new.distdata, trans.freq, by.x="siteID", by.y="new.trans")
+        # expand this reduced set my replicating rows
+        new.distdata <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
+        
+        
+        # Extract distances
         new.x <- new.distdata$dists
         
         #update g(0) or g(x) estimate.
@@ -151,7 +167,7 @@ F.abund.estim <- function(dfunc, distdata, covdata,
     if (plot.bs) f.plot.bs(dfunc, x.scl.plot, y.scl.plot, col = "red", lwd = 3)
     
     
-    
+    # Calculate CI from bootstrap replicates
     p <- mean(n.hat.bs > n.hat, na.rm = TRUE)
     z.0 <- qnorm(1 - p)
     z.alpha <- qnorm(1 - ((1 - ci)/2))
