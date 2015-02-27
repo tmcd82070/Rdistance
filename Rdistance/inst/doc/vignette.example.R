@@ -8,7 +8,7 @@
 # jason.d.carlisle@gmail.com
 # Assistance from Trent L. McDonald, WEST, Inc.
 
-# Last updated 2/26/2015
+# Last updated 2/27/2015
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Install package ---------------------------------------------------------
@@ -56,7 +56,7 @@ summary(x)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Fit detection function
 # Requires only a vector of distances
-?F.dfunc.estim
+?F.dfunc.estim  # outdated -- need to update that dist argument can take two forms (see below)
 (dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))  # supplying just the vector of distances
 
 # same as supplying the data.frame with "dists" column
@@ -71,7 +71,7 @@ dfunc$fit
 dfunc$w.lo
 dfunc$w.hi
 # How to extract the ESW?  It prints, but how would one extract the value?
-ESW(dfunc)
+ESW(dfunc)  # found it, didn't realize it wasn't stored in dfunc directly
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -87,24 +87,28 @@ ESW(dfunc)
 # area=10000 converts to density per ha (for dist measured in m)
 
 
-?F.abund.estim
-#(fit <- F.abund.estim(dfunc, group.sizes=dists.df$Number, tot.trans.len=(72*500), area=10000, plot.bs=TRUE))
-(fit <- F.abund.estim(dfunc, tot.trans.len=(72*500), area=10000, R=200, plot.bs=TRUE))
-F.abund.estim(dfunc)
-print(fit)
+?F.abund.estim  # really outdated -- group sizes and transect lengths etc. handled differently (see inside function)
+
+(fit <- F.abund.estim(dfunc, distdata=dists.df, covdata=covs.df, area=10000,
+                      R=500, ci=0.95, plot.bs=TRUE, bs.method="transects"))
+
+
+
+# Explore the fit object
 str(fit)
 
-# How to index abundance estimate?
-fit
-# What are the names?
+# Abundance estimate and CI
+fit$n.hat
 fit$ci
 
+# Distribution of the bootstrap replicates of the abundance estimate
+hist(fit$B)
+
+
 # plot
-fit
+plot(fit)
 
 
-
-?ESW
 
 
 
@@ -115,12 +119,8 @@ fit
 # Plot abundance estimate and CI ------------------------------------------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
-
-
-
-
-
-
+# Thinking of building in a barplot with CI
+?barplot
 
 
 
@@ -135,26 +135,26 @@ fit
 
 
 
-?F.abund.estim
-?F.gx.estim
-
-# Throws error prior to bootstrapping:
-#Error in key * (1 + (exp.term %*% a[2:(nexp + 1)])) : 
-#    non-conformable arrays
-F.automated.CDA(x, area=10000, total.trans.len=500, w.hi = 150,
-                likelihoods=c("uniform", "halfnorm", "hazrate", "negexp", "Gamma"),
-                series=c("simple", "cosine"), expansions=c(0, 1, 2, 3), plot=TRUE)
-
-# uniform, 0 expansions selected as best
-# density (per ha) is 0.96 (CI=0.84, 1.19)
-F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi = 150,
-                likelihoods=c("uniform", "halfnorm", "Gamma"),
-                series=c("simple", "cosine"), expansions=c(0, 1, 2), plot=TRUE)
-
-F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi=150,
-                likelihoods=c("halfnorm", "uniform", "hazrate", "negexp", "Gamma"),
-                series=c("simple", "cosine"), plot=TRUE)
-
+# ?F.abund.estim
+# ?F.gx.estim
+# 
+# # Throws error prior to bootstrapping:
+# #Error in key * (1 + (exp.term %*% a[2:(nexp + 1)])) : 
+# #    non-conformable arrays
+# F.automated.CDA(x, area=10000, total.trans.len=500, w.hi = 150,
+#                 likelihoods=c("uniform", "halfnorm", "hazrate", "negexp", "Gamma"),
+#                 series=c("simple", "cosine"), expansions=c(0, 1, 2, 3), plot=TRUE)
+# 
+# # uniform, 0 expansions selected as best
+# # density (per ha) is 0.96 (CI=0.84, 1.19)
+# F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi = 150,
+#                 likelihoods=c("uniform", "halfnorm", "Gamma"),
+#                 series=c("simple", "cosine"), expansions=c(0, 1, 2), plot=TRUE)
+# 
+# F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi=150,
+#                 likelihoods=c("halfnorm", "uniform", "hazrate", "negexp", "Gamma"),
+#                 series=c("simple", "cosine"), plot=TRUE)
+# 
 
 
 
