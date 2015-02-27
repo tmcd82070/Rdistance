@@ -119,7 +119,7 @@ plot(fit)
 # Plot abundance estimate and CI ------------------------------------------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
-# Thinking of building in a barplot with CI
+# Thinking of building in a barplot with CI or something ...
 ?barplot
 
 
