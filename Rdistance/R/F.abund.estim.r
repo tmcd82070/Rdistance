@@ -2,21 +2,20 @@ F.abund.estim <- function(dfunc, distdata, covdata,
                           area=1, ci=0.95, R=500,
                           bs.method="transects", plot.bs=FALSE){
   # the alternative bs.method would be observations (aka detections)
-  dfunc=dfunc
-  distdata=dists.df
-  covdata=covs.df
-  area=10000
+#   dfunc=dfunc
+#   distdata=dists.df
+#   covdata=covs.df
+#   area=10000
+#   plot.bs=TRUE
+#   ci=0.95
+#   bs.method="transects"
+#   R=500
   
   # original arguments (2/26/15)  
 #   F.abund.estim <- function(dfunc, avg.group.size=1, group.sizes, area=1, 
 #                             ci=0.95, R=500, plot.bs=FALSE, 
 #                             transects=NULL, transect.lengths=NULL){
   
-  #Augistine changes
-  ###I changed default of n = length(dfunc$dist) to  n=sum(!is.na(dfunc$dist))
-  ##since there will be NA's in dfunc$dist
-  ##removed tot.trans.length as input as it is calculated from transect lengths
-  ##removed n from input as it is calculated from dfunc
   
   
   ########Plotting################
@@ -41,37 +40,21 @@ F.abund.estim <- function(dfunc, distdata, covdata,
   #Apply truncation specified in dfunc object (including dists equal to w.lo and w.hi)
   distdata <- distdata[distdata$dists >= dfunc$w.lo & distdata$dists <= dfunc$w.hi, ]
 
-
-  #dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
-
-
-
-  ###Calculate observed metrics####
   # sample size
-  #n <- sum(!is.na(dfunc$dist))
   n <- nrow(distdata)
   
   # group sizes
   n.tot <- sum(distdata$groupsize)
-  
-  
-  #if (missing(group.sizes)) {
-  #  n.tot <- avg.group.size * n
-  #}
-  #else if (length(group.sizes) == n) {
-  #else if (sum(!is.na(group.sizes)) == n) { #Augustine modification
-  #  #n.tot <- sum(group.sizes)
-  #  n.tot=sum(group.sizes, na.rm=TRUE) #Augustine modification
-  #  #avg.group.size <- mean(group.sizes)
   avg.group.size <- mean(distdata$groupsize)
-  #}else{
-  #  stop("Either avg.group.size or group.sizes vector must be specified")
-  #}
-  
-  #####Store observed metrics
+
+  # total transect length and ESW
+  tot.trans.len <- sum(covdata$length)  
   esw <- ESW(dfunc)  #get effective strip width
-  tot.trans.len = sum(covdata$length)
+
+  # estimate abundance
   n.hat <- n.tot * area/(2 * esw * tot.trans.len)
+  
+  # store output
   ans <- dfunc
   ans$n.hat <- n.hat
   ans$n <- n
@@ -79,54 +62,130 @@ F.abund.estim <- function(dfunc, distdata, covdata,
   ans$esw <- esw
   ans$tran.len <- tot.trans.len
   ans$avg.group.size <- avg.group.size
+
+
+
+  if (!is.null(ci)) {
+    ######Compute bootstrap CI
+    # Option 1:  resample transects
+    if(bs.method=="transects"){
+      g.x.scl.orig <- dfunc$call.g.x.scl  # g(0) or g(x) estimate
+      
+      n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
+      
+      # Turn on progress bar (if utils is installed)
+      if ("utils" %in% installed.packages()[, "Package"]) {
+        require(utils)
+        pb <- txtProgressBar(1, R)
+        show.progress = TRUE
+      } else show.progress = FALSE
+      
+      
+      # bootstrap
+      cat("Computing bootstrap confidence interval on N...\n")
+      for(i in 1:R){
+        # sample rows, with replacement, from site covariates
+        new.covdata <- covdata[sample(nrow(covdata), nrow(covdata), replace=TRUE), ]
+        
+        # subset distance data from these transects
+        new.trans <- unique(droplevels(new.covdata$siteID))
+        new.distdata <- distdata[distdata$siteID %in% new.trans, ]
+        new.x <- new.distdata$dists
+        
+        #update g(0) or g(x) estimate.
+        if (is.data.frame(g.x.scl.orig)) {
+          g.x.scl.bs <- g.x.scl.orig[sample(1:nrow(g.x.scl.orig), 
+                                            replace = TRUE), ]
+        } else g.x.scl.bs <- g.x.scl.orig
+        
+        
+        # estimate distance function
+        dfunc.bs <- F.dfunc.estim(new.x, likelihood = dfunc$like.form, 
+                                  w.lo = dfunc$w.lo, w.hi = dfunc$w.hi, expansions = dfunc$expansions, 
+                                  series = dfunc$series, x.scl = dfunc$call.x.scl, 
+                                  g.x.scl = g.x.scl.bs, observer = dfunc$call.observer, 
+                                  warn = FALSE)
+        
+        
+        
+        #Store ESW if it converged
+        if (dfunc.bs$convergence == 0) {
+          esw.bs <- ESW(dfunc.bs)
+          if (esw.bs <= dfunc$w.hi) {
+            
+            
+            
+            ###Calculate observed metrics####
+            # sample size
+            n.bs <- nrow(new.distdata)
+            
+            # group sizes
+            n.tot.bs <- sum(new.distdata$groupsize)
+            avg.group.size.bs <- mean(new.distdata$groupsize)
+            
+            
+            #####Store observed metrics
+            #esw <- ESW(dfunc.bs)  #get effective strip width
+            tot.trans.len.bs <- sum(new.covdata$length)
+            n.hat.bs[i] <- n.tot.bs * area/(2 * esw.bs * tot.trans.len.bs)  # area stays same as original?   
+            
+            
+            #calculate n.hat for this rep
+            #n.bs[i] <- (n.tot.rep * area/(2 * trans.len.rep))/esw  # ? this math doesn't match calculating nhat elsewhere
+            #End Augustine modifications
+            
+          }  # end if esw.bs <= w.hi
+          if (plot.bs) 
+            f.plot.bs(dfunc.bs, x.scl.plot, y.scl.plot, col = "blue", lwd = 0.5)
+          
+          if (show.progress) setTxtProgressBar(pb, i)
+        }  # end if dfunc.bs converged
+      }  # end bootstrap
+    }  # end option 1, transects
+    
+    
+    # close progress bar  
+    if (show.progress) close(pb)
+    
+    # plot red line of original fit again (over bs lines)
+    if (plot.bs) f.plot.bs(dfunc, x.scl.plot, y.scl.plot, col = "red", lwd = 3)
+    
+    
+    
+    p <- mean(n.hat.bs > n.hat, na.rm = TRUE)
+    z.0 <- qnorm(1 - p)
+    z.alpha <- qnorm(1 - ((1 - ci)/2))
+    p.L <- pnorm(2 * z.0 - z.alpha)
+    p.H <- pnorm(2 * z.0 + z.alpha)
+    ans$ci <- quantile(n.hat.bs[!is.na(n.hat.bs)], p = c(p.L, p.H))
+    ans$B <- n.hat.bs
+    if (any(is.na(n.hat.bs))) cat(paste(sum(is.na(n.hat.bs)), "of", R, "iterations did not converge.\n"))
+    
+  }  # end if is.null ci
+
+
+
+   ######Don't compute CI##############
+   else {
+     ans$B <- NA
+     ans$ci <- c(NA, NA)
+   }
   
-#   ######Compute bootstrap CI
-#   if (!is.null(ci)) {
-#     
-#     #Orignial code:  Remove invalid distances before bootrapping.  NA, too high or low
-#     #Code no longer does this
-#     d.orig <- dfunc$dist #observed distances
-#     #ind <- !is.na(d.orig) & (dfunc$w.lo <= d.orig) & (d.orig <= dfunc$w.hi)
-#     #d.orig <- d.orig[ind]
-#     g.x.scl.orig <- dfunc$call.g.x.scl #g(0) or g(x) estimate
-#     
-#     #This only bootstraps transects with observations
-#     #else {
-#     #transects <- transects[ind]
-#     #}
-#     
-#     #Get unique transects
-#     unique.transects <- sort(unique(transects)) 
-#     
-#     #Make data struture of transects and distances for bootstrapping
-#     data.list <- tapply(d.orig, transects, function(x) {
-#       x
-#     })
-#     
-#     #Make data struture of group sizes for bootstrapping, Augustine modification
-#     if (!missing(group.sizes)) {
-#       group.sums <- tapply(group.sizes, transects, function(x) {
-#         sum(x)
-#       })
-#     }
-#     
-#     n.bs <- rep(NA, R)#preallocate space for bootstrap replicates
-#     
-#     #n.tot and tot.trans.len not constant if bootstrapping all transects
-#     #tmp.const <- n.tot * area/(2 * tot.trans.len)
-#     
-#     #Turn on progress bar
-#     if ("utils" %in% installed.packages()[, "Package"]) {
-#       require(utils)
-#       pb <- txtProgressBar(1, R)
-#       show.progress = TRUE
-#     }
-#     else {
-#       show.progress = FALSE
-#     }
-#     #show.progress=F
-#     #start bootstrap
-#     cat("Computing bootstrap confidence interval on N...\n")
+  ####output####
+  ans$alpha <- ci
+  class(ans) <- c("abund", class(dfunc))
+  ans
+
+  
+  
+}  # end function
+
+
+
+
+# Junk
+#     # OLD start bootstrap
+# 
 #     for (i in 1:R) {
 #       #sample transects
 #       bs.trans <- sample(unique.transects, replace = TRUE)
@@ -136,13 +195,7 @@ F.abund.estim <- function(dfunc, distdata, covdata,
 #                               df[[as.character(x)]]
 #                             }, data.list))
 #       
-#       #update g(0) or g(x) estimate.
-#       if (is.data.frame(g.x.scl.orig)) {
-#         g.x.scl.bs <- g.x.scl.orig[sample(1:nrow(g.x.scl.orig), 
-#                                           replace = TRUE), ]
-#       }else{
-#         g.x.scl.bs <- g.x.scl.orig
-#       }
+# 
 #       
 #       #estimate distance function
 #       dfunc.bs <- F.dfunc.estim(d.bs, likelihood = dfunc$like.form, 
@@ -194,19 +247,3 @@ F.abund.estim <- function(dfunc, distdata, covdata,
 #     if (any(is.na(n.bs))) 
 #       cat(paste(sum(is.na(n.bs)), "of", R, "iterations did not converge.\n"))
 #   }
-  
-  
-#   ######Don't compute CI##############
-#   else {
-#     ans$B <- NA
-#     ans$ci <- c(NA, NA)
-#   }
-  
-  ####output####
-  ans$alpha = ci
-  class(ans) <- c("abund", class(dfunc))
-  ans
-
-  
-  
-}  # end function
