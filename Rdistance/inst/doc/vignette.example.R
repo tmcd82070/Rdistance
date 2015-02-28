@@ -121,7 +121,65 @@ plot(fit)
 
 # Thinking of building in a barplot with CI or something ...
 ?barplot
+barplot(height=fit$n.hat)
 
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Example with two groups -------------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+data(sparrows)
+
+# Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
+dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
+
+# Remove sight distance and angle
+dists.df <- dists.df[, -which(names(dists.df) %in% c("sightdist", "sightangle"))]
+
+
+# split the covariats and distance dataframe by sagebrush cover class
+hi.covs <- covs.df[covs.df$sage=="High", ]
+lo.covs <- covs.df[covs.df$sage=="Low", ]
+
+hi.dists <- dists.df[dists.df$siteID %in% hi.covs$siteID, ]
+lo.dists <- dists.df[dists.df$siteID %in% lo.covs$siteID, ]
+
+# histograms
+hist(hi.dists$dists)
+hist(lo.dists$dists)
+
+
+# fit dfunc objects
+(hi.dfunc <- F.dfunc.estim(hi.dists, likelihood="halfnorm", w.hi=150))
+(lo.dfunc <- F.dfunc.estim(lo.dists, likelihood="halfnorm", w.hi=150))
+
+
+# estimate abundance
+(hi.fit <- F.abund.estim(hi.dfunc, distdata=hi.dists, covdata=hi.covs, area=10000,
+                         R=500, ci=0.95, plot.bs=TRUE, bs.method="transects"))
+
+(lo.fit <- F.abund.estim(lo.dfunc, distdata=lo.dists, covdata=lo.covs, area=10000,
+                         R=500, ci=0.95, plot.bs=TRUE, bs.method="transects"))
+
+
+# compile results for plotting
+pdata <- data.frame(sage=c("Low", "High"))
+pdata$sage <- factor(pdata$sage, levels=c("Low", "High"))
+pdata$nhat <- c(lo.fit$n.hat, hi.fit$n.hat)
+pdata$low <- c(lo.fit$ci[1], hi.fit$ci[1])
+pdata$upp <- c(lo.fit$ci[2], hi.fit$ci[2])
+
+# plot using ggplot2 package
+require(ggplot2)
+ggplot(data=pdata, aes(x=sage, y=nhat, fill=sage)) +
+  geom_bar(stat="identity", colour="black") +
+  geom_errorbar(aes(ymin=low, ymax=upp), width=.1) +
+  xlab("Sagebrush Cover") + ylab("Sparrow Density\n(birds per ha)") +
+  theme_bw() + theme(legend.position="none")
+  
 
 
 
