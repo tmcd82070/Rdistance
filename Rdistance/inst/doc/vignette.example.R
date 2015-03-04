@@ -60,7 +60,7 @@ summary(x)
 (dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))  # supplying just the vector of distances
 
 # same as supplying the data.frame with "dists" column
-F.dfunc.estim(dists.df, likelihood="halfnorm", w.hi=150)
+dfit <- F.dfunc.estim(dists.df, likelihood="halfnorm", w.hi=150)
 
 
 
