@@ -3,6 +3,7 @@ F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, tran
                                                       "uniform", "negexp", "Gamma"), series = c("cosine", "hermite", 
                                                                                                 "simple"), expansions = 0:3, plot = TRUE, ...) 
 {
+  # 
   f.save.result <- function(results, dfunc, like, ser, expan, 
                             plot) {
     esw <- ESW(dfunc)
