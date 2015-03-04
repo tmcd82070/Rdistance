@@ -1,24 +1,22 @@
-F.dfunc.estim = function (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist,na.rm=TRUE), 
-          expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1, 
-          observer = "both", warn = TRUE) 
-{
+F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist, na.rm=TRUE), 
+                            expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){
   
-  #### Augustine changed the default w.hi so that it does not return NA if dist contains NA
-  
-  dist2=dist #Store with NAs
-  dist=dist[!is.na(dist)] #Remove NAs for maximizing likelihood
-  
+  # dists can be provided as a vector or as a column named "dists" in a data.frame
+  # if d.f, pull out the dist column
+  if(inherits(dist, "data.frame")){
+    dist <- dist$dist
+  }
   
   call <- match.call()
+  
   strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist)
-  fit <- nlminb(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, 
-                upper = strt.lims$uplimit, control = list(trace = 0, 
-                                                          iter.max = 1000), dist = dist, like = likelihood, 
+  fit <- nlminb(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
+                control = list(trace = 0, iter.max = 1000), dist = dist, like = likelihood, 
                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
   names(fit$par) <- strt.lims$names
   ans <- list(parameters = fit$par, loglik = fit$objective, 
               convergence = fit$convergence, like.form = likelihood, 
-              w.lo = w.lo, w.hi = w.hi, dist = dist2, expansions = expansions, 
+              w.lo = w.lo, w.hi = w.hi, dist = dist, expansions = expansions, 
               series = series, call = call, call.x.scl = x.scl, call.g.x.scl = g.x.scl, 
               call.observer = observer, fit = fit)
   class(ans) <- "dfunc"
@@ -39,4 +37,5 @@ F.dfunc.estim = function (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(di
       warning(ans$fit$message)
   }
   ans
-}
+  
+}  # end function

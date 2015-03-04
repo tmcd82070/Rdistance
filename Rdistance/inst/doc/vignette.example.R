@@ -8,113 +8,178 @@
 # jason.d.carlisle@gmail.com
 # Assistance from Trent L. McDonald, WEST, Inc.
 
-# Last updated 2/23/2015
+# Last updated 2/27/2015
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Install package ---------------------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+## USE CURRENT GITHUB VERSION OF THE PACKAGE
+# Install devtools in order to install development version of Rdistance from GitHub
+require(devtools)
 
-# ## USE CURRENT GITHUB VERSION OF THE PACKAGE
-# # Install devtools in order to install development version of Rdistance from GitHub
-# require(devtools)
-# 
-# # Some functionality of devtools depends on Rtools.  install_github() apparently does not.
-# # If needed, download Rtools from web at http://cran.r-project.org/bin/windows/Rtools/
-# # For R version 3.1.2, use Rtools31.exe
-# 
-# # This works and will install the master branch; however, the CarlisleWorkspace brance is where we're developing
-# install_github("tmcd82070/Rdistance/Rdistance@master")  # master branch
-# 
-# # This doesn't work (with or without Rtools installed)
-# # Appears to be some sort of cyclic namespace dependency -- not sure how to fix
-# install_github("tmcd82070/Rdistance/Rdistance@CarlisleWorkspace")  # CarlisleWorkspace branch
+# Some functionality of devtools depends on Rtools.  install_github() apparently does not.
+# If needed though, download Rtools from web at http://cran.r-project.org/bin/windows/Rtools/
+# For R version 3.1.2, use Rtools31.exe
 
+# Install the development version of Rdistance from the CarlisleWorkspace branch on GitHub
+install_github("tmcd82070/Rdistance/Rdistance@CarlisleWorkspace")
 
-
-
-
-# Set working directory to the CarlisleWorkspace branch saved on local machine
-# This will be replaced with the GitHub option above once I figure it out.
-packdir <- "C:/R_Code/Rdistance/Rdistance"  # Carlisle laptop
-packdir <- "C:/Users/tmcdonald/Google Drive/Documents/Programs/Rdistance/Rdistance"
-
-
-# Load example dataset (two data.frames)
-load(paste(packdir, "data", "sparrows.rda", sep="/"))
-
-# data(sparrows)
+require(Rdistance)
 
 
 
-
-
-# Source current functions (under development)
-source(paste(packdir, "R", "perp.dists.R", sep="/"))
-source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
-
-
-# # Load or Install/load the Rdistance package (currently version 1.1)
-# if(!require(Rdistance)) { 
-#     install.packages("Rdistance")
-#     require(Rdistance)
-# }
-
-
-
-
-# Add NA rows to counts where no sparrows were observed
-length(unique(sparrows.covs$TranID))  # unique IDs for all transects surveyed (even if no sparrow recorded)
-(absences <- data.frame(table(sparrows.counts$TranID)))  # Note sparrows not observed at all transects
-(absences <- as.character(absences[absences$Freq==0, 1]))
-
-(toadd <- data.frame(matrix(nrow=length(absences), ncol=ncol(sparrows.counts))))
-toadd[, 1] <- absences
-names(toadd) <- names(sparrows.counts)
-
-# Append NA rows
-sparrows.counts <- rbind(sparrows.counts, toadd)
-
-
-
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Import and prep data ----------------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Load the example sparrows dataset from package
+data(sparrows)
 
 # Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
-sparrows.counts$PerpDist <- perp.dists(obs.dist=sparrows.counts$SightDist, obs.angle=sparrows.counts$SightAngle, digits=1)
+dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
 
-# Save vector of distances (includes NAs)
-x <- sparrows.counts$PerpDist
+# Remove sight distance and angle
+dists.df <- dists.df[, -which(names(dists.df) %in% c("sightdist", "sightangle"))]
+
+# Save vector of distances
+x <- dists.df$dists
 
 # Examine the histogram of distances
 hist(x)
+rug(x)
 summary(x)
 
 
 
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Fit a detection function ------------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Fit detection function
-?F.dfunc.estim
-(dfunc <- F.dfunc.estim(x, likelihood="uniform", w.hi=150))
-# (dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))
-# (dfunc <- F.dfunc.estim(x, likelihood="hazrate", w.hi=150))
+# Requires only a vector of distances
+?F.dfunc.estim  # outdated -- need to update that dist argument can take two forms (see below)
+(dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))  # supplying just the vector of distances
+
+# same as supplying the data.frame with "dists" column
+F.dfunc.estim(dists.df, likelihood="halfnorm", w.hi=150)
+
+
+
+# Explore the dfunc object
+dfunc$parameters
+dfunc$call
+dfunc$fit
+dfunc$w.lo
+dfunc$w.hi
+# How to extract the ESW?  It prints, but how would one extract the value?
+ESW(dfunc)  # found it, didn't realize it wasn't stored in dfunc directly
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Estimate abundance given a detection function ---------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+# Requires two data.frames:
+  # a distance data.frame with at least $distance, $siteID, and $groupsize
+  # a site-covariate data.frame with at least $siteID and $length
+
 
 # 72 transects surveyed, each 500 m
 # area=10000 converts to density per ha (for dist measured in m)
-?F.abund.estim
-#(fit <- F.abund.estim(dfunc, group.sizes=sparrows.counts$Number, tot.trans.len=(72*500), area=10000, plot.bs=TRUE))
-(fit <- F.abund.estim(dfunc, tot.trans.len=(72*500), area=10000, R=200, plot.bs=TRUE))
-print(fit)
+
+
+?F.abund.estim  # really outdated -- group sizes and transect lengths etc. handled differently (see inside function)
+
+(fit <- F.abund.estim(dfunc, distdata=dists.df, covdata=covs.df, area=10000,
+                      R=500, ci=0.95, plot.bs=TRUE, bs.method="transects"))
+
+
+
+# Explore the fit object
 str(fit)
 
-# How to index abundance estimate?
-fit
-# What are the names?
+# Abundance estimate and CI
+fit$n.hat
 fit$ci
 
+# Distribution of the bootstrap replicates of the abundance estimate
+hist(fit$B)
+
+
 # plot
-fit
+plot(fit)
 
 
 
 
 
 
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Plot abundance estimate and CI ------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+# Thinking of building in a barplot with CI or something ...
+?barplot
+barplot(height=fit$n.hat)
+
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Example with two groups -------------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+data(sparrows)
+
+# Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
+dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
+
+# Remove sight distance and angle
+dists.df <- dists.df[, -which(names(dists.df) %in% c("sightdist", "sightangle"))]
+
+
+# split the covariats and distance dataframe by sagebrush cover class
+hi.covs <- covs.df[covs.df$sage=="High", ]
+lo.covs <- covs.df[covs.df$sage=="Low", ]
+
+hi.dists <- dists.df[dists.df$siteID %in% hi.covs$siteID, ]
+lo.dists <- dists.df[dists.df$siteID %in% lo.covs$siteID, ]
+
+# histograms
+hist(hi.dists$dists)
+hist(lo.dists$dists)
+
+
+# fit dfunc objects
+(hi.dfunc <- F.dfunc.estim(hi.dists, likelihood="halfnorm", w.hi=150))
+(lo.dfunc <- F.dfunc.estim(lo.dists, likelihood="halfnorm", w.hi=150))
+
+
+# estimate abundance
+(hi.fit <- F.abund.estim(hi.dfunc, distdata=hi.dists, covdata=hi.covs, area=10000,
+                         R=500, ci=0.95, plot.bs=TRUE, bs.method="transects"))
+
+(lo.fit <- F.abund.estim(lo.dfunc, distdata=lo.dists, covdata=lo.covs, area=10000,
+                         R=500, ci=0.95, plot.bs=TRUE, bs.method="transects"))
+
+
+# compile results for plotting
+pdata <- data.frame(sage=c("Low", "High"))
+pdata$sage <- factor(pdata$sage, levels=c("Low", "High"))
+pdata$nhat <- c(lo.fit$n.hat, hi.fit$n.hat)
+pdata$low <- c(lo.fit$ci[1], hi.fit$ci[1])
+pdata$upp <- c(lo.fit$ci[2], hi.fit$ci[2])
+
+# plot using ggplot2 package
+require(ggplot2)
+ggplot(data=pdata, aes(x=sage, y=nhat, fill=sage)) +
+  geom_bar(stat="identity", colour="black") +
+  geom_errorbar(aes(ymin=low, ymax=upp), width=.1) +
+  xlab("Sagebrush Cover") + ylab("Sparrow Density\n(birds per ha)") +
+  theme_bw() + theme(legend.position="none")
+  
 
 
 
@@ -128,26 +193,26 @@ fit
 
 
 
-?F.abund.estim
-?F.gx.estim
-
-# Throws error prior to bootstrapping:
-#Error in key * (1 + (exp.term %*% a[2:(nexp + 1)])) : 
-#    non-conformable arrays
-F.automated.CDA(x, area=10000, total.trans.len=500, w.hi = 150,
-                likelihoods=c("uniform", "halfnorm", "hazrate", "negexp", "Gamma"),
-                series=c("simple", "cosine"), expansions=c(0, 1, 2, 3), plot=TRUE)
-
-# uniform, 0 expansions selected as best
-# density (per ha) is 0.96 (CI=0.84, 1.19)
-F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi = 150,
-                likelihoods=c("uniform", "halfnorm", "Gamma"),
-                series=c("simple", "cosine"), expansions=c(0, 1, 2), plot=TRUE)
-
-F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi=150,
-                likelihoods=c("halfnorm", "uniform", "hazrate", "negexp", "Gamma"),
-                series=c("simple", "cosine"), plot=TRUE)
-
+# ?F.abund.estim
+# ?F.gx.estim
+# 
+# # Throws error prior to bootstrapping:
+# #Error in key * (1 + (exp.term %*% a[2:(nexp + 1)])) : 
+# #    non-conformable arrays
+# F.automated.CDA(x, area=10000, total.trans.len=500, w.hi = 150,
+#                 likelihoods=c("uniform", "halfnorm", "hazrate", "negexp", "Gamma"),
+#                 series=c("simple", "cosine"), expansions=c(0, 1, 2, 3), plot=TRUE)
+# 
+# # uniform, 0 expansions selected as best
+# # density (per ha) is 0.96 (CI=0.84, 1.19)
+# F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi = 150,
+#                 likelihoods=c("uniform", "halfnorm", "Gamma"),
+#                 series=c("simple", "cosine"), expansions=c(0, 1, 2), plot=TRUE)
+# 
+# F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi=150,
+#                 likelihoods=c("halfnorm", "uniform", "hazrate", "negexp", "Gamma"),
+#                 series=c("simple", "cosine"), plot=TRUE)
+# 
 
 
 
@@ -164,5 +229,44 @@ F.automated.CDA(x, area=10000, total.trans.len=(72*500), w.hi=150,
 
 
 # # Read in example datasets
-# counts <- read.csv("Sparrows.Counts.csv")
+# counts <- read.csv("dists.df.csv")
 # covs <- read.csv("Sparrows.Covariates.csv")
+
+
+# # Set working directory to the CarlisleWorkspace branch saved on local machine
+# # This will be replaced with the GitHub option above once I figure it out.
+# packdir <- "C:/R_Code/Rdistance/Rdistance"  # Carlisle laptop
+# packdir <- "C:/Users/tmcdonald/Google Drive/Documents/Programs/Rdistance/Rdistance"
+# 
+# 
+# # Load example dataset (two data.frames)
+# load(paste(packdir, "data", "sparrows.rda", sep="/"))
+# 
+# # data(sparrows)
+# 
+# 
+# 
+# 
+# 
+# # Source current functions (under development)
+# source(paste(packdir, "R", "perp.dists.R", sep="/"))
+# source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
+
+
+# # Load or Install/load the Rdistance package (currently version 1.1)
+# if(!require(Rdistance)) { 
+#     install.packages("Rdistance")
+#     require(Rdistance)
+# }
+
+# # Add NA rows to counts where no sparrows were observed
+# length(unique(sparrows.covs$TranID))  # unique IDs for all transects surveyed (even if no sparrow recorded)
+# (absences <- data.frame(table(dists.df$TranID)))  # Note sparrows not observed at all transects
+# (absences <- as.character(absences[absences$Freq==0, 1]))
+# 
+# (toadd <- data.frame(matrix(nrow=length(absences), ncol=ncol(dists.df))))
+# toadd[, 1] <- absences
+# names(toadd) <- names(dists.df)
+# 
+# # Append NA rows
+# dists.df <- rbind(dists.df, toadd)
