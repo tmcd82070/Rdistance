@@ -43,3 +43,5 @@ distance_old
 Rdistance*.zip
 Rdistance*.tar.gz
 Rdistance*.piz
+.Rproj.user
+Rdistance.Rproj
