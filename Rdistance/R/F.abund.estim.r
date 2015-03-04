@@ -48,7 +48,6 @@ F.abund.estim <- function(dfunc, distdata, covdata,
   (n <- nrow(distdata))
   
   # group sizes
-  (n.tot <- sum(distdata$groupsize))  # number of individuals
   (avg.group.size <- mean(distdata$groupsize))
 
   # total transect length and ESW
@@ -56,7 +55,7 @@ F.abund.estim <- function(dfunc, distdata, covdata,
   (esw <- ESW(dfunc))  #get effective strip width
 
   # estimate abundance
-  (n.hat <- n.tot * area/(2 * esw * tot.trans.len))
+  (n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len))
   
   # store output
   ans <- dfunc
@@ -104,7 +103,6 @@ F.abund.estim <- function(dfunc, distdata, covdata,
         # expand this reduced set my replicating rows
         new.distdata <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
         
-        
         # Extract distances
         new.x <- new.distdata$dists
         
@@ -136,14 +134,13 @@ F.abund.estim <- function(dfunc, distdata, covdata,
             n.bs <- nrow(new.distdata)
             
             # group sizes
-            n.tot.bs <- sum(new.distdata$groupsize)
             avg.group.size.bs <- mean(new.distdata$groupsize)
             
             
             #####Store observed metrics
             #esw <- ESW(dfunc.bs)  #get effective strip width
             tot.trans.len.bs <- sum(new.covdata$length)
-            n.hat.bs[i] <- n.tot.bs * area/(2 * esw.bs * tot.trans.len.bs)  # area stays same as original?   
+            n.hat.bs[i] <- avg.group.size.bs * n.bs * area/(2 * esw.bs * tot.trans.len.bs)  # area stays same as original?   
             
             
             #calculate n.hat for this rep
