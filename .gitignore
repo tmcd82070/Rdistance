@@ -46,4 +46,5 @@ Rdistance*.piz
 Rdistance/inst/doc/~$istance Example Vignette.docx
 Rdistance/inst/doc/~WRL0005.tmp
 .Rproj.user
-.Rdistance.proj
+Rdistance.Rproj
+
