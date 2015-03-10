@@ -9,18 +9,20 @@ Fit a specific distance function to a set of observed off-transect distances.
 }
 
 \usage{
-F.dfunc.estim(dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist), expansions = 0, 
-    series = "cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE )
+F.dfunc.estim (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist, na.rm = TRUE), 
+                            expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1,
+                            observer = "both", warn = TRUE)
 }
 
 \arguments{
   \item{dist}{
-    The vector of observed off-transect distances. All values in \code{dist} must be 
-    between \code{w.lo} and \code{w.hi}. 
+    The vector of observed off-transect distances.  Alternatively, a data.frame with observed off-transect
+    distances stored in a column named \code{dist}.  See \code{perp.dists} to calculate off-transect distances
+    from sighting angle and sighting distance.
 }
   \item{likelihood}{
     String specifying the likelihood to assume. Valid values at present are "uniform", 
-    "halfnorm", "hazrate", "negexp", and "Gamma". See Details and Example for user defined likelihoods.
+    "halfnorm", "hazrate", "negexp", and "Gamma". See Details and Example for user-defined likelihoods.
 }
   \item{w.lo}{
     Lower or left-truncation limit of the distances in \code{dist}.  This is the minimum 
@@ -47,19 +49,18 @@ F.dfunc.estim(dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist), expansi
     This parameter is passed to \code{F.g.estim}. See \code{F.gx.estim} documentation for definition.
 }
 \item{warn}{
-    A logical scaler specifying whether to issue an R warning if the estimation did not converge or if one or more parameter 
-    estimates are at their boundaries.  For estimation, \code{warn} should generally be left at its default value of \code{TRUE}.  When computing 
-    bootstrap confidence intervals, setting \code{warn = FALSE} turns off annoying warnings when an iteration does not
-    converge.  Regardless of \code{warn}, messages about convergence and boundary conditions are printed by \code{print.dfunc}, \code{print.abund},
-    and \code{plot.dfunc}, so there should be little harm in setting \code{warn = FALSE}.
+    A logical scaler specifying whether to issue an R warning if the estimation did not converge or if one or more
+    parameter estimates are at their boundaries.  For estimation, \code{warn} should generally be left at its default
+    value of \code{TRUE}.  When computing bootstrap confidence intervals, setting \code{warn = FALSE} turns off annoying
+    warnings when an iteration does not converge.  Regardless of \code{warn}, messages about convergence and boundary
+    conditions are printed by \code{print.dfunc}, \code{print.abund}, and \code{plot.dfunc}, so there should be little
+    harm in setting \code{warn = FALSE}.
 }
 
 
 }
 \details{
-\code{Rdistance} allows user-defined likelihood functions (see Examples).  Assuming the user defined likelihood is named <\emph{form}>,
-estimation of a user defined likelihood 
-requires that the following two functions be defined: 
+\code{Rdistance} allows user-defined likelihood functions (see Examples).  Assuming the user defined likelihood is named <\emph{form}>, estimation of a user defined likelihood requires that the following two functions be defined: 
 
 \enumerate{
 \item <\emph{form}>.like - The likelihood:  This function defines the user-defined likelihood and should take the following inputs, in this order:
@@ -99,7 +100,7 @@ containing the following components:
         Length of this vector for built-in likelihood is the 
         number of expansion terms plus 1 plus 1 if the likelihood is 
         either 'hazrate' or 'uniform'. }
-    \item{loglik}{The maximized value of the log likelihood. }
+    \item{loglik}{The maximized value of the log likelihood.}
     \item{convergence}{The convergence code. This code is returned by 
         \code{nlminb}.  Values other than 0 indicate suspect 
         convergence.}

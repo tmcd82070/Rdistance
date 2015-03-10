@@ -56,7 +56,7 @@ to bump the number of trapazoids, and \code{source}-d back in.
 A scalar equal to the area under the distance function from \code{obj$w.lo} to \code{obj$w.hi}. }
 
 \references{
-Buckland et al. 
+Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 }
 
 \author{
