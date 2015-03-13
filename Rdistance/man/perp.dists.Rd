@@ -48,17 +48,10 @@ Jason Carlisle,  \email{jason.d.carlisle@gmail.com}
 
 \examples{
 # Load the example sparrows dataset from package
-require(Rdistance)
 data(sparrows)
-
-# View the detection data recorded
-head(dists.df)
 
 # Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
 dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
-
-# Remove sight distance and angle
-dists.df <- dists.df[, -which(names(dists.df) \%in\% c("sightdist", "sightangle"))]
 
 # Proceed to fitting the detection function with F.dfunc.estim
 }
