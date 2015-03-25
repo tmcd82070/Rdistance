@@ -8,7 +8,7 @@
 # jason.d.carlisle@gmail.com
 # Assistance from Trent L. McDonald, WEST, Inc.
 
-# Last updated 2/27/2015
+# Last updated 3/25/2015
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Install package ---------------------------------------------------------
@@ -60,7 +60,7 @@ summary(x)
 (dfunc <- F.dfunc.estim(x, likelihood="halfnorm", w.hi=150))  # supplying just the vector of distances
 
 # same as supplying the data.frame with "dists" column
-dfit <- F.dfunc.estim(dists.df, likelihood="halfnorm", w.hi=150)
+F.dfunc.estim(dists.df, likelihood="halfnorm", w.hi=150)
 
 
 
@@ -72,6 +72,8 @@ dfunc$w.lo
 dfunc$w.hi
 # How to extract the ESW?  It prints, but how would one extract the value?
 ESW(dfunc)  # found it, didn't realize it wasn't stored in dfunc directly
+
+
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
@@ -115,15 +117,28 @@ plot(fit)
 
 
 
+
+
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# Plot abundance estimate and CI ------------------------------------------
+# Automate fitting multiple detection functions and estimate abund --------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
-# Thinking of building in a barplot with CI or something ...
-?barplot
-barplot(height=fit$n.hat)
+
+F.automated.CDA(distdata=dists.df, covdata=covs.df, area=10000, R=500, ci=0.95, plot.bs=TRUE,
+                bs.method="transects", w.hi=150)
 
 
+
+
+
+
+
+
+# Compare to fitting the best model outside of automation
+(dfunc <- F.dfunc.estim(dists.df, likelihood="negexp", expansions=1, series="cosine", w.hi=150))
+F.abund.estim(dfunc, distdata=dists.df, covdata=covs.df, area=10000, R=500, ci=0.95, plot.bs=TRUE, bs.method="transects")
 
 
 
@@ -165,6 +180,7 @@ hist(lo.dists$dists)
                          R=500, ci=0.95, plot.bs=TRUE, bs.method="transects"))
 
 
+
 # compile results for plotting
 pdata <- data.frame(sage=c("Low", "High"))
 pdata$sage <- factor(pdata$sage, levels=c("Low", "High"))
@@ -178,19 +194,48 @@ ggplot(data=pdata, aes(x=sage, y=nhat, fill=sage)) +
   geom_bar(stat="identity", colour="black") +
   geom_errorbar(aes(ymin=low, ymax=upp), width=.1) +
   xlab("Sagebrush Cover") + ylab("Sparrow Density\n(birds per ha)") +
+  coord_cartesian(ylim = c(0, 2)) +
   theme_bw() + theme(legend.position="none")
-  
 
 
 
 
-# Automated ---------------------------------------------------------------
+##
+# automated option
+(hi.fit <- F.automated.CDA(distdata=hi.dists, covdata=hi.covs, area=10000, R=200, ci=0.95,
+                           plot.bs=TRUE, bs.method="transects", w.hi=150))
 
-F.automated.CDA(distdata=dists.df, covdata=covs.df, area=10000,
-                R=500, ci=0.95, plot.bs=TRUE, bs.method="transects", w.hi=150)
+(lo.fit <- F.automated.CDA(distdata=lo.dists, covdata=lo.covs, area=10000, R=200, ci=0.95,
+                           plot.bs=TRUE, bs.method="transects", w.hi=150))
 
 
 
+
+# compile results for plotting
+pdata <- data.frame(sage=c("Low", "High"))
+pdata$sage <- factor(pdata$sage, levels=c("Low", "High"))
+pdata$nhat <- c(lo.fit$n.hat, hi.fit$n.hat)
+pdata$low <- c(lo.fit$ci[1], hi.fit$ci[1])
+pdata$upp <- c(lo.fit$ci[2], hi.fit$ci[2])
+
+# plot using ggplot2 package
+require(ggplot2)
+ggplot(data=pdata, aes(x=sage, y=nhat, fill=sage)) +
+  geom_bar(stat="identity", colour="black") +
+  geom_errorbar(aes(ymin=low, ymax=upp), width=.1) +
+  xlab("Sagebrush Cover") + ylab("Sparrow Density\n(birds per ha)") +
+  coord_cartesian(ylim = c(0, 2)) +
+  theme_bw() + theme(legend.position="none")
+
+
+
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# Junk code ---------------------------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
 
 ## Next sections to tackle
@@ -222,55 +267,3 @@ F.automated.CDA(distdata=dists.df, covdata=covs.df, area=10000,
 
 
 
-
-
-
-
-
-## Junk code
-# # Set working directory
-# setwd("C:\\Users\\jcarlis3\\Box Sync\\Classes\\s8_Spr_15\\DistanceSampling\\ExampleVignette")
-
-
-# # Read in example datasets
-# counts <- read.csv("dists.df.csv")
-# covs <- read.csv("Sparrows.Covariates.csv")
-
-
-# # Set working directory to the CarlisleWorkspace branch saved on local machine
-# # This will be replaced with the GitHub option above once I figure it out.
-# packdir <- "C:/R_Code/Rdistance/Rdistance"  # Carlisle laptop
-# packdir <- "C:/Users/tmcdonald/Google Drive/Documents/Programs/Rdistance/Rdistance"
-# 
-# 
-# # Load example dataset (two data.frames)
-# load(paste(packdir, "data", "sparrows.rda", sep="/"))
-# 
-# # data(sparrows)
-# 
-# 
-# 
-# 
-# 
-# # Source current functions (under development)
-# source(paste(packdir, "R", "perp.dists.R", sep="/"))
-# source(paste(packdir, "R", "F.dfunc.estim.R", sep="/"))
-
-
-# # Load or Install/load the Rdistance package (currently version 1.1)
-# if(!require(Rdistance)) { 
-#     install.packages("Rdistance")
-#     require(Rdistance)
-# }
-
-# # Add NA rows to counts where no sparrows were observed
-# length(unique(sparrows.covs$TranID))  # unique IDs for all transects surveyed (even if no sparrow recorded)
-# (absences <- data.frame(table(dists.df$TranID)))  # Note sparrows not observed at all transects
-# (absences <- as.character(absences[absences$Freq==0, 1]))
-# 
-# (toadd <- data.frame(matrix(nrow=length(absences), ncol=ncol(dists.df))))
-# toadd[, 1] <- absences
-# names(toadd) <- names(dists.df)
-# 
-# # Append NA rows
-# dists.df <- rbind(dists.df, toadd)
