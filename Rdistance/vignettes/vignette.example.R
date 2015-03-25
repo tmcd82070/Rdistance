@@ -184,6 +184,10 @@ ggplot(data=pdata, aes(x=sage, y=nhat, fill=sage)) +
 
 
 
+# Automated ---------------------------------------------------------------
+
+F.automated.CDA(distdata=dists.df, covdata=covs.df, area=10000,
+                R=500, ci=0.95, plot.bs=TRUE, bs.method="transects", w.hi=150)
 
 
 
