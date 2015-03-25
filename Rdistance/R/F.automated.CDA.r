@@ -128,11 +128,11 @@ F.automated.CDA <- function (distdata, covdata,
 #     abund <- F.abund.estim(dfunc, avg.group.size = 1, area = area, 
 #                             transects = transects, transect.lengths=transect.lengths)
 #   }
-  else {
-    abund <- F.abund.estim(dfunc, distdata=distdata, covdata=covdata, area=area, ci=ci, R=R,
-                           bs.method=bs.method, plot.bs=plot.bs)
+#   else {
+  abund <- F.abund.estim(dfunc, distdata=distdata, covdata=covdata, area=area, ci=ci, R=R,
+                         bs.method=bs.method, plot.bs=plot.bs)
 
-  }
+#   }
   cat("\n\n---------------- Final Automated CDS Abundance Estimate -------------------------------\n")
   print(abund)
   options(warn = wwarn)
