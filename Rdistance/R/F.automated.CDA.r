@@ -1,9 +1,17 @@
-F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, transect.lengths=NULL, 
-          w.lo = 0, w.hi = max(dist,na.rm=T), likelihoods = c("halfnorm", "hazrate", 
-                                                      "uniform", "negexp", "Gamma"), series = c("cosine", "hermite", 
-                                                                                                "simple"), expansions = 0:3, plot = TRUE, ...) 
-{
-  # 
+F.automated.CDA <- function (distdata, covdata, 
+                             w.lo=0, w.hi=max(dist, na.rm=TRUE),
+                             likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
+                             series=c("cosine", "hermite", "simple"), expansions=0:3,
+                             x.scl=0, g.x.scl=1, observer="both", warn=TRUE,
+                             area=1, ci=0.95, R=500, bs.method="transects", plot.bs=FALSE,                          
+                             plot=TRUE, ...){
+  
+  
+  # extract distance vector from distdata
+  dist <- distdata$dist
+  
+  
+  # function to save results
   f.save.result <- function(results, dfunc, like, ser, expan, 
                             plot) {
     esw <- ESW(dfunc)
@@ -54,6 +62,7 @@ F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, tran
   }
   
   
+  # Fit detection functions (F.dfunc.estim appears 4 times below)
   
   wwarn <- options()$warn
   options(warn = -1)
@@ -61,7 +70,7 @@ F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, tran
   cat("Likelihood\tSeries\tExpans\tConverged?\tScale?\tAIC\n")
   for (like in likelihoods) {
     if (like == "Gamma") {
-      dfunc <- F.dfunc.estim2(dist, likelihood = like, w.lo = w.lo, 
+      dfunc <- F.dfunc.estim(dist, likelihood = like, w.lo = w.lo, 
                              w.hi = w.hi, ...)
       ser <- ""
       expan <- 0
@@ -74,7 +83,7 @@ F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, tran
       for (expan in expansions) {
         if (expan == 0) {
           ser <- "cosine"
-          dfunc <- F.dfunc.estim2(dist, likelihood = like, 
+          dfunc <- F.dfunc.estim(dist, likelihood = like, 
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                  series = ser, ...)
           fit.table <- f.save.result(fit.table, dfunc, 
@@ -84,7 +93,7 @@ F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, tran
         }
         else {
           for (ser in series) {
-            dfunc <- F.dfunc.estim2(dist, likelihood = like, 
+            dfunc <- F.dfunc.estim(dist, likelihood = like, 
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                    series = ser, ...)
             fit.table <- f.save.result(fit.table, dfunc, 
@@ -107,22 +116,24 @@ F.automated.CDA=function (dist, group.size = 1, area = 1, transects = NULL, tran
   fit.table$aic <- ifelse(fit.table$converge == 0, fit.table$aic, 
                           Inf)
   fit.table <- fit.table[order(fit.table$aic), ]
-  dfunc <- F.dfunc.estim2(dist, likelihood = fit.table$like[1], 
+
+  dfunc <- F.dfunc.estim(dist, likelihood = fit.table$like[1], 
                          w.lo = w.lo, w.hi = w.hi, expansions = fit.table$expansions[1], 
                          series = fit.table$series[1], ...)
   if (plot) {
     plot(dfunc)
     mtext("BEST FITTING FUNCTION", side = 3, cex = 1.5, line = 3)
   }
-  if (missing(group.size)) {
-    abund <- F.abund.estim2(dfunc, avg.group.size = 1, area = area, 
-                            transects = transects, transect.lengths=transect.lengths)
-  }
+#   if (missing(group.size)) {
+#     abund <- F.abund.estim(dfunc, avg.group.size = 1, area = area, 
+#                             transects = transects, transect.lengths=transect.lengths)
+#   }
   else {
-    abund <- F.abund.estim2(dfunc, group.sizes = group.size, 
-                           area = area,  transects = transects, transect.lengths=transect.lengths)
+    abund <- F.abund.estim(dfunc, distdata=distdata, covdata=covdata, area=area, ci=ci, R=R,
+                           bs.method=bs.method, plot.bs=plot.bs)
+
   }
-  cat("\n\n---------------- Final Automated CDS Abundance estimate -------------------------------\n")
+  cat("\n\n---------------- Final Automated CDS Abundance Estimate -------------------------------\n")
   print(abund)
   options(warn = wwarn)
   abund
