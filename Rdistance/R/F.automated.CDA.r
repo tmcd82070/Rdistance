@@ -1,8 +1,7 @@
 F.automated.CDA <- function (distdata, covdata, 
                              w.lo=0, w.hi=max(dist, na.rm=TRUE),
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
-                             series=c("cosine", "hermite", "simple"), expansions=0:3,
-                             x.scl=0, g.x.scl=1, observer="both", warn=TRUE,
+                             series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
                              area=1, ci=0.95, R=500, bs.method="transects", plot.bs=FALSE,                          
                              plot=TRUE, ...){
   
