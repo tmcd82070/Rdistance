@@ -50,7 +50,7 @@ Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
 # Load the example sparrows dataset from package
 data(sparrows)
 
-# Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
+# Compute the off-transect distances from the observer's sight distance and angle
 dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
 
 # Proceed to fitting the detection function with F.dfunc.estim

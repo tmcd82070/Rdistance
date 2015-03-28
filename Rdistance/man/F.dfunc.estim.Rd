@@ -127,7 +127,7 @@ Likelihoods listed in \code{\link{uniform.like}};
 # Load the example sparrows dataset from package
 data(sparrows)
 
-# Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
+# Compute the off-transect distances from the observer's sight distance and angle
 dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
 
 # Fit multiple detection functions
@@ -138,7 +138,8 @@ hz.dfunc <- F.dfunc.estim(dists.df, likelihood="hazrate", w.hi = 150)
 ga.dfunc <- F.dfunc.estim(dists.df, likelihood="Gamma", w.hi = 150, x.scl="max") 
 
 # Plot the first four detection functions
-# Note, bins are plotted behind the detection function for visualization; however, the function is fit to the actual data, not to the bins.
+# Note, bins are plotted behind the detection function for visualization;
+# however, the function is fit to the actual data, not to the bins.
 par(mfrow=c(2,2))
 plot(un.dfunc)
 plot(hn.dfunc)

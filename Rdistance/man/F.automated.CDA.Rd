@@ -106,7 +106,7 @@ fitted models.  The model with lowest AIC is choosen as 'best', and estimation o
 # Load the example sparrows dataset from package
 data(sparrows)
 
-# Compute the off-transect (aka perpendicular) distances from the observer's sight distance and angle
+# Compute the off-transect distances from the observer's sight distance and angle
 dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
 
 # Automate fitting multiple detection functions
