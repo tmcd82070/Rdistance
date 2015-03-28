@@ -4,21 +4,12 @@ F.abund.estim <- function(dfunc, distdata, covdata,
   # the alternative bs.method would be observations (aka detections), but not programmed yet
    
   
-  
-  # test values for use in development
-#    dfunc=dfunc
-#    distdata=dists.df
-#    covdata=covs.df
-#    area=10000
-#    plot.bs=TRUE
-#    ci=0.95
-#    bs.method="transects"
-#    R=500
-  
-  # original arguments (2/26/15)  
-#   F.abund.estim <- function(dfunc, avg.group.size=1, group.sizes, area=1, 
-#                             ci=0.95, R=500, plot.bs=FALSE, 
-#                             transects=NULL, transect.lengths=NULL){
+    
+  # Error if distdata or covdata contain NAs
+  if(anyNA(distdata)==TRUE)
+    stop("Please remove detections for which dist is NA.")
+  if(anyNA(covdata)==TRUE)
+    stop("covdata cannot contain NAs.")
   
   
   

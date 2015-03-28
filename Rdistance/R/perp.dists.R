@@ -1,14 +1,12 @@
 perp.dists <- function(obs.dist, obs.angle, digits=1){
-    
-    # For line transect surveys where the distance from the observer (obs.dist) and angle (in degrees) from
-    # the line (obs.angle) is recorded.
-    # Converts degrees to radians, then applies the sine function and rounds off decimal places
-    # Reference Buckland et al Intro to Dist Samp book
-    
-    
-    # Need to build in some error handling (e.g., NA values)
-    
-    
-    round(obs.dist * sin(obs.angle*(pi/180)), digits)
+  
+  # Error if dist or angle is NA
+  if(anyNA(obs.dis)==TRUE)
+    stop("Please remove detections for which obs.dist and/or obs.angle is NA.")
+  if(anyNA(obs.angle)==TRUE)
+    stop("Please remove detections for which obs.dist and/or obs.angle is NA.")
+  
+  #Convert degrees to radians, then apply sine function and round off decimal places
+  round(obs.dist * sin(obs.angle*(pi/180)), digits)
     
 }

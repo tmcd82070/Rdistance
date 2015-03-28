@@ -7,6 +7,12 @@ F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist, n
     dist <- dist$dist
   }
   
+  
+  # Error if dist vector contains NAs
+  if(anyNA(dist)==TRUE)
+    stop("Please remove detections for which dist is NA.")
+  
+  
   call <- match.call()
   
   strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist)
