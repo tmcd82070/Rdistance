@@ -1,8 +1,8 @@
 Package: Rdistance
 Type: Package
 Title: Distance sampling analyses
-Version: 1.1
-Date: 2012-12-01
+Version: 1.2
+Date: 2015-04-01
 Authors@R: c(
   person("Trent", "McDonald", email="tmcdonald@west-inc.com", role=c("cre","aut")), 
   person("Ryan", "Nielson", email="rnielson@west-inc.com", role=c("aut")), 
@@ -15,6 +15,5 @@ Authors@R: c(
   person("Brook", "Russelland", email="", role=c("ctb")), 
   person("Patrick", "McKann", email="", role=c("ctb"))
   )
-Description: Analysis of line transect surveys.  Estimates distance-based sightability functions and abundances.
+Description: Analysis of distance sampling data collected on line transect surveys.  Estimates distance-based detection functions and abundances.
 License: GNU General Public License
-Imports:  quantreg, KernSmooth, SparseM

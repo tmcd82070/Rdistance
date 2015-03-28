@@ -1,7 +1,7 @@
 \name{perp.dists}
 \alias{perp.dists}
 
-\title{Compute off-transect distances from sighting distance and angle}
+\title{Compute off-transect distances from sighting distances and angles}
 
 \description{
 Computes off-transect (also called 'perpendicular') distances from measures of sighting distance and sighting angle.
