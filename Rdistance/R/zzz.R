@@ -4,7 +4,7 @@
     
     v <- 1.2
 
-    packageStartupMessage( paste("Rdistance - Distance and Line Transect Analysis (vers ", v ,")", sep=""))  # You have to change this every version
+    packageStartupMessage( paste("Rdistance - Distance Sampling Analyses for Line Transect Data (vers ", v ,")", sep=""))  # You have to change this every version
 	packageStartupMessage("\nWEST Inc. (tmcdonald@west-inc.com)") 
 
 

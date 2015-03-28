@@ -93,6 +93,7 @@ fitted models.  The model with lowest AIC is choosen as 'best', and estimation o
 
 \author{
     Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+    
     Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
 }
 

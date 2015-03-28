@@ -44,8 +44,8 @@ a couple differences.
 \code{Rdistance} includes routines to fit a Gamma detection function, and 
 the Uniform detection function of Rdistance is parameterized as a heavy-side function. 
 
-The best place to start learning the routines of \code{Rdistance} is the 
-examples in the help files for \code{F.dfunc.estim}, \code{F.abund.estim}, and \code{F.automated.CDA}.
+The best place to start learning the routines of \code{Rdistance} is the examples in the help files
+for \code\link{{F.dfunc.estim}}, \code\link{{F.abund.estim}}, and \code\link{{F.automated.CDA}}.
 }
 
 \details{
