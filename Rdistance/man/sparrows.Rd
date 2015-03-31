@@ -1,6 +1,6 @@
 \name{sparrows}
 \docType{data}
-\alias{sparrows}
+\alias{sparrows, sparrow.dists}
 \title{Example sparrow distance sampling data}
 \description{
   This dataset demonstrates the type and format of input data required by \code{Rdistance} to estimate a detection function and abundance from distance sampling data collected by surveying line transects.  Data come from 72 transects, each 500 meters long, surveyed by the Wyoming Cooperative Fish & Wildlife Research Unit.
