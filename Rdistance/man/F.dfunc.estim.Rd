@@ -124,18 +124,19 @@ Likelihoods listed in \code{\link{uniform.like}};
 }
 
 \examples{
-# Load the example sparrows dataset from package
-data(sparrows)
+# Load the example sparrows distances dataset from package
+data(sparrow.dists)
 
-# Compute the off-transect distances from the observer's sight distance and angle
-dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
+# Compute perpendicular, off-transect distances from the observer's sight distance and angle
+sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
+                                  obs.angle=sparrow.dists$sightangle)
 
 # Fit multiple detection functions
-un.dfunc <- F.dfunc.estim(dists.df, likelihood="uniform", w.hi = 150)
-hn.dfunc <- F.dfunc.estim(dists.df, likelihood="halfnorm", w.hi = 150)
-ne.dfunc <- F.dfunc.estim(dists.df, likelihood="negexp", w.hi = 150)
-hz.dfunc <- F.dfunc.estim(dists.df, likelihood="hazrate", w.hi = 150)
-ga.dfunc <- F.dfunc.estim(dists.df, likelihood="Gamma", w.hi = 150, x.scl="max") 
+un.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="uniform", w.hi = 150)
+hn.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="halfnorm", w.hi = 150)
+ne.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="negexp", w.hi = 150)
+hz.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="hazrate", w.hi = 150)
+ga.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="Gamma", w.hi = 150, x.scl="max") 
 
 # Plot the first four detection functions
 # Note, bins are plotted behind the detection function for visualization;
@@ -145,7 +146,6 @@ plot(un.dfunc)
 plot(hn.dfunc)
 plot(ne.dfunc)
 plot(hz.dfunc)
-
 }
 
 \keyword{ model }

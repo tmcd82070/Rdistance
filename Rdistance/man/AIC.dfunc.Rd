@@ -74,14 +74,15 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 \code{\link{coef}}, \code{\link{F.dfunc.estim}}
 }
 \examples{
-# Load the example sparrows dataset from package
-data(sparrows)
+# Load the example sparrows distances dataset from package
+data(sparrow.dists)
 
-# Compute the off-transect distances from the observer's sight distance and angle
-dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
+# Compute perpendicular, off-transect distances from the observer's sight distance and angle
+sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
+                                  obs.angle=sparrow.dists$sightangle)
 
 # Fit detection function object
-dfunc <- F.dfunc.estim(dists.df, w.hi=150)
+dfunc <- F.dfunc.estim(sparrow.dists, w.hi=150)
 
 # Compute fit statistics
 AIC(dfunc)  # AICc

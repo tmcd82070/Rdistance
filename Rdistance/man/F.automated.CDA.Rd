@@ -103,17 +103,19 @@ fitted models.  The model with lowest AIC is choosen as 'best', and estimation o
 }
 
 \examples{
-# Load the example sparrows dataset from package
-data(sparrows)
+# Load the example sparrows distances and covariates datasets from package
+data(sparrow.dists)
+data(sparrow.covs)
 
-# Compute the off-transect distances from the observer's sight distance and angle
-dists.df$dists <- perp.dists(obs.dist=dists.df$sightdist, obs.angle=dists.df$sightangle, digits=1)
+# Compute perpendicular, off-transect distances from the observer's sight distance and angle
+sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
+                                  obs.angle=sparrow.dists$sightangle)
 
 # Automate fitting multiple detection functions
 # And estimate abundance (density per ha in this case) given the 'best' detection function
 # Note, area=10000 converts to density per hectare (for distances measured in meters)
 # Note, a person should do more than R=20 iterations 
-F.automated.CDA(distdata=dists.df, covdata=covs.df,
+F.automated.CDA(distdata=sparrow.dists, covdata=sparrow.covs,
                 likelihood=c("halfnorm", "hazrate", "negexp"),
                 series=c("cosine", "simple"),
                 expansions=c(0, 1), area=10000, R=20, ci=0.95, plot.bs=FALSE,
