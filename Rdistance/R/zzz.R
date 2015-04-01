@@ -8,7 +8,7 @@
   
   # Startup message
   packageStartupMessage(paste("Rdistance (version ", v ,")", sep=""))
-  packageStartupMessage("Distance Sampling Analyses for Line Transect Data")
-	packageStartupMessage("WEST Inc. (tmcdonald@west-inc.com)") 
+  #packageStartupMessage("Distance Sampling Analyses for Line Transect Data")
+	#packageStartupMessage("WEST Inc. (tmcdonald@west-inc.com)") 
 
 }
