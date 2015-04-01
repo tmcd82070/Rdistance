@@ -1,7 +1,7 @@
 Package: Rdistance
 Type: Package
-Title: Distance sampling analyses
-Version: 1.2
+Title: Distance Sampling Analyses
+Version: 1.2.1
 Date: 2015-04-01
 Authors@R: c(
   person("Trent", "McDonald", email="tmcdonald@west-inc.com", role=c("cre","aut")), 
@@ -17,3 +17,5 @@ Authors@R: c(
   )
 Description: Analysis of distance sampling data collected on line transect surveys.  Estimates distance-based detection functions and abundances.
 License: GNU General Public License
+URL: https://github.com/tmcd82070/Rdistance/wiki
+BugReports: https://github.com/tmcd82070/Rdistance/issues

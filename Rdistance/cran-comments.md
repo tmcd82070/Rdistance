@@ -2,7 +2,7 @@
 * Updated version of Rdistance to enhance features
 
 ## Current Version
-1.2
+1.2.1
 Previous version: 1.1
 
 ## Test environments
