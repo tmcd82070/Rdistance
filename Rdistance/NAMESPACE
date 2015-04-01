@@ -20,6 +20,7 @@ export(integration.constant)
 export(negexp.like)
 export(simple.expansion)
 export(uniform.like)
+export(perp.dists)
 
 S3method(AIC,dfunc)
 S3method(coef,dfunc)

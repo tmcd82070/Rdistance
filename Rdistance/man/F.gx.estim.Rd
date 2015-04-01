@@ -103,7 +103,8 @@ A list comprised of the following components:
     
     # Double observer example
     dbl.obs <- data.frame(obsby.1=rbinom(50,1,0.8), obsby.2=rbinom(50,1,0.7))
-    F.gx.estim(un.dfunc, x.scl=0, g.x.scl=dbl.obs, observer="both" )  # a warning about x.scl < $w.lo is issued.
+    F.gx.estim(un.dfunc, x.scl=0, g.x.scl=dbl.obs, observer="both" )
+    # a warning about x.scl < $w.lo is issued.
     F.gx.estim(un.dfunc, x.scl="max", g.x.scl=dbl.obs, observer="both" )
     F.gx.estim(un.dfunc, x.scl="max", g.x.scl=dbl.obs, observer=1 )
 }

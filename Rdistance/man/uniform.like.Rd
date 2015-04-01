@@ -12,10 +12,14 @@ sighting distances, scaled appropriately, for use as a distance likelihood.
 }
 
 \usage{
-uniform.like(a, dist, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE)
-halfnorm.like(a, dist, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE)
-negexp.like(a, dist, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE)
-hazrate.like(a, dist, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE)
+uniform.like(a, dist, w.lo = 0, w.hi = max(dist),
+series = "cosine", expansions = 0, scale = TRUE)
+halfnorm.like(a, dist, w.lo = 0, w.hi = max(dist),
+series = "cosine", expansions = 0, scale = TRUE)
+negexp.like(a, dist, w.lo = 0, w.hi = max(dist),
+series = "cosine", expansions = 0, scale = TRUE)
+hazrate.like(a, dist, w.lo = 0, w.hi = max(dist),
+series = "cosine", expansions = 0, scale = TRUE)
 }
 
 

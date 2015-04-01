@@ -1,34 +1,42 @@
 \name{F.abund.estim}
 \alias{F.abund.estim}
 \title{
-F.abund.estim - Estimate abundance from distance data.
+Estimate abundance from distance-sampling data.
 }
 
 \description{
-Estimate abundance given an estimated distance function, group sizes, 
-and total length of transect.
+Estimate abundance (or density) given an estimated detection function and supplemental information on observed group sizes, transect lengths, area surveyed, etc.  Also computes confidence intervals of abundance (or density) using the bias corrected bootstrap method.
 }
 
 \usage{
-F.abund.estim(dfunc, avg.group.size = 1, group.sizes, area = 1, 
-    tot.trans.len = 1, n = length(dfunc$dist), ci=0.95, R=500, plot.bs=FALSE, 
-    transects=NULL)
+F.abund.estim(dfunc, distdata, covdata, area = 1, 
+    ci=0.95, R=500, bs.method="transects", plot.bs=FALSE)
 }
 
 \arguments{
   \item{dfunc}{
-    An estimated 'dfunc' object produced by \code{F.dfunc.estim}. 
-}
-  \item{avg.group.size}{
-    Average group size for all sighted objects, estimated from some 
-    other source. Either \code{avg.group.size} or \code{group.sizes} 
-    must be specified. Specifying the vector of \code{group.sizes}
-    takes precedent over \code{avg.group.size}.
-}
-  \item{group.sizes}{
-    Vector of group sizes associated with each sighted object.  Takes
-    precedence over \code{avg.group.size}
-}
+    An estimated 'dfunc' object produced by \code{F.dfunc.estim}.
+    }
+
+  \item{distdata}{
+  A data.frame where each row represents one detection (see Vignette and example sparrow dataset) and with at least the following three columns with the names \code{siteID}, \code{groupsize}, and \code{dists}:
+  \itemize{
+        \item \code{siteID} = the name of the transect.
+        \item \code{groupsize} = the number of individuals in the detected group.
+        \item \code{dists} = the off-transect distance.
+        }
+  }
+
+
+  \item{covdata}{
+  A data.frame where each transect is represented as one row (see Vignette and example sparrow dataset) and with at least the following two columns with the names \code{siteID} and \code{length}:
+    \itemize{
+        \item \code{siteID} = the name of the transect.  This vector is used during bootstrapping to resample transects.
+        \item \code{length} = the length of the transect.
+        }
+  }
+  
+  
   \item{area}{
     Total study area size.  If \code{area} = 1, density is estimated. 
     Density has units (# of animals) per (z), where (z) is the square 
@@ -36,20 +44,9 @@ F.abund.estim(dfunc, avg.group.size = 1, group.sizes, area = 1,
     fitted in \code{dfunc} were in meters, density will be number of individuals 
     per square meter.  If distances are miles, density will be number of individuals 
     per square mile.  If \code{area} > 1, total abundance on the study 
-    area is estimated and units are (# of animals). 
+    area is estimated and units are (# of animals).
 }
-  \item{tot.trans.len}{
-    Total length of transects surveyed.  Units must be same as those 
-    of raw distance measures, and the square root of units of \code{area}.
-}
-  \item{n}{
-    Number of groups seen. Normally, this is length(dist), but this is 
-    left as a parameter so that a previously estimated 
-    distance function can be applied to another set of surveys.  For example, 
-    if \code{dfunc} is estimated and assumed to apply to a new 
-    set of transects, it is possible to estimate abundance using 
-    average group size in the new area and number of sighted groups. 
-    }    
+
     
   \item{ci}{A scaler indicating the confidence level of confidence intervals.  
     Confidence intervals are computed using the bias corrected bootstrap method.  
@@ -59,18 +56,14 @@ F.abund.estim(dfunc, avg.group.size = 1, group.sizes, area = 1,
   \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not NULL. 
     }
     
-  \item{plot.bs}{A logical scalar indicating whether to plot individual bootstrap iterations}
-  
-  \item{transects}{A vector containing the transect ID's of the targets sighted.  This vector is used during bootstrapping to resample transects 
-    in order to estimate variance in estimated size. Length must be either 0 (NULL) or \code{length(dfunc$dist)}.
-    This is only ssed when \code{ci} is not NULL.  If \code{sighting.transects} is not NULL, transects are resampled and new 
-    distance functions are fitted during bootstrap iterations.  If \code{sighting.transects} is NULL, individual observations are resampled during bootstrap iterations.  
-    For the latter case (NULL), sightings must be independent and the fundamental unit of replication. 
-    }   
-
-
-
+  \item{bs.method}{The units that are resampled during bootstrap iterations.
+  Currently, the only option is 'transects', but future versions will allow the resampling of individual detections instead of transects.  See Details.
+  }
+    
+  \item{plot.bs}{A logical scalar indicating whether to plot individual bootstrap iterations.}
 }
+
+
 
 \details{
 The abundance estimate is 
@@ -79,7 +72,7 @@ where n.indiv is either \code{avg.group.size * n} or \code{sum(group.sizes)}, an
 is the effective strip width computed from the estimated distance function (i.e., \code{ESW(dfunc)}). 
 
 The confidence interval for abundance assumes that the fundamental units of replication 
-(transects or individual sightings) are independent. The 
+(transects or individual detections) are independent. The 
 bias corrected bootstrap method used here resamples the units of replication and recalculates the 
 model's parameter estimates.  If a double-observer data frame is included in \code{dfunc}, 
 rows of the double-observer data frame are re-sampled each bootstrap iteration.  
@@ -101,8 +94,7 @@ all the components of a "dfunc" object (see \code{F.dfunc.estim}), plus,
   \code{n.hat} can be plotted with \code{hist(x$B)}, where \code{x} is an 'abundance estimate' object. The 
   confidence interval in \code{ci} can be reproduced with \code{quantile(x$B[!is.na(x$B)], p=names(x$ci) )}.   }
   \item{alpha}{The (scalar) confidence level of the confidence interval for \code{n.hat}.}  
-  \item{n}{The number of targets used in the estimate of abundance.  Usually this is \code{length(dist)}, but 
-    when supplied as an argument, it can be different.}
+  \item{n}{The number of detections (not individuals, unless all group sizes = 1) used in the estimate of abundance.}
   \item{area}{The study area size used in the estimate of abundance.}
   \item{tran.len}{The total length of transects used in the estimate of abundance.}
   \item{esw}{Effective strip width used in the estimate of abundance.  This can be computed with \code{ESW(dfunc)}.}
@@ -111,6 +103,8 @@ all the components of a "dfunc" object (see \code{F.dfunc.estim}), plus,
 
 \author{
     Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+    
+    Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
 }
 
 \references{
@@ -123,33 +117,23 @@ London: Chapman and Hall.
 }
 
 \examples{
-\dontrun{
-#   Fake offtransect distances (x), transect id's (tran.id), and group sizes (grp.size)
-set.seed(234092)
-x <- rnorm(1000) * 100
-tran.id <- rep(1:100, each=10)
-grp.size <- rpois(1000, 2.5)
-tran.id <- tran.id[ 0 < x & x < 100 ]
-grp.size <- grp.size[ 0 < x & x < 100 ]
-x <- x[ 0 < x & x < 100 ]
+# Load the example sparrows distances and covariates datasets from package
+data(sparrow.dists)
+data(sparrow.covs)
 
-#   Fit a distance function
-hn.dfunc <- F.dfunc.estim( x, likelihood="halfnorm", w.hi = 100)
+# Compute perpendicular, off-transect distances from the observer's sight distance and angle
+sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
+                                  obs.angle=sparrow.dists$sightangle)
 
-#   Assume surveyed 10000 m in study area of size 1000 hectares.
-#   Original offtransect distances must be in meters, and area must be square meters. 
-#   Without group sizes, this estimates number of groups in the area. 
-F.abund.estim( hn.dfunc, tot.trans.len=10000, area=1000*10000, ci=NULL)
+# Fit detection function object
+dfunc <- F.dfunc.estim(sparrow.dists, w.hi=150)
 
-#   Include group sizes to estimate number of individuals. 
-F.abund.estim( hn.dfunc, group.sizes = grp.size, tot.trans.len=10000, area=1000*10000, ci=NULL)
-
-#   Or,
-F.abund.estim( hn.dfunc, avg.group.size=2.5, tot.trans.len=10000, area=1000*10000, ci=NULL)
-
-#   Bootstrap resample the transects to compute CI for N (A person should do more than R=100 iterations)
-F.abund.estim( hn.dfunc, group.sizes=grp.size, tot.trans.len=10000, area=1000*10000, ci=.95, transects=tran.id, R=100, plot.bs=TRUE)
+# Estimate abundance given a detection function
+# Note, area=10000 converts to density per hectare (for distances measured in meters)
+# Note, a person should do more than R=20 iterations 
+fit <- F.abund.estim(dfunc, distdata=sparrow.dists, covdata=sparrow.covs, area=10000,
+                     R=20, ci=0.95, plot.bs=TRUE, bs.method="transects")
 }
-}
+
 \keyword{ model }
 

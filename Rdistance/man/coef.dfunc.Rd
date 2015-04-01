@@ -1,10 +1,10 @@
 \name{coef.dfunc}
 \alias{coef.dfunc}
 
-\title{Coefficients of an estimated distance function}
+\title{Coefficients of an estimated detection function}
 
 \description{Extract the coefficients and estimated parameters (if any) from 
-a estimated distance function object.}
+a estimated detection function object.}
 
 \usage{
 \method{coef}{dfunc}(object, \dots)
@@ -20,13 +20,13 @@ a estimated distance function object.}
 }
 
 \details{
-This is an extractor function for the parameters of an estimated distance function. 
-This function is equivalent to \code{obj$parameters} for classical distance functions. 
+This is an extractor function for the parameters of an estimated detection function. 
+This function is equivalent to \code{obj$parameters} for classical detection functions. 
 }
 
 \value{
-The estimated parameter vector for the distance function. Length and interpretation of values 
-in this vector vary depending on the form of the distance function and expansion terms.
+The estimated parameter vector for the detection function. Length and interpretation of values 
+in this vector vary depending on the form of the detection function and expansion terms.
 }
 
 
@@ -40,15 +40,18 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
 
 \examples{
-\dontrun{
-set.seed(5553)
-x <- rnorm(1000) * 100
-x <- x[ 0 < x & x < 100 ]
-fit <- F.dfunc.estim(x, w.lo=0, w.hi=100)
-coef(fit)  
-fit <- F.dfunc.estim(x, w.lo=0, w.hi=100, expansions=1)
-coef(fit)
-}
+# Load the example sparrows distances dataset from package
+data(sparrow.dists)
+
+# Compute perpendicular, off-transect distances from the observer's sight distance and angle
+sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
+                                  obs.angle=sparrow.dists$sightangle)
+
+# Fit detection function object
+dfunc <- F.dfunc.estim(sparrow.dists, w.hi=150)
+
+# Extract the coefficient(s)
+coef(dfunc)
 }
 
 \keyword{ model }

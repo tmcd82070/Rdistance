@@ -8,7 +8,8 @@ Computes the gamma likelihood, scaled appropriately, for use as a likelihood in 
 }
 
 \usage{
-Gamma.like(a, dist, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE)
+Gamma.like(a, dist, w.lo = 0, w.hi = max(dist), series = "cosine",
+expansions = 0, scale = TRUE)
 }
 
 \arguments{

@@ -45,3 +45,6 @@ Rdistance*.tar.gz
 Rdistance*.piz
 .Rproj.user
 Rdistance.Rproj
+.RData
+.Rhistory
+
