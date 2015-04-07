@@ -4,7 +4,7 @@
   #v <- packageVersion("Rdistance")  # this requires utils package, and I don't want to make this dependent on Utils
   
   # To manually update the version number
-  v <- "1.2.1"
+  v <- "1.2.2"
   
   # Startup message
   packageStartupMessage(paste("Rdistance (version ", v ,")", sep=""))
