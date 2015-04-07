@@ -9,7 +9,7 @@ F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist, n
   
   
   # Stop and print error if dist vector contains NAs
-  if(anyNA(dist)==TRUE)
+  if(any(is.na(dist)))
     stop("Please remove detections for which dist is NA.")
   
   

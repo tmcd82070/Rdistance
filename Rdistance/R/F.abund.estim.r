@@ -6,9 +6,9 @@ F.abund.estim <- function(dfunc, distdata, covdata,
   
     
   # Stop and print error if distdata or covdata contain NAs
-  if(anyNA(distdata)==TRUE)
+  if(any(is.na(distdata)))
     stop("Please remove detections for which dist is NA.")
-  if(anyNA(covdata)==TRUE)
+  if(any(is.na(covdata)))
     stop("covdata cannot contain NAs.")
   
   
