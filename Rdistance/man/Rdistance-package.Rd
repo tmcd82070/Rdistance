@@ -9,7 +9,7 @@ Rdistance - Distance Sampling Analyses for Line Transect Data
 }
 \description{
 \bold{Description} - 
-This package contains functions and associated routines to analyze line transect data, and functionality for point count data is forthcoming.  A large suite of classical, parametric detection functions are included (see \code{\link{F.dfunc.estim}}), and the package can also accommodate user-defined detection functions.  
+This package contains functions and associated routines to analyze line transect data, and functionality for point count data is forthcoming.  A large suite of classical, parametric detection functions are included (see \code{\link{F.dfunc.estim}}), and the package can also accommodate user-defined detection functions (see package vignettes).  
 
 \bold{Background} -
 Line transect surveys are conducted by traversing \emph{randomly} 
@@ -32,20 +32,13 @@ proportion of indivivduals missed and thereby eliminating the assumption
 that all individuals on the line have been observed. 
 
 
-\bold{Relationship to DISTANCE} - 
-Program DISTANCE (www.distancesampling.org) is a stand-alone 
-program for analyzing line transect 
-data and has, with a few exceptions, been the standard program for analyzing 
-line transect data. For the most part, \code{Rdistance} performs a subset 
-of the analyses available in 
-program DISTANCE.  In particualar, routines in \code{Rdistance} 
-perform the same "classical distance analysis" (CDA) as DISTANCE, with 
-a couple differences.
-\code{Rdistance} includes routines to fit a Gamma detection function, and 
-the Uniform detection function of Rdistance is parameterized as a heavy-side function. 
+\bold{Relationship to other software} - 
+A detailed comparison of \code{Rdistance} to other options for distance sampling analysis
+(e.g., Program DISTANCE, R package \code{Distance}, and R package \code{unmarked}) is forthcoming.  Our intent is for \code{Rdistance} to provide rigorous and flexible analysis of distance-sampling data.  We understand that beginning users often need software that is both easy to use and easy to understand, and that advanced users often require greater flexibility and customization.  Our aim is to meet the demands of both user groups.  \code{Rdistance} is under active development, so please contact us with issues, feature requests, etc. through the package's GitHub website (\url{https://github.com/tmcd82070/Rdistance}).
 
-The best place to start learning the routines of \code{Rdistance} is the examples in the help files
-for \code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}, and \code{\link{F.automated.CDA}}.
+
+
+The best place to start learning the routines of \code{Rdistance} is the \emph{Rdistance Tutorial for Beginners} vignette avialable through the package's GitHub website (\url{https://github.com/tmcd82070/Rdistance}) or CRAN.  Additionally, the examples in the help files for \code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}, and \code{\link{F.automated.CDA}} highlight the package's primary functionality.
 }
 
 \details{
@@ -64,7 +57,7 @@ Main authtor and maintainer: Trent McDonald <tmcdonald@west-inc.com>
 
 Coauthors:  Ryan Nielson and Jason Carlisle
 
-Contributors: James Griswold, Joel Reynolds, Pham Quang, Earl Becker, Aaron Christ, Brook Russelland, and Patrick McKann
+Contributors: Ben Augustine, James Griswold, Joel Reynolds, Pham Quang, Earl Becker, Aaron Christ, Brook Russelland, and Patrick McKann
 }
 
 

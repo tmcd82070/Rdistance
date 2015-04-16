@@ -9,7 +9,7 @@ Estimate abundance (or density) given an estimated detection function and supple
 }
 
 \usage{
-F.abund.estim(dfunc, distdata, covdata, area = 1, 
+F.abund.estim(dfunc, detection.data, transect.data, area = 1, 
     ci=0.95, R=500, bs.method="transects", plot.bs=FALSE)
 }
 
@@ -18,18 +18,18 @@ F.abund.estim(dfunc, distdata, covdata, area = 1,
     An estimated 'dfunc' object produced by \code{F.dfunc.estim}.
     }
 
-  \item{distdata}{
-  A data.frame where each row represents one detection (see Vignette and example sparrow dataset) and with at least the following three columns with the names \code{siteID}, \code{groupsize}, and \code{dists}:
+  \item{detection.data}{
+  A data.frame where each row represents one detection (see example dataset, \code{\link{sparrow.detections}}) and with at least the following three columns with the names \code{siteID}, \code{groupsize}, and \code{dist}:
   \itemize{
         \item \code{siteID} = the name of the transect.
         \item \code{groupsize} = the number of individuals in the detected group.
-        \item \code{dists} = the off-transect distance.
+        \item \code{dist} = the perpendicular, off-transect distance.
         }
   }
 
 
-  \item{covdata}{
-  A data.frame where each transect is represented as one row (see Vignette and example sparrow dataset) and with at least the following two columns with the names \code{siteID} and \code{length}:
+  \item{transect.data}{
+  A data.frame where each transect surveyed is represented as one row (see example dataset, \code{\link{sparrow.transects}}) and with at least the following two columns with the names \code{siteID} and \code{length}:
     \itemize{
         \item \code{siteID} = the name of the transect.  This vector is used during bootstrapping to resample transects.
         \item \code{length} = the length of the transect.
@@ -39,12 +39,12 @@ F.abund.estim(dfunc, distdata, covdata, area = 1,
   
   \item{area}{
     Total study area size.  If \code{area} = 1, density is estimated. 
-    Density has units (# of animals) per (z), where (z) is the square 
+    Density has units (number of animals) per (z), where (z) is the square 
     units of the distance measurements.  For example, if distance values 
     fitted in \code{dfunc} were in meters, density will be number of individuals 
     per square meter.  If distances are miles, density will be number of individuals 
     per square mile.  If \code{area} > 1, total abundance on the study 
-    area is estimated and units are (# of animals).
+    area is estimated and units are (number of animals).
 }
 
     
@@ -117,22 +117,22 @@ London: Chapman and Hall.
 }
 
 \examples{
-# Load the example sparrows distances and covariates datasets from package
-data(sparrow.dists)
-data(sparrow.covs)
+# Load the example datasets for sparrow detections and transects from package
+data(sparrow.detections)
+data(sparrow.transects)
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
-                                  obs.angle=sparrow.dists$sightangle)
+sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
+                                  obs.angle=sparrow.detections$sightangle)
 
 # Fit detection function object
-dfunc <- F.dfunc.estim(sparrow.dists, w.hi=150)
+dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
 
 # Estimate abundance given a detection function
 # Note, area=10000 converts to density per hectare (for distances measured in meters)
 # Note, a person should do more than R=20 iterations 
-fit <- F.abund.estim(dfunc, distdata=sparrow.dists, covdata=sparrow.covs, area=10000,
-                     R=20, ci=0.95, plot.bs=TRUE, bs.method="transects")
+fit <- F.abund.estim(dfunc, detection.data=sparrow.detections, transect.data=sparrow.transects,
+                     area=10000, R=20, ci=0.95, plot.bs=TRUE)
 }
 
 \keyword{ model }

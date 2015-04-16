@@ -40,15 +40,15 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
 
 \examples{
-# Load the example sparrows distances dataset from package
-data(sparrow.dists)
+# Load the example dataset for sparrow detections from package
+data(sparrow.detections)
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
-                                  obs.angle=sparrow.dists$sightangle)
+sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
+                                  obs.angle=sparrow.detections$sightangle)
 
 # Fit detection function object
-dfunc <- F.dfunc.estim(sparrow.dists, w.hi=150)
+dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
 
 # Extract the coefficient(s)
 coef(dfunc)

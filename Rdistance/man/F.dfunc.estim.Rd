@@ -9,19 +9,18 @@ Fit a specific detection function to a set of observed off-transect distances.
 }
 
 \usage{
-F.dfunc.estim (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist, na.rm = TRUE), 
+F.dfunc.estim (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist), 
                             expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1,
                             observer = "both", warn = TRUE)
 }
 
 \arguments{
   \item{dist}{
-    The vector of observed off-transect distances.  Alternatively, a data.frame with observed off-transect distances stored in a column named \code{dist}.  See \code{perp.dists} to calculate off-transect distances from sighting angle and sighting distance.
+    The vector of observed off-transect distances.  Alternatively, a data.frame with observed off-transect distances stored in a column named 'dist'.  See \code{\link{perp.dists}} to calculate off-transect distances from sighting angle and sighting distance.
 }
   \item{likelihood}{
     String specifying the likelihood to assume. Valid values at present are "uniform", 
-    "halfnorm", "hazrate", "negexp", and "Gamma". See Details and Vignettes for information on
-    user-defined likelihoods.
+    "halfnorm", "hazrate", "negexp", and "Gamma".
 }
   \item{w.lo}{
     Lower or left-truncation limit of the distances in \code{dist}.  This is the minimum 
@@ -53,38 +52,10 @@ F.dfunc.estim (dist, likelihood = "halfnorm", w.lo = 0, w.hi = max(dist, na.rm =
 
 }
 \details{
-\code{Rdistance} allows user-defined likelihood functions (see Examples).  Assuming the user defined likelihood is named <\emph{form}>, estimation of a user defined likelihood requires that the following two functions be defined: 
-
-\enumerate{
-\item <\emph{form}>.like - The likelihood:  This function defines the user-defined likelihood and should take the following inputs, in this order:
-    \itemize{
-        \item \code{a} = the parameter vector for the likelihood.
-        \item \code{dist} = the vector of observed distances.
-        \item \code{w.lo} = the left truncation (minimum distance).
-        \item \code{w.hi} = the right truncation (maximum distance).
-        \item \code{series} = the name of the expansion series.  If the likelihood does not use a series, this 
-            function still requires a parameter named \code{series}. 
-        \item \code{expansions} = the number of expansions.  If the likelihood does not use expansions, this 
-            function still needs a parameter named \code{expansions}. 
-        \item \code{scale} = a logical scalar.  If TRUE, the likelihood should be scaled to integrate to 1.0.  If FALSE, the 
-            user defined likelihood does not need to integrate to 1.0.  See \code{uniform.like} for an example of how this 
-            parameter should be used.
-    }
-    The likelihood function should return a vector the same length as \code{dist} containing the likelihood values. That is, the i-th 
-    element of the output vector should be the likelihood of observing \code{dist[i]}. 
-
-\item <\emph{form}>.start.limits - The starting values, limits, and names of parameters in the likelihood.  This function  
-    takes the arguments \code{dist}, \code{w.lo}, and \code{w.hi}, and returns a list containing the following components: 
-    \itemize{
-        \item \code{start} = a vector of length \emph{p} of starting values for the parameters of the likelihood, assuming 
-            there are \emph{p} parameters in the likelihood. 
-        \item \code{lowlimit} = a vector of length \emph{p} of lower limits for parameters of the likelihood. 
-        \item \code{highlimit} = a vector of length \emph{p} of upper limits for parameters of the likelihood.  
-        \item \code{names} = a vector of length \emph{p} of names for the parameters of the likelihood. 
-    }
+Given a specified likelihood (e.g., "halfnorm"), maximum likelihood is used to estimate the parameter(s) of that likelihood function that best fit the distance data.  When the resulting detection function is plotted (see Examples), bins are plotted behind the detection function for visualization; however, the function is fit to the actual data, not to the bins.
 }
 
-}
+
 
 \value{
 An object of class 'dfunc'.  Objects of class 'dfunc' are lists 
@@ -119,28 +90,26 @@ of the negative log likelihood).}
 
 
 \seealso{
-Likelihoods listed in \code{\link{uniform.like}}; 
-\code{\link{F.abund.estim}}; \code{\link{F.automated.CDA}} 
+See \code{\link{uniform.like}} for details on the "uniform", "halfnorm", "hazrate", and "negexp" likelihoods.  See \code{\link{Gamma.like}} for "Gamma".  And see package vignettes for information on
+custom, user-defined likelihoods.  See also \code{\link{F.abund.estim}}, \code{\link{F.automated.CDA}} 
 }
 
 \examples{
-# Load the example sparrows distances dataset from package
-data(sparrow.dists)
+# Load the example dataset for sparrow detections from package
+data(sparrow.detections)
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
-                                  obs.angle=sparrow.dists$sightangle)
+sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
+                                  obs.angle=sparrow.detections$sightangle)
 
 # Fit multiple detection functions
-un.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="uniform", w.hi = 150)
-hn.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="halfnorm", w.hi = 150)
-ne.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="negexp", w.hi = 150)
-hz.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="hazrate", w.hi = 150)
-ga.dfunc <- F.dfunc.estim(sparrow.dists, likelihood="Gamma", w.hi = 150, x.scl="max") 
+un.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="uniform", w.hi = 150)
+hn.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="halfnorm", w.hi = 150)
+ne.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="negexp", w.hi = 150)
+hz.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="hazrate", w.hi = 150)
+ga.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="Gamma", w.hi = 150, x.scl="max") 
 
 # Plot the first four detection functions
-# Note, bins are plotted behind the detection function for visualization;
-# however, the function is fit to the actual data, not to the bins.
 par(mfrow=c(2,2))
 plot(un.dfunc)
 plot(hn.dfunc)

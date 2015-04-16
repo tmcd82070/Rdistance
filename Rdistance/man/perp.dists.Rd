@@ -13,10 +13,10 @@ perp.dists(obs.dist, obs.angle, digits=1)
 
 
 \arguments{
-  \item{obs.dist}{A column of a data.frame that contains the observed or sighting distances from the observer to the
+  \item{obs.dist}{Vector (e.g., a column of a data.frame) that contains the observed or sighting distances from the observer to the
   detected objects.}
   
-  \item{obs.angle}{A column of a data.fame that contains the observed or sighting angles from the line transect to the
+  \item{obs.angle}{Vector (e.g., a column of a data.frame) that contains the observed or sighting angles from the line transect to the
   detected objects.  Angles must be measured in degrees.}
 
   \item{digits}{Scalar number of digits to round output distances to.}
@@ -47,12 +47,12 @@ Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
 }
 
 \examples{
-# Load the example sparrows distances dataset from package
-data(sparrow.dists)
+# Load the example dataset for sparrow detections from package
+data(sparrow.detections)
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
-                                  obs.angle=sparrow.dists$sightangle)
+sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
+                                  obs.angle=sparrow.detections$sightangle)
 
 # Proceed to fitting the detection function with F.dfunc.estim
 }

@@ -10,7 +10,7 @@ Perform automated classical detection function selection and estimation of abund
 }
 
 \usage{
-F.automated.CDA(distdata, covdata, w.lo=0, w.hi=max(dist, na.rm=TRUE),
+F.automated.CDA(detection.data, transect.data, w.lo=0, w.hi=max(dist),
 likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
 series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
 area=1, ci=0.95, R=500, bs.method="transects", plot.bs=FALSE, plot=TRUE, ...)
@@ -18,11 +18,11 @@ area=1, ci=0.95, R=500, bs.method="transects", plot.bs=FALSE, plot=TRUE, ...)
 }
 
 \arguments{
-\item{distdata}{
+\item{detection.data}{
 This parameter is passed to \code{F.dfunc.estim} and \code{F.abund.estim}.
 See \code{F.abund.estim} documentation for definition.}
 
-\item{covdata}{
+\item{transect.data}{
 This parameter is passed to \code{F.abund.estim}.
 See \code{F.abund.estim} documentation for definition.}
 
@@ -103,19 +103,19 @@ fitted models.  The model with lowest AIC is choosen as 'best', and estimation o
 }
 
 \examples{
-# Load the example sparrows distances and covariates datasets from package
-data(sparrow.dists)
-data(sparrow.covs)
+# Load the example datasets for sparrow detections and transects from package
+data(sparrow.detections)
+data(sparrow.transects)
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist,
-                                  obs.angle=sparrow.dists$sightangle)
+sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
+                                  obs.angle=sparrow.detections$sightangle)
 
 # Automate fitting multiple detection functions
 # And estimate abundance (density per ha in this case) given the 'best' detection function
 # Note, area=10000 converts to density per hectare (for distances measured in meters)
 # Note, a person should do more than R=20 iterations 
-F.automated.CDA(distdata=sparrow.dists, covdata=sparrow.covs,
+F.automated.CDA(detection.data=sparrow.detections, transect.data=sparrow.transects,
                 likelihood=c("halfnorm", "hazrate", "negexp"),
                 series=c("cosine", "simple"),
                 expansions=c(0, 1), area=10000, R=20, ci=0.95, plot.bs=FALSE,
