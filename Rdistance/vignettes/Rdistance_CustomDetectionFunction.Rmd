@@ -1,0 +1,99 @@
+---
+title: "User-Defined Likelihood Functions in Rdistance"
+author: "Trent L. McDonald and Jason D. Carlisle"
+date: "April 16, 2015"
+output: pdf_document
+---
+
+
+# Introduction
+Detection functions are often fit using a small set of likelihood functions that lend themselves to the distance-sampling data (e.g., half-normal, hazard rate, etc.).  `Rdistance` has many of these traditional likelihood functions built in (see help documentation for `F.dfunc.estim`), but the package also allows the user to specify a custom function.  Here, we give an example of how to specify a user-defined likelihood function when fitting a detection function in `Rdistance`.
+
+
+# Details
+Assuming that the user-defined likelihood is named _form_, estimation of a user-defined likelihood requires that the following two functions be defined:
+
+1. `form.like` - The likelihood: This function defines the user-defined likelihood and should
+take the following inputs, in this order:
+
+* `a` = the parameter vector for the likelihood.  
+* `dist` = the vector of observed distances.  
+* `w.lo` = the left truncation (minimum distance).  
+* `w.hi` = the right truncation (maximum distance).  
+* `series` = the name of the expansion series. If the likelihood does not use a series, this
+function still requires a parameter named `series`.  
+* `expansions` = the number of expansions. If the likelihood does not use expansions, this
+function still needs a parameter named `expansions`.  
+* `scale` = a logical scalar. If TRUE, the likelihood should be scaled to integrate to 1.0. If
+FALSE, the user defined likelihood does not need to integrate to 1.0. See the help documentation for `uniform.like` for an example of how this parameter should be used.
+
+The likelihood function should return a vector the same length as `dist` (the vector of distances) containing the likelihood values. That is, the i-th element of the output vector should be the likelihood of observing `dist[i]`.
+
+
+2. `form.start.limits` - This function provides the starting values, limits, and names of parameters in the likelihood and should take the following inputs (described above):  `dist`, `w.lo`, and `w.hi`.
+
+This function should return a list containing the following components:
+
+* `start` = a vector of length _p_ of starting values for the parameters of the likelihood, assuming
+there are _p_ parameters in the likelihood.  
+* `lowlimit` = a vector of length _p_ of lower limits for parameters of the likelihood.  
+* `highlimit` = a vector of length _p_ of upper limits for parameters of the likelihood.  
+* `names` = a vector of length _p_ of names for the parameters of the likelihood.  
+
+# Example
+A user-defined likelihood function: the triangular distribution on [0, b].
+```{r}
+# Part 1:  The likelihood function
+triangular.like <- function(b, dist, w.lo, w.hi, series="", expansions=0, scale=TRUE){
+  L <- (2/b)*(1 - dist/b)
+  L[ L < 0 ] <- 0
+  L
+  }
+
+```
+
+```{r}
+# Part 2:  The starting values, limits, and names of parameters in the likelihood
+triangular.start.limits <- function(dist, w.lo, w.hi){
+  list(start=max(dist)*.75,
+       lowlimit=w.lo,
+       highlimit=w.hi,
+       names="Max")
+  }
+
+```
+
+```{r, fig.width=6, fig.height=4}
+# A function to generate triangular random deviates
+rtriang <- function(n, b){
+  x <- seq(0, b, length=500)
+  CDF <- 2*x/b - (x/b)^2
+  u <- runif(n)
+  r <- approx( CDF, x, xout=u )$y
+  }
+
+# Simulated vector of distances
+set.seed(123)
+d <- rtriang(500, 100)  # true b = 100
+hist(d)
+```
+    
+```{r, fig.width=6, fig.height=4}
+# Fit detection function with user-defined "triangular" likelihood
+# Requires the F.dfunc.estim function from Rdistance
+require(Rdistance)
+tri.dfunc <- F.dfunc.estim( d, likelihood="triangular", w.hi=150 )
+plot(tri.dfunc)
+```
+
+
+For the triangular case, the true effective strip width is equal to the following:
+```{r}
+tri.dfunc$g.x.scl*tri.dfunc$param / 2
+```
+
+The effective strip width calculated using `ESW` differs only slightly due to numerical integration error.
+```{r}
+
+ESW(tri.dfunc)
+```
