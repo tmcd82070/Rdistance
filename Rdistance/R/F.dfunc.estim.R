@@ -1,9 +1,12 @@
-F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist, na.rm=TRUE), 
+F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist), 
                             expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){
   
-  # dists can be provided as a vector or as a column named "dists" in a data.frame
-  # if d.f, pull out the dist column
+  # dists can be provided as a vector or as a column named 'dist' in a data.frame
+  # if d.f, check for a column named 'dist', and extract it
   if(inherits(dist, "data.frame")){
+    # Stop and print error if a 'dist' column isn't provided
+    if(identical(any(names(dist) == "dist"), FALSE))
+      stop("There is no column named 'dist' in your dist data.frame.")
     dist <- dist$dist
   }
   

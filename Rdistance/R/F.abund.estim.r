@@ -1,4 +1,4 @@
-F.abund.estim <- function(dfunc, distdata, covdata,
+F.abund.estim <- function(dfunc, detection.data, transect.data,
                           area=1, ci=0.95, R=500,
                           bs.method="transects", plot.bs=FALSE){
   # the alternative bs.method would be observations (aka detections), but not programmed yet
