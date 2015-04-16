@@ -5,11 +5,11 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
    
   
     
-  # Stop and print error if distdata or covdata contain NAs
-  if(any(is.na(distdata)))
+  # Stop and print error if detection.data or transect.data contain NAs
+  if(any(is.na(detection.data)))
     stop("Please remove detections for which dist is NA.")
-  if(any(is.na(covdata)))
-    stop("covdata cannot contain NAs.")
+  if(any(is.na(transect.data)))
+    stop("transect.data cannot contain NAs.")
   
   
   
@@ -33,16 +33,16 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   }
   
   #Apply truncation specified in dfunc object (including dists equal to w.lo and w.hi)
-  (distdata <- distdata[distdata$dists >= dfunc$w.lo & distdata$dists <= dfunc$w.hi, ])
+  (detection.data <- detection.data[detection.data$dists >= dfunc$w.lo & detection.data$dists <= dfunc$w.hi, ])
 
   # sample size (number of detections, NOT individuals)
-  (n <- nrow(distdata))
+  (n <- nrow(detection.data))
   
   # group sizes
-  (avg.group.size <- mean(distdata$groupsize))
+  (avg.group.size <- mean(detection.data$groupsize))
 
   # total transect length and ESW
-  (tot.trans.len <- sum(covdata$length))
+  (tot.trans.len <- sum(transect.data$length))
   (esw <- ESW(dfunc))  #get effective strip width
 
   # estimate abundance
@@ -79,23 +79,23 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
       cat("Computing bootstrap confidence interval on N...\n")
       for(i in 1:R){
         # sample rows, with replacement, from site covariates
-        new.covdata <- covdata[sample(nrow(covdata), nrow(covdata), replace=TRUE), ]
+        new.transect.data <- transect.data[sample(nrow(transect.data), nrow(transect.data), replace=TRUE), ]
         
-        new.trans <- as.character(new.covdata$siteID)  # which transects were sampled?
+        new.trans <- as.character(new.transect.data$siteID)  # which transects were sampled?
         trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
         
         # subset distance data from these transects
-        new.trans <- unique(droplevels(new.covdata$siteID))
-        new.distdata <- distdata[distdata$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
+        new.trans <- unique(droplevels(new.transect.data$siteID))
+        new.detection.data <- detection.data[detection.data$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
         
         # replicate according to freqency in new sample
         # merge to add Freq column to indicate how many times to repeat each row
-        red <- merge(new.distdata, trans.freq, by.x="siteID", by.y="new.trans")
+        red <- merge(new.detection.data, trans.freq, by.x="siteID", by.y="new.trans")
         # expand this reduced set my replicating rows
-        new.distdata <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
+        new.detection.data <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
         
         # Extract distances
-        new.x <- new.distdata$dists
+        new.x <- new.detection.data$dists
         
         #update g(0) or g(x) estimate.
         if (is.data.frame(g.x.scl.orig)) {
@@ -122,15 +122,15 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
             
             ###Calculate observed metrics####
             # sample size
-            n.bs <- nrow(new.distdata)
+            n.bs <- nrow(new.detection.data)
             
             # group sizes
-            avg.group.size.bs <- mean(new.distdata$groupsize)
+            avg.group.size.bs <- mean(new.detection.data$groupsize)
             
             
             #####Store observed metrics
             #esw <- ESW(dfunc.bs)  #get effective strip width
-            tot.trans.len.bs <- sum(new.covdata$length)
+            tot.trans.len.bs <- sum(new.transect.data$length)
             n.hat.bs[i] <- avg.group.size.bs * n.bs * area/(2 * esw.bs * tot.trans.len.bs)  # area stays same as original?   
             
             
