@@ -75,7 +75,7 @@ and ESW equal to *X* effectively covers the same area as a study with perfect de
 
 # 4: Estimate abundance given the detection function
 
-Estimating abundance requires the additional information contained in the second required dataset, described earlier, where each row reprensents one transect. Load the example dataset of surveyed sparrow transects from the package.
+Estimating abundance requires the additional information contained in the second required dataset, described earlier, where each row represents one transect. Load the example dataset of surveyed sparrow transects from the package.
 ```{r}
 data(sparrow.transects)
 head(sparrow.transects)
