@@ -1,8 +1,12 @@
 ---
 title: "Rdistance Tutorial for Beginners"
 author: "Jason D. Carlisle and Trent L. McDonald"
-date: "April 16, 2015"
+date: "April 22, 2015"
 output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Rdistance_BeginnerTutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 
