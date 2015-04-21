@@ -1,0 +1,7 @@
+^cran-comments\.md$
+^cran-check\.R$
+^PackageComparison\.R$
+^PreppingExampleData\.R$
+^Rdistance\.Rproj$
+^README\.md$
+^\.Rproj\.user$

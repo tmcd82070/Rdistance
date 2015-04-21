@@ -47,4 +47,5 @@ Rdistance*.piz
 Rdistance.Rproj
 .RData
 .Rhistory
+inst/doc
 
