@@ -83,12 +83,12 @@ head(sparrow.transects)
 
 Next, estimate abundance (or density in this case) using `F.abund.estim`.  If `area`=1, then density is given in the squared units of the distance measurements -- in this case, sparrows per square meter.  Instead, we set `area`=10000 in order to convert to sparrows per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance estimate is detailed in the help documentation for `F.abund.estim`.
 
-Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`), and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).  Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 500 used here) may be necessary to stabilize CI estimates.
+Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`), and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).  Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be necessary to stabilize CI estimates.
 
 ```{r, fig.width=6, fig.height=4}
 fit <- F.abund.estim(dfunc, detection.data=sparrow.detections,
                      transect.data=sparrow.transects,
-                     area=10000, R=500, ci=0.95, plot.bs=TRUE)
+                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
 fit
 ```
 
@@ -108,7 +108,7 @@ Alternatively, steps 3 (fitting a detection function) and 4 (estimating abundanc
 ```{r, fig.width=6, fig.height=4}
 auto <- F.automated.CDA(detection.data=sparrow.detections,
                         transect.data=sparrow.transects,
-                        w.hi=150, plot=FALSE, area=10000, R=500, ci=0.95, plot.bs=TRUE)
+                        w.hi=150, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
 ```
 
 You can see that the detection function with the lowest AICc value (and thus selected as the 'best') is the negative exponential likelihood, with one cosine expansion.
