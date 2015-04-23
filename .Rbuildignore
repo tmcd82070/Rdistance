@@ -10,3 +10,5 @@ CodeParkingLot
 distance_old
 .tar.gz$
 .zip$
+^Rdistance_BeginnerTutorial\.pdf$
+^Rdistance_CustomDetectionFunction\.pdf$
