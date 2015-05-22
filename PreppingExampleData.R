@@ -167,8 +167,8 @@ names(sdf) <- c("siteID", "sagemean", "sage")
 
 
 # Rename
-sparrow.detections <- ddf
-sparrow.transects <- tdf
+sparrow.detections <- data.frame(ddf, row.names=NULL)
+sparrow.transects <- data.frame(tdf, row.names=NULL)
 
 
 # Erase everything but the detection and transect datasets
