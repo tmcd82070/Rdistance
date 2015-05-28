@@ -1,0 +1,105 @@
+---
+title: "How Distance Sampling Works"
+author: "Jason D. Carlisle and Trent L. McDonald"
+date: "May 28, 2015"
+output: pdf_document
+---
+
+Distance sampling is a popular method for estimating abundance (or density) that accounts for imperfect detection.  This vignette is meant to provide an introduction to the fundamentals of how distance sampling works.  The introductory chapters of Buckland et al. 2001 are also an excellent resource.  In this example, we make use of the example datasets already contained within the package `Rdistance` (i.e., line transect surveys of sparrows), so you can step through this exercise without having any data of your own.  This tutorial is current as of version 1.2.2 of `Rdistance`.
+
+
+
+
+# The Fundamental Concept
+
+
+# 1: Install and load Rdistance
+
+If you haven't already done so, install the latest version of `Rdistance`.  In the R console, issue `install.packages("Rdistance")`.  After the package is installed, it can be loaded into the current session as follows:
+```{r}
+require(Rdistance)
+```
+
+# 2: Read in and prep input data
+
+`Rdistance` requires two input datasets to estimate abundance:  one where each row represents a detection event, and the second where each row represents each transect surveyed.  See the "Rdistance Tutorial for Beginners" vignette in `Rdistance` for more information.
+
+Load the example dataset of sparrow detections and their distances from the package using `data(sparrow.detections)`.  Be sure that you have installed and loaded `Rdistance` prior to issuing the following commands:
+```{r}
+data(sparrow.detections)
+```
+
+Note that the observers recorded sighting distances and sighting angles.  Distance sampling requires distances to be from the detection to the line (called perpendicular distances), not from the detection to the observer (like these sighting distances).  We will quickly use `Rdistance`'s `perp.dists` function to compute the perpenduclar distances (and remove the sighting distances and angles) before proceeding:
+```{r}
+sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
+                                      obs.angle=sparrow.detections$sightangle)
+sparrow.detections <- sparrow.detections[, -which(names(sparrow.detections)
+                                                  %in% c("sightdist", "sightangle"))]                                                                  
+```
+
+Next, load the example dataset of surveyed sparrow transects from the package.
+```{r}
+data(sparrow.transects)
+```
+
+
+
+# 3: Fit a detection function
+
+
+Explore the distribution of distances.
+```{r, fig.width=6, fig.height=4}
+hist(sparrow.detections$dist, col="grey", main="", xlab="distance (m)")
+summary(sparrow.detections$dist)
+```
+
+Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater than 150 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 150.
+```{r, fig.width=6, fig.height=4}
+dfunc <- F.dfunc.estim(sparrow.detections, likelihood="halfnorm", w.hi=150)
+plot(dfunc)
+dfunc
+```
+
+The effective strip width (ESW) is the key information from the detection function that will be used to next estimate abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect detection
+and ESW equal to *X* effectively covers the same area as a study with perfect detection out to a distance of *X*.  See the help documentation for `ESW` for details.
+
+
+# 4: Estimate abundance given the detection function
+
+
+Next, estimate abundance (or density in this case) using `F.abund.estim`.  If `area`=1, then density is given in the squared units of the distance measurements -- in this case, sparrows per square meter.  Instead, we set `area`=10000 in order to convert to sparrows per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance estimate is detailed in the help documentation for `F.abund.estim`.
+
+Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`), and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).  Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be necessary to stabilize CI estimates.
+
+```{r, fig.width=6, fig.height=4}
+fit <- F.abund.estim(dfunc, detection.data=sparrow.detections,
+                     transect.data=sparrow.transects,
+                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
+fit
+```
+
+
+Results of interest (such as the abundance estimate and confidence interval) can be extracted from the resulting object (here called `fit`).
+``` {r}
+fit$n.hat
+fit$ci
+```
+
+
+# 5: Use AICc to select a detection function and estimate abundance
+
+Alternatively, steps 3 (fitting a detection function) and 4 (estimating abundance) can be automated using the function `F.automated.CDA`.  This function attempts to fit multiple detection functions, uses AICc (by default, but see help documentation for `AIC.dfunc` for other options) to find the 'best' detection function, then proceeds to estimate abundance using that detection function.  By default, `F.automated.CDA` tries dozens of detection functions, but you can restrict the process to fewer detection functions if you choose (see help documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In this example, we won't restrict the number of detection functions attempted, and we won't plot each (`plot=FALSE`).
+
+
+```{r, fig.width=6, fig.height=4}
+auto <- F.automated.CDA(detection.data=sparrow.detections,
+                        transect.data=sparrow.transects,
+                        w.hi=150, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
+```
+
+You can see that the detection function with the lowest AICc value (and thus selected as the 'best') is the negative exponential likelihood, with one cosine expansion.
+
+# 6:  Conclusion
+Note that the detection function that you select has a large influence on the resulting abundance estimate.  In sections 3 and 4, we fit a half-normal detection function and used that function to estimate sparrow density.  Our estimate was `r round(fit$n.hat, 2)` sparrows per ha (95% CI = `r round(fit$ci[[1]], 2)` - `r round(fit$ci[[2]], 2)`).  In section 5, we used AICc to determine the best-fitting detection function and used that function to estimate sparrow density again.  Our new estimate was `r round(auto$n.hat, 2)` sparrows per ha (95% CI = `r round(auto$ci[[1]], 2)` - `r round(auto$ci[[2]], 2)`). (Note, recall that your estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).  Thus we see that choosing an appropriate detection function is critical to accurately estimating abundance.  The `F.automated.CDA` function can help you select a detection function that fits your data well.
+
+That concludes this `Rdistance` tutorial.  You are now ready to read in your own data, fit a detection function, and estimate abundance.
