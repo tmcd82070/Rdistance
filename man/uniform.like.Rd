@@ -60,7 +60,7 @@ series = "cosine", expansions = 0, scale = TRUE)
 \details{
 
     \bold{Uniform}: The uniform likelihood is not technically uniform, but can look similar to a 
-        uniform if the data warrant.  The uniform likelihood is actuall a \emph{heavy side} 
+        uniform if the data warrant.  The uniform likelihood is actually the \emph{heavy side} 
         or \emph{logistic} function of the form, 
         \deqn{f(x|a,b) = 1 - \frac{1}{1 + \exp(-b(x-a))} = \frac{\exp( -b(x-a) )}{1 + exp( -b(x-a) )},}{f(x|a,b) = 
         1 - 1 / (1 + exp(-b*(x-a))) = exp(-b*(x-a)) / (1 + exp(-b*(x-a))),}
@@ -68,16 +68,15 @@ series = "cosine", expansions = 0, scale = TRUE)
         as the location of the 
         "approximate upper limit" of an uniform distribution's support by  
         noting that 
-        that the inverse likelihood of 0.5 is always \code{a}.
+        that the inverse likelihood of 0.5 is \code{a} before scaling (i.e., \code{uniform.like(c(a,b),a,scale=FALSE)} equals \code{0.5}).
         Parameter \code{b} is the "knee" or sharpness of the bend at \code{a} and estimates 
-        the degree to which observations decline at the outer limit of sightability.  Note that the 
-        slope of the likelihood at \eqn{a} is \eqn{-b}. 
-        If \eqn{b} is large, the "knee" is sharp at \eqn{a} meaning that observations are uniformly 
-        distributed between 0 and \code{a}, but then cease relatively abruptly at \eqn{a}. In this case,  
-        the likelihood looks much like 
-        a uniform distribution with support from \code{w.lo} to \eqn{a}.  If \eqn{b} is small, 
-        the "knee" at \eqn{a} is not sharp and the density of observations (and thus the likelihood) 
-        declines in an elongated "S" shape pivoting at \code{a}.  See Examples 
+        the degree to which observations decline at the outer limit of sightability.  Note that, prior to scaling for \code{g.x.scl}, the 
+        slope of the likelihood at \eqn{a} is \eqn{-b}. After scaling for \code{g.x.scl}, the inverse of \code{g.x.scl/2} is \code{a/f(0)}.   
+        If \eqn{b} is large, the "knee" is sharp and the density of observations  declines rapidly at \eqn{a/f(0)}. In this case,  
+        the likelihood can look like 
+        a uniform distribution with support from \code{w.lo} to \eqn{a/f(x.scl)}.  If \eqn{b} is small, 
+        the "knee" is shallow and the density of observations
+        declines in an elongated "S" shape pivoting at \code{a/f(x.scl)}.  As  \code{b} grows large, the effective strip width approaches \code{a} from above.  See Examples 
         for plots using large and small values of \eqn{b}.    
         
 
