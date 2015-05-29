@@ -1,105 +1,207 @@
 ---
-title: "How Distance Sampling Works"
+title: "How Distance Sampling Works in Rdistance"
 author: "Jason D. Carlisle and Trent L. McDonald"
-date: "May 28, 2015"
+date: "May 29, 2015"
 output: pdf_document
 ---
 
-Distance sampling is a popular method for estimating abundance (or density) that accounts for imperfect detection.  This vignette is meant to provide an introduction to the fundamentals of how distance sampling works.  The introductory chapters of Buckland et al. 2001 are also an excellent resource.  In this example, we make use of the example datasets already contained within the package `Rdistance` (i.e., line transect surveys of sparrows), so you can step through this exercise without having any data of your own.  This tutorial is current as of version 1.2.2 of `Rdistance`.
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, fig.width=3.5, fig.height=3.5)
 
+# par(c(5, 4, 4, 2) + 0.1) # default (wider) margin space for plots
+```
 
+< *DRAFT* >
 
+< *Need to go through and add proper citation of concepts, equations, etc. before publishing* >
 
-# The Fundamental Concept
+Distance sampling is a popular method for estimating the abundance (or density) of biological populations that accounts for imperfect detection of individuals.  This vignette is meant to provide an introduction to the fundamentals of how distance sampling works and how it is implemented in `Rdistance`.  The introductory chapters of Buckland et al. 2001 (*Introduction to Distance Sampling*) are an excellent resource on distance-sampling fundamentals, and many of these concepts are drawn from these chapters.  This tutorial is current as of version 1.2.2 of `Rdistance`.
 
+# Background on Abundance Estimation
+## When the probablity of detection is 100%
 
-# 1: Install and load Rdistance
+If you can detect your object of interest with perfection, you are doing a "census" and don't need to use distance-sampling.  However, walking though a perfect-detection scenario will set the stage for understanding how distance sampling accounts for imperfect detection.
 
-If you haven't already done so, install the latest version of `Rdistance`.  In the R console, issue `install.packages("Rdistance")`.  After the package is installed, it can be loaded into the current session as follows:
+If detection is perfect, the true abundance is the same as the observed count.
+$$N = Count$$
+
+In order to calculate the true density, you also need to know the size of the area surveyed:
+
+$$D = \frac{Count}{Area}$$
+
+In the case of a strip transect, area is specified as follows:
+
+$$D = \frac{Count}{2 * StripWidth * TotalTransectLength},$$
+
+where *StripWidth* is the perpendicular distance from the line transect to the edge of the survey area.  Because you survey both sides of the transect, *StripWidth* is multiplied by 2.  The *TotalTransectLength* is the sum of all transect lengths if more than one transect is surveyed.
+
+To illustrate, assume to can perfectly detect individuals of some bird species.  If you surveyed within 5 m on both sides of 100 transects that were each 1,000 m long, and you counted 250 birds, the true abundance and true density are as follows:
+
+$$N = 250$$
+
+$$D = \frac{250}{2 * 5 * (100*1000)} = 0.00025$$
+
+Density is in birds per m^2^ because all other measures are in meters.  Take caution to ensure you use consistent units of measure.  One hectare (ha) converts to 10,000 m^2^, so density could also be expressed as 2.5 birds per ha.  If the birds were evenly distributed throughout the survey area, your histogram of distances would look like this, with the 250 birds distributed equally across each of 5 distance bins:
+
 ```{r}
-require(Rdistance)
+par(mar=c(4, 4, 0.3, 0) + 0.1)  # narrow plot margins
+x <- rep(c(0.5, 1.5, 2.5, 3.5, 4.5), 50)
+hist(x, breaks=5, xlab="Distance (m)", ylab="Count", main="", col="grey", ylim=c(0, 54), labels=TRUE)
+
 ```
 
-# 2: Read in and prep input data
 
-`Rdistance` requires two input datasets to estimate abundance:  one where each row represents a detection event, and the second where each row represents each transect surveyed.  See the "Rdistance Tutorial for Beginners" vignette in `Rdistance` for more information.
+## When the probability of detection is less than 100%
 
-Load the example dataset of sparrow detections and their distances from the package using `data(sparrow.detections)`.  Be sure that you have installed and loaded `Rdistance` prior to issuing the following commands:
+But what if you repeated the same survey, only counted 170 birds, and your histogram of distances looked like this?
+
 ```{r}
-data(sparrow.detections)
+par(mar=c(4, 4, 0.3, 0) + 0.1)  # narrow plot margins
+x2 <- c(rep(0.5, 50), rep(1.5, 46), rep(2.5, 37), rep(3.5, 25), rep(4.5, 12))
+hist(x2, breaks=5, xlab="Distance (m)", ylab="Count", main="", col="grey", ylim=c(0, 54), labels=TRUE)
+
+count <- 50+46+37+25+12
+
 ```
 
-Note that the observers recorded sighting distances and sighting angles.  Distance sampling requires distances to be from the detection to the line (called perpendicular distances), not from the detection to the observer (like these sighting distances).  We will quickly use `Rdistance`'s `perp.dists` function to compute the perpenduclar distances (and remove the sighting distances and angles) before proceeding:
+Lower counts at farther distances are indicative of imperfect detection, and more specifically, that detectability decreases with distance.  In essence, you did not detect some proportion of the true population of birds (shaded in pink below).
+
 ```{r}
-sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
-                                      obs.angle=sparrow.detections$sightangle)
-sparrow.detections <- sparrow.detections[, -which(names(sparrow.detections)
-                                                  %in% c("sightdist", "sightangle"))]                                                                  
+par(mar=c(4, 4, 0.3, 0) + 0.1)  # narrow plot margins
+#plot(1, type="n", xlab="Distance (m)", ylab="Count", main="", col="grey", ylim=c(0, 54), xlim=c(0,5), bty="n")
+hist(x2, breaks=5, xlab="Distance (m)", ylab="Count", main="", col="grey", ylim=c(0, 54))
+poly <- data.frame(x=c(0, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0), y=c(50, 50, 12, 12, 25, 25, 37, 37, 46, 46, 50, 50))
+polygon(x=poly$x, y=poly$y, col="pink")
+text(4, 40, "Not\nDetected", col="red")
+
 ```
 
-Next, load the example dataset of surveyed sparrow transects from the package.
+
+
+If you were to proceed to estimate abundance and density assuming perfect detection, you can see that you would underestimate both given that we know that *N* = 250 and *D* = 0.00025 birds per m^2^:
+
+$$\widehat{N} = 170$$
+
+$$\widehat{D} = \frac{170}{2 * 5 * (100*1000)} = 0.00017$$
+
+Thus the motivation for methods like distance sampling that can account or correct for imperfect detection.  If you knew the proportion of birds that were or were not detected, you could correct your observed count to have an estimate of what the true abundance was.  In this example you counted 170 birds.  We know the true abundance is 250 birds, so you detected 68% $(170/250)$ of the birds.  You did not detect 80 (250 -- 170), or 32% (1 -- 0.68) of the birds.
+
 ```{r}
-data(sparrow.transects)
+par(mar=c(4, 4, 0.3, 0) + 0.1)  # narrow plot margins
+plot(1, type="n", xlab="Distance (m)", ylab="Count", main="", ylim=c(0, 54), xlim=c(0,5), bty="n")
+
+poly <- data.frame(x=c(0, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0), y=c(50, 50, 12, 12, 25, 25, 37, 37, 46, 46, 50, 50))
+polygon(x=poly$x, y=poly$y, col="pink")
+
+poly2 <- data.frame(x=c(0, 0, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0), y=c(50, 0, 0, 12, 12, 25, 25, 37, 37, 46, 46, 50, 50))
+polygon(x=poly2$x, y=poly2$y, col="grey")
+
+text(4, 40, "Not\nDetected\n(32%)", col="red")
+text(1.5, 20, "Detected\n(68%)", col="black")
+
 ```
 
 
 
-# 3: Fit a detection function
+If you know the proportion of birds detected (synonymous with the detection probability), you can use a correction factor to inflate the observed counts to the approximate true abundance.  The correction factor can be computed from the detection probability.
+
+$$ CorrectionFactor = \frac{1}{DetectionProbability}$$
+
+And a corrected estimate of abundance can then be calculated, which in this case we know to agree with the true abundance of 250 used in this hypothetical example.
+
+$$ \widehat{N} = Count* \frac{1}{DetectionProbability} = 170*\frac{1}{0.68} = 250  $$
 
 
-Explore the distribution of distances.
-```{r, fig.width=6, fig.height=4}
-hist(sparrow.detections$dist, col="grey", main="", xlab="distance (m)")
-summary(sparrow.detections$dist)
-```
 
-Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater than 150 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 150.
-```{r, fig.width=6, fig.height=4}
-dfunc <- F.dfunc.estim(sparrow.detections, likelihood="halfnorm", w.hi=150)
-plot(dfunc)
-dfunc
-```
+# How Rdistance Works
+`Rdistance` and other traditional distance-sampling methods of analysis use these basic principles to enable you to estimate abundance (or density) when true abundance is unknown (as is almost always the case) and when you record the distances to observed individuals.  Two concepts are key to understanding `Rdistance`:  the detection function and Effective Strip Width, each of which is detailed below.
 
-The effective strip width (ESW) is the key information from the detection function that will be used to next estimate abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect detection
-and ESW equal to *X* effectively covers the same area as a study with perfect detection out to a distance of *X*.  See the help documentation for `ESW` for details.
+## Detection Function
+
+Instead of relying on histograms, you can fit a function that approximates the distribution of the actual observed distance values.  For example, the red line in the following plot.
 
 
-# 4: Estimate abundance given the detection function
+```{r}
+par(mar=c(4, 4, 0.3, 0) + 0.1)  # narrow plot margins
+plot(1, type="n", xlab="Distance (m)", ylab="Count", main="", col="grey", ylim=c(0, 54), xlim=c(0,5), bty="n")
+
+polygon(x=c(0, 5, 5, 0, 0), y=c(50, 50, 0, 0, 50), col="grey")
+
+poly <- data.frame(x=c(0, 5, 5, 4.5, 3.5, 2.5, 1.5, 0.5, 0), y=c(50, 50, 4, 12, 25, 37, 46, 50, 50))
+polygon(x=poly$x, y=poly$y, col="white")
+
+lin <- data.frame(x=c(0, 0.5, 1.5, 2.5, 3.5, 4.5, 5, 5), y=c(50, 50, 46, 37, 25, 12, 4, 0))
+lines(x=lin$x, y=lin$y, col="red", lwd=3)
 
 
-Next, estimate abundance (or density in this case) using `F.abund.estim`.  If `area`=1, then density is given in the squared units of the distance measurements -- in this case, sparrows per square meter.  Instead, we set `area`=10000 in order to convert to sparrows per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance estimate is detailed in the help documentation for `F.abund.estim`.
 
-Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`), and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).  Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be necessary to stabilize CI estimates.
+text(4, 40, "Not\nDetected", col="red")
+text(1.5, 20, "Detected", col="black")
 
-```{r, fig.width=6, fig.height=4}
-fit <- F.abund.estim(dfunc, detection.data=sparrow.detections,
-                     transect.data=sparrow.transects,
-                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
-fit
-```
-
-
-Results of interest (such as the abundance estimate and confidence interval) can be extracted from the resulting object (here called `fit`).
-``` {r}
-fit$n.hat
-fit$ci
 ```
 
 
-# 5: Use AICc to select a detection function and estimate abundance
-
-Alternatively, steps 3 (fitting a detection function) and 4 (estimating abundance) can be automated using the function `F.automated.CDA`.  This function attempts to fit multiple detection functions, uses AICc (by default, but see help documentation for `AIC.dfunc` for other options) to find the 'best' detection function, then proceeds to estimate abundance using that detection function.  By default, `F.automated.CDA` tries dozens of detection functions, but you can restrict the process to fewer detection functions if you choose (see help documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In this example, we won't restrict the number of detection functions attempted, and we won't plot each (`plot=FALSE`).
+Detection functions are often fit using a small set of likelihood functions that lend themselves to the distance-sampling data (e.g., half-normal, hazard rate, etc.). `Rdistance` has many of these traditional likelihood functions built in, but the package also allows the user to specify a custom function (see the package vignette on user-defined likelihood functions).  For more information on detection functions, see the help documentation for the `F.dfunc.estim` function (by issuing `?F.dfunc.estim` in the R console after loading `Rdistance`).
 
 
-```{r, fig.width=6, fig.height=4}
-auto <- F.automated.CDA(detection.data=sparrow.detections,
-                        transect.data=sparrow.transects,
-                        w.hi=150, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
+## Effective Strip Width (ESW)
+Once you have fit a detection function, you can compute the Effective Strip Width (ESW).  Recall that, in our example, true abundance was 250 birds, and we were able to calculate true density (0.25 birds per ha or 0.00025 birds per m^2^) because we knew the total length of the transects surveyed (100,000 m) and the strip width of the survey (5 m on each side of the transect).  But in the case of imperfect detection, the probability of detection generally decreases as detection distances increase, meaning that you don't effectively (or perfectly) cover the entire strip width.  So in the imperfect detection example, our Effective Strip Width (ESW) was something less than 5 m.
+
+
+What `Rdistance` does is estimate the Effective Strip Width (ESW) of your survey based on the detetction function you fit to the sample of distances you observed.  This is done by calculating the area under the detection function through numerical integration.  Conceptually, the ESW of a survey is the strip width that you effectively covered.  In our case, a survey with perfect detection out to 5 m effectively covers the same area as a survey with imperfect detection out to an ESW value that is unknown but less than 5 m.  At distance = ESW, you have failed to detect as many birds as you did detect beyond the ESW distance.  To show this graphically, the area of these two blue polygons are the same, and ESW = 3.4 m:
+
+```{r}
+par(mar=c(4, 4, 0.3, 0) + 0.1)  # narrow plot margins
+plot(1, type="n", xlab="Distance (m)", ylab="Count", main="", col="grey", ylim=c(0, 54), xlim=c(0,5), bty="n")
+
+polygon(x=c(0, 5, 5, 0, 0), y=c(50, 50, 0, 0, 50))
+
+poly <- data.frame(x=c(0, 5, 5, 4.5, 3.5, 2.5, 1.5, 0.5, 0), y=c(50, 50, 4, 12, 25, 37, 46, 50, 50))
+polygon(x=poly$x, y=poly$y)
+
+
+poly2 <- data.frame(x=c(0, 3.4, 3.4, 5, 5, 4.5, 3.5, 2.5, 1.5, 0.5, 0),
+                    y=c(50, 50, 0, 0, 4, 12, 25, 37, 46, 50, 50))
+polygon(x=poly2$x, y=poly2$y, col="light blue")
+text(2.6, 43, "Poly\n1", col="black")
+text(4, 9, "Poly\n2", col="black")
+
+abline(v=3.4, lwd=3)
+text(4.4, 54, "ESW = 3.4", col="black")
+
 ```
 
-You can see that the detection function with the lowest AICc value (and thus selected as the 'best') is the negative exponential likelihood, with one cosine expansion.
+For more information on ESW and how it is calculated, see the help documentation for the `ESW` function (by issuing `?ESW` in the R console after loading `Rdistance`).
 
-# 6:  Conclusion
-Note that the detection function that you select has a large influence on the resulting abundance estimate.  In sections 3 and 4, we fit a half-normal detection function and used that function to estimate sparrow density.  Our estimate was `r round(fit$n.hat, 2)` sparrows per ha (95% CI = `r round(fit$ci[[1]], 2)` - `r round(fit$ci[[2]], 2)`).  In section 5, we used AICc to determine the best-fitting detection function and used that function to estimate sparrow density again.  Our new estimate was `r round(auto$n.hat, 2)` sparrows per ha (95% CI = `r round(auto$ci[[1]], 2)` - `r round(auto$ci[[2]], 2)`). (Note, recall that your estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).  Thus we see that choosing an appropriate detection function is critical to accurately estimating abundance.  The `F.automated.CDA` function can help you select a detection function that fits your data well.
+To prove the equivalence of the perfect-detection scenario where ESW = 5 m and the imperfect-detection scenario where ESW = 3.4, estimate density for each, using the appropriate count and strip width values.
 
-That concludes this `Rdistance` tutorial.  You are now ready to read in your own data, fit a detection function, and estimate abundance.
+
+$$D = \frac{250}{2 * 5 * (100*1000)} = 0.00025$$
+
+
+$$\widehat{D} = \frac{170}{2 * 3.4 * (100*1000)} = 0.00025$$
+
+
+```{r, eval=FALSE}
+# perfect detection
+(250)/
+  (2*5*100000)
+
+# imperfect detection
+(170)/
+  (2*3.4*100000)
+```
+
+
+# Example with Real Data
+Here, we make use of the example datasets that come installed with `Rdistance` (i.e., line transect surveys of sparrows) to demonstrate these concepts with real data and using `Rdistance` functions.
+
+< *Still working on this section* >
+
+Much of these sections already appear in the Rdistance Tutorial vignette.  My thought is to supply condensed versions here that don't show the code for each step, but that prove the concepts implemented by our functions.
+
+**Outline**
+
+* histogram of distances
+* fit a dfunc and compute ESW
+* calculate abundance with `Rdistance` and manually
