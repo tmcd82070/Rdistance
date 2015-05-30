@@ -71,12 +71,12 @@ series = "cosine", expansions = 0, scale = TRUE)
         that the inverse likelihood of 0.5 is \code{a} before scaling (i.e., \code{uniform.like(c(a,b),a,scale=FALSE)} equals \code{0.5}).
         Parameter \code{b} is the "knee" or sharpness of the bend at \code{a} and estimates 
         the degree to which observations decline at the outer limit of sightability.  Note that, prior to scaling for \code{g.x.scl}, the 
-        slope of the likelihood at \eqn{a} is \eqn{-b}. After scaling for \code{g.x.scl}, the inverse of \code{g.x.scl/2} is \code{a/f(0)}.   
+        slope of the likelihood at \eqn{a} is \eqn{-b/4}. After scaling for \code{g.x.scl}, the inverse of \code{g.x.scl/2} is close to \code{a/f(0)}.   
         If \eqn{b} is large, the "knee" is sharp and the density of observations  declines rapidly at \eqn{a/f(0)}. In this case,  
         the likelihood can look like 
-        a uniform distribution with support from \code{w.lo} to \eqn{a/f(x.scl)}.  If \eqn{b} is small, 
+        a uniform distribution with support from \code{w.lo} to \eqn{a/f(0)}.  If \eqn{b} is small, 
         the "knee" is shallow and the density of observations
-        declines in an elongated "S" shape pivoting at \code{a/f(x.scl)}.  As  \code{b} grows large, the effective strip width approaches \code{a} from above.  See Examples 
+        declines in an elongated "S" shape pivoting at \code{a/f(0)}.  As  \code{b} grows large and assuming f(0) = 1, the effective strip width approaches \code{a} from above.  See Examples 
         for plots using large and small values of \eqn{b}.    
         
 
