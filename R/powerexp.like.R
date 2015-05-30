@@ -4,8 +4,9 @@ powerexp.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expa
 #   equation is 1 - exp(-(dist/s)^(-k))
 #
 #
-
-
+print(a)
+print(expansions)
+  
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
 
     sigma <- a[1]
@@ -23,6 +24,9 @@ powerexp.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expa
             warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
         }
 
+        print(a)
+        print(nexp)
+        
 		if (series=="cosine"){
             dscl = dist/w
             exp.term <- cosine.expansion( dscl, nexp )
@@ -39,7 +43,7 @@ powerexp.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expa
         dfunc <- key * (1 + (exp.term %*% a[3:(nexp+2)]))
 
 
-    } else if(length(a) > 1){
+    } else if(length(a) > 2){
         warning("Wrong number of parameters in powerexp. Only 2 needed if no expansions. High terms ignored.")
     }
 

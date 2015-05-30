@@ -44,9 +44,11 @@ powerexp.start.limits(dist, expansions, w.lo, w.hi)
     The power exponential likelihood is 
 \deqn{f(x|sigma,K) = 1 - exp( - (x/sigma)^{-K} )}{f(x|sigma,K) = 
         1 - exp(-(x/sigma)^(-K))}    
-        
+
         Large values of K produce uniform-like likelihoods, with support from 
-        w.lo to sigma.  When K is large, the \code{powerexp} and \code{uniform} (heavy side) likelihoods are similar.
+        \code{w.lo} to \code{sigma}.  When K is large, the \code{powerexp} and \code{uniform} (heavy side) likelihoods are similar.
+        
+        In fact all functions pass through 1 - exp(-1) at \code{sigma}. That is, \code{powerexp( c(s,k), s, scale=FALSE)} equals \code{0.6321} for all \code{K}.  Thus, for large \code{K}, effective strip width is \code{sigma}. 
 }
 
 \value{
@@ -71,19 +73,20 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 x <- seq( 0, 100, length=100)
 
 #   Plots showing effects of changes in sigma
-plot(x, powerexp.like(c(20,2), x), type="l", col="red")
-lines(x, powerexp.like(c(40,2), x), col="blue")
-lines(x, powerexp.like(c(60,2), x), col="green")
+plot(x, powerexp.like(c(20,2), x, scale=FALSE), type="l", col="red", ylim=c(0,1))
+lines(x, powerexp.like(c(40,2), x, scale=FALSE), col="blue")
+lines(x, powerexp.like(c(60,2), x, scale=FALSE), col="green")
 
 #   Plots showing effects of changes in K
-plot(x, powerexp.like(c(30,1), x), type="l", col="red")
-lines(x, Gamma.like(c(30,2), x), col="blue")
-lines(x, Gamma.like(c(30,3), x), col="green")
+plot(x, powerexp.like(c(30,1), x, scale=FALSE), type="l", col="red", ylim=c(0,1))
+lines(x, powerexp.like(c(30,2), x, scale=FALSE), col="blue")
+lines(x, powerexp.like(c(30,3), x, scale=FALSE), col="green")
 
 
 #   Fit powerexp likelihood to half-normal data
 set.seed(238642)
 x <- rnorm(500, 0, 5)
+x <- x[ x > 0 ]
 dfunc <- F.dfunc.estim( x, likelihood="powerexp" )
 plot(dfunc)
 }
