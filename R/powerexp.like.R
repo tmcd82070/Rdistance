@@ -4,8 +4,6 @@ powerexp.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expa
 #   equation is 1 - exp(-(dist/s)^(-k))
 #
 #
-print(a)
-print(expansions)
   
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
 
@@ -24,8 +22,6 @@ print(expansions)
             warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
         }
 
-        print(a)
-        print(nexp)
         
 		if (series=="cosine"){
             dscl = dist/w

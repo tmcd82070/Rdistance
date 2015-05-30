@@ -5,8 +5,8 @@
 \title{Power exponential likelihood for distance analyses}
 
 \description{
-Computes an exponential or normal-like distance function where the power 
-in the exponent is an estimated parameter. 
+Computes an exponential-like distance function where  power 
+in the exponent is estimated. 
 }
 
 \usage{
