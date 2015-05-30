@@ -59,7 +59,7 @@ if( like == "hazrate" ){
 } else {
     #   Assume this is a user-defined likelihood
     fn <- match.fun( paste(like, ".start.limits", sep="") )
-    ans <- fn(dist, w.lo, w.hi)
+    ans <- fn(dist, expan, w.lo, w.hi)
     start <- ans$start
     low <- ans$lowlimit
     high <- ans$highlimit
