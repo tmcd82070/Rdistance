@@ -34,7 +34,7 @@ FALSE, the user defined likelihood does not need to integrate to 1.0. See the he
 The likelihood function should return a vector the same length as `dist` (the vector of distances) containing the likelihood values. That is, the i-th element of the output vector should be the likelihood of observing `dist[i]`.
 
 
-2. `form.start.limits` - This function provides the starting values, limits, and names of parameters in the likelihood and should take the following inputs (described above):  `dist`, `w.lo`, and `w.hi`.
+2. `form.start.limits` - This function provides the starting values, limits, and names of parameters in the likelihood and should take the following inputs (described above):  `dist`, `expansions`, `w.lo`, and `w.hi`.
 
 This function should return a list containing the following components:
 
@@ -58,7 +58,7 @@ triangular.like <- function(b, dist, w.lo, w.hi, series="", expansions=0, scale=
 
 ```{r}
 # Part 2:  The starting values, limits, and names of parameters in the likelihood
-triangular.start.limits <- function(dist, w.lo, w.hi){
+triangular.start.limits <- function(dist, expansions, w.lo, w.hi){
   list(start=max(dist)*.75,
        lowlimit=w.lo,
        highlimit=w.hi,
@@ -66,6 +66,8 @@ triangular.start.limits <- function(dist, w.lo, w.hi){
   }
 
 ```
+
+To demonstrate, generate some data and fit the triangular distance function.
 
 ```{r, fig.width=6, fig.height=4}
 # A function to generate triangular random deviates
