@@ -1,7 +1,7 @@
 ---
 title: "Rdistance Tutorial for Beginners"
 author: "Jason D. Carlisle and Trent L. McDonald"
-date: "April 22, 2015"
+date: "June 1, 2015"
 output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Rdistance_BeginnerTutorial}
@@ -10,7 +10,7 @@ vignette: >
 ---
 
 
-This tutorial is meant to be a beginner's guide to using `Rdistance`.  It is assumed that you have some familiarity with using Program R, but not necessarily with distance-sampling analysis.  This beginning tutorial focuses on input data requirements, fitting a detection function, and estimating abundance (or density).  Here, we make use of the example datasets already contained within `Rdistance` (i.e., line transect surveys of sparrows), so you can complete this tutorial without having any data of your own.  This tutorial is current as of version 1.2.2 of `Rdistance`.
+This tutorial is meant to be a beginner's guide to using `Rdistance`.  It is assumed that you have some familiarity with using Program R, but not necessarily with distance-sampling analysis.  This beginning tutorial focuses on input data requirements, fitting a detection function, and estimating abundance (or density).  Here, we make use of the example datasets already contained within `Rdistance` (i.e., line transect surveys of sparrows), so you can complete this tutorial without having any data of your own.  This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
 
 
 # 1: Install and load Rdistance
