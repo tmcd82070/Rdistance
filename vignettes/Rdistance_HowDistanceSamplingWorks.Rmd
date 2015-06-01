@@ -20,12 +20,12 @@ Distance sampling is a popular method for estimating the abundance (or density) 
 # Background on Abundance Estimation
 ## When the probablity of detection is 100%
 
-If you can detect your object of interest with perfection, you are doing a "census" and don't need to use distance-sampling.  However, walking though a perfect-detection scenario will set the stage for understanding how distance sampling accounts for imperfect detection.
+If you can detect your object of interest with perfection, you are doing a "census" __of the areas surveyed__ and don't need to use distance-sampling.  However, walking though a perfect-detection scenario will set the stage for understanding how distance sampling accounts for imperfect detection.
 
-If detection is perfect, the true abundance is the same as the observed count.
+If detection is perfect, the ~~true~~ abundance __on surveyed areas__ is the same as the observed count.
 $$N = Count$$
 
-In order to calculate the true density, you also need to know the size of the area surveyed:
+In order to calculate the ~~true~~ density __on the areas surveyed__, you ~~also~~ need to know the size of the area surveyed:
 
 $$D = \frac{Count}{Area}$$
 
