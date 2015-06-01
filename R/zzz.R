@@ -1,10 +1,10 @@
 .onAttach <- function(libname, pkgname){
   
   # To automatically update the version number  
-  #v <- packageVersion("Rdistance")  # this requires utils package, and I don't want to make this dependent on Utils
+  v <- packageVersion("Rdistance")  # this requires utils package, which is base
   
   # To manually update the version number
-  v <- "1.2.2"
+  #v <- "1.2.2"
   
   # Startup message
   packageStartupMessage(paste("Rdistance (version ", v ,")", sep=""))
