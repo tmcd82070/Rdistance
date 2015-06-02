@@ -5,8 +5,7 @@
 \title{Power exponential likelihood for distance analyses}
 
 \description{
-Computes an exponential-like distance function where  power 
-in the exponent is estimated. 
+Computes the half-normal-like distance function with estimated exponent, \code{1 - exp(-(d/sigma)^(-K))}. This is the distance function of Hayes and Buckland (1983)
 }
 
 \usage{
@@ -48,7 +47,7 @@ powerexp.start.limits(dist, expansions, w.lo, w.hi)
         Large values of K produce uniform-like likelihoods, with support from 
         \code{w.lo} to \code{sigma}.  When K is large, the \code{powerexp} and \code{uniform} (heavy side) likelihoods are similar.
         
-        In fact all functions pass through 1 - exp(-1) at \code{sigma}. That is, \code{powerexp( c(s,k), s, scale=FALSE)} equals \code{0.6321} for all \code{K}.  Thus, for large \code{K}, effective strip width is \code{sigma}. 
+        All functions pass through 1 - exp(-1) at \code{sigma}. That is, \code{powerexp( c(s,k), s, scale=FALSE)} equals \code{0.6321} for all \code{K}.  Thus, for large \code{K}, effective strip width is \code{sigma}. 
 }
 
 \value{
@@ -58,7 +57,11 @@ powerexp.start.limits(dist, expansions, w.lo, w.hi)
         greater than \code{w.hi} is \code{NA}.   
 
         If \code{scale} = TRUE, the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0.  
-        If \code{scale} = FALSE, the integral of the likelihood is an arbitrary constant.
+        If \code{scale} = FALSE, the integral of the likelihood is arbitrary.
+}
+
+\references{
+Hayes, R. J. and Buckland, S. T. (1983). Radial-distance models for the line-transect method. Biometrics 39, 29–42.
 }
 
 \author{
@@ -66,7 +69,7 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
 
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}
+\code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}, \code{\link{uniform.like}}}
 }
 
 \examples{
