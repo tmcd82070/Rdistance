@@ -20,5 +20,6 @@ Description: Analysis of distance sampling data collected on line transect surve
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki
 BugReports: https://github.com/tmcd82070/Rdistance/issues
+Imports: utils
 Suggests: knitr
 VignetteBuilder: knitr
