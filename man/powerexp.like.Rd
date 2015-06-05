@@ -5,7 +5,7 @@
 \title{Power exponential likelihood for distance analyses}
 
 \description{
-Computes the half-normal-like distance function with estimated exponent, \code{1 - exp(-(d/sigma)^(-K))}. This is the distance function of Hayes and Buckland (1983)
+Computes the half-normal-like distance function with estimated exponent, \code{1 - exp(-(d/sigma)^(-K))}. This is the distance function of Hayes and Buckland (1983).
 }
 
 \usage{
@@ -61,7 +61,7 @@ powerexp.start.limits(dist, expansions, w.lo, w.hi)
 }
 
 \references{
-Hayes, R. J. and Buckland, S. T. (1983). Radial-distance models for the line-transect method. Biometrics 39, 29–42.
+Hayes, R. J. and Buckland, S. T. (1983). Radial-distance models for the line-transect method. Biometrics 39, 29-42.
 }
 
 \author{
@@ -69,7 +69,7 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
 
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}, \code{\link{uniform.like}}}
+\code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}, \code{\link{uniform.like}}
 }
 
 \examples{
