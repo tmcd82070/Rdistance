@@ -102,7 +102,7 @@ fit$ci
 
 # 5: Use AICc to select a detection function and estimate abundance
 
-Alternatively, steps 3 (fitting a detection function) and 4 (estimating abundance) can be automated using the function `F.automated.CDA`.  This function attempts to fit multiple detection functions, uses AICc (by default, but see help documentation for `AIC.dfunc` for other options) to find the 'best' detection function, then proceeds to estimate abundance using that detection function.  By default, `F.automated.CDA` tries dozens of detection functions, but you can restrict the process to fewer detection functions if you choose (see help documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In this example, we won't restrict the number of detection functions attempted, and we won't plot each (`plot=FALSE`).
+Alternatively, steps 3 (fitting a detection function) and 4 (estimating abundance) can be automated using the function `F.automated.CDA`.  This function attempts to fit multiple detection functions, uses AICc (by default, but see help documentation for `AIC.dfunc` for other options) to find the 'best' detection function, then proceeds to estimate abundance using that detection function.  By default, `F.automated.CDA` tries a large subset of `Rdistance`'s built-in detection functions, but you can control exactly which detection functions are attempted (see help documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
 ```{r, fig.width=6, fig.height=4}

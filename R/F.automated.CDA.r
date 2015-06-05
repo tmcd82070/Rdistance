@@ -1,6 +1,6 @@
 F.automated.CDA <- function (detection.data, transect.data, 
                              w.lo=0, w.hi=max(dist),
-                             likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
+                             likelihoods=c("halfnorm", "hazrate", "powerexp", "negexp", "Gamma"),
                              series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
                              area=1, ci=0.95, R=500, bs.method="transects", plot.bs=FALSE,                          
                              plot=TRUE, ...){
