@@ -9,8 +9,8 @@ Estimate abundance (or density) given an estimated detection function and supple
 }
 
 \usage{
-F.abund.estim(dfunc, detection.data, transect.data, area = 1, 
-    ci=0.95, R=500, bs.method="transects", plot.bs=FALSE, by.id=FALSE)
+F.abund.estim(dfunc, detection.data, transect.data, area=1, ci=0.95, R=500,
+by.id=FALSE, bs.method="transects", plot.bs=FALSE)
 }
 
 \arguments{
@@ -56,13 +56,15 @@ F.abund.estim(dfunc, detection.data, transect.data, area = 1,
   \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not NULL. 
     }
     
+  \item{by.id}{A logical scalar indicating whether to compute transect-level estimates of abundance (the default is one single overall abundance estimate).  Currently, this option returns the estimate only, with no confidence interval included.}
+    
   \item{bs.method}{The units that are resampled during bootstrap iterations.
   Currently, the only option is 'transects', but future versions will allow the resampling of individual detections instead of transects.  See Details.
   }
     
   \item{plot.bs}{A logical scalar indicating whether to plot individual bootstrap iterations.}
   
-  \item{by.id}{A logical scalar indicating whether to compute transect-level estimates of abundance (the default is one single overall abundance estimate).  Currently, this option returns the estimate only, with no confidence interval included.}
+
   
 }
 
