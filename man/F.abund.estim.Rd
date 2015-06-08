@@ -10,7 +10,7 @@ Estimate abundance (or density) given an estimated detection function and supple
 
 \usage{
 F.abund.estim(dfunc, detection.data, transect.data, area = 1, 
-    ci=0.95, R=500, bs.method="transects", plot.bs=FALSE)
+    ci=0.95, R=500, bs.method="transects", plot.bs=FALSE, by.id=FALSE)
 }
 
 \arguments{
@@ -61,6 +61,9 @@ F.abund.estim(dfunc, detection.data, transect.data, area = 1,
   }
     
   \item{plot.bs}{A logical scalar indicating whether to plot individual bootstrap iterations.}
+  
+  \item{by.id}{A logical scalar indicating whether to compute transect-level estimates of abundance (the default is one single overall abundance estimate).  Currently, this option returns the estimate only, with no confidence interval included.}
+  
 }
 
 
@@ -98,7 +101,8 @@ all the components of a "dfunc" object (see \code{F.dfunc.estim}), plus,
   \item{area}{The study area size used in the estimate of abundance.}
   \item{tran.len}{The total length of transects used in the estimate of abundance.}
   \item{esw}{Effective strip width used in the estimate of abundance.  This can be computed with \code{ESW(dfunc)}.}
-  \item{avg.group.size}{The average group size used in the estimate.}  
+  \item{avg.group.size}{The average group size used in the estimate.}
+  \item{nhat.df}{A data.frame of transect-level abundance (or density) estimates (if \code{by.id = TRUE}).}
 }
 
 \author{
@@ -132,7 +136,7 @@ dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
 # Note, area=10000 converts to density per hectare (for distances measured in meters)
 # Note, a person should do more than R=20 iterations 
 fit <- F.abund.estim(dfunc, detection.data=sparrow.detections, transect.data=sparrow.transects,
-                     area=10000, R=20, ci=0.95, plot.bs=TRUE)
+                     area=10000, R=20, ci=0.95, plot.bs=TRUE, by.id=FALSE)
 }
 
 \keyword{ model }
