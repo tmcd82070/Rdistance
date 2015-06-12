@@ -1,13 +1,14 @@
 ## Resubmission comments
-* Updated to fix issue with older versions of R. Specifically, we removed all references to `anyNA()`. 
-* Vignettes included
+* Functionality added.  Specifically the powerexp detection function and transect-level density estimates.
+* Example datasets updated.
+* Vignettes updated.
 
 ## Current Version
-1.2.2
-Previous version: 1.2.1
+* 1.3.1
+* Previous version: 1.2.2
 
 ## Test environments
-* local Windows 7 Pro, R 3.1.3
+* local Windows 8.1 Pro, R 3.2.0
 
 ## R CMD check results
 No ERRORs or WARNINGs. 
