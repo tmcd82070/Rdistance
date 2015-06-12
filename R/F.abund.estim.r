@@ -1,5 +1,5 @@
 F.abund.estim <- function(dfunc, detection.data, transect.data,
-                          area=1, ci=0.95, R=500,
+                          area=1, ci=0.95, R=500, by.id=FALSE,
                           bs.method="transects", plot.bs=FALSE){
   
   # the alternative bs.method would be observations (aka detections), but not programmed yet
@@ -161,15 +161,42 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     ans$B <- n.hat.bs
     if (any(is.na(n.hat.bs))) cat(paste(sum(is.na(n.hat.bs)), "of", R, "iterations did not converge.\n"))
     
+    # Don't compute CI
+    else {
+      ans$B <- NA
+      ans$ci <- c(NA, NA)
+    }
+    
   }  # end if is.null ci
 
+  
+  
+  # Compute transect-level densities
+  if (by.id) {
+    
+    # Starting df
+    nhat.df <- transect.data[, c("siteID", "length")]
+    
+    # Summarize raw count (truncated observations excluded previously) by transect
+    rawcount <- data.frame(rawcount = tapply(detection.data$groupsize, detection.data$siteID, sum))
+    rawcount <- cbind(siteID = rownames(rawcount), rawcount)
+    
+    # Merge and replace NA with 0 for 0-count transects
+    nhat.df <- merge(nhat.df, rawcount, by="siteID", all.x=TRUE)
+    nhat.df$rawcount[is.na(nhat.df$rawcount)] <- 0
+    
+    # Calculate transect-level abundance (density)
+    nhat.df$nhat <- (nhat.df$rawcount * area) / (2 * esw * nhat.df$length)    
 
-
-   ######Don't compute CI##############
-   else {
-     ans$B <- NA
-     ans$ci <- c(NA, NA)
-   }
+    # Check that transect-level abundances match total abundance
+    #mean(nhat.df$nhat)
+    #ans$n.hat
+    
+    # Save in output list
+    ans$nhat.df <- nhat.df
+  }  # end if by.id
+  
+  
   
   ####output####
   ans$alpha <- ci
