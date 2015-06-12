@@ -1,7 +1,7 @@
 ---
 title: "Rdistance Tutorial for Beginners"
 author: "Jason D. Carlisle and Trent L. McDonald"
-date: "June 1, 2015"
+date: "June 15, 2015"
 output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Rdistance_BeginnerTutorial}
