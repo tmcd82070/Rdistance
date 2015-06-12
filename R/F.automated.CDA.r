@@ -2,7 +2,7 @@ F.automated.CDA <- function (detection.data, transect.data,
                              w.lo=0, w.hi=max(dist),
                              likelihoods=c("halfnorm", "hazrate", "powerexp", "negexp", "Gamma"),
                              series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
-                             area=1, ci=0.95, R=500, by.id=FALSE, bs.method="transects", plot.bs=FALSE,                          
+                             area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE,                          
                              plot=TRUE, ...){
   
   
@@ -131,7 +131,7 @@ F.automated.CDA <- function (detection.data, transect.data,
 
   
   abund <- F.abund.estim(dfunc, detection.data=detection.data, transect.data=transect.data,
-                         area=area, ci=ci, R=R, bs.method=bs.method, plot.bs=plot.bs, by.id=by.id)
+                         area=area, ci=ci, R=R, plot.bs=plot.bs, by.id=by.id)
 
 #   }
   cat("\n\n---------------- Final Automated CDS Abundance Estimate -------------------------------\n")

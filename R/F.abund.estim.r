@@ -1,9 +1,6 @@
 F.abund.estim <- function(dfunc, detection.data, transect.data,
                           area=1, ci=0.95, R=500, by.id=FALSE,
-                          bs.method="transects", plot.bs=FALSE){
-  
-  # the alternative bs.method would be observations (aka detections), but not programmed yet
-   
+                          plot.bs=FALSE){
   
   # Stop and print error if detection.data or transect.data contain NAs
   if(any(is.na(detection.data)))
@@ -12,7 +9,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     stop("transect.data cannot contain NAs.")
   
   
-  ########Plotting################
+  # Plotting
   f.plot.bs <- function(x, xscl, yscl, ...) {
     x.seq <- seq(x$w.lo, x$w.hi, length = 200)
     g.at.x0 <- x$g.x.scl
@@ -31,7 +28,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
   }
   
-  #Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
+  # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
   (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
 
   # sample size (number of detections, NOT individuals)
@@ -42,7 +39,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
 
   # total transect length and ESW
   (tot.trans.len <- sum(transect.data$length))
-  (esw <- ESW(dfunc))  #get effective strip width
+  (esw <- ESW(dfunc))  # get effective strip width
 
   # estimate abundance
   (n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len))
@@ -59,25 +56,23 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
 
 
   if (!is.null(ci)) {
-    ######Compute bootstrap CI
-    # Option 1:  resample transects
-    if(bs.method=="transects"){
+    # Compute bootstrap CI by resampling transects
+
       g.x.scl.orig <- dfunc$call.g.x.scl  # g(0) or g(x) estimate
       
       n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
       
       # Turn on progress bar (if utils is installed)
       if ("utils" %in% installed.packages()[, "Package"]) {
-        #require(utils)
         pb <- txtProgressBar(1, R)
         show.progress = TRUE
       } else show.progress = FALSE
       
       
-      # bootstrap
+      # Bootstrap
       cat("Computing bootstrap confidence interval on N...\n")
       for(i in 1:R){
-        # sample rows, with replacement, from site covariates
+        # sample rows, with replacement, from transect data
         new.transect.data <- transect.data[sample(nrow(transect.data), nrow(transect.data), replace=TRUE), ]
         
         new.trans <- as.character(new.transect.data$siteID)  # which transects were sampled?
@@ -110,29 +105,22 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
                                   g.x.scl = g.x.scl.bs, observer = dfunc$call.observer, 
                                   warn = FALSE)
         
-        
-        
-        #Store ESW if it converged
+        # Store ESW if it converged
         if (dfunc.bs$convergence == 0) {
           esw.bs <- ESW(dfunc.bs)
           if (esw.bs <= dfunc$w.hi) {
             
-            
-            
-            ###Calculate observed metrics####
+            # Calculate observed metrics
             # sample size
             n.bs <- nrow(new.detection.data)
             
             # group sizes
             avg.group.size.bs <- mean(new.detection.data$groupsize)
             
-            
-            #####Store observed metrics
+            # Store observed metrics
             #esw <- ESW(dfunc.bs)  #get effective strip width
             tot.trans.len.bs <- sum(new.transect.data$length)
             n.hat.bs[i] <- avg.group.size.bs * n.bs * area/(2 * esw.bs * tot.trans.len.bs)  # area stays same as original?   
-            
-
             
           }  # end if esw.bs <= w.hi
           if (plot.bs) 
@@ -141,7 +129,6 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
           if (show.progress) setTxtProgressBar(pb, i)
         }  # end if dfunc.bs converged
       }  # end bootstrap
-    }  # end option 1, transects
     
     
     # close progress bar  
@@ -161,13 +148,11 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     ans$B <- n.hat.bs
     if (any(is.na(n.hat.bs))) cat(paste(sum(is.na(n.hat.bs)), "of", R, "iterations did not converge.\n"))
     
-    # Don't compute CI
-    else {
-      ans$B <- NA
-      ans$ci <- c(NA, NA)
-    }
-    
-  }  # end if is.null ci
+  }  else {
+    # Don't compute CI if ci is null
+    ans$B <- NA
+    ans$ci <- c(NA, NA)
+    }  # end else
 
   
   
@@ -198,11 +183,10 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   
   
   
-  ####output####
+  # Output
   ans$alpha <- ci
   class(ans) <- c("abund", class(dfunc))
   ans
 
-  
   
 }  # end function
