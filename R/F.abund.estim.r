@@ -160,7 +160,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   if (by.id) {
     
     # Starting df
-    nhat.df <- transect.data[, "siteID")]
+    nhat.df <- data.frame(transect.data$siteID)
     
     # Summarize raw count (truncated observations excluded previously) by transect
     rawcount <- data.frame(rawcount = tapply(detection.data$groupsize, detection.data$siteID, sum))
