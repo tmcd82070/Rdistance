@@ -2,6 +2,7 @@
 * Functionality added.  Specifically the powerexp detection function and transect-level density estimates.
 * Example datasets updated.
 * Vignettes updated.
+* Help documentation updated.
 
 ## Current Version
 * 1.3.1
