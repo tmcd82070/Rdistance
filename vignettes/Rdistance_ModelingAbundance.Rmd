@@ -9,7 +9,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-
+# Introduction
 This tutorial builds on the introductory material presented in the **Rdistance Tutorial for Beginners**.  The goal of a distance-sampling study is often to relate abundance to some other variable, e.g., a covariate describing the habitat at each survey site.  `Rdistance` can provide you with site-level estimates of abundance that are corrected for imperfect detection. You can then use these estimates as the response variable in one of the many modeling frameworks available in Program R that you're likely already familiar with (e.g., `lm`, `glm`, `lme4`, etc.).  Here, we make use of the example datasets already contained within `Rdistance` (i.e., line transect surveys of sparrows), to demonstrate an example modeling workflow.  This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
 
 # Estimate abundance at each site

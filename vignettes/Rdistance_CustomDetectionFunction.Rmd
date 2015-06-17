@@ -9,7 +9,6 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-
 # Introduction
 Detection functions are often fit using a small set of likelihood functions that lend themselves to the distance-sampling data (e.g., half-normal, hazard rate, etc.).  `Rdistance` has many of these traditional likelihood functions built in (see help documentation for `F.dfunc.estim`), but the package also allows the user to specify a custom function.  Here, we give an example of how to specify a user-defined likelihood function when fitting a detection function in `Rdistance`.  This tutorial is current as of version `r packageVersion("Rdistance")` of Rdistance.
 

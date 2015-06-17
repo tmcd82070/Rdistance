@@ -9,7 +9,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-
+# Introduction
 This tutorial is meant to be a beginner's guide to using `Rdistance`.  It is assumed that you have some familiarity with using Program R, but not necessarily with distance-sampling analysis.  This beginning tutorial focuses on input data requirements, fitting a detection function, and estimating abundance (or density).  Here, we make use of the example datasets already contained within `Rdistance` (i.e., line transect surveys of sparrows), so you can complete this tutorial without having any data of your own.  This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
 
 
@@ -114,7 +114,7 @@ auto <- F.automated.CDA(detection.data=sparrow.detections,
 
 You can see that the detection function with the lowest AICc value (and thus selected as the 'best') is the negative exponential likelihood, with one cosine expansion.
 
-# 6:  Conclusion
+# Conclusion
 Note that the detection function that you select has a large influence on the resulting abundance estimate.  In sections 3 and 4, we fit a half-normal detection function and used that function to estimate sparrow density.  Our estimate was `r round(fit$n.hat, 2)` sparrows per ha (95% CI = `r round(fit$ci[[1]], 2)` - `r round(fit$ci[[2]], 2)`).  In section 5, we used AICc to determine the best-fitting detection function and used that function to estimate sparrow density again.  Our new estimate was `r round(auto$n.hat, 2)` sparrows per ha (95% CI = `r round(auto$ci[[1]], 2)` - `r round(auto$ci[[2]], 2)`). (Note, recall that your estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).  Thus we see that choosing an appropriate detection function is critical to accurately estimating abundance.  The `F.automated.CDA` function can help you select a detection function that fits your data well.
 
 That concludes this `Rdistance` tutorial.  You are now ready to read in your own data, fit a detection function, and estimate abundance.
