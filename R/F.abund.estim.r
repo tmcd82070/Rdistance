@@ -171,14 +171,14 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     nhat.df$rawcount[is.na(nhat.df$rawcount)] <- 0
     
     # Calculate transect-level abundance (density)
-    nhat.df$nhat <- (nhat.df$rawcount * area) / (2 * esw * nhat.df$length)    
+    nhat.df$nhat <- (nhat.df$rawcount * area) / (2 * esw * nhat.df$length)   
 
     # Check that transect-level abundances match total abundance
     #mean(nhat.df$nhat)
     #ans$n.hat
     
     # Remove the length column
-    nhat.df[, -2]
+    nhat.df <- nhat.df[, -2]
     
     # Save in output list
     ans$nhat.df <- nhat.df
