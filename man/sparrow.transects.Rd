@@ -11,12 +11,13 @@ See the package vignettes for an \code{Rdistance} tutorial using these datasets.
 }
 
 \usage{sparrow.transects}
-\format{A data.frame containing 72 rows and 3 columns.  Each row represents a site or transect surveyed.  Columns descriptions:
+\format{A data.frame containing 72 rows and 5 columns.  Each row represents a site or transect surveyed.  Column descriptions:
   \enumerate{
     \item \code{siteID}:  Factor, the site or transect surveyed.
     \item \code{length}:  Number, the length of each transect.  Use the same units for all distance measurements.
-    \item \code{sage}:  Factor, an example categorical covariate with two classes.
-    \item \code{...}:  Additional transect-level covariate columns.
+    \item \code{observer}:  Factor, an example categorical covariate with 5 classes.  Identity of the observer who surveyed the transect.
+    \item \code{sagemean}:  Number, an example continuous covariate.  The mean sagebrush cover (\%) at each transect.
+    \item \code{sage}:  Factor, an example categorical covariate with two classes.  Class is "Low"" when sagemean is < 10\%, "High" otherwise.
   }
 }
 

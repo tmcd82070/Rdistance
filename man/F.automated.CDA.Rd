@@ -13,7 +13,7 @@ Perform automated classical detection function selection and estimation of abund
 F.automated.CDA(detection.data, transect.data, w.lo=0, w.hi=max(dist),
 likelihoods=c("halfnorm", "hazrate", "powerexp", "negexp", "Gamma"),
 series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
-area=1, ci=0.95, R=500, by.id.=FALSE, bs.method="transects", plot.bs=FALSE, plot=TRUE, ...)
+area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE, plot=TRUE, ...)
 
 }
 
@@ -51,10 +51,6 @@ This parameter is passed to \code{F.abund.estim}.
 See \code{F.abund.estim} documentation for definition.}
 
 \item{by.id}{
-This parameter is passed to \code{F.abund.estim}.
-See \code{F.abund.estim} documentation for definition.}
-
-\item{bs.method}{
 This parameter is passed to \code{F.abund.estim}.
 See \code{F.abund.estim} documentation for definition.}
 
@@ -103,13 +99,9 @@ During model selection, each series and number of expansions is crossed with eac
 }
 
 \examples{
-# Load the example datasets for sparrow detections and transects from package
+# Load the example datasets of sparrow detections and transects from package
 data(sparrow.detections)
 data(sparrow.transects)
-
-# Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
-                                  obs.angle=sparrow.detections$sightangle)
 
 # Automate fitting multiple detection functions
 # And estimate abundance (density per ha in this case) given the 'best' detection function
@@ -119,7 +111,7 @@ F.automated.CDA(detection.data=sparrow.detections, transect.data=sparrow.transec
                 likelihood=c("halfnorm", "hazrate", "negexp"),
                 series=c("cosine", "simple"),
                 expansions=c(0, 1), area=10000, R=20, ci=0.95, by.id=FALSE,
-                plot.bs=FALSE, bs.method="transects", w.hi=150, plot=TRUE)
+                plot.bs=FALSE, w.hi=150, plot=TRUE)
 }
 
 \keyword{ model }

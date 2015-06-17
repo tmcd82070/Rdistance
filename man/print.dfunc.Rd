@@ -51,11 +51,14 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
 
 \examples{
-\dontrun{
-    set.seed(12345)
-    x <- rgamma(1000, 2,2) 
-    fit <- F.dfunc.estim(x, likelihood="Gamma")
-    print(fit)
-}
+# Load the example datasets of sparrow detections and transects from package
+data(sparrow.detections)
+data(sparrow.transects)
+
+# Fit detection function to perpendicular, off-transect distances
+dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+
+# Print the output                 
+print(dfunc)
 }
 \keyword{ models }

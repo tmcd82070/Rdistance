@@ -47,7 +47,7 @@ Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
 }
 
 \examples{
-# Load the example dataset for sparrow detections from package
+# Load the example dataset of sparrow detections from package
 data(sparrow.detections)
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle

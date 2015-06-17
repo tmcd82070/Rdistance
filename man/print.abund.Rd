@@ -41,13 +41,19 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
 
 \examples{
-\dontrun{
-    set.seed(444443)
-    x <- rgamma(1000, 2,2) 
-    fit <- F.dfunc.estim(x, likelihood="Gamma")
-    fit <- F.abund.estim(fit, tot.trans.len=1000 )
-    print(fit)
-}  
+# Load the example datasets of sparrow detections and transects from package
+data(sparrow.detections)
+data(sparrow.transects)
+
+# Fit detection function to perpendicular, off-transect distances
+dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+
+# Estimate abundance given a detection function
+fit <- F.abund.estim(dfunc, detection.data=sparrow.detections, transect.data=sparrow.transects,
+                     area=10000, R=10, ci=0.95, plot.bs=TRUE, by.id=FALSE)
+
+# Print the output                 
+print(fit)
 }
 \keyword{ models }
 

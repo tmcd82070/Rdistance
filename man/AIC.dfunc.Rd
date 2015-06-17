@@ -74,14 +74,10 @@ Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 \code{\link{coef}}, \code{\link{F.dfunc.estim}}
 }
 \examples{
-# Load the example dataset for sparrow detections from package
+# Load the example dataset of sparrow detections from package
 data(sparrow.detections)
 
-# Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
-                                  obs.angle=sparrow.detections$sightangle)
-
-# Fit detection function object
+# Fit detection function to perpendicular, off-transect distances
 dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
 
 # Compute fit statistics

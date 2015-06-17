@@ -90,19 +90,15 @@ of the negative log likelihood).}
 
 
 \seealso{
-See \code{\link{uniform.like}} for details on the "uniform", "halfnorm", "hazrate", and "negexp" likelihoods.  See \code{\link{Gamma.like}} for "Gamma".  And see package vignettes for information on
+See \code{\link{uniform.like}} for details on the "uniform", "halfnorm", "hazrate", and "negexp" likelihoods.  See \code{\link{Gamma.like}} for "Gamma" and \code{\link{powerexp.like}} for "powerexp".  And see package vignettes for information on
 custom, user-defined likelihoods.  See also \code{\link{F.abund.estim}}, \code{\link{F.automated.CDA}} 
 }
 
 \examples{
-# Load the example dataset for sparrow detections from package
+# Load the example dataset of sparrow detections from package
 data(sparrow.detections)
 
-# Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
-                                  obs.angle=sparrow.detections$sightangle)
-
-# Fit multiple detection functions
+# Fit multiple detection functions to perpendicular, off-transect distances
 un.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="uniform", w.hi = 150)
 hn.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="halfnorm", w.hi = 150)
 ne.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="negexp", w.hi = 150)
