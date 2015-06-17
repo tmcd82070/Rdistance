@@ -1,0 +1,71 @@
+---
+title: "Modeling Abundance in Relation to Covariates"
+author: "Jason D. Carlisle and Trent L. McDonald"
+date: "June 15, 2015"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Rdistance_BeginnerTutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+
+This tutorial builds on the introductory material presented in the **Rdistance Tutorial for Beginners**.  The goal of a distance-sampling study is often to relate abundance to some other variable, e.g., a covariate describing the habitat at each survey site.  `Rdistance` can provide you with site-level estimates of abundance that are corrected for imperfect detection. You can then use these estimates as the response variable in one of the many modeling frameworks available in Program R that you're likely already familiar with (e.g., `lm`, `glm`, `lme4`, etc.).  Here, we make use of the example datasets already contained within `Rdistance` (i.e., line transect surveys of sparrows), to demonstrate an example modeling workflow.  This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
+
+# Estimate abundance at each site
+The process of generating an overall, study-area estimate of abundance is outlined in the **Rdistance Tutorial for Beginners**.  Use the `by.id` argument (`by.id=TRUE`) within `F.abund.estim` or `F.automated.CDA` to estimate abundance for each site surveyed.
+
+```{r}
+require(Rdistance)
+data(sparrow.detections)
+data(sparrow.transects)
+auto <- F.automated.CDA(detection.data=sparrow.detections,
+                        transect.data=sparrow.transects,
+                        by.id=TRUE, w.hi=150, area=10000, R=100, ci=0.95,
+                        plot=FALSE, plot.bs=FALSE)
+
+```
+
+Because `by.id=TRUE`, a data.frame of the site-level abundances is stored in the `auto` object under the name `nhat.df`:
+
+```{r}
+head(auto$nhat.df)
+```
+
+Because distances are measured in meters and `area=10000`, abundance (density) estimates are given as the number of sparrows per hectare.
+
+# Model abundance estimates
+
+The original transect dataset contained a variable named `sagemean` that represents the average sagebrush cover at each transect.  Suppose we want to examine the relationship between sagebrush cover and sparrow abundance.  First, merge the new data.frame of site-level abundance estimates back to the orignial transect data.frame that includes `sagemean`.
+
+
+```{r}
+mydata <- merge(sparrow.transects, auto$nhat.df, by="siteID")
+head(mydata)
+```
+
+
+We now have both variables in the same data.frame.  For the sake of demonstration, we will fit a simple linear regression model using the `lm` function to assess the relationship between sagebrush cover and sparrow abundance.  We see that sparrow density increases with sagebrush cover, and density nearly quadruples across the range of sagebrush cover surveyed.
+
+```{r}
+mod <- lm(nhat ~ sagemean, data=mydata)
+summary(mod)
+```
+
+```{r, fig.width=4.5, fig.height=5, echo=FALSE}
+plot(mydata$nhat ~ mydata$sagemean,
+     xlab="Sagebrush Cover (%)", ylab="Sparrow Density (birds per ha +/- 95% CI)")
+
+pred.sage <- seq(min(mydata$sagemean), max(mydata$sagemean), by=0.5)
+pred.nhat <- data.frame(predict(mod, newdata=data.frame(sagemean=pred.sage),
+                                interval="confidence"))
+
+lines(pred.sage, pred.nhat$fit, col="red", lwd=3)
+lines(pred.sage, pred.nhat$lwr, col="red", lwd=2, lty="dashed")
+lines(pred.sage, pred.nhat$upr, col="red", lwd=2, lty="dashed")
+
+```
+
+
+# Conclusion
+By using `Rdistance` to estimate site-level abundance, you can account for imperfect detection, and use the modeling framework you choose to then relate site-level covariates to abundance.  We demonstrated this workflow using `Rdistance`'s `F.automated.CDA` function to fit a detection function and provide abundance estimates for each site, and the standard `lm` function to model the relationship between a habitat covariate and sparrow density.
