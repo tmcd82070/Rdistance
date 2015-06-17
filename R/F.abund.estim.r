@@ -177,6 +177,9 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     #mean(nhat.df$nhat)
     #ans$n.hat
     
+    # Remove the length column
+    nhat.df[, -2]
+    
     # Save in output list
     ans$nhat.df <- nhat.df
   }  # end if by.id
