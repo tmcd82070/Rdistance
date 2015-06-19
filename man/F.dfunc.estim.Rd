@@ -90,7 +90,7 @@ of the negative log likelihood).}
 
 
 \seealso{
-See \code{\link{uniform.like}} for details on the "uniform", "halfnorm", "hazrate", and "negexp" likelihoods.  See \code{\link{Gamma.like}} for "Gamma" and \code{\link{powerexp.like}} for "powerexp".  And see package vignettes for information on
+See \code{\link{uniform.like}} for details on the "uniform", "halfnorm", "hazrate", and "negexp" likelihoods.  See \code{\link{Gamma.like}} for details on "Gamma".  And see package vignettes for information on
 custom, user-defined likelihoods.  See also \code{\link{F.abund.estim}}, \code{\link{F.automated.CDA}} 
 }
 

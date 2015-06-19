@@ -1,5 +1,5 @@
 ## Resubmission comments
-* Functionality added.  Specifically the powerexp detection function and transect-level density estimates.
+* New functionality added (i.e., transect-level density estimates).
 * Example datasets updated.
 * Vignettes updated.
 * Help documentation updated.
