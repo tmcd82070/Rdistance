@@ -48,10 +48,10 @@ expansions = 0, scale = TRUE)
     density function.  Using the parameterization of \code{dgamma}, the gamma shape parameter 
     is \code{a[1]} while the gamma scale parameter is \code{(a[2]/gamma(r)) * (((r - 1)/exp(1))^(r - 1))}.
     
-    Currently, this function implements is a non-covariate version of the gamma distance function 
-    used by Becker and Quan (\emph{citation?}).  In future, linear equations will relate covariate values to 
+    Currently, this function implements a non-covariate version of the gamma detection function 
+    used by Becker and Quang (2009).  In future, linear equations will relate covariate values to 
     values of the gamma paramters.  This future implementation will fully replicate the distance 
-    functions of Becker and Quan. 
+    functions of Becker and Quang (2009). 
 }
 
 \value{
@@ -64,9 +64,15 @@ expansions = 0, scale = TRUE)
         If \code{scale} = TRUE, the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0.  
         If \code{scale} = FALSE, the integral of the likelihood is an arbitrary constant.
 }
+
+
+
 \references{
-Becker and Quan (?)
+Becker, E. F., and P. X. Quang, 2009. \emph{A Gamma-Shaped Detection Function for Line-Transect Surveys with Mark-Recapture and Covariate Data.} Journal of Agricultural, Biological, and Environmental Statistics 14(2):207-223.
 }
+
+
+
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }
