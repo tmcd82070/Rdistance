@@ -21,7 +21,7 @@ data(sparrow.detections)
 data(sparrow.transects)
 auto <- F.automated.CDA(detection.data=sparrow.detections,
                         transect.data=sparrow.transects,
-                        by.id=TRUE, w.hi=150, area=10000, R=100, ci=0.95,
+                        by.id=TRUE, w.hi=150, area=10000, R=10, ci=0.95,
                         plot=FALSE, plot.bs=FALSE)
 
 ```
