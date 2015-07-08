@@ -32,7 +32,7 @@ Because `by.id=TRUE`, a data.frame of the site-level abundances is stored in the
 head(auto$nhat.df)
 ```
 
-Because distances are measured in meters and `area=10000`, abundance (density) estimates are given as the number of sparrows per hectare.
+Because distances were measured in meters and `area=10000`, abundance (density) estimates are given as the number of sparrows per hectare.
 
 # Model abundance estimates
 
@@ -45,7 +45,7 @@ head(mydata)
 ```
 
 
-We now have both variables in the same data.frame.  For the sake of demonstration, we will fit a simple linear regression model using the `lm` function to assess the relationship between sagebrush cover and sparrow abundance.  We see that sparrow density increases with sagebrush cover, and density nearly quadruples across the range of sagebrush cover surveyed.
+We now have both variables in the same data.frame.  For the sake of demonstration, we will fit a simple linear regression model using the `lm` function to assess the relationship between sagebrush cover and sparrow density (per ha).  We see that sparrow density increases with sagebrush cover, and density nearly quadruples across the range of sagebrush cover surveyed.
 
 ```{r}
 mod <- lm(nhat ~ sagemean, data=mydata)
