@@ -28,3 +28,7 @@ S3method(plot,dfunc)
 S3method(print,dfunc)
 S3method(print,abund)
 
+importFrom("graphics", "axTicks", "axis", "barplot", "hist", "lines", "mtext", "plot", "text", "title")
+importFrom("stats", "AIC", "coef", "dgamma", "dist", "nlminb", "pnorm", "qnorm", "quantile")
+importFrom("utils", "installed.packages", "setTxtProgressBar", "txtProgressBar")
+
