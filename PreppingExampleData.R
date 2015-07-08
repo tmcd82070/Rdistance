@@ -1,13 +1,13 @@
 # Code used to prepare the example sparrow datasets in Rdistance
 # Jason Carlisle
-# Last updated 5/21/2015
+# Last updated 7/8/2015
 
 # Goal for two required two data.frames:
 # a detection data.frame with at least $dist, $siteID, and $groupsize
 # a transect data.frame with at least $siteID and $length (and we're adding some other covariates)
 
-# This code calculates a bunch of covariates that we're not using at this time.  The only one
-# included in the Rdistance example data (as of v 1.2.2) is a categorical covariate of sagebrush cover (low or high)
+# This code calculates a bunch of covariates that we're not using at this time.
+# As of v 1.3.1, observer (factor), sagemean (continuous), and sage (factor) are included.
 
 # Load required packages
 require(Rdistance)
