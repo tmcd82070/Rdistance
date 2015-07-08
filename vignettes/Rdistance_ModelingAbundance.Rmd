@@ -1,7 +1,7 @@
 ---
 title: "Modeling Abundance in Relation to Covariates"
 author: "Jason D. Carlisle and Trent L. McDonald"
-date: "June 17, 2015"
+date: "July 8, 2015"
 output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Rdistance_BeginnerTutorial}
