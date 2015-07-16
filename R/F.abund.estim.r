@@ -2,11 +2,13 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
                           area=1, ci=0.95, R=500, by.id=FALSE,
                           plot.bs=FALSE){
   
-  # Stop and print error if detection.data or transect.data contain NAs
-  if(any(is.na(detection.data)))
-    stop("Please remove detections for which dist is NA.")
-  if(any(is.na(transect.data)))
-    stop("transect.data cannot contain NAs.")
+  # Stop and print error if key columns of detection.data or transect.data contain NAs
+  if(any(is.na(detection.data$dist))) stop("Please remove rows for which detection.data$dist is NA.")
+  if(any(is.na(detection.data$siteID))) stop("Please remove rows for which detection.data$siteID is NA.")
+  if(any(is.na(detection.data$groupsize))) stop("Please remove rows for which detection.data$groupsize is NA.")
+  
+  if(any(is.na(transect.data$siteID))) stop("Please remove NA's from transect.data$siteID.")
+  if(any(is.na(transect.data$length))) stop("Please remove NA's from transect.data$length.")
   
   
   # Plotting
