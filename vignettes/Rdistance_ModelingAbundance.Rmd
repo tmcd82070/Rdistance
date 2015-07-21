@@ -1,7 +1,7 @@
 ---
 title: "Modeling Abundance in Relation to Covariates"
 author: "Jason D. Carlisle and Trent L. McDonald"
-date: "July 8, 2015"
+date: "July 21, 2015"
 output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Rdistance_BeginnerTutorial}
@@ -21,7 +21,7 @@ data(sparrow.detections)
 data(sparrow.transects)
 auto <- F.automated.CDA(detection.data=sparrow.detections,
                         transect.data=sparrow.transects,
-                        by.id=TRUE, w.hi=150, area=10000, R=100, ci=0.95,
+                        by.id=TRUE, w.hi=150, area=10000, R=10, ci=0.95,
                         plot=FALSE, plot.bs=FALSE)
 
 ```
