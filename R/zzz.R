@@ -1,7 +1,7 @@
 .onAttach <- function(libname, pkgname){
   
   # To automatically update the version number  
-  v <- packageVersion("Rdistance")  # this requires utils package, which is base
+  v <- utils::packageVersion("Rdistance")  # this requires utils package, which is base
   
   # To manually update the version number
   #v <- "1.3.1"

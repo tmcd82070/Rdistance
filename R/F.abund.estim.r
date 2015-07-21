@@ -81,7 +81,11 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
         trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
         
         # subset distance data from these transects
-        new.trans <- unique(droplevels(new.transect.data$siteID))
+        if( class(new.transect.data$siteID) == "factor" ){
+          new.trans <- unique(droplevels(new.transect.data$siteID))
+        } else {
+          new.trans <- unique(new.transect.data$siteID)
+        }
         new.detection.data <- detection.data[detection.data$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
         
         # replicate according to freqency in new sample

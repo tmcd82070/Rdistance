@@ -1,6 +1,10 @@
 # Export all names
 #exportPattern(".")
 
+importFrom("graphics", "axTicks", "axis", "barplot", "hist", "lines", "mtext", "plot", "text", "title")
+importFrom("stats", "AIC", "coef", "dgamma", "dist", "nlminb", "pnorm", "qnorm", "quantile")
+importFrom("utils", "installed.packages", "setTxtProgressBar", "txtProgressBar")
+
 export(AIC.dfunc)
 export(ESW)
 export(F.abund.estim)

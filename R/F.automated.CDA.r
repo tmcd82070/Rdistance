@@ -8,7 +8,7 @@ F.automated.CDA <- function (detection.data, transect.data,
   
   
   # Stop and print error if a 'dist' column isn't provided in detection.data
-  if(identical(any(names(detection.data) == "dist"), FALSE))
+  if(!("dist" %in% names(detection.data)))
     stop("There is no column named 'dist' in your detection.data.")
   
   # extract distance vector from distdata
