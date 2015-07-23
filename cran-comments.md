@@ -5,11 +5,11 @@
 * Help documentation updated.
 
 ## Current Version
-* 1.3.1
-* Previous version: 1.2.2
+* 1.3.2
+* Previous version on CRAN: 1.2.2
 
 ## Test environments
-* local Windows 8.1 Pro, R 3.2.0
+* local Windows 8.1 Pro, R 3.2.1
 
 ## R CMD check results
 No ERRORs or WARNINGs. 
