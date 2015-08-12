@@ -2,7 +2,14 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
                           area=1, ci=0.95, R=500, by.id=FALSE,
                           plot.bs=FALSE){
   
-  # Stop and print error if key columns of detection.data or transect.data contain NAs
+  # Stop and print error if key columns of detection.data or transect.data are missing or contain NAs
+  if(!("dist" %in% names(detection.data))) stop("There is no column named 'dist' in your detection.data.")
+  if(!("siteID" %in% names(detection.data))) stop("There is no column named 'siteID' in your detection.data.")
+  if(!("groupsize" %in% names(detection.data))) stop("There is no column named 'groupsize' in your detection.data.")
+  
+  if(!("siteID" %in% names(transect.data))) stop("There is no column named 'siteID' in your transect.data.")
+  if(!("length" %in% names(transect.data))) stop("There is no column named 'length' in your transect.data.")
+  
   if(any(is.na(detection.data$dist))) stop("Please remove rows for which detection.data$dist is NA.")
   if(any(is.na(detection.data$siteID))) stop("Please remove rows for which detection.data$siteID is NA.")
   if(any(is.na(detection.data$groupsize))) stop("Please remove rows for which detection.data$groupsize is NA.")

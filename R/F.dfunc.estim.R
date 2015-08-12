@@ -4,16 +4,14 @@ F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist),
   # dists can be provided as a vector or as a column named 'dist' in a data.frame
   # if d.f, check for a column named 'dist', and extract it
   if(inherits(dist, "data.frame")){
-    # Stop and print error if a 'dist' column isn't provided
-    if(identical(any(names(dist) == "dist"), FALSE))
-      stop("There is no column named 'dist' in your dist data.frame.")
+    # Stop and print error if a 'dist' column isn't provided in detection.data
+    if(!("dist" %in% names(dist))) stop("There is no column named 'dist' in your dist data.frame.")
     dist <- dist$dist
   }
   
   
   # Stop and print error if dist vector contains NAs
-  if(any(is.na(dist)))
-    stop("Please remove detections for which dist is NA.")
+  if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
   
   
   call <- match.call()

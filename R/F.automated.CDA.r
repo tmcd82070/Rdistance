@@ -6,12 +6,23 @@ F.automated.CDA <- function (detection.data, transect.data,
                              plot=TRUE, ...){
   
   
+    # Stop and print error if key columns of detection.data or transect.data are missing or contain NAs
+  if(!("dist" %in% names(detection.data))) stop("There is no column named 'dist' in your detection.data.")
+  if(!("siteID" %in% names(detection.data))) stop("There is no column named 'siteID' in your detection.data.")
+  if(!("groupsize" %in% names(detection.data))) stop("There is no column named 'groupsize' in your detection.data.")
   
-  # Stop and print error if a 'dist' column isn't provided in detection.data
-  if(!("dist" %in% names(detection.data)))
-    stop("There is no column named 'dist' in your detection.data.")
+  if(!("siteID" %in% names(transect.data))) stop("There is no column named 'siteID' in your transect.data.")
+  if(!("length" %in% names(transect.data))) stop("There is no column named 'length' in your transect.data.")
   
-  # extract distance vector from distdata
+  if(any(is.na(detection.data$dist))) stop("Please remove rows for which detection.data$dist is NA.")
+  if(any(is.na(detection.data$siteID))) stop("Please remove rows for which detection.data$siteID is NA.")
+  if(any(is.na(detection.data$groupsize))) stop("Please remove rows for which detection.data$groupsize is NA.")
+  
+  if(any(is.na(transect.data$siteID))) stop("Please remove NA's from transect.data$siteID.")
+  if(any(is.na(transect.data$length))) stop("Please remove NA's from transect.data$length.")
+  
+  
+  # extract distance vector from detection.data
   dist <- detection.data$dist
   
   
