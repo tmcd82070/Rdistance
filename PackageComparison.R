@@ -5,11 +5,11 @@
 # Wyoming Cooperative Fish & Wildlife Research Unit
 # jason.d.carlisle@gmail.com
 
-# last updated 4/8/2015
+# last updated 1/25/2016
 
-# Trent, once the three packages are installed, this code should run self-contained as is
+# Once the three packages are installed, this code should run self-contained as is
 # Run the entire script, then see the object named "output" for a summary table of results by package.
-# "output" has NAs where I could not figure out how to calculate that value for that package.
+# "output" has NAs where I could not figure out off-hand how to calculate that value for that package.
 
 # Note, all packages are used to fit a half-normal detection function
 # to the Rdistance sparrows data with distances > 150 truncated
@@ -34,20 +34,20 @@ output <- data.frame(pkg=c("Rdistance", "Distance", "unmarked"),
 
 
 # Read in example sparrow datasets and calculate perpendicular distance
-data(package="Rdistance", sparrow.dists)
-sparrow.dists$dists <- perp.dists(obs.dist=sparrow.dists$sightdist, obs.angle=sparrow.dists$sightangle)
-sparrow.dists <- sparrow.dists[, -which(names(sparrow.dists) %in% c("sightdist", "sightangle"))]
+data(package="Rdistance", sparrow.detections)
+sparrow.detections$dists <- perp.dists(obs.dist=sparrow.detections$sightdist, obs.angle=sparrow.detections$sightangle)
+sparrow.detections <- sparrow.detections[, -which(names(sparrow.detections) %in% c("sightdist", "sightangle"))]
 
-data(package="Rdistance", sparrow.covs)
+data(package="Rdistance", sparrow.transects)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Rdistance -----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Fit model and estimate abundance (density per ha)
-r.dfunc <- F.dfunc.estim(sparrow.dists, likelihood = "halfnorm", w.hi=trunc)
-r.fit <- F.abund.estim(r.dfunc, distdata=sparrow.dists, covdata=sparrow.covs, area=10000,
-                       R=1000, ci=0.95, plot.bs=TRUE, bs.method="transects")
+r.dfunc <- F.dfunc.estim(sparrow.detections, likelihood = "halfnorm", w.hi=trunc)
+r.fit <- F.abund.estim(r.dfunc, detection.data=sparrow.detections, transect.data=sparrow.transects, area=10000,
+                       R=1000, ci=0.95, plot.bs=TRUE)
 
 r.fit
 
@@ -65,18 +65,18 @@ output[1, "AIC"] <- AIC.dfunc(r.fit)
 # Distance -----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Format detection data
-d.data <- sparrow.dists[3:2]
+d.data <- sparrow.detections[3:2]
 names(d.data) <- c("distance", "size")  # meet naming conventions
 d.data$object <- 1:nrow(d.data)  # add object ID
 
 # Produce and format 3 other required data.frames
 d.region <- data.frame(Region.Label="main", Area=10000)
 
-d.sample <- sparrow.covs[1:2]
+d.sample <- sparrow.transects[1:2]
 names(d.sample)[1:2] <- c("Sample.Label", "Effort")
 d.sample$Region.Label <- "main"
 
-d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrow.dists$siteID)
+d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrow.detections$siteID)
 
 # Fit model and estimate abundance
 (ds.fit <- ds(data=d.data, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
@@ -114,7 +114,7 @@ output[2, "AIC"] <- ds.fit$ddf$criterion
 # Here, I used 15 m bins, but my experience is that different bin size affects the results quite a bit.
 
 # Convert to from individual-level format to transect-level format required by distsamp
-u.dists <- sparrow.dists
+u.dists <- sparrow.detections
 
 u.dists <- u.dists[u.dists$dists < trunc, ]  # manually truncate
 #hist(u.dists$dists, breaks=30)
@@ -143,7 +143,7 @@ u.mat <- formatDistData(distData=u.dists, distCol="dists", transectNameCol="site
 u.mat
 
 # covariate data
-u.covs <- sparrow.covs[1]
+u.covs <- sparrow.transects[1]
 
 # Organize distance data along with covariates and metadata
 # u.dist.5 <- unmarkedFrameDS(y=u.mat.5, siteCovs=u.covs, dist.breaks=cp5,
@@ -190,3 +190,6 @@ output[3, "LogLike"] <- u.fit@negLogLike
 output[3, "AIC"] <- u.fit@AIC
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+# View comparison
+output
