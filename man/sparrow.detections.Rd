@@ -16,9 +16,9 @@ See the package vignettes for an \code{Rdistance} tutorial using these datasets.
   \enumerate{
     \item \code{siteID}:  Factor, the site or transect where the detection was made.
     \item \code{groupsize}:  Number, the number of individuals within the detected group.
-    \item \code{sightdist}:  Number, the distance from the observer to the detected group.
+    \item \code{sightdist}:  Number, the distance (in meters) from the observer to the detected group.
     \item \code{sightangle}:  Number, the angle (in degrees) from the transect line to the detected group.
-    \item \code{dist}:  Number, the perpendicular, off-transect distance from the transect to the detected group.  This is the distance used in analysis.  Calculated using \code{\link{perp.dists}}.
+    \item \code{dist}:  Number, the perpendicular, off-transect distance (in meters) from the transect to the detected group.  This is the distance used in analysis.  Calculated using \code{\link{perp.dists}}.
   }
 }
 
