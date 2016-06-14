@@ -8,18 +8,16 @@ Computes off-transect (also called 'perpendicular') distances from measures of s
 }
 
 \usage{
-perp.dists(obs.dist, obs.angle, digits=1)
+perp.dists(s.dist, s.angle, data)
 }
 
 
 \arguments{
-  \item{obs.dist}{Vector (e.g., a column of a data.frame) that contains the observed or sighting distances from the observer to the
-  detected objects.}
+  \item{s.dist}{Character, name of column in \code{data} that contains the observed or sighting distances from the observer to the detected objects.}
   
-  \item{obs.angle}{Vector (e.g., a column of a data.frame) that contains the observed or sighting angles from the line transect to the
-  detected objects.  Angles must be measured in degrees.}
+  \item{s.angle}{Character, name of column in \code{data} that contains the observed or sighting angles from the line transect to the detected objects.  Angles must be measured in degrees.}
 
-  \item{digits}{Scalar number of digits to round output distances to.}
+  \item{data}{data.frame object containing sighting distance and sighting angle.}
 
 
 }
@@ -51,8 +49,8 @@ Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
 data(sparrow.detections)
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.detections$dist <- perp.dists(obs.dist=sparrow.detections$sightdist,
-                                  obs.angle=sparrow.detections$sightangle)
+sparrow.detections$dist <- perp.dists(s.dist="sightdist", s.angle="sightangle",
+data=sparrow.detections)
 
 # Proceed to fitting the detection function with F.dfunc.estim
 }
