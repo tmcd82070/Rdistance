@@ -1,0 +1,612 @@
+---
+title: "Comparing Methods for Distance-Sampling Analysis"
+author: "Jason D. Carlisle"
+date: "June 8, 2016"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Rdistance_CompareMethods}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# Introduction
+This vignette is meant to compare ways to analyze distance-sampling data.  This comparison is current as of `R` version 3.3.0 and the package versions listed below.
+
+
+Two first two methods implement the conventional approach popularized in Buckland et al. 2001 and later described as
+
+>"a hybrid approach to modelling, so that model-based methods are used to estimate the detection function (that is, we fit a model to distances, to estimate for each animal detected its probability of detection), but design-based methods are used to give robust extrapolation from the sampling units to the wider survey region. In other words, we estimate abundance on the plots, and extrapolate to the whole study area, based on the random design, which ensures that the plots are representative of the area from which they were drawn." (Buckland et al. 2015, p. vi).
+
+1. [`Rdistance`](https://cran.r-project.org/package=Rdistance)
+(version `r packageVersion("Rdistance")`).
+2. [`Distance`](https://cran.r-project.org/package=Distance)
+(version `r packageVersion("Distance")`).
+
+The next method takes a different approach, implementing a multinomial-Poisson (or negative binomial) mixture model, modelling detection and abundance simultaneously using a single, integrated likelihood (Royle 2004, Royle et al. 2004, Fiske and Chandler 2011).
+
+3. [`unmarked`](https://cran.r-project.org/package=unmarked)
+(version `r packageVersion("unmarked")`).
+
+The final method uses a Bayesian framework, treating distance sampling as one method in a broad class of hierarchical, individual-covariate models (also called spatial capture-recapture models) (Royle and Dorazio 2008, section 7.1).
+
+4. [Bayesian individual-covariate model](http://www.mbr-pwrc.usgs.gov/pubanalysis/roylebook/panel7pt1.fn.R) implemented using [`JAGS`](http://mcmc-jags.sourceforge.net/)
+(version 4.0.0), [`rjags`](https://cran.r-project.org/package=rjags)
+(version `r packageVersion("rjags")`), and [`jagsUI`](https://cran.r-project.org/package=jagsUI)
+(version `r packageVersion("jagsUI")`).
+
+
+# Prep Example Data
+We make use of example data (available in `Rdistance`) from a line transect survey of sparrows.  For each method, we will fit a half-normal detection function, truncating distances > 150 m.
+
+Load packages.
+```{r message=FALSE}
+require(Rdistance)
+require(Distance)
+require(unmarked)
+```
+
+
+Read in example sparrow datasets and calculate perpendicular distance.  See the [Rdistance Tutorial for Beginners](https://cran.r-project.org/web/packages/Rdistance/vignettes/Rdistance_BeginnerTutorial.pdf) for details about these example data.
+
+```{r}
+# Data.frame of sparrow detections
+# The dist column is the perpendicular distance (the distances to analyze)
+data(package="Rdistance", sparrow.detections)
+
+# Data.frame of transects surveyed
+data(package="Rdistance", sparrow.transects)
+```
+
+
+Explore the distribution of detection distances.  
+```{r fig.width=6, fig.height=4}
+# Distribution of detection distances
+hist(sparrow.detections$dist, col="grey", main="", xlab="Distance (m)")
+rug(sparrow.detections$dist)
+
+# Store truncation distance
+trunc <- 150
+```
+
+
+This comparison will create a summary table of each method's results to a data.frame named `output`.  `output` will have NAs where not applicable (e.g., AIC from the Bayesian model), or where I could not figure out off-hand how to calculate that value from the package's output.
+```{r}
+# Prep data.frame to store results in
+output <- data.frame(pkg=c("Rdistance", "Distance", "unmarked", "Bayesian"),
+                     Nhat=NA,
+                     Nlow=NA,
+                     Nupp=NA,
+                     Sigma=NA,
+                     ESW=NA,
+                     LogLike=NA,
+                     AIC=NA)
+```
+
+
+# 1: `Rdistance` Package
+```{r}
+# Fit model and estimate abundance (density per ha)
+r.dfunc <- F.dfunc.estim(sparrow.detections, likelihood="halfnorm", w.hi=trunc)
+r.fit <- F.abund.estim(r.dfunc, detection.data=sparrow.detections,
+                       transect.data=sparrow.transects, area=10000,
+                       R=1000, ci=0.95, plot.bs=TRUE, by.id=TRUE)
+
+r.fit
+
+# Extract output
+output[1, "Sigma"] <- round(r.fit$parameters[[1]], 3)
+output[1, "Nhat"] <- round(r.fit$n.hat, 3)
+output[1, "Nlow"] <- round(r.fit$ci[[1]], 3)
+output[1, "Nupp"] <- round(r.fit$ci[[2]], 3)
+output[1, "ESW"] <- round(ESW(r.fit), 3)
+output[1, "LogLike"] <- r.fit$loglik
+output[1, "AIC"] <- AIC.dfunc(r.fit)
+
+# View output
+output
+
+```
+
+
+
+# 2: `Distance` Package
+```{r}
+# Format detection data
+d.data <- sparrow.detections[c(5, 2)]
+names(d.data) <- c("distance", "size")  # meet naming conventions
+d.data$object <- 1:nrow(d.data)  # add object ID
+
+# Produce and format 3 other required data.frames
+d.region <- data.frame(Region.Label="main", Area=10000)
+
+d.sample <- sparrow.transects[1:2]
+names(d.sample)[1:2] <- c("Sample.Label", "Effort")
+d.sample$Region.Label <- "main"
+
+d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main",
+                    Sample.Label=sparrow.detections$siteID)
+
+# Fit model and estimate abundance
+(ds.fit <- ds(data=d.data, region.table=d.region, sample.table=d.sample,
+              obs.table=d.obs, truncation=trunc, transect="line",
+              key="hn", adjustment=NULL, dht.group=FALSE))
+
+plot(ds.fit)
+(sum.ds.fit <- summary(ds.fit))
+
+
+# Extract output
+exp(sum.ds.fit$ds$coeff$key.scale$estimate)
+
+# The Nhat and CI are copied from the printed output, not sure where stored in ds.fit
+output[2, "Sigma"] <- round(exp(sum.ds.fit$ds$coeff$key.scale$estimate), 3)
+output[2, "Nhat"] <- round(sum.ds.fit$dht$individuals$N$Estimate, 3)
+output[2, "Nlow"] <- round(sum.ds.fit$dht$individuals$N$lcl, 3)
+output[2, "Nupp"] <- round(sum.ds.fit$dht$individuals$N$ucl, 3)
+output[2, "ESW"] <-   round(sum.ds.fit$ds$average.p * sum.ds.fit$ds$width, 3)
+output[2, "LogLike"] <- ds.fit$ddf$lnl
+output[2, "AIC"] <- ds.fit$ddf$criterion
+
+# Questions:
+# How are transects with no birds accounted for?
+# Why do the printed abundance and what's stored in ds.fit$ddf$Nhat differ?
+# Monotonicity parameters?
+
+# View output
+output
+```
+
+
+
+# 3: `unmarked` Package
+`unmarked` uses a multinomial-Poisson mixture model to estimate abundance.  They have a [great vignette](http://cran.r-project.org/web/packages/unmarked/vignettes/distsamp.pdf) on the distance-sampling component of the package.  In `unmarked` detection distances are binned prior to analysis.  Here, I use 15 m bins, but the results (abundance estimate) seem to have some sensitivity to how the counts are binned.
+
+Here I use the `distsamp` function.  There is an alternative, `gdistsamp` that handles more-complex model types (Chandler et al. 2011), including the option to use negative binomial instead of Poisson.
+
+```{r}
+# Convert to from individual-level format to transect-level format required by distsamp
+u.dists <- sparrow.detections
+
+u.dists <- u.dists[u.dists$dist < trunc, ]  # manually truncate
+#hist(u.dists$dists, breaks=30)
+# summary(u.dists$dists)
+
+
+# Add rows for individuals detected in groups of multiple birds
+countsToCases <- function(x, countcol = "Freq") {
+  idx <- rep.int(seq_len(nrow(x)), x[[countcol]])
+  x[[countcol]] <- NULL
+  x[idx, ]
+}
+u.dists <- countsToCases(u.dists, countcol="groupsize")
+# after truncation, 353 detections, but 371 individuals
+
+
+# Add factor levels for transects where no sparrows were observed (if needed)
+# (should be 72 total levels)
+length(levels(u.dists$siteID))
+table(u.dists$siteID)
+
+# Format (bin) into a matrix with dimensions of number of sites (M or R) by number of
+# distance intervals (J).  Each cell of the matrix is the number of observations at
+# that distance interval for that transect
+cp15 <- seq(0, trunc, by=15)  # create 15 m bins from 0-trunc
+u.mat <- formatDistData(distData=u.dists, distCol="dist",
+                        transectNameCol="siteID", dist.breaks=cp15)
+
+# Likely too wide to print cleanly, but have a look
+head(u.mat)
+
+# covariate data (just siteID for now)
+u.covs <- sparrow.transects[1]
+
+# Organize distance data along with covariates and metadata
+u.dist <- unmarkedFrameDS(y=u.mat, siteCovs=u.covs, dist.breaks=cp15,
+                            tlength=rep(500, nrow(u.covs)), survey="line", unitsIn="m")
+
+head(u.dist)  # look at the data
+summary(u.dist)  # get a summary of the new object
+
+# Fit half-normal detection function with no covariates for detection or density
+u.fit <- distsamp(~1 ~1, u.dist, keyfun="halfnorm",
+                  output="density", unitsOut="ha")
+u.fit
+
+# Plot detection function
+hist(u.fit, xlab="Distance (m)")
+
+# Back-transformed output
+backTransform(u.fit, type="state")
+backTransform(u.fit, type="det")
+
+# Extract output
+# names(u.fit)
+u.fit@estimates
+# str(u.fit)
+
+
+integrate(gxhn, 0, trunc, sigma=backTransform(u.fit, type="det")@estimate)$value
+
+
+output[3, "Sigma"] <- round(backTransform(u.fit, type="det")@estimate, 3)
+output[3, "Nhat"] <- round(backTransform(u.fit, type="state")@estimate, 3)
+output[3, "Nlow"] <- round(predict(u.fit, type="state")[1, "lower"], 3)
+output[3, "Nupp"] <- round(predict(u.fit, type="state")[1, "upper"], 3)
+output[3, "ESW"] <- round(integrate(gxhn, 0, trunc,
+                                    sigma=backTransform(u.fit,type="det")
+                                    @estimate)$value, 3)
+output[3, "LogLike"] <- u.fit@negLogLike
+output[3, "AIC"] <- u.fit@AIC
+
+# View output
+output
+
+```
+
+
+
+# 4: Bayesian Individual-Covariate Model
+This section follows the impala example presented in section 7.1 of Royle and Dorazio 2008, namely a Bayesian analysis by data augmentation.  This section requires JAGS software (version 4.0.0 used here), and links R to JAGS using the packages `rjags` and `jagsUI`.
+
+
+```{r, message=FALSE}
+require(rjags)
+require(jagsUI)
+```
+
+```{r}
+# Truncate distances farther than 150 m from the original example data
+bd <- sparrow.detections[sparrow.detections$dist < trunc, ]
+
+# Add rows for individuals detected in groups of multiple birds
+bd <- countsToCases(bd, countcol="groupsize")
+
+# Keep only the distances
+x <- bd$dist
+
+
+# Data augmentation
+nind <- length(x)
+nz <- 500
+y <- c(rep(1, nind), rep(0, nz))
+x <- c(x, rep(NA, nz))
+
+# Information describing transects surveyed (used to calculate area surveyed)
+nsites <- 72
+sitelength <- 500
+maxd <- trunc
+sides <- 2
+
+# JAGS model syntax
+cat("
+    model{
+
+    # Priors
+    sigma~dunif(0,maxd+1)  # uniform from 0 to something larger than max dist
+    sigma2<-sigma*sigma
+    psi~dunif(0,1)  # zero-inflation parameter
+
+
+    # Likelihood
+    for(i in 1:(nind+nz)){
+      w[i]~dbern(psi)  # binary indicators
+      x[i]~dunif(0,maxd)
+    
+      logp[i]<- -((x[i]*x[i])/sigma2)  # half-normal detection function
+      p[i]<-exp(logp[i])
+    
+      mu[i]<-w[i]*p[i]
+      y[i]~dbern(mu[i])
+    }
+    
+    
+    # Derived parameters
+    N<-sum(w[1:(nind+nz)])  # abundance
+    area<-nsites*sitelength*maxd*sides  # area surveyed
+    D<-N/(area/10000) # convert to individuals per ha
+
+    }",fill=TRUE, file="dist.txt")
+
+
+wst <- y
+data <- list("nind", "nz", "x", "y", "nsites", "sitelength", "maxd", "sides")
+inits <- function(){
+  list(psi=runif(1), w=wst, sigma=runif(1, 1, maxd))
+}
+params <- c("N", "D", "sigma", "psi")
+```
+
+```{r, message=FALSE, echo=TRUE}
+# Fit model in JAGS
+fit <- jags(data=data, inits=inits, parameters.to.save=params, model.file='dist.txt',
+            n.chains=3, n.thin=1, n.burnin=1000, n.iter=10000, DIC=TRUE, parallel=TRUE)
+```
+
+```{r}
+# View results
+print(fit, dig=3)
+plot(fit)
+
+# Extract output
+output[4, "Sigma"] <- round(fit$mean$sigma, 3)
+output[4, "Nhat"] <- round(fit$mean$D, 3)
+output[4, "Nlow"] <- round(fit$q2.5$D, 3)
+output[4, "Nupp"] <- round(fit$q97.5$D, 3)
+
+```
+
+# Compare Results across Methods
+
+```{r}
+# View output
+output
+```
+
+```{r, message=FALSE}
+# Plot density estimates and sigmas
+require(ggplot2)
+```
+
+```{r}
+ggplot(output, aes(x=pkg, y=Nhat)) + geom_bar(stat="identity") + theme_bw() +
+  xlab("Method") + ylab("Sparrow Density\n(birds/ha)") +
+  geom_errorbar(aes(ymin=Nlow, ymax=Nupp), width=0.2)
+
+ggplot(output, aes(x=pkg, y=Sigma)) + geom_bar(stat="identity") + theme_bw() +
+  xlab("Method") + ylab("Sigma\n(half-normal scale parameter)")
+```
+
+# References
+Buckland, S.T., Anderson, D.R., Burnham, K.P., Laake, J.L., Borchers, D.L., Thomas, L., 2001. Introduction to distance sampling: Estimating abundance of biological populations. Oxford University Press, Oxford.
+
+Buckland, S.T., Rexstad, E.A., Marques, T.A., Oedekoven, C.S., 2015. Distance sampling: Methods and applications. Springer, New York, NY.
+
+Chandler, R.B., Royle, J.A., King, D.I., 2011. Inference about density and temporary emigration in unmarked populations. Ecology 92, 1429-1435.
+
+Fiske, I.J., Chandler, R.B., 2011. unmarked: An R package for fitting hierarchical models of wildlife occurrence and abundance. Journal of Statistical Software. 43, 1-23.
+
+Royle, J.A., 2004. Generalized estimators of avian abundance from count survey data. Animal Biodiversity and Conservation. 27, 375-386.
+
+Royle, J.A., Dawson, D.K., Bates, S., 2004. Modeling abundance effects in distance sampling. Ecology 85, 1591-1597.
+
+Royle, J.A., Dorazio, R.M., 2008. Hierarchical modeling and inference in ecology: The analysis of data from populations, metapopulations and communities. Academic Press, London, UK.
+
+
+
+
+***
+
+
+# Covariates on Abundance
+
+
+## `Rdistance`
+`Rdistance` does not explicitly accommodate covariates (on abundance or detection).  It does, however, provide site-specific estimates of abundance, which can be used as the response variable in a regression model (e.g., Poisson or negative binomial GLM).  We demonstrate this so-called two-stage approach predicting sparrow abundance (and density) as a function of site-level sagebrush cover, incorporating the appropriate offset term in a Poisson GLM.
+
+
+
+```{r}
+# Merge the site-level abundance estimate generated previously to the covariate data
+rd.data <- merge(sparrow.transects, r.fit$nhat.df, by="siteID")
+head(rd.data)
+
+# Note that these scatterplots are the same, except the y-axis label
+# This is because detection probability is assumed to be constant across sites
+par(mfrow=c(1, 2))
+plot(rawcount ~ sagemean, rd.data,
+     ylab="Observed raw count", xlab="Sagebrush cover (%)")
+plot(nhat ~ sagemean, rd.data,
+     ylab="Density estimate (birds/ha)", xlab="Sagebrush cover (%)")
+
+
+# GLM
+# Add offset term and fit Poisson GLM
+rd.data$Lesw <- log(ESW(r.fit))
+fit.glm <- glm(rawcount ~ offset(Lesw) + sagemean, data=rd.data, family="poisson")
+summary(fit.glm)
+
+# Predict output for plot
+rd.pred <- data.frame(sagemean=seq(min(rd.data$sagemean), max(rd.data$sagemean),
+                                   length.out=100))
+rd.pred$Lesw <- log(ESW(r.fit))
+
+
+rd.pred <- cbind(rd.pred, predict(fit.glm, rd.pred, type="link", se.fit=TRUE))
+rd.pred <- within(rd.pred, {
+  Count <- exp(fit)
+  Low <- exp(fit - 1.96 * se.fit)
+  Upp <- exp(fit + 1.96 * se.fit)
+})
+
+# Plotting count
+plot(rd.data$rawcount ~ rd.data$sagemean,
+     xlab="Sagebrush Cover (%)", ylab="Sparrow Count")
+lines(rd.pred$sagemean, rd.pred$Count, col="red", lwd=3)
+lines(rd.pred$sagemean, rd.pred$Low, col="red", lwd=2, lty="dashed")
+lines(rd.pred$sagemean, rd.pred$Upp, col="red", lwd=2, lty="dashed")
+
+# Converting predicted count to density (per ha) and plotting
+rd.pred$D <- (rd.pred$Count*1e4)/(2*exp(rd.pred$Lesw)*500)
+rd.pred$DLow <- (rd.pred$Low*1e4)/(2*exp(rd.pred$Lesw)*500)
+rd.pred$DUpp <- (rd.pred$Upp*1e4)/(2*exp(rd.pred$Lesw)*500)
+
+plot(rd.data$nhat ~ rd.data$sagemean,
+     xlab="Sagebrush Cover (%)", ylab="Sparrow Density (birds/ha)")
+lines(rd.pred$sagemean, rd.pred$D, col="red", lwd=3)
+lines(rd.pred$sagemean, rd.pred$DLow, col="red", lwd=2, lty="dashed")
+lines(rd.pred$sagemean, rd.pred$DUpp, col="red", lwd=2, lty="dashed")
+
+
+
+# For every one unit increase in shrub cover, count increases by 7.3 percent
+exp(coef(fit.glm)[[2]])
+
+
+```
+
+
+
+## `unmarked`
+
+```{r}
+
+# covariate data
+u.covs <- sparrow.transects
+
+# Organize distance data along with covariates and metadata
+u.dist <- unmarkedFrameDS(y=u.mat, siteCovs=u.covs, dist.breaks=cp15,
+                            tlength=rep(500, nrow(u.covs)), survey="line", unitsIn="m")
+
+head(u.dist)  # look at the data
+summary(u.dist)  # get a summary of the new object
+
+# Fit half-normal detection function with no covariates for detection
+# and one covariate (sagebrush cover) for density
+u.fit <- distsamp(~1 ~sagemean, u.dist, keyfun="halfnorm",
+                  output="density", unitsOut="ha")
+u.fit
+
+
+# New, prediction data.frame
+u.pred <- data.frame(sagemean=seq(min(rd.data$sagemean), max(rd.data$sagemean),
+                                  length.out=100))
+u.pred <- predict(u.fit, type="state", newdata=u.pred, appendData=TRUE)
+
+
+
+# Plotting density and comparing to Rdistance
+par(mfrow=c(1, 1))
+plot(rd.data$nhat ~ rd.data$sagemean, main="unmarked and Rdistance",
+     xlab="Sagebrush Cover (%)", ylab="Sparrow Density (birds/ha)")
+lines(rd.pred$sagemean, rd.pred$D, col="red", lwd=3)
+lines(rd.pred$sagemean, rd.pred$DLow, col="red", lwd=2, lty="dashed")
+lines(rd.pred$sagemean, rd.pred$DUpp, col="red", lwd=2, lty="dashed")
+
+lines(u.pred$sagemean, u.pred$Predicted, col="blue", lwd=3)
+lines(u.pred$sagemean, u.pred$lower, col="blue", lwd=2, lty="dashed")
+lines(u.pred$sagemean, u.pred$upper, col="blue", lwd=2, lty="dashed")
+
+legend("topleft", c("Rdistance", "unmarked"), col=c("red", "blue"),
+       lty=c(1, 1), lwd=c(2, 2))
+
+
+# Example to predict y at given x
+# 1 is intercept, 5 is x value to predict at
+backTransform(linearComb(u.fit["state"], c(1, 5)))
+
+
+summary(u.fit)
+
+# For every one unit increase in shrub cover, count increases by 7.3 percent
+exp(coef(u.fit)[[2]])
+
+```
+
+
+## `unmarked` with covariates
+
+One strength of `unmarked` is the ability to circumvent the two-step process and model detection and abundance simultaneously.  An added strength is that both detection and abundance can be modeled as a function of covariates.  Additionally, AIC can be used to compare models.  Here is an example workflow, using AIC to determine the type of detection function to use, and the best-supported covariates on detection and/or abundance. 
+
+
+```{r}
+# Compare detection models
+  
+null.hn <- distsamp(~1 ~1, data=u.dist, keyfun="halfnorm",
+                    output="density", unitsOut="ha")
+null.hz <- distsamp(~1 ~1, data=u.dist, keyfun="hazard",
+                    output="density", unitsOut="ha")
+
+obs.hn <- distsamp(~observer ~1, data=u.dist, keyfun="halfnorm",
+                   output="density", unitsOut="ha")
+obs.hz <- distsamp(~observer ~1, data=u.dist, keyfun="hazard",
+                   output="density", unitsOut="ha")
+
+sage.hn <- distsamp(~sagemean ~1, data=u.dist, keyfun="halfnorm",
+                    output="density", unitsOut="ha")
+sage.hz <- distsamp(~sagemean ~1, data=u.dist, keyfun="hazard",
+                    output="density", unitsOut="ha")
+
+
+# Create AIC table
+(aic <- modSel(fitList(null.hn, null.hz, obs.hn, obs.hz, sage.hn, sage.hz)))
+
+# Visually inspect key detection function fits
+# (only works when there are no detection covariates)
+par(mfrow=c(1, 2))
+hist(null.hn, xlab="Distance (m)", lwd=2, main="half-normal")
+hist(null.hz, xlab="Distance (m)", lwd=2, main="hazard-rate")
+
+
+# Explore the top-ranked detection function with covariate on haz-rate detection
+par(mfrow=c(1, 1))
+shape5 <- backTransform(linearComb(sage.hz["det"], c(1, 5)))@estimate
+scale <- backTransform(sage.hz["scale"])@estimate
+plot(function(x) gxhaz(x, shape=shape5, scale=scale), 0, trunc,
+     ylab="Detection probability", xlab="Distance (m)", lwd=2)
+
+shape20 <- backTransform(linearComb(sage.hz["det"], c(1, 20)))@estimate
+plot(function(x) gxhaz(x, shape=shape20, scale=scale), 0, trunc,
+     lty=2, lwd=2, add=TRUE)
+
+legend("topright", c("5% sagebrush cover", "20% sagebrush cover"), lty=c(1, 2))
+
+
+
+# Compare abundance models
+# The hazard-rate detection function with sagebrush cover as
+# a covariate on detection was best-supported, so carrying forward here.
+
+
+sage.hz.null <- distsamp(~sagemean ~1, data=u.dist, keyfun="hazard",
+                         output="density", unitsOut="ha")
+sage.hz.sage <- distsamp(~sagemean ~sagemean, data=u.dist, keyfun="hazard",
+                         output="density", unitsOut="ha")
+sage.hz.sagecat <- distsamp(~sagemean ~sage, data=u.dist, keyfun="hazard",
+                         output="density", unitsOut="ha")
+
+
+
+null.hn <- distsamp(~1 ~1, data=u.dist, keyfun="halfnorm",
+                    output="density", unitsOut="ha")
+sage.hn <- distsamp(~1 ~sagemean, data=u.dist, keyfun="halfnorm",
+                    output="density", unitsOut="ha")
+sagecat.hn <- distsamp(~1 ~sage, data=u.dist, keyfun="halfnorm",
+                       output="density", unitsOut="ha")
+
+# Create AIC table
+(aic <- modSel(fitList(sage.hz.null, sage.hz.sage, sage.hz.sagecat)))
+
+
+# The model already plotted has most support:
+# (no covariates on a half-normal detection function,
+# with sagebrush cover as an abundance covariate)
+
+
+best.fit <- sage.hz.sage
+
+
+# New, prediction data.frame
+best.pred <- data.frame(sagemean=seq(min(rd.data$sagemean), max(rd.data$sagemean),
+                                  length.out=100))
+best.pred <- predict(best.fit, type="state", newdata=best.pred, appendData=TRUE)
+
+
+
+# Plotting density and comparing unmarked models
+# with covariate on detection and without
+par(mfrow=c(1, 1))
+plot(rd.data$nhat ~ rd.data$sagemean, main="unmarked",
+     xlab="Sagebrush Cover (%)", ylab="Sparrow Density (birds/ha)")
+lines(u.pred$sagemean, u.pred$Predicted, col="blue", lwd=3)
+lines(u.pred$sagemean, u.pred$lower, col="blue", lwd=2, lty="dashed")
+lines(u.pred$sagemean, u.pred$upper, col="blue", lwd=2, lty="dashed")
+
+lines(best.pred$sagemean, best.pred$Predicted, col="orange", lwd=3)
+lines(best.pred$sagemean, best.pred$lower, col="orange", lwd=2, lty="dashed")
+lines(best.pred$sagemean, best.pred$upper, col="orange", lwd=2, lty="dashed")
+
+legend("topleft", c("null", "det covariate"), col=c("blue", "orange"),
+       lty=c(1, 1), lwd=c(2, 2))
+
+
+```

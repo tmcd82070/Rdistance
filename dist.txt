@@ -1,0 +1,28 @@
+
+    model{
+
+    # Priors
+    sigma~dunif(0,maxd+1)  # uniform from 0 to something larger than max dist
+    sigma2<-sigma*sigma
+    psi~dunif(0,1)  # zero-inflation parameter
+
+
+    # Likelihood
+    for(i in 1:(nind+nz)){
+      w[i]~dbern(psi)  # binary indicators
+      x[i]~dunif(0,maxd)
+    
+      logp[i]<- -((x[i]*x[i])/sigma2)  # half-normal detection function
+      p[i]<-exp(logp[i])
+    
+      mu[i]<-w[i]*p[i]
+      y[i]~dbern(mu[i])
+    }
+    
+    
+    # Derived parameters
+    N<-sum(w[1:(nind+nz)])  # abundance
+    area<-nsites*sitelength*maxd*sides  # area surveyed
+    D<-N/(area/10000) # convert to individuals per ha
+
+    }
