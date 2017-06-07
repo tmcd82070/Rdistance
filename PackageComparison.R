@@ -193,3 +193,9 @@ output[3, "AIC"] <- u.fit@AIC
 
 # View comparison
 output
+
+# Plot abundance estimates
+require(ggplot2)
+
+ggplot(output, aes(x=pkg, y=Nhat)) + geom_bar(stat="identity") + theme_bw() +
+  xlab("Package") + ylab("Density estimate\n(birds/ha)") + geom_errorbar(aes(ymin=Nlow, ymax=Nupp), width=0.2)
