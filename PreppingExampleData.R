@@ -1,6 +1,6 @@
 # Code used to prepare the example sparrow datasets in Rdistance
 # Jason Carlisle
-# Last updated 7/8/2015
+# Last updated 6/7/2017
 
 # Goal for two required two data.frames:
 # a detection data.frame with at least $dist, $siteID, and $groupsize
@@ -18,10 +18,86 @@ require(raster)
 require(RODBC)
 
 
+
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# PART 1:  PREPARE THE DETECTIONS DATASET (RAW BIRD COUNT DATA) -----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Data sources
 # Connect to SQL Server database on CarlisleMule Desktop
-chan <- odbcDriverConnect(connection='driver={SQL Server Native Client 11.0}; server=CARLISLEMULE,1433;
-                          database=LineTransectData; Uid=jasontemp; Pwd=temppassword', believeNRows=FALSE)
+# chan <- odbcDriverConnect(connection='driver={SQL Server Native Client 11.0}; server=CARLISLEMULE,1433;
+#                           database=LineTransectData; Uid=jasontemp; Pwd=temppassword', believeNRows=FALSE)
+
+# Path to Access databases
+path <- "C:/Users/Jason/Box Sync/Umbrella_NEW/Data/"
+
+tchan <- odbcConnectAccess2007(access.file=paste0(path, "Umbrella_MasterData_LineTransect_25May2017.accdb"))
+
+pchan  <- odbcConnectAccess2007(access.file=paste0(path, "Umbrella_MasterData_PointCount_25May2017.accdb"))
+
+
+
+# Read in dataframe of observations on transects that don't have "Z" in the transect ID
+# We surveyed 8 "Z" transects which were sited differently and are not being analyzed here
+dB <- sqlQuery(tchan, query="SELECT * FROM [Avian_Data] WHERE TranID NOT LIKE 'Z%'")
+dB <- dB[ , -10]  # drop comments columns
+dB <- dB[order(dB$TranID), ]  # order by transect ID
+
+
+# Keep only Brewer's Sparrow data from 2012
+dB <- dB[dB$Spp=="BRSP" & dB$Year==2012, ]
+
+
+# Keep only necessary columns and rename them to Rdistance conventions
+dB <- dB[, c("TranID", "Number", "SightDist", "SightAngle")]
+names(dB) <- c("siteID", "groupsize", "sightdist", "sightangle")
+
+
+# Compute perpendicular, off-transect distances from the observer's sight distance and angle
+# Note, the current version of Rdistance (v 1.2.2) doesn't have the perpendicular distances calculated
+# within the example dataset.
+dB$dist <- round(perp.dists(s.dist="sightdist", s.angle="sightangle", data=dB), 1)
+
+
+# Plot histogram
+hist(dB$dist, breaks=25, col="dark gray", main="Sparrow Distances", xlab="Distance (m)")
+
+
+
+
+
+
+# Try SATH point count data
+
+# Read in dataframe of observations on transects that don't have "Z" in the transect ID
+dS <- sqlQuery(pchan, query="SELECT * FROM [Point_Data]")
+dS <- dS[ , -9]  # drop comments columns
+dS <- dS[order(dS$PtID), ]  # order by transect ID
+
+
+# Keep only Sage Thrasher data from 2013
+dS <- dS[dS$Spp=="SATH" & dS$Year==2013, ]
+
+
+# Keep only necessary columns and rename them to Rdistance conventions
+dS <- dS[, c("PtID", "GrpSize", "Dist")]
+names(dS) <- c("siteID", "groupsize", "dist")
+
+
+
+
+# Plot histogram
+hist(dS$dist, breaks=10, col="dark gray", main="Thrasher Distances", xlab="Distance (m)")
+abline(0, 1)
+
+
+odbcCloseAll()
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# PART 2:  PREPARE THE TRANSECTS DATASET (TRANSECT-LEVEL DATA) -----
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
 # Transect shapefile
 trandir <- "C:/Users/Jason/Box Sync/GIS/Field_GIS_Data/x2012"  # ThinkPadLaptop
@@ -32,41 +108,7 @@ rastdir <- "C:/GIS_data/HomerData/ProcessedRasters"  # ThinkPad Laptop
 # rastdir <- "F:/umbrella_GIS/LandcoverData/usgs_wyo_sagebrush_jan2012/ProcessedRasters"#  CarlisleMule Desktop
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# PART 1:  PREPARE THE DETECTIONS DATASET (RAW BIRD COUNT DATA) -----
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
-# Read in dataframe of observations on transects that don't have "Z" in the transect ID
-# We surveyed 8 "Z" transects which were sited differently and are not being analyzed here
-ddf <- sqlQuery(chan, query="SELECT * FROM [LineTransectData].[dbo].[Avian_Data] WHERE TranID NOT LIKE 'Z%'")
-ddf <- ddf[ , -10]  # drop comments columns
-ddf <- ddf[order(ddf$TranID), ]  # order by transect ID
-
-
-# Keep only Brewer's Sparrow data from 2012
-ddf <- ddf[ddf$Spp=="BRSP" & ddf$Year==2012, ]
-
-
-# Keep only necessary columns and rename them to Rdistance conventions
-ddf <- ddf[, c("TranID", "Number", "SightDist", "SightAngle")]
-names(ddf) <- c("siteID", "groupsize", "sightdist", "sightangle")
-
-
-# Compute perpendicular, off-transect distances from the observer's sight distance and angle
-# Note, the current version of Rdistance (v 1.2.2) doesn't have the perpendicular distances calculated
-# within the example dataset.
-ddf$dist <- perp.dists(obs.dist=ddf$sightdist, obs.angle=ddf$sightangle)
-
-
-# Plot histogram
-hist(ddf$dist, breaks=25, col="dark gray", main="Sparrow Distances", xlab="Distance (m)")
-
-
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# PART 2:  PREPARE THE TRANSECTS DATASET (TRANSECT-LEVEL DATA) -----
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
 # Read in transect information recorded while surveying (from SQL database)
 tdf <- sqlQuery(chan, query="SELECT * FROM [LineTransectData].[dbo].[Avian_Effort] WHERE TranID NOT LIKE 'Z%'")
