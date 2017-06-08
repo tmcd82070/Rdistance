@@ -16,7 +16,7 @@ g.neg <-  function(x, params, like, w.lo=0, w.hi=max(dist), series, expansions=0
 
 x.start <- (fit$w.lo + fit$w.hi) / 2
 
-x.max <- nlminb(x.start, g.neg,  params = fit$parameters, w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
+x.max <- optim(x.start, g.neg,  params = fit$parameters, method = "L-BFGS-B", w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
     expansions=fit$expansions, series=fit$series, lower=fit$w.lo, upper=fit$w.hi)
 
 

@@ -17,11 +17,11 @@ F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist),
   call <- match.call()
   
   strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist)
-  fit <- nlminb(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
-                control = list(trace = 0, iter.max = 1000), dist = dist, like = likelihood, 
+  fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit, method = "L-BFGS-B",
+                control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, 
                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
   names(fit$par) <- strt.lims$names
-  ans <- list(parameters = fit$par, loglik = fit$objective, 
+  ans <- list(parameters = fit$par, loglik = fit$value, 
               convergence = fit$convergence, like.form = likelihood, 
               w.lo = w.lo, w.hi = w.hi, dist = dist, expansions = expansions, 
               series = series, call = call, call.x.scl = x.scl, call.g.x.scl = g.x.scl, 
