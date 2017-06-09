@@ -1,4 +1,4 @@
-hazrate.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE){
+hazrate.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE){
 #
 #   Compute hazard rate likelihood
 #
@@ -23,8 +23,15 @@ hazrate.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expan
 #	
 
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
-	sigma=a[1]
-	beta=a[2]
+  
+    if(!is.null(covars)){
+      s <- 0
+      for (i in 1:(length(a) - expansions - 1))
+        s <- s + a[i]*covars[,i]
+      sigma <- exp(s)
+    } else {sigma <- a[1]}
+	
+	beta = a[length(a) - expansions]
 	key = 1 - exp(-(dist/sigma)^(-beta))
     dfunc <- key
     w <- w.hi - w.lo
@@ -32,11 +39,11 @@ hazrate.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expan
 
     if(expansions > 0){
 
-        nexp <- min(expansions,length(a)-2)  # should be equal. If not, fire warning next
+        nexp <- expansions #nexp <- min(expansions,length(a)-2)  # should be equal. If not, fire warning next
         
-        if( length(a) != (expansions+2) ) {
-            warning("Wrong number of parameters in expansion. Should be (expansions+2). Higher terms ignored.")
-        }
+        #if( length(a) != (expansions+2) ) {
+        #    warning("Wrong number of parameters in expansion. Should be (expansions+2). Higher terms ignored.")
+        #}
 
 		if (series=="cosine"){
             dscl = dist/w
@@ -51,15 +58,15 @@ hazrate.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expan
             stop( paste( "Unknown expansion series", series ))
         }
 
-        dfunc <- key * (1 + (exp.term %*% a[3:(nexp+2)]))
+        dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
 
 
-    } else if(length(a) > 2){
-        warning("Wrong number of parameters in hazrate. Only 2 needed if no expansions. Higher terms ignored.")
-    }
+    }# else if(length(a) > 2){
+    #    warning("Wrong number of parameters in hazrate. Only 2 needed if no expansions. Higher terms ignored.")
+    #}
 
     if( scale ){
-        dfunc = dfunc / integration.constant(hazrate.like, w.lo=w.lo, w.hi=w.hi, a=a, series=series,expansions=expansions)
+        dfunc = dfunc / integration.constant(hazrate.like, w.lo=w.lo, w.hi=w.hi, a=a, covars = covars, series=series,expansions=expansions)
     }
     
     c(dfunc)

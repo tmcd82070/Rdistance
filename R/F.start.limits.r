@@ -1,28 +1,40 @@
-F.start.limits <- function( like, expan, w.lo, w.hi, dist ){
+F.start.limits <- function( like, expan, w.lo, w.hi, dist, ncovars = 1 ){
 #
 #   Establish starting value for parameters, and limits passed to the optimizer
 #
 
 #   Number of parameters
-np <- expan + 1 + 1*(like %in% c("hazrate","uniform"))
+np <- expan + 1*(like %in% c("hazrate","uniform")) + ncovars
 
 w <- w.hi - w.lo
 
 
 #   No starting values given
 if( like == "hazrate" ){
+  if( ncovars > 1 )
+    start <- c(log(.5*w), rep(0, ncovars-1), 1,rep(0, expan))
+  else
     start <- c(.5*w, 1,rep(0, np - 2))
-    low   <- c(0, .01, rep(-Inf, np - 2 ))
-    high  <- c(Inf, Inf, rep( Inf, np - 2 ))
-    nms <- c("Sigma", "Beta")
-    if(expan > 0) nms <- c(nms, paste( "a", 1:(np-2), sep=""))
+    low   <- c(0, rep(-Inf, ncovars-1), .01, rep(-Inf, expan))
+    high  <- c(Inf, rep( Inf, ncovars-1), Inf, rep( Inf, expan))
+    if( ncovars > 1 )
+      nms <- c(paste("beta", 0:(ncovars-1), sep = ""), "Beta")
+    else  
+      nms <- c("Sigma", "Beta")
+    if(expan > 0) nms <- c(nms, paste( "a", 1:expan, sep=""))
 
 } else if( like == "halfnorm" ){
+  if( ncovars > 1 )
+    start <- c(log(sqrt(sum( (dist - w.lo)^2 )/length(dist))), rep(0, np - 1))
+  else
     start <- c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(0, np - 1))
     low   <- c(0, rep(-Inf, np - 1 ))
     high  <- c(Inf, rep( Inf, np - 1 ))
-    nms <- c("Sigma")
-    if(expan > 0) nms <- c(nms, paste( "a", 1:(np-1), sep=""))
+    if( ncovars > 1 )
+      nms <- c(paste("beta", 0:(ncovars-1), sep = ""))
+    else
+      nms <- c("Sigma")
+    if(expan > 0) nms <- c(nms, paste( "a", 1:(np-ncovars), sep=""))
 
 } else if( like == "uniform" ){
     start <- c(.1*w, 1, rep(0, np - 2))

@@ -1,4 +1,4 @@
-halfnorm.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE){
+halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE){
 #   Computes half norm likelihood, scaled appropriately to integrate to 1.0, for every
 #   observation. I.e., returns a vector. 
 #
@@ -24,7 +24,13 @@ halfnorm.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expa
 
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
 
-    sigma <- a[1]
+    if(!is.null(covars)){
+    s <- 0
+    for (i in 1:(length(a)-expansions))
+      s <- s + a[i]*covars[,i]
+    sigma <- exp(s)
+    } else {sigma <- a[1]}
+    
     key <- exp(-dist^2/(2*sigma^2))
     dfunc <- key
     w <- w.hi - w.lo
@@ -32,11 +38,11 @@ halfnorm.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expa
     # If there are expansion terms
     if(expansions > 0){
 
-        nexp <- min(expansions,length(a)-1)  # should be equal. If not, fire warning next
+        nexp <- expansions #nexp <- min(expansions,length(a)-1)  # should be equal. If not, fire warning next
         
-        if( length(a) != (expansions+1) ) {
-            warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
-        }
+        #if( length(a) != (expansions+1) ) {
+        #    warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
+        #}
 
 		if (series=="cosine"){
             dscl = dist/w
@@ -50,16 +56,16 @@ halfnorm.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expa
         } else {
             stop( paste( "Unknown expansion series", series ))
         }
-
-        dfunc <- key * (1 + (exp.term %*% a[2:(nexp+1)]))
+        
+        dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
 
 
     } else if(length(a) > 1){
-        warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
+        #warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
     }
 
     if( scale ){
-        dfunc = dfunc / integration.constant(halfnorm.like,w.lo=w.lo,w.hi=w.hi,a=a,series=series,expansions=expansions)   # scales underlying density to integrate to 1.0
+        dfunc = dfunc / integration.constant(halfnorm.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions)   # scales underlying density to integrate to 1.0
         
            #df2 <- dfunc[ order(dist) ]
            #d2 <- dist[ order(dist) ]

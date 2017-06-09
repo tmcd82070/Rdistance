@@ -17,7 +17,7 @@ integration.constant <- function( density, w.lo, w.hi, ... ){
 
 density = match.fun(density)
 
-seqx = seq(w.lo, w.hi, length=200)
+seqx = seq(w.lo, w.hi, length=(length(covars)*10))
 seqy = density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi,...)
 
 #   Trapazoid rule
