@@ -37,18 +37,33 @@ if( like == "hazrate" ){
     if(expan > 0) nms <- c(nms, paste( "a", 1:(np-ncovars), sep=""))
 
 } else if( like == "uniform" ){
+  if( ncovars > 1 )
+    start <- c(log(.1*w), 1, rep(0, np - 2))
+  else
     start <- c(.1*w, 1, rep(0, np - 2))
     low   <- c(1e-6, 0, rep(-Inf, np - 2 ))
     high  <- c(w, Inf, rep( Inf, np - 2 ))
-    nms <- c("Threshold", "Knee")
-    if(expan > 0) nms <- c(nms, paste( "a", 1:(np-2), sep=""))
+    if( ncovars > 1 )
+      nms <- c(paste("beta", 0:(ncovars-1), sep = ""), "Knee")
+    else
+      nms <- c("Threshold", "Knee")
+    if(expan > 0) nms <- c(nms, paste( "a", 1:expan, sep=""))
 
 } else if( like == "negexp" ){
+  if( ncovars > 1 ){
+    start <- c(0, rep(0, np - 1))
+    low   <- c(-Inf, rep(-Inf, np - 1 ))
+  }
+  else{
     start <- c(1, rep(0, np - 1))
     low   <- c(0, rep(-Inf, np - 1 ))
+  }
     high  <- c(Inf, rep( Inf, np - 1 ))
-    nms <- c("Beta")
-    if(expan > 0) nms <- c(nms, paste( "a", 1:(np-1), sep=""))
+    if( ncovars > 1 )
+      nms <- c(paste("beta", 0:(ncovars-1), sep = ""))
+    else
+      nms <- c("Beta")
+    if(expan > 0) nms <- c(nms, paste( "a", 1:expan, sep=""))
 
 
 } else if( like == "Gamma" ){

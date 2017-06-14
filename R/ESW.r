@@ -15,7 +15,7 @@ like <- match.fun(paste( obj$like.form, ".like", sep=""))
 if( is.null(obj$covars) )
   seq.length = 200
 else
-  seq.length = length(obj$covars*2)
+  seq.length = length(obj$covars*10)
 
 if( (obj$like.form == "hazrate") & (obj$x.scl == obj$w.lo) ){
     x <- seq( obj$w.lo + 1e-6*(obj$w.hi - obj$w.lo), obj$w.hi, length=seq.length)

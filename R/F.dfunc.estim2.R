@@ -17,6 +17,8 @@ F.dfunc.estim2 <- function (vars, data, likelihood="halfnorm", w.lo=0, w.hi=max(
   }
   # print(head(covars))
   ncovars <- ncol(covars)
+  if(ncovars==1)
+    covars <- NULL
   
   vnames<-dimnames(covars)[[2]]
   
@@ -39,11 +41,16 @@ F.dfunc.estim2 <- function (vars, data, likelihood="halfnorm", w.lo=0, w.hi=max(
   #strt.lims <- NULL
   #for (i in 1:ncovars)
   #  strt.lims[i] <- 1
-  
-  fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
-               method = "L-BFGS-B",
-               control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
-               w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
+  if(likelihood == "negexp" | likelihood == "uniform")
+    fit <- optim(strt.lims$start, F.nLL,# lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
+                 #method = c("L-BFGS-B"),
+                 control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
+                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
+  else
+    fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
+                 method = c("L-BFGS-B"),
+                 control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
+                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
   names(fit$par) <- strt.lims$names
   ans <- list(parameters = fit$par, loglik = fit$value, 
               convergence = fit$convergence, like.form = likelihood, 

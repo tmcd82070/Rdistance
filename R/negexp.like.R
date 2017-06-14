@@ -1,4 +1,4 @@
-negexp.like <- function (a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansions = 0, scale=TRUE){
+negexp.like <- function (a, dist, w.lo=0, covars = NULL, w.hi=max(dist), series="cosine", expansions = 0, scale=TRUE){
 #
 #   Compute negative exponential likelihood
 #
@@ -42,7 +42,12 @@ negexp.like <- function (a, dist, w.lo=0, w.hi=max(dist), series="cosine", expan
 
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
 
-	beta=a[1]
+    if(!is.null(covars)){
+      s <- 0
+      for (i in 1:(ncol(covars)))
+        s <- s + a[i]*covars[,i]
+      beta <- exp(s)
+    } else {beta <- a[1]}
 	key = exp(-beta*dist)
     dfunc <- key
     w <- w.hi - w.lo
@@ -53,7 +58,7 @@ negexp.like <- function (a, dist, w.lo=0, w.hi=max(dist), series="cosine", expan
         nexp <- min(expansions,length(a)-1)  # should be equal. If not, fire warning next
         
         if( length(a) != (expansions+1) ) {
-            warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
+            #warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
         }
 
 		if (series=="cosine"){
@@ -69,15 +74,15 @@ negexp.like <- function (a, dist, w.lo=0, w.hi=max(dist), series="cosine", expan
             stop( paste( "Unknown expansion series", series ))
         }
 
-        dfunc <- key * (1 + (exp.term %*% a[2:(nexp+1)]))
+        dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
 
 
     } else if(length(a) > 1){
-        warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
+        #warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
     }
 
     if( scale ){
-        dfunc = dfunc / integration.constant(negexp.like,w.lo=w.lo,w.hi=w.hi,a=a,series=series,expansions=expansions)  # makes integral from w.lo to w.hi = 1.0
+        dfunc = dfunc / integration.constant(negexp.like, covars = covars, w.lo=w.lo,w.hi=w.hi,a=a,series=series,expansions=expansions)  # makes integral from w.lo to w.hi = 1.0
     }
     
     c(dfunc)

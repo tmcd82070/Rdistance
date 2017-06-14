@@ -1,4 +1,4 @@
-plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", ... ){
+plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", covar.vals.to.plot = list(), ... ){
 #
 #   Plot method for distance functions.
 #
@@ -6,6 +6,16 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", ... ){
 #   include.zero = whether or not to plot distance function at 0.
 
 #   changed the number of plotting points to 200 - jg
+  
+  if(!is.null(x$covars)){
+    if(is.list(covar.vals.to.plot) & length(covar.vals.to.plot) == 0 & ncol(x$covars) > 1){
+      temp <- NULL
+      for(i in 1:ncol(x$covars))
+        temp <- c(temp, mean(x$covars[,i]))
+      covar.vals.to.plot[[1]] <- temp
+    }
+  }  
+  
 x.dist <- x$dist[ (x$w.lo <= x$dist) & (x$dist <= x$w.hi) ]
 cnts <- hist( x.dist, plot=FALSE, breaks=nbins )
 xscl <- cnts$mid[2] - cnts$mid[1]
@@ -20,12 +30,32 @@ if( cnts$breaks[1] > x$w.lo ){
     cnts <- hist( x.dist, plot=FALSE, breaks=brks, include.lowest=TRUE )
 }
 
-
 like <- match.fun( paste( x$like.form, ".like", sep=""))
 
 x.seq <- seq( x$w.lo, x$w.hi, length=200)
+if(!is.null(x$covars)){
+  temp.covars <- list()
+  for(i in 1:length(covar.vals.to.plot)){
+    temp.covars[[i]] <- matrix(nrow = length(x.seq), ncol = ncol(x$covars))
+  }
+}
+if(is.list(covar.vals.to.plot) & length(covar.vals.to.plot) == 0)
+  ncol = 1
+else
+  ncol = length(covar.vals.to.plot)
+y <- matrix(nrow = length(x.seq), ncol = ncol)
 
-y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
+if(!is.null(x$covars)){
+  for(i in 1:length(covar.vals.to.plot)){
+    for(j in 1:length(x.seq)){
+      temp.covars[[i]][j,] <- covar.vals.to.plot[[i]]
+    }
+    y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
+  }
+}
+else{
+  y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
+}
 
 if( include.zero & x$like.form == "hazrate" ){
     x.seq[1] <- x$w.lo
@@ -40,18 +70,44 @@ if( is.null( x$g.x.scl ) ){
     g.at.x0 <- x$g.x.scl
     x0 <- x$x.scl
 }
-f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
-if(is.na(f.at.x0) | (f.at.x0 <= 0)){
+if(!is.null(x$covars)){
+  for(i in 1:length(covar.vals.to.plot)){
+    f.at.x0 <- like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
+    if(any(is.na(f.at.x0) | (f.at.x0 <= 0))){
+      #   can happen when parameters at the border of parameter space
+      yscl <- 1.0
+      warning("Y intercept missing or zero. One or more parameters likely at their boundaries. Caution.")
+    } else {
+      yscl <- g.at.x0 / f.at.x0
+    }
+    if(length(yscl > 1)){yscl <- yscl[1]}
+    y[,i] <- y[,i] * yscl
+  }
+  temp <- NULL
+  mean.covars <- matrix(nrow = length(x.seq), ncol = ncol(x$covars))
+  for(i in 1:ncol(x$covars))
+    temp <- c(temp, mean(x$covars[,i]))
+  for(j in 1:length(x.seq)){
+    mean.covars[j,] <- temp
+  }
+  f.at.x0 <- like( x$parameters, x0 - x$w.lo, covars = mean.covars, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
+  yscl <- g.at.x0 / f.at.x0
+  if(length(yscl > 1)){yscl <- yscl[1]}
+  ybarhgts <- cnts$density * yscl
+}
+else{
+  f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
+  if(any(is.na(f.at.x0) | (f.at.x0 <= 0))){
     #   can happen when parameters at the border of parameter space
     yscl <- 1.0
     warning("Y intercept missing or zero. One or more parameters likely at their boundaries. Caution.")
-} else {
+  } else {
     yscl <- g.at.x0 / f.at.x0
+  }
+  if(length(yscl > 1)){yscl <- yscl[1]}
+  y <- y * yscl
+  ybarhgts <- cnts$density * yscl
 }
-
-
-ybarhgts <- cnts$density * yscl
-y <- y * yscl
 
 y.finite <- y[ y < Inf ]
 y.lims <- c(0, max( g.at.x0, ybarhgts, y.finite, na.rm=TRUE ))
@@ -82,7 +138,14 @@ if( !("main" %in% names(c(...))) ){
 #polygon( x.poly, y.poly, density=15, border="red", lwd=2 )
 
 #   This places a single line over the histogram
-lines( x.seq, y, col="red", lwd=2 )
+if(is.matrix(y)){
+  for(i in 1:ncol(y)){
+    lines( x.seq, y[,i], col="red", lwd=2 )
+  }
+}
+else{
+  lines( x.seq, y, col="red", lwd=2 )
+}
 
 #   These two add vertical lines at 0 and w
 lines( rep(x.seq[1], 2), c(0,y[1]), col="red", lwd=2 )

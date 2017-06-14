@@ -26,7 +26,7 @@ hazrate.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series=
   
     if(!is.null(covars)){
       s <- 0
-      for (i in 1:(length(a) - expansions - 1))
+      for (i in 1:(ncol(covars)))
         s <- s + a[i]*covars[,i]
       sigma <- exp(s)
     } else {sigma <- a[1]}

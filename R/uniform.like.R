@@ -1,4 +1,4 @@
-uniform.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansions= 0, scale=TRUE){
+uniform.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions= 0, scale=TRUE){
 #
 #   Compute the uniform likelihood, scaled appropriately, for all distance values in dist.
 #
@@ -37,12 +37,20 @@ uniform.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expan
     #   A couple internal functions first.
     #   This is the heavy-side function.  Basically, a steep logistic. f is just heavi flipped over
     heavi <- function(x,k){ 1 / (1 + exp( -k*x ))}
-    f <- function(beta, x){ 1 - heavi(x-beta[1],beta[2]) }
+    f <- function(beta1, beta2, x){ 1 - heavi(x-beta1,beta2) }
 
 
     dist[ (dist < w.lo) | (dist > w.hi) ] = NA
-
-	key <- f(a,dist)
+    beta <- c(0,0)
+    if(!is.null(covars)){
+      s <- 0
+      for (i in 1:(ncol(covars)))
+        s <- s + a[i]*covars[,i]
+      beta1 <- exp(s)
+    } else {beta1 <- a[1]}
+    beta2 <- a[length(a)-expansions]
+    
+	key <- f(beta1, beta2, dist)
     dfunc <- key
     w <- w.hi - w.lo
 #    cat(paste( "w.lo=", w.lo, "w.hi=", w.hi, "\n"))
