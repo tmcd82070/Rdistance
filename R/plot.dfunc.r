@@ -16,7 +16,6 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", covar.vals.to.pl
     }
   }  
   
-x.dist <- x$dist[ (x$w.lo <= x$dist) & (x$dist <= x$w.hi) ]
 cnts <- hist( x.dist, plot=FALSE, breaks=nbins )
 xscl <- cnts$mid[2] - cnts$mid[1]
 
@@ -140,7 +139,7 @@ if( !("main" %in% names(c(...))) ){
 #   This places a single line over the histogram
 if(is.matrix(y)){
   for(i in 1:ncol(y)){
-    lines( x.seq, y[,i], col="red", lwd=2 )
+    lines( x.seq, y[,i], col=i, lwd=2, lty = i )
   }
 }
 else{

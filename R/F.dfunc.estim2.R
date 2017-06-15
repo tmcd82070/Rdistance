@@ -1,12 +1,12 @@
-F.dfunc.estim2 <- function (vars, data, likelihood="halfnorm", w.lo=0, w.hi=max(dist), 
+F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=max(dist), 
                            expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){
   if (missing(data))
-    data <- environment(vars)
+    data <- environment(formula)
   cl <- match.call()
   mf <- match.call(expand.dots = FALSE)
-  m <- match(c("vars", "data"), names(mf), 0L)
+  m <- match(c("formula", "data"), names(mf), 0L)
   mf <- mf[c(1L, m)]
-  names(mf)[names(mf)=="vars"] <- "formula"
+  names(mf)[names(mf)=="formula"] <- "formula"
   mf$drop.unused.levels <- TRUE
   mf[[1L]] <- quote(stats::model.frame)
   mf <- eval(mf, parent.frame())
@@ -15,7 +15,9 @@ F.dfunc.estim2 <- function (vars, data, likelihood="halfnorm", w.lo=0, w.hi=max(
   covars <- if (!is.empty.model(mt)){
     model.matrix(mt, mf, contrasts)
   }
+  
   # print(head(covars))
+  
   ncovars <- ncol(covars)
   if(ncovars==1)
     covars <- NULL
@@ -37,21 +39,23 @@ F.dfunc.estim2 <- function (vars, data, likelihood="halfnorm", w.lo=0, w.hi=max(
   
   call <- match.call()
   
-  strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist, ncovars)
+  strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist, covars)
   #strt.lims <- NULL
   #for (i in 1:ncovars)
   #  strt.lims[i] <- 1
-  if(likelihood == "negexp" | likelihood == "uniform")
+  if(likelihood == "negexp"){
     fit <- optim(strt.lims$start, F.nLL,# lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                  #method = c("L-BFGS-B"),
                  control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
                  w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
-  else
+  }
+  else{
     fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                  method = c("L-BFGS-B"),
                  control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
                  w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
-  names(fit$par) <- strt.lims$names
+  }
+    names(fit$par) <- strt.lims$names
   ans <- list(parameters = fit$par, loglik = fit$value, 
               convergence = fit$convergence, like.form = likelihood, 
               w.lo = w.lo, w.hi = w.hi, dist = dist, covars = covars, expansions = expansions, 

@@ -1,4 +1,4 @@
-Gamma.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE){
+Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE){
 #
 #   Compute gamma likelihood.
 #
@@ -12,12 +12,18 @@ Gamma.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansi
 #
 #   See comments in uniform.like.r
 #
-
-    r <- a[1]
-    lam <- a[2]
+    print(paste("Coeffs:",a))
+    if(!is.null(covars)){
+      s <- 0
+      for (i in 1:(ncol(as.matrix(covars))))
+        s <- s + a[i]*covars[,i]
+      r <- exp(s)
+    } else {r <- a[1]}
+    
+    lam <- a[length(a)]
     
 
-    if( r <= 1 ) warning("Shape parameter of gamma likelihood invalid (<= 1).")
+    if( any(r <= 1) ) warning("Shape parameter of gamma likelihood invalid (<= 1).")
     if( lam < 0 ) warning("Scale parameter of gamma likelihood invalid (< 0).")
 
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
@@ -64,7 +70,7 @@ Gamma.like <- function(a, dist, w.lo=0, w.hi=max(dist), series="cosine", expansi
     like <- dgamma( dist, shape=r, scale=lam*b )
 
     if( scale ){
-         like = like / integration.constant(Gamma.like, w.lo=w.lo, w.hi=w.hi, a=a,series=series,expansions=expansions)
+         like = like / integration.constant(Gamma.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series,expansions=expansions)
     }
 
     like
