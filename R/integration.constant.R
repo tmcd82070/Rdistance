@@ -19,16 +19,21 @@ integration.constant <- function( density, w.lo, w.hi, covars, ... ){
   seqx = seq(w.lo, w.hi, length=200)
   
   if(!is.null(covars)){
-    temp.covars <- matrix(nrow = length(seqx), ncol = ncol(covars))
+    unique.covars <- unique(covars)
+    temp.covars <- matrix(nrow = length(seqx), ncol = ncol(unique.covars))
     seqy <- list()
-    scaler = vector(length = nrow(covars))
-    for(i in 1:nrow(covars)){
+    temp.scaler <- vector(length = nrow(unique.covars))
+    scaler <- vector(length = nrow(covars), "numeric")
+    for(i in 1:nrow(unique.covars)){
       for(j in 1:length(seqx)){
-        temp.covars[j,] <- covars[i,]
+        temp.covars[j,] <- unique.covars[i,]
       }
       seqy[[i]] <- density( dist = seqx, covars = temp.covars, scale=FALSE, w.lo=w.lo, w.hi=w.hi,...)
-      scaler[i] <- (seqx[2]-seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])]+seqy[[i]][-1]) / 2
+      temp.scaler[i] <- (seqx[2]-seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])]+seqy[[i]][-1]) / 2
     }
+    df <- data.frame(unique.covars,temp.scaler)
+    z <- merge(covars, df, by.x = names(as.data.frame(covars)), by.y = names(df[, names(df) != "temp.scaler"]), sort = F)
+    scaler <- z$temp.scaler
   }
   else{
     seqy = density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi,...)
@@ -36,8 +41,7 @@ integration.constant <- function( density, w.lo, w.hi, covars, ... ){
     #   Trapazoid rule
     scaler= (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
   }
-  
-  print("working...")
+  #print("working...")
   scaler
   
 }

@@ -26,7 +26,7 @@ halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series
 
     if(!is.null(covars)){
     s <- 0
-    for (i in 1:(ncol(as.matrix(covars))))
+    for (i in 1:(ncol(covars)))
       s <- s + a[i]*covars[,i]
     sigma <- exp(s)
     } else {sigma <- a[1]}
@@ -60,9 +60,9 @@ halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series
         dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
 
 
-    } else if(length(a) > 1){
+    } #else if(length(a) > 1){
         #warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
-    }
+    #}
 
     if( scale ){
         dfunc = dfunc / integration.constant(halfnorm.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions)   # scales underlying density to integrate to 1.0
