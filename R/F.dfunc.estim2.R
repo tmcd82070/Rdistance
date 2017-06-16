@@ -46,13 +46,13 @@ F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=m
   if(likelihood == "negexp"){
     fit <- optim(strt.lims$start, F.nLL,# lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                  #method = c("L-BFGS-B"),
-                 control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
+                 control = list(trace = 4, maxit = 1000), dist = dist, like = likelihood, covars = covars,
                  w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
   }
   else{
     fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                  method = c("L-BFGS-B"),
-                 control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
+                 control = list(trace = 4, maxit = 1000), dist = dist, like = likelihood, covars = covars,
                  w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
   }
     names(fit$par) <- strt.lims$names

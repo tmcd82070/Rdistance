@@ -1,4 +1,4 @@
-integration.constant <- function( density, w.lo, w.hi, ... ){
+integration.constant <- function( density, w.lo, w.hi, covars, ... ){
 #
 #   Return the scalar so that integral from 0 to w of underlying density
 #   is 1.0
@@ -15,14 +15,29 @@ integration.constant <- function( density, w.lo, w.hi, ... ){
 #   this output scalar is the integral of unscaled density from 0 to w.
 #
 
-density = match.fun(density)
-
-seqx = seq(w.lo, w.hi, length=(length(covars)*50))
-seqy = density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi,...)
-
-#   Trapazoid rule
-scaler= (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
-
-scaler
-
+  density = match.fun(density)
+  seqx = seq(w.lo, w.hi, length=200)
+  
+  if(!is.null(covars)){
+    temp.covars <- matrix(nrow = length(seqx), ncol = ncol(covars))
+    seqy <- list()
+    scaler = vector(length = nrow(covars))
+    for(i in 1:nrow(covars)){
+      for(j in 1:length(seqx)){
+        temp.covars[j,] <- covars[i,]
+      }
+      seqy[[i]] <- density( dist = seqx, covars = temp.covars, scale=FALSE, w.lo=w.lo, w.hi=w.hi,...)
+      scaler[i] <- (seqx[2]-seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])]+seqy[[i]][-1]) / 2
+    }
+  }
+  else{
+    seqy = density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi,...)
+    
+    #   Trapazoid rule
+    scaler= (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
+  }
+  
+  print("working...")
+  scaler
+  
 }

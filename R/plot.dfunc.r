@@ -16,7 +16,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", covar.vals.to.pl
     }
   }  
   
-cnts <- hist( x.dist, plot=FALSE, breaks=nbins )
+cnts <- hist( x$dist, plot=FALSE, breaks=nbins )
 xscl <- cnts$mid[2] - cnts$mid[1]
 
 #   Gotta add bars on the left if first bar is not at w.lo.  I.e., if first 
