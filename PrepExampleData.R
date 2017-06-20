@@ -1,30 +1,31 @@
-# Code used to prepare the example sparrow datasets in Rdistance
+# Code used to prepare the example songbird datasets in Rdistance
 # Jason Carlisle
-# Last updated 6/7/2017
+# Last updated 6/19/2017
 
-# Goal for two required two data.frames:
-# a detection data.frame with at least $dist, $siteID, and $groupsize
-# a transect data.frame with at least $siteID and $length (and we're adding some other covariates)
 
-# This code calculates a bunch of covariates that we're not using at this time.
-# As of v 1.3.1, observer (factor), sagemean (continuous), and sage (factor) are included.
+# Creating two example datasets, each will include two tables:
+# 1)  Line transect example (BRSP)
+      # a detection data.frame with at least $dist, $siteID, and $groupsize
+      # a site data.frame with at least $siteID and $length (and we're adding some other covariates)
+# 2)  Point transect example (SATH)
+      # a detection data.frame with at least $dist, $siteID, and $groupsize
+      # a site data.frame with at least $siteID (and we're adding some other covariates)
+
 
 # Load required packages
-require(Rdistance)
+# require(Rdistance)  # build from development
 require(sp)
 require(rgdal)
 require(rgeos)
 require(raster)
 require(RODBC)
-
-
-
+require(lubridate)
 
 
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# PART 1:  PREPARE THE DETECTIONS DATASET (RAW BIRD COUNT DATA) -----
+# PART 1:  PREPARE THE DETECTIONS DATASETS (RAW BIRD COUNT DATA) -----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # Data sources
 # Connect to SQL Server database on CarlisleMule Desktop
@@ -32,7 +33,7 @@ require(RODBC)
 #                           database=LineTransectData; Uid=jasontemp; Pwd=temppassword', believeNRows=FALSE)
 
 # Path to Access databases
-path <- "C:/Users/Jason/Box Sync/Umbrella_NEW/Data/"
+path <- "C:/Users/jcarlisle/Google Drive/Dissertation/Data/"
 
 tchan <- odbcConnectAccess2007(access.file=paste0(path, "Umbrella_MasterData_LineTransect_25May2017.accdb"))
 
@@ -43,7 +44,7 @@ pchan  <- odbcConnectAccess2007(access.file=paste0(path, "Umbrella_MasterData_Po
 # Read in dataframe of observations on transects that don't have "Z" in the transect ID
 # We surveyed 8 "Z" transects which were sited differently and are not being analyzed here
 dB <- sqlQuery(tchan, query="SELECT * FROM [Avian_Data] WHERE TranID NOT LIKE 'Z%'")
-dB <- dB[ , -10]  # drop comments columns
+dB$Comments <- NULL  # drop comments columns
 dB <- dB[order(dB$TranID), ]  # order by transect ID
 
 
@@ -57,8 +58,6 @@ names(dB) <- c("siteID", "groupsize", "sightdist", "sightangle")
 
 
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-# Note, the current version of Rdistance (v 1.2.2) doesn't have the perpendicular distances calculated
-# within the example dataset.
 dB$dist <- round(perp.dists(s.dist="sightdist", s.angle="sightangle", data=dB), 1)
 
 
@@ -70,11 +69,11 @@ hist(dB$dist, breaks=25, col="dark gray", main="Sparrow Distances", xlab="Distan
 
 
 
-# Try SATH point count data
+# SATH point count data
 
 # Read in dataframe of observations on transects that don't have "Z" in the transect ID
 dS <- sqlQuery(pchan, query="SELECT * FROM [Point_Data]")
-dS <- dS[ , -9]  # drop comments columns
+dS$Comments <- NULL  # drop comments columns
 dS <- dS[order(dS$PtID), ]  # order by transect ID
 
 
@@ -94,40 +93,75 @@ hist(dS$dist, breaks=10, col="dark gray", main="Thrasher Distances", xlab="Dista
 abline(0, 1)
 
 
-odbcCloseAll()
+
+
+
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# PART 2:  PREPARE THE TRANSECTS DATASET (TRANSECT-LEVEL DATA) -----
+# PART 2:  PREPARE THE SITE DATASETS (TRANSECT- (OR POINT-) LEVEL DATA) -----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
 # Transect shapefile
-trandir <- "C:/Users/Jason/Box Sync/GIS/Field_GIS_Data/x2012"  # ThinkPadLaptop
+trandir <- "D:/GIS/Field_GIS_Data/x2012"  # External drive
+# trandir <- "C:/Users/Jason/Box Sync/GIS/Field_GIS_Data/x2012"  # ThinkPad Laptop
 # trandir <- "C:/Users/jcarlis3/Box Sync/GIS/Field_GIS_Data/x2012"  # CarlisleMule Desktop
 
+# Point count shapefile
+ptdir <- "D:/GIS/Field_GIS_Data/x2013/TrtPointCounts"  # External drive
+
 # Homer raster data
-rastdir <- "C:/GIS_data/HomerData/ProcessedRasters"  # ThinkPad Laptop
+rastdir <- "D:/UWyo/Ch3_FocalRaster/Oct2016/CovariateRasters/Veg0s"  # External drive
+# rastdir <- "C:/GIS_data/HomerData/ProcessedRasters"  # ThinkPad Laptop
 # rastdir <- "F:/umbrella_GIS/LandcoverData/usgs_wyo_sagebrush_jan2012/ProcessedRasters"#  CarlisleMule Desktop
 
 
 
-
+# BRSP line transect data
 # Read in transect information recorded while surveying (from SQL database)
-tdf <- sqlQuery(chan, query="SELECT * FROM [LineTransectData].[dbo].[Avian_Effort] WHERE TranID NOT LIKE 'Z%'")
-tdf <- tdf[order(tdf$TranID), ]  # order by transect ID
-
+tB <- sqlQuery(tchan, query="SELECT * FROM [Avian_Effort] WHERE TranID NOT LIKE 'Z%'")
+tB <- tB[order(tB$TranID), ]  # order by transect ID
+# Keep only the 2012 surveys
+tB <- tB[year(tB$SampDateStart) == 2012, ]
 # Add transect length (all 500 m)
-tdf$length <- 500
+tB$length <- 500
+
+
+# SATH point transect data
+tS <- sqlQuery(pchan, query="SELECT * FROM [Point_Effort]")
+tS <- tS[order(tS$PtID), ]  # order by transect ID
+# Keep only the 2013 surveys
+tS <- tS[tS$Year == 2013, ]
+
+
+tB <- droplevels(tB)
+tS <- droplevels(tS)
+
+odbcCloseAll()
+
 
 
 # Keep only necessary columns and rename
-tdf <- tdf[, c("TranID", "Observer", "length")]
-names(tdf) <- c("siteID", "observer", "length")
+tB <- tB[, c("TranID", "Observer", "length")]
+names(tB) <- c("siteID", "observer", "length")
+
+tS <- tS[, c("PtID", "Observer")]
+names(tS) <- c("siteID", "observer")
 
 
 # Rename observers
-levels(tdf$observer) <- c("obs1", "obs2", "obs3", "obs4", "obs5")
+levels(tB$observer) <- c("obs1", "obs2", "obs3", "obs4", "obs5")
+levels(tS$observer) <- c("obs1", "obs2", "obs3", "obs4", "obs5", "obs6")
+
+
+table(tB$observer)
+table(tS$observer)
+
 
 # Reorder columns
-tdf <- tdf[, c("siteID", "length", "observer")]
+tB <- tB[, c("siteID", "length", "observer")]
+
+
+
 
 
 # Calculate some covariates with GIS
@@ -138,18 +172,32 @@ trans@data[ncol(trans@data)] <- NULL  # get rid of last column with redundant in
 trans@data  # look at attribute table
 
 # drop 8 transects that start with "Z"
-trans@data[grepl(pattern="Z", x=trans@data$TransectID), ]  # find row numbers
-trans <- trans[-c(9, 10, 23, 28, 57, 62, 63, 64), ]  # these should be row numbers +1
+trans <- trans[!grepl(pattern="Z", x=trans@data$TransectID), ]
 trans@data[grepl(pattern="Z", x=trans@data$TransectID), ]  # check that "Z"s gone
 length(trans)  # should now be 72
 
 
+
+
+# Read in point count locations
+pts <- readOGR(dsn=ptdir, layer="PointCountLocations_surveyed")
+plot(pts)
+length(pts)
+pts@data
+
+# Project points from NAD 83 to Wylam
+proj4string(trans)
+proj4string(pts)
+
+pts <- spTransform(pts, proj4string(trans))
+identicalCRS(pts, trans)
+
 # Find all .img raster files in the raster directory that were processed to have masked values==0
-dlist <- dir(path=rastdir, pattern="0s.img$")
-(dlist <- dlist[c(1, 4, 5, 7, 6, 8)])  # keep only the ones I'm interested in
+(dlist <- dir(path=rastdir, pattern="0s.img$"))
+(dlist <- dlist[c(1, 4, 7, 8)])  # keep only the ones I'm interested in
 
 # Loop through the list and read in the rasters
-rlist<- list()
+rlist <- list()
 for(i in 1:length(dlist)){
     rlist<- c(rlist, raster(paste(rastdir, dlist[i], sep="/")))
 }
@@ -165,7 +213,7 @@ plot(rs)
 
 
 # Create a 100m buffer around each transect line
-polys <- gBuffer(trans, width=100, capStyle="ROUND", byid=TRUE)
+polys <- gBuffer(trans, width=100, capStyle="FLAT", byid=TRUE)
 plot(polys[1:4, ]); plot(trans, add=TRUE)  # plot a few to see
 
 # Take the mean of each raster within the buffered polygon of each line
@@ -173,52 +221,93 @@ xmean <- extract(x=rs, y=polys, fun=mean, df=TRUE)  # mean
 
 
 # Give columns meaningful names and append to one data.frame
-names(xmean)[2:7] <- c("BareMean", "HerbMean", "LitterMean", "ShrubMean", "SageMean", "HeightMean")
-
+names(xmean)[2:ncol(xmean)] <- c("bare", "herb", "shrub", "height")
+xmean[2:ncol(xmean)] <- round(xmean[2:ncol(xmean)], 1)
+plot(xmean)
 
 # Append to data from shapefile attribute table to make covariate data.frame
 (sdf <- trans@data)
 (sdf <- data.frame(cbind(sdf, xmean), row.names=NULL))  # append, they're already in the right order
 sdf$ID <- NULL  # remove ID field after ensuring match with TranID order
+sdf$Tier <- sdf$Core <- NULL  # extra cols
 
-
-# Make sure data types are correct
-sdf$Tier <- as.factor(sdf$Tier)  # change to factor
-sdf$Core <- as.factor(sdf$Core)  # change to factor
-sdf <- droplevels(sdf)  # drops unused factor levels in sdf (specifically TranID)
+# Merge to existing transect data
+tB <- merge(tB, sdf, by.x="siteID", by.y="TransectID")
+rm(sdf)
+tB <- droplevels(tB)  # drops unused factor levels in sdf (specifically TranID)
 
 
 # Add categorical sagebrush cover (low being less than 10%)
-sdf$SageClass <- "Low"
-sdf[sdf$SageMean >= 10, "SageClass"] <- "High"
-sdf$SageClass <- factor(sdf$SageClass, levels=c("Low", "High"))
+tB$shrubclass <- "Low"
+tB[tB$shrub >= 10, "shrubclass"] <- "High"
+tB$shrubclass <- factor(tB$shrubclass, levels=c("Low", "High"))
 
 
 
-# Round mean sagebrush
-sdf$SageMean <- round(sdf$SageMean, 1)
 
 
-# Keep only a few of the spatial variables for now and rename
-sdf <- sdf[, c("TransectID", "SageMean", "SageClass")]
-names(sdf) <- c("siteID", "sagemean", "sage")
+# For points
+# Take the mean of each raster within 100 m of each point
+xmean <- extract(x=rs, y=pts, fun=mean, buffer=100, df=TRUE)  # mean
 
 
-# Merge
-(tdf <- merge(tdf, sdf, by="siteID"))
+# Give columns meaningful names and append to one data.frame
+names(xmean)[2:ncol(xmean)] <- c("bare", "herb", "shrub", "height")
+xmean[2:ncol(xmean)] <- round(xmean[2:ncol(xmean)], 1)
+plot(xmean)
+
+# Append to data from shapefile attribute table to make covariate data.frame
+(sdf <- pts@data)
+(sdf <- data.frame(cbind(sdf, xmean), row.names=NULL))  # append, they're already in the right order
+sdf$ID <- NULL  # remove ID field after ensuring match with TranID order
+
+
+# Merge to existing transect data
+tS <- merge(tS, sdf, by.x="siteID", by.y="Pt_ID")
+rm(sdf)
+tS <- droplevels(tS)
+tS <- tS[, c("siteID", "observer", "bare", "herb", "shrub", "height")]
+
+
+
+
+
+# Make sure pt sites has full complement of site levels
+length(levels(tS$siteID))
+levels(tS$siteID)
+length(levels(dS$siteID))
+levels(dS$siteID)
+
+table(tS$siteID)
+table(dS$siteID)
+
+dS$siteID <- factor(dS$siteID)
+length(levels(dS$siteID))
+
+# The two levels with no detections, add back as levels
+levels(dS$siteID) <- c(levels(dS$siteID), "C1X03", "C1X07")
+
+table(dS$siteID)
+
+
 
 
 # Rename
-sparrow.detections <- data.frame(ddf, row.names=NULL)
-sparrow.transects <- data.frame(tdf, row.names=NULL)
+sparrow.detections <- data.frame(dB, row.names=NULL)
+sparrow.sites <- data.frame(tB, row.names=NULL)
 
+thrasher.detections <- data.frame(dS, row.names=NULL)
+thrasher.sites <- data.frame(tS, row.names=NULL)
 
 # Erase everything but the detection and transect datasets
-rm(list=setdiff(ls(), c("sparrow.detections", "sparrow.transects")))
+rm(list=setdiff(ls(), c("sparrow.detections", "sparrow.sites",
+                        "thrasher.detections", "thrasher.sites")))
 
 
 
 
 # Save .rda files to package directory
 save(sparrow.detections, file="C:/R_Code/Rdistance/data/sparrow.detections.rda")
-save(sparrow.transects, file="C:/R_Code/Rdistance/data/sparrow.transects.rda")
+save(sparrow.sites, file="C:/R_Code/Rdistance/data/sparrow.sites.rda")
+save(thrasher.detections, file="C:/R_Code/Rdistance/data/thrasher.detections.rda")
+save(thrasher.sites, file="C:/R_Code/Rdistance/data/thrasher.sites.rda")

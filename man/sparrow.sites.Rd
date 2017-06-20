@@ -1,8 +1,7 @@
-\name{sparrow.detections}
+\name{sparrow.sites}
 \docType{data}
-\alias{sparrow.detections}
-\title{Example data:  sparrow detections (line transect survey)}
-
+\alias{sparrow.sites}
+\title{Example data:  sparrow sites (line transect survey)}
 \description{
 \code{Rdistance} contains four example datasets:  two collected using a line-transect survey (i.e., \code{\link{sparrow.detections}} and \code{\link{sparrow.sites}}) and two collected using a point-transect (sometimes called a point count) survey (i.e., \code{\link{thrasher.detections}} and \code{\link{thrasher.sites}}).  These datasets demonstrate the type and format of input data required by \code{Rdistance} to estimate a detection function and abundance from distance sampling data collected by surveying line transects or point transects.  They also allow the user to step through the tutorials described in the package vignettes.  Only the detection data is needed to fit a detection function (see \code{\link{F.dfunc.estim}}), but both detection and the additional site data are needed to estimate abundance (see \code{\link{F.abund.estim}}).
 
@@ -13,19 +12,22 @@ Point transect (thrasher) data come from 120 points surveyed for Sage Thrashers 
 See the package vignettes for \code{Rdistance} tutorials using these datasets.
 }
 
-\usage{sparrow.detections}
-\format{A data.frame containing 356 rows and 5 columns.  Each row represents a detected group of sparrows.  Column descriptions:
+\usage{sparrow.sites}
+\format{A data.frame containing 72 rows and 8 columns.  Each row represents a site (transect) surveyed.  Column descriptions:
   \enumerate{
-    \item \code{siteID}:  Factor (72 levels), the site or transect where the detection was made.
-    \item \code{groupsize}:  Number, the number of individuals within the detected group.
-    \item \code{sightdist}:  Number, the distance (m) from the observer to the detected group.
-    \item \code{sightangle}:  Number, the angle (degrees) from the transect line to the detected group.
-    \item \code{dist}:  Number, the perpendicular, off-transect distance (m) from the transect to the detected group.  This is the distance used in analysis.  Calculated using \code{\link{perp.dists}}.
+    \item \code{siteID}:  Factor (72 levels), the site or transect surveyed.
+    \item \code{length}:  Number, the length (m) of each transect.  Use the same units for all distance measurements.
+    \item \code{observer}:  Factor (five levels), identity of the observer who surveyed the transect.
+    \item \code{bare}:  Number, the mean bare ground cover (\%) within 100 m of each transect.
+    \item \code{herb}:  Number, the mean herbaceous cover (\%) within 100 m of each transect.
+    \item \code{shrub}:  Number, the mean shrub cover (\%) within 100 m of each transect.
+    \item \code{height}:  Number, the mean shrub height (cm) within 100 m of each transect.
+    \item \code{shrubclass}:  Factor (two levels), class is "Low"" when shrub cover is < 10\%, "High" otherwise.
   }
 }
 
 
-\seealso{\code{\link{sparrow.sites}}}
+\seealso{\code{\link{sparrow.detections}}}
 \source{Jason Carlisle's dissertation data, University of Wyoming.}}
 \references{Carlisle, J.D. 2017. The effect of sage-grouse conservation on wildlife species of concern:  implications for the umbrella species concept. Dissertation. University of Wyoming, Laramie, Wyoming, USA.}
 \keyword{datasets}
