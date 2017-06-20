@@ -43,7 +43,7 @@ F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=m
   #strt.lims <- NULL
   #for (i in 1:ncovars)
   #  strt.lims[i] <- 1
-  if(likelihood == "negexp"){
+  if(F & likelihood == "negexp"){
     fit <- optim(strt.lims$start, F.nLL,# lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                  #method = c("L-BFGS-B"),
                  control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
