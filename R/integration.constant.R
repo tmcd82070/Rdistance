@@ -65,7 +65,7 @@ integration.constant <- function( density, w.lo, w.hi, covars, a, expansions, ..
         for(j in 1:length(seqx)){
           temp.covars[j,] <- unique.covars[i,]
         }
-        seqy[[i]] <- density(dist = seqx, covars = temp.covars, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, ...)
+        seqy[[i]] <- density(dist = seqx, covars = temp.covars, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
         temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
     }
@@ -75,7 +75,7 @@ integration.constant <- function( density, w.lo, w.hi, covars, a, expansions, ..
     scaler <- z$temp.scaler
   }
   else{
-    seqy = density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi, a=a, ...)
+    seqy = density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi, a=a, expansions = expansions, ...)
     
     #   Trapazoid rule
     scaler= (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
