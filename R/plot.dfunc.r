@@ -1,4 +1,4 @@
-plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", covar.vals.to.plot = list(), ... ){
+plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = data.frame(), ... ){
 #
 #   Plot method for distance functions.
 #
@@ -7,12 +7,17 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", covar.vals.to.pl
 
 #   changed the number of plotting points to 200 - jg
   
+  new.data <- as.list(new.data)
+  for(i in 1:length(new.data)){
+    new.data[[i]] <- c(1,new.data[[i]])
+  }
+  
   if(!is.null(x$covars)){
-    if(is.list(covar.vals.to.plot) & length(covar.vals.to.plot) == 0 & ncol(x$covars) > 1){
+    if(is.list(new.data) & length(new.data) == 0 & ncol(x$covars) > 1){
       temp <- NULL
       for(i in 1:ncol(x$covars))
         temp <- c(temp, mean(x$covars[,i]))
-      covar.vals.to.plot[[1]] <- temp
+      new.data[[1]] <- temp
     }
   }  
   
@@ -34,20 +39,20 @@ like <- match.fun( paste( x$like.form, ".like", sep=""))
 x.seq <- seq( x$w.lo, x$w.hi, length=200)
 if(!is.null(x$covars)){
   temp.covars <- list()
-  for(i in 1:length(covar.vals.to.plot)){
+  for(i in 1:length(new.data)){
     temp.covars[[i]] <- matrix(nrow = length(x.seq), ncol = ncol(x$covars))
   }
 }
-if(is.list(covar.vals.to.plot) & length(covar.vals.to.plot) == 0)
+if(is.list(new.data) & length(new.data) == 0)
   ncol = 1
 else
-  ncol = length(covar.vals.to.plot)
+  ncol = length(new.data)
 y <- matrix(nrow = length(x.seq), ncol = ncol)
 
 if(!is.null(x$covars)){
-  for(i in 1:length(covar.vals.to.plot)){
+  for(i in 1:length(new.data)){
     for(j in 1:length(x.seq)){
-      temp.covars[[i]][j,] <- covar.vals.to.plot[[i]]
+      temp.covars[[i]][j,] <- new.data[[i]]
     }
     y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
   }
@@ -70,7 +75,7 @@ if( is.null( x$g.x.scl ) ){
     x0 <- x$x.scl
 }
 if(!is.null(x$covars)){
-  for(i in 1:length(covar.vals.to.plot)){
+  for(i in 1:length(new.data)){
     f.at.x0 <- like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi )
     if(any(is.na(f.at.x0) | (f.at.x0 <= 0))){
       #   can happen when parameters at the border of parameter space
