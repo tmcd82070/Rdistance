@@ -1,4 +1,4 @@
-plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = data.frame(), ... ){
+plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL, ... ){
 #
 #   Plot method for distance functions.
 #
@@ -6,19 +6,25 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = data.
 #   include.zero = whether or not to plot distance function at 0.
 
 #   changed the number of plotting points to 200 - jg
-  
-  new.data <- as.list(new.data)
-  for(i in 1:length(new.data)){
-    new.data[[i]] <- c(1,new.data[[i]])
+  if(!is.null(x$covars) & ncol(x$covars) > 1){
+    if(!is.null(new.data)){
+      new.data <- as.list(new.data)
+      for(i in 1:length(new.data)){
+        new.data[[i]] <- c(1,new.data[[i]])
+      }
+    }
+    else{
+      temp <- NULL
+      new.data <- list()
+      for(i in 1:ncol(x$covars)){
+        temp <- c(temp, mean(x$covars[,i]))
+      }
+      new.data[[1]] <- temp
+    }
   }
   
   if(!is.null(x$covars)){
-    if(is.list(new.data) & length(new.data) == 0 & ncol(x$covars) > 1){
-      temp <- NULL
-      for(i in 1:ncol(x$covars))
-        temp <- c(temp, mean(x$covars[,i]))
-      new.data[[1]] <- temp
-    }
+    
   }  
   
 cnts <- hist( x$dist, plot=FALSE, breaks=nbins )
@@ -144,7 +150,7 @@ if( !("main" %in% names(c(...))) ){
 #   This places a single line over the histogram
 if(is.matrix(y)){
   for(i in 1:ncol(y)){
-    lines( x.seq, y[,i], col=i, lwd=2, lty = i )
+    lines( x.seq, y[,i], col=i+1, lwd=2, lty = i )
   }
 }
 else{
@@ -177,6 +183,19 @@ if( x$convergence != 0 ){
     mess <- paste("Check g0=", round(g.at.x0,2), "assumption")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
 }
+
+# Add legend to plot if covars are present
+if(!is.null(x$covars)){
+  legend.names <- vector(mode = "character", length = length(new.data))
+  for(i in 1:length(new.data)){
+    for(j in 2:ncol(x$covars)){
+      legend.names[i] <- paste0(legend.names[i], " ", colnames(x$covars)[j], " = ", new.data[[i]][j], ",")
+    }
+    legend.names[i] <- substr(legend.names[i], 2, nchar(legend.names[i])-1)
+  }
+  legend('topright', legend = legend.names, lty = 1:ncol(y), lwd = 2, col = 2:(ncol(y)+1))
+}
+
 #x$xscl.plot <- xscl   # gonna need this to plot something on the graph.
 x$yscl <- yscl   # this is g(x) / f(x).  Might want this later.
 
