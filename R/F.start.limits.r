@@ -15,11 +15,14 @@ F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL ){
   
   #   No starting values given
   if( like == "hazrate" ){
-    if( ncovars > 1 )
+    if( ncovars > 1 ){
       start <- c(log(.5*w), rep(0, ncovars-1), 1,rep(0, expan))
-    else
+      low   <- c(-10, rep(-Inf, ncovars-1), .01, rep(-Inf, expan))
+    }
+    else{
       start <- c(.5*w, 1,rep(0, np - 2))
-    low   <- c(0, rep(-Inf, ncovars-1), .01, rep(-Inf, expan))
+      low   <- c(0, rep(-Inf, ncovars-1), .01, rep(-Inf, expan))
+    }
     high  <- c(Inf, rep( Inf, ncovars-1), Inf, rep( Inf, expan))
     if( ncovars > 1 )
       nms <- c(colnames(covars), "Beta")
@@ -28,11 +31,14 @@ F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL ){
     if(expan > 0) nms <- c(nms, paste( "a", 1:expan, sep=""))
     
   } else if( like == "halfnorm" ){
-    if( ncovars > 1 )
+    if( ncovars > 1 ){
       start <- c(log(sqrt(sum( (dist - w.lo)^2 )/length(dist))), rep(0, np - 1))
-    else
+      low <- c(rep(-Inf, np))
+    }
+    else{
       start <- c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(0, np - 1))
-    low   <- c(0, rep(-Inf, np - 1 ))
+      low <- c(0, rep(-Inf, np - 1 ))
+    }
     high  <- c(Inf, rep( Inf, np - 1 ))
     if( ncovars > 1 )
       nms <- colnames(covars)

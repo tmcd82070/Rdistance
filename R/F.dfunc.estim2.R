@@ -16,7 +16,13 @@ F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=m
     model.matrix(mt, mf, contrasts)
   }
   
-  # print(head(covars))
+  # Find which columns are factors
+  factor.names <- NULL
+  for(i in 1:ncol(mf)){
+    if(class(mf[,i]) == "factor"){
+      factor.names <- c(factor.names, names(mf)[i])
+    }
+  }
   
   ncovars <- ncol(covars)
   if(ncovars==1)
@@ -60,7 +66,7 @@ F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=m
               convergence = fit$convergence, like.form = likelihood, 
               w.lo = w.lo, w.hi = w.hi, dist = dist, covars = covars, expansions = expansions, 
               series = series, call = call, call.x.scl = x.scl, call.g.x.scl = g.x.scl, 
-              call.observer = observer, fit = fit)
+              call.observer = observer, fit = fit, factor.names = factor.names)
   class(ans) <- "dfunc"
   gx <- F.gx.estim(ans)
   ans$x.scl <- gx$x.scl
