@@ -197,14 +197,16 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
     for(i in 1:length(new.data)){
       legend.factors <- vector(length = length(x$legend.names))
       for(j in 2:ncol(x$covars)){
-        if(any(startsWith(colnames(x$covars)[j], x$factor.names))){
-          for(k in 1:length(x$factor.names)){
-            if(startsWith(colnames(x$covars)[j], x$factor.names[k])){
-              if(is.na(legend.factors[k])){
-                legend.factors[k] <- paste0(new.data[[i]][j], ",")
-              }
-              else{
-                legend.factors[k] <- paste0(legend.factors[k], new.data[[i]][j], ",")
+        if(!is.null(x$factor.names)){
+          if(any(startsWith(colnames(x$covars)[j], x$factor.names))){
+            for(k in 1:length(x$factor.names)){
+              if(startsWith(colnames(x$covars)[j], x$factor.names[k])){
+                if(is.na(legend.factors[k])){
+                  legend.factors[k] <- paste0(new.data[[i]][j], ",")
+                }
+                else{
+                  legend.factors[k] <- paste0(legend.factors[k], new.data[[i]][j], ",")
+                }
               }
             }
           }
@@ -213,8 +215,10 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
           legend.names[i] <- paste0(legend.names[i], " ", colnames(x$covars)[j], " = ", new.data[[i]][j], ",")
         }
       }
-      for(k in 1:length(x$factor.names)){
-        legend.names[i] <- paste0(legend.names[i], " ", x$factor.names[k], " = ", legend.factors[k])
+      if(!is.null(x$factor.names)){
+        for(k in 1:length(x$factor.names)){
+          legend.names[i] <- paste0(legend.names[i], " ", x$factor.names[k], " = ", legend.factors[k])
+        }
       }
       legend.names[i] <- substr(legend.names[i], 2, nchar(legend.names[i])-1)
     }

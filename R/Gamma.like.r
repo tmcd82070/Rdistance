@@ -12,7 +12,6 @@ Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="c
 #
 #   See comments in uniform.like.r
 #
-    print(paste("Coeffs:",a))
     if(!is.null(covars)){
       s <- 0
       for (i in 1:(ncol(as.matrix(covars))))
