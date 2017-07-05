@@ -1,4 +1,4 @@
-F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=max(dist), 
+F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", point.transects = F, w.lo=0, w.hi=max(dist), 
                            expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){
   if (missing(data))
     data <- environment(formula)
@@ -38,14 +38,12 @@ F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=m
     dist <- dist$dist
   }
   
-  
   # Stop and print error if dist vector contains NAs
   if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
   
-  
   call <- match.call()
   
-  strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist, covars)
+  strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist, covars, point.transects)
   #strt.lims <- NULL
   #for (i in 1:ncovars)
   #  strt.lims[i] <- 1
@@ -53,20 +51,21 @@ F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", w.lo=0, w.hi=m
     fit <- optim(strt.lims$start, F.nLL,# lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                  #method = c("L-BFGS-B"),
                  control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
-                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
+                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series, point.transects = point.transects)
   }
   else{
     fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                  method = c("L-BFGS-B"),
                  control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
-                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series)
+                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series, point.transects = point.transects)
   }
     names(fit$par) <- strt.lims$names
   ans <- list(parameters = fit$par, loglik = fit$value, 
               convergence = fit$convergence, like.form = likelihood, 
               w.lo = w.lo, w.hi = w.hi, dist = dist, covars = covars, expansions = expansions, 
               series = series, call = call, call.x.scl = x.scl, call.g.x.scl = g.x.scl, 
-              call.observer = observer, fit = fit, factor.names = factor.names)
+              call.observer = observer, fit = fit, factor.names = factor.names, point.transects = point.transects)
+  
   class(ans) <- "dfunc"
   gx <- F.gx.estim(ans)
   ans$x.scl <- gx$x.scl

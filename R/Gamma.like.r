@@ -1,4 +1,4 @@
-Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE){
+Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE, point.transects, ...){
 #
 #   Compute gamma likelihood.
 #
@@ -69,7 +69,7 @@ Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="c
     like <- dgamma( dist, shape=r, scale=lam*b )
 
     if( scale ){
-         like = like / integration.constant(Gamma.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series,expansions=expansions)
+         like = like / integration.constant(dist, Gamma.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a, series=series, expansions=expansions, point.transects = point.transects, ...)
     }
 
     like

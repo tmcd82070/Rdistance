@@ -29,7 +29,13 @@ print.dfunc <- function( x, ... ){
     cat(paste("Function:", casefold(x$like.form, upper=TRUE), mess, "\n") )
 
     cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
-    cat(paste("Effective strip width:", format(ESW(x)), "\n"))
+    if(x$point.transects){
+      cat(paste("Effective radius:", format(effective.radius(x)), "\n"))
+    }
+    else{
+      cat(paste("Effective strip width:", format(ESW(x)), "\n"))
+    }
+    
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
     cat(paste("Log likelihood:", format(x$loglik), "\n"))
     cat(paste("AIC:", format(AIC(x)), "\n"))

@@ -1,4 +1,4 @@
-halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE){
+halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, point.transects = F, ...){
   #   Computes half norm likelihood, scaled appropriately to integrate to 1.0, for every
   #   observation. I.e., returns a vector. 
   #
@@ -20,7 +20,6 @@ halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series
   #   A vector same length as dist, containing likelihood values, scaled appropriately. 
   #   Likelihood for all distances >w are set to NA
   #
-  
   
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
@@ -65,7 +64,8 @@ halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series
   #}
   
   if( scale ){
-    dfunc = dfunc / integration.constant(halfnorm.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions)   # scales underlying density to integrate to 1.0
+      dfunc = dfunc / integration.constant(dist, halfnorm.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions, point.transects = point.transects, ...)   # scales underlying density to integrate to 1.0
+    
     
     #df2 <- dfunc[ order(dist) ]
     #d2 <- dist[ order(dist) ]
@@ -74,9 +74,5 @@ halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series
     #readline("Enter:")
     
   }
-  
-  
-  
   c(dfunc)
-  
 }

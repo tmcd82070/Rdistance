@@ -15,14 +15,12 @@ if( is.null( observer ) ){
     observer <- fit$call.observer
 }
 
-
 if( !is.character(x.scl) ){
     if( x.scl == 0 & fit$like.form == "Gamma" ){
         x.scl <- "max"
         warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
     }
 }
-
 
 if( !is.character(x.scl) ){
 
@@ -67,8 +65,6 @@ if( is.data.frame(g.x.scl) ){
         warning("Impossible g(x) > 1 specified in F.gx.estim. g(x) reset to 1.")
     }
 }
-
-
-
+  
 list( x.scl = x.scl, g.x.scl = g.x.scl )
 }

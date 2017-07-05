@@ -1,4 +1,4 @@
-F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL ){
+F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, point.transects ){
   #
   #   Establish starting value for parameters, and limits passed to the optimizer
   #
@@ -34,6 +34,10 @@ F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL ){
     if( ncovars > 1 ){
       start <- c(log(sqrt(sum( (dist - w.lo)^2 )/length(dist))), rep(0, np - 1))
       low <- c(rep(-Inf, np))
+    }
+    else if(point.transects){
+      start <- 30 #c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(0, np - 1))
+      low <- c(0, rep(-Inf, np - 1 ))
     }
     else{
       start <- c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(0, np - 1))

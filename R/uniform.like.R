@@ -1,4 +1,4 @@
-uniform.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions= 0, scale=TRUE){
+uniform.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions= 0, scale=TRUE, point.transects, ...){
 #
 #   Compute the uniform likelihood, scaled appropriately, for all distance values in dist.
 #
@@ -81,7 +81,7 @@ uniform.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series=
     }
 
     if( scale ){
-            dfunc = dfunc / integration.constant( uniform.like, covars = covars, w.lo=w.lo,w.hi=w.hi, a=a,series=series,expansions=expansions )   # scales density so integrate from w.lo to w.hi is 1.0
+            dfunc = dfunc / integration.constant(dist, uniform.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions, point.transects = point.transects, ...)   # scales density so integrate from w.lo to w.hi is 1.0
     }
 
 #   df2 <- dfunc[ order(dist) ]

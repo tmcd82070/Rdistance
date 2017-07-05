@@ -1,4 +1,4 @@
-integration.constant <- function( density, w.lo, w.hi, covars, a, expansions, ... ){
+integration.constant <- function( dist, density, w.lo, w.hi, covars, a, expansions, point.transects, ...){
   #
   #   Return the scalar so that integral from 0 to w of underlying density
   #   is 1.0
@@ -23,10 +23,18 @@ integration.constant <- function( density, w.lo, w.hi, covars, a, expansions, ..
     temp.covars <- matrix(nrow = length(seqx), ncol = ncol(unique.covars))
     seqy <- list()
     temp.scaler <- vector(length = nrow(unique.covars))
-    #temp.scaler2 <- vector(length = nrow(unique.covars))
     scaler <- vector(length = nrow(covars), "numeric")
     
-    if(identical(density, halfnorm.like) & expansions == 0){
+    if(point.transects){
+      for(i in 1:nrow(unique.covars)){
+        for(j in 1:length(seqx)){
+          temp.covars[j,] <- unique.covars[i,]
+        }
+        seqy[[i]] <- seqx[i] * density(dist = seqx, covars = temp.covars, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
+        temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / (2*seqx[i])
+      }
+    }
+    else if(identical(density, halfnorm.like) & expansions == 0){
       s <- 0
       for (j in 1:(ncol(covars)))
         s <- s + a[j]*unique.covars[,j]
@@ -43,11 +51,9 @@ integration.constant <- function( density, w.lo, w.hi, covars, a, expansions, ..
       sigma <- exp(s)
       beta = a[length(a) - expansions]
       
-      
       for(i in 1:nrow(unique.covars)){
-        temp.scaler[i] <- integrate(f = function(x){1 - exp(-(x/sigma[i])^(-beta))},lower =  w.lo, upper = w.hi, stop.on.error = F)$value #w.hi - (w.hi*(-(-w.hi/sigma[i])^(-beta))^(1/beta)*gamma_inc(-1/beta,-(-w.hi/sigma[i])^(-beta)))/(beta) - (w.lo - (w.lo*(-(-w.lo/sigma[i])^(-beta))^(1/beta)*gamma_inc(-1/beta,-(-w.lo/sigma[i])^(-beta)))/(beta))
+        temp.scaler[i] <- integrate(f = function(x){1 - exp(-(x/sigma[i])^(-beta))},lower =  w.lo, upper = w.hi, stop.on.error = F)$value
       }
-      
     }
     else if(identical(density, negexp.like) & expansions == 0){
       s <- 0
@@ -56,7 +62,6 @@ integration.constant <- function( density, w.lo, w.hi, covars, a, expansions, ..
       beta <- exp(s)
       
       for(i in 1:nrow(unique.covars)){
-        #temp.scaler[i] <- integrate(function(x){exp(-beta[i]*x)}, w.lo, w.hi, stop.on.error = F)$value 
         temp.scaler[i] <- unname((exp(-beta[i]*w.lo) - exp(-beta[i]*w.hi))/beta[i])
       }
     }
@@ -74,13 +79,17 @@ integration.constant <- function( density, w.lo, w.hi, covars, a, expansions, ..
     z <- merge(covars, df, by.x = names(as.data.frame(covars)), by.y = names(df[, names(df) != "temp.scaler"]), sort = F)
     scaler <- z$temp.scaler
   }
-  else{
-    seqy = density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi, a=a, expansions = expansions, ...)
+  else if(point.transects){
+    seqy <- seqx * density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi, a=a, expansions = expansions, ...)
     
     #   Trapazoid rule
-    scaler= (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
+    scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*dist)
   }
-  #print("working...")
+  else{
+    seqy <- density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi, a=a, expansions = expansions, ...)
+    
+    #   Trapazoid rule
+    scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
+  }
   scaler
-  
 }

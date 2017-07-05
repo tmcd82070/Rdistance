@@ -23,7 +23,7 @@ if( (obj$like.form == "hazrate") & (obj$x.scl == obj$w.lo) ){
     x <- seq( obj$w.lo, obj$w.hi, length=seq.length)
 }
 
-y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = obj$covars, expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi )
+y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = obj$covars, expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
 
 
 if( is.null( obj$g.x.scl ) ){
@@ -35,12 +35,11 @@ if( is.null( obj$g.x.scl ) ){
     g.at.x0 <- obj$g.x.scl
     x0 <- obj$x.scl
 }
-f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, covars = obj$covars, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi )
+f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, covars = obj$covars, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
 
 y <- y * g.at.x0 / f.at.x0
 
-
-esw <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # Trapazoid rule.  Use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
+  esw <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # Trapazoid rule.  Use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
 
 ### This is correct. It works provided g(x) and x are stored in obj. 
 ### This routine evaluates f(x) using like(), 

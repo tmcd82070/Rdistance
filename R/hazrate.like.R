@@ -1,4 +1,4 @@
-hazrate.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE){
+hazrate.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, point.transects, ...){
 #
 #   Compute hazard rate likelihood
 #
@@ -66,7 +66,7 @@ hazrate.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series=
     #}
 
     if( scale ){
-        dfunc = dfunc / integration.constant(hazrate.like, w.lo=w.lo, w.hi=w.hi, a=a, covars = covars, series=series,expansions=expansions)
+        dfunc = dfunc / integration.constant(dist, hazrate.like, w.lo=w.lo, w.hi=w.hi, a=a, covars = covars, series=series,expansions=expansions, point.transects = point.transects, ...)
     }
     
     c(dfunc)

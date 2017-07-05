@@ -1,4 +1,4 @@
-negexp.like <- function (a, dist, w.lo=0, covars = NULL, w.hi=max(dist), series="cosine", expansions = 0, scale=TRUE){
+negexp.like <- function (a, dist, w.lo=0, covars = NULL, w.hi=max(dist), series="cosine", expansions = 0, scale=TRUE, point.transects, ...){
 #
 #   Compute negative exponential likelihood
 #
@@ -82,7 +82,7 @@ negexp.like <- function (a, dist, w.lo=0, covars = NULL, w.hi=max(dist), series=
     }
 
     if( scale ){
-        dfunc = dfunc / integration.constant(negexp.like, covars = covars, w.lo=w.lo,w.hi=w.hi,a=a,series=series,expansions=expansions)  # makes integral from w.lo to w.hi = 1.0
+        dfunc = dfunc / integration.constant(dist, negexp.like, covars = covars, w.lo=w.lo,w.hi=w.hi,a=a,series=series,expansions=expansions, point.transects = point.transects, ...)  # makes integral from w.lo to w.hi = 1.0
     }
     
     c(dfunc)

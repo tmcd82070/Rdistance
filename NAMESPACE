@@ -8,6 +8,7 @@ importFrom("pracma", "erf")
 
 export(AIC.dfunc)
 export(ESW)
+export(effective.radius)
 export(F.abund.estim)
 export(F.automated.CDA)
 export(F.dfunc.estim)
