@@ -21,7 +21,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
         temp <- c(temp, mean(x$covars[,i]))
         if(!is.null(x$factor.names)){
           for(j in 1:length(x$factor.names)){
-            if(startsWith(names(x$parameters)[i], fit$factor.names[j])){
+            if(startsWith(names(x$parameters)[i], x$factor.names[j])){
               temp[i] <- 0
             }
           }

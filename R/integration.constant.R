@@ -41,7 +41,7 @@ integration.constant <- function( dist, density, w.lo, w.hi, covars, a, expansio
       sigma <- exp(s)
       
       for(i in 1:nrow(unique.covars)){
-        temp.scaler[i] <- sqrt(pi/2) * sigma[i] * (erf(w.hi/(sqrt(2)*sigma[i])) - erf(w.lo/(sqrt(2)*sigma[i])))
+        temp.scaler[i] <- 2*pnorm(sqrt(2)*w.hi) - 2*pnorm(sqrt(2)*w.lo)
       }
     }
     else if(identical(density, hazrate.like) & expansions == 0){
