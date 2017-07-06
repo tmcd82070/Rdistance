@@ -1,4 +1,4 @@
-negexp.like <- function (a, dist, w.lo=0, covars = NULL, w.hi=max(dist), series="cosine", expansions = 0, scale=TRUE, point.transects, ...){
+negexp.like <- function (a, dist, w.lo=0, covars = NULL, w.hi=max(dist), series="cosine", expansions = 0, scale=TRUE, point.transects = F, ...){
 #
 #   Compute negative exponential likelihood
 #

@@ -1,4 +1,4 @@
-uniform.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions= 0, scale=TRUE, point.transects, ...){
+uniform.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions= 0, scale=TRUE, point.transects = F, ...){
 #
 #   Compute the uniform likelihood, scaled appropriately, for all distance values in dist.
 #

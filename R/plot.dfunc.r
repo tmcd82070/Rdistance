@@ -27,9 +27,6 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
           }
         }
       }
-      
-      
-      
       new.data[[1]] <- temp
     }
   }
@@ -89,13 +86,13 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
   }
   if(!is.null(x$covars)){
     for(i in 1:length(new.data)){
-      f.at.x0 <- like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
-      if(any(is.na(f.at.x0) | (f.at.x0 <= 0))){
+      f.max <- F.maximize.g(x, t(temp.covars[[i]][1,]))  #like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+      if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
         yscl <- 1.0
         warning("Y intercept missing or zero. One or more parameters likely at their boundaries. Caution.")
       } else {
-        yscl <- g.at.x0 / f.at.x0
+        yscl <- g.at.x0 / f.max
       }
       if(length(yscl > 1)){yscl <- yscl[1]}
       y[,i] <- y[,i] * yscl
@@ -107,19 +104,19 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
     for(j in 1:length(x.seq)){
       mean.covars[j,] <- temp
     }
-    f.at.x0 <- like( x$parameters, x0 - x$w.lo, covars = mean.covars, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
-    yscl <- g.at.x0 / f.at.x0
+    f.max <- F.maximize.g(x, t(mean.covars[1,]))#like( x$parameters, x0 - x$w.lo, covars = mean.covars, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+    yscl <- g.at.x0 / f.max
     if(length(yscl > 1)){yscl <- yscl[1]}
     ybarhgts <- cnts$density * yscl
   }
   else{
-    f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
-    if(any(is.na(f.at.x0) | (f.at.x0 <= 0))){
+    f.max <- F.maximize.g(x, covars = NULL) #like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+    if(any(is.na(f.max) | (f.max <= 0))){
       #   can happen when parameters at the border of parameter space
       yscl <- 1.0
       warning("Y intercept missing or zero. One or more parameters likely at their boundaries. Caution.")
     } else {
-      yscl <- g.at.x0 / f.at.x0
+      yscl <- g.at.x0 / f.max
     }
     if(length(yscl > 1)){yscl <- yscl[1]}
     y <- y * yscl
@@ -169,7 +166,12 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
   lines( rep(x.seq[length(x.seq)], 2), c(0,y[length(x.seq)]), col="red", lwd=2 )
   
   #   print area under the curve
-  area <- ESW( x )
+  if(x$point.transects){
+    area <- effective.radius(x)
+  }
+  else{
+    area <- ESW(x)
+  }
   #area2 <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
   #print(c(area,area2))
   text( max(x.seq), max(y.lims)-0.025*diff(y.lims), paste("ESW =", round(area,3)), adj=1)
