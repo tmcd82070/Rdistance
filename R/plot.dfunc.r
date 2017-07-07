@@ -1,4 +1,4 @@
-plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL, legend = TRUE, ... ){
+plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, legend = TRUE, ... ){
   #
   #   Plot method for distance functions.
   #
@@ -7,16 +7,19 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
   
   #   changed the number of plotting points to 200 - jg
   if(!is.null(x$covars)){
-    if(!is.null(new.data)){
-      new.data <- as.list(new.data)
-      for(i in 1:length(new.data)){
-        new.data[[i]] <- c(1,new.data[[i]])
+    if(!is.null(newdata)){
+      temp <- list()
+      #newdata <- as.list(newdata)
+      
+      for(i in 1:nrow(newdata)){
+        temp[[i]] <- unname(unlist(cbind(1, newdata)[i,]))
       }
+      newdata <- temp
     }
     else{
       # Default covar values to plot
       temp <- NULL
-      new.data <- list()
+      newdata <- list()
       for(i in 1:ncol(x$covars)){
         temp <- c(temp, mean(x$covars[,i]))
         if(!is.null(x$factor.names)){
@@ -27,7 +30,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
           }
         }
       }
-      new.data[[1]] <- temp
+      newdata[[1]] <- temp
     }
   }
   
@@ -49,20 +52,20 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
   x.seq <- seq( x$w.lo, x$w.hi, length=200)
   if(!is.null(x$covars)){
     temp.covars <- list()
-    for(i in 1:length(new.data)){
+    for(i in 1:length(newdata)){
       temp.covars[[i]] <- matrix(nrow = length(x.seq), ncol = ncol(x$covars))
     }
   }
-  if(is.list(new.data) & length(new.data) == 0)
+  if(is.list(newdata) & length(newdata) == 0)
     ncol = 1
   else
-    ncol = length(new.data)
+    ncol = length(newdata)
   y <- matrix(nrow = length(x.seq), ncol = ncol)
   
   if(!is.null(x$covars)){
-    for(i in 1:length(new.data)){
+    for(i in 1:length(newdata)){
       for(j in 1:length(x.seq)){
-        temp.covars[[i]][j,] <- new.data[[i]]
+        temp.covars[[i]][j,] <- unname(newdata[[i]])
       }
       y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
     }
@@ -85,7 +88,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
     x0 <- x$x.scl
   }
   if(!is.null(x$covars)){
-    for(i in 1:length(new.data)){
+    for(i in 1:length(newdata)){
       f.max <- F.maximize.g(x, t(temp.covars[[i]][1,]))  #like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
       if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
@@ -195,8 +198,8 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
   
   # Add legend to plot if covars are present
   if(legend & !is.null(x$covars)){
-    legend.names <- vector(mode = "character", length = length(new.data))
-    for(i in 1:length(new.data)){
+    legend.names <- vector(mode = "character", length = length(newdata))
+    for(i in 1:length(newdata)){
       legend.factors <- vector(length = length(x$legend.names))
       for(j in 2:ncol(x$covars)){
         if(!is.null(x$factor.names)){
@@ -204,17 +207,17 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", new.data = NULL,
             for(k in 1:length(x$factor.names)){
               if(startsWith(colnames(x$covars)[j], x$factor.names[k])){
                 if(is.na(legend.factors[k])){
-                  legend.factors[k] <- paste0(new.data[[i]][j], ",")
+                  legend.factors[k] <- paste0(newdata[[i]][j], ",")
                 }
                 else{
-                  legend.factors[k] <- paste0(legend.factors[k], new.data[[i]][j], ",")
+                  legend.factors[k] <- paste0(legend.factors[k], newdata[[i]][j], ",")
                 }
               }
             }
           }
-        }
-        else{
-          legend.names[i] <- paste0(legend.names[i], " ", colnames(x$covars)[j], " = ", new.data[[i]][j], ",")
+          else{
+            legend.names[i] <- paste0(legend.names[i], " ", colnames(x$covars)[j], " = ", newdata[[i]][j], ",")
+          }
         }
       }
       if(!is.null(x$factor.names)){
