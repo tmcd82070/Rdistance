@@ -6,7 +6,7 @@ Date: 2015-07-21
 Authors@R: c(
   person("Trent", "McDonald", email="tmcdonald@west-inc.com", role=c("cre","aut")), 
   person("Ryan", "Nielson", email="rnielson@west-inc.com", role=c("aut")), 
-  person("Jason", "Carlisle", email="jason.d.carlisle@gmail.com", role=c("aut")), 
+  person("Jason", "Carlisle", email="jcarlisle@west-inc.com", role=c("aut")), 
   person("Ben", "Augustine", email="ben.augustine@uky.edu", role=c("ctb")),
   person("James", "Griswald", email="", role=c("ctb")),
   person("Joel", "Reynolds", email="", role=c("ctb")), 

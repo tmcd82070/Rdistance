@@ -36,7 +36,7 @@ Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. \emph{Distan
 }
 
 \author{
-Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
+Jason Carlisle, WEST Inc., \email{jcarlisle@west-inc.com}
 }
 
 

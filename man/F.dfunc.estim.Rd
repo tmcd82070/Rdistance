@@ -85,7 +85,7 @@ of the negative log likelihood).}
 \author{
     Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
     
-    Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
+    Jason Carlisle, WEST Inc., \email{jcarlisle@west-inc.com}
 }
 
 
