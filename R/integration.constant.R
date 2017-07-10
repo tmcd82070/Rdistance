@@ -30,8 +30,8 @@ integration.constant <- function( dist, density, w.lo, w.hi, covars, a, expansio
         for(j in 1:length(seqx)){
           temp.covars[j,] <- unique.covars[i,]
         }
-        seqy[[i]] <- seqx[i] * density(dist = seqx, covars = temp.covars, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
-        temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / (2*seqx[i])
+        seqy[[i]] <- seqx * density(dist = seqx, covars = temp.covars, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
+        temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
     }
     else if(identical(density, halfnorm.like) & expansions == 0){
@@ -41,7 +41,7 @@ integration.constant <- function( dist, density, w.lo, w.hi, covars, a, expansio
       sigma <- exp(s)
       
       for(i in 1:nrow(unique.covars)){
-        temp.scaler[i] <- 2*pnorm(sqrt(2)*w.hi) - 2*pnorm(sqrt(2)*w.lo)
+        temp.scaler[i] <- sqrt(pi/2) * sigma[i] * (erf(w.hi/(sqrt(2)*sigma[i])) - erf(w.lo/(sqrt(2)*sigma[i])))
       }
     }
     else if(identical(density, hazrate.like) & expansions == 0){
@@ -78,18 +78,22 @@ integration.constant <- function( dist, density, w.lo, w.hi, covars, a, expansio
     df <- data.frame(unique.covars,temp.scaler)
     z <- merge(covars, df, by.x = names(as.data.frame(covars)), by.y = names(df[, names(df) != "temp.scaler"]), sort = F)
     scaler <- z$temp.scaler
+    if(point.transects){
+      scaler <- scaler/dist
+    }
   }
   else if(point.transects){
-    seqy <- seqx * density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi, a=a, expansions = expansions, ...)
+    seqy <- seqx * density( dist = seqx, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
     
     #   Trapazoid rule
     scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*dist)
   }
   else{
-    seqy <- density( dist=seqx, scale=FALSE, w.lo=w.lo, w.hi=w.hi, a=a, expansions = expansions, ...)
+    seqy <- density( dist = seqx, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
     
     #   Trapazoid rule
     scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
   }
+  #print(scaler)
   scaler
 }

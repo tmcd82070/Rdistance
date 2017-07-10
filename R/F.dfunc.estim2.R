@@ -1,5 +1,5 @@
 F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", point.transects = F, w.lo=0, w.hi=max(dist), 
-                           expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){
+                            expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){
   if (missing(data))
     data <- environment(formula)
   cl <- match.call()
@@ -47,24 +47,19 @@ F.dfunc.estim2 <- function (formula, data, likelihood="halfnorm", point.transect
   #strt.lims <- NULL
   #for (i in 1:ncovars)
   #  strt.lims[i] <- 1
-  if(F & likelihood == "negexp"){
-    fit <- optim(strt.lims$start, F.nLL,# lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
-                 #method = c("L-BFGS-B"),
-                 control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
-                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series, point.transects = point.transects)
-  }
-  else{
-    fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
-                 method = c("L-BFGS-B"),
-                 control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
-                 w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series, point.transects = point.transects)
-  }
-    names(fit$par) <- strt.lims$names
+  fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
+               method = c("L-BFGS-B"),
+               control = list(trace = 6, maxit = 1000), dist = dist, like = likelihood, covars = covars,
+               w.lo = w.lo, w.hi = w.hi, expansions = expansions, series = series, point.transects = point.transects, for.optim = T)
+  
+  names(fit$par) <- strt.lims$names
   ans <- list(parameters = fit$par, loglik = fit$value, 
               convergence = fit$convergence, like.form = likelihood, 
               w.lo = w.lo, w.hi = w.hi, dist = dist, covars = covars, expansions = expansions, 
               series = series, call = call, call.x.scl = x.scl, call.g.x.scl = g.x.scl, 
               call.observer = observer, fit = fit, factor.names = factor.names, point.transects = point.transects)
+  
+  ans$loglik <- F.nLL(ans$parameters, ans$dist, covars = ans$covars, like = ans$like.form, w.lo = ans$w.lo, w.hi = ans$w.hi, series = ans$series, expansions = ans$expansions, point.transects = ans$point.transects, for.optim = F)
   
   class(ans) <- "dfunc"
   gx <- F.gx.estim(ans)

@@ -10,7 +10,7 @@ g.neg <-  function(x, params, covars = NULL, like, w.lo=0, w.hi=max(dist), serie
 
     g.x <- f.like( a = params, dist = x, covars = covars, w.lo=w.lo, w.hi=w.hi, series = series, expansions = expansions, point.transects = point.transects )
 
-    -g.x * 100000
+    -g.x * 10000000000
 }
 
 x.start <- (fit$w.lo + fit$w.hi) / 10 + fit$w.lo
@@ -26,6 +26,6 @@ if( x.max$convergence != 0 ){
 }
 
 -g.neg(x = x.max, params = fit$parameters, covars = covars, w.lo = fit$w.lo, w.hi = fit$w.hi, like = fit$like.form,
-       expansions = fit$expansions, series = fit$series, point.transects = fit$point.transects)/100000 
+       expansions = fit$expansions, series = fit$series, point.transects = fit$point.transects)/10000000000
 
 }

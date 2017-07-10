@@ -34,7 +34,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
     }
   }
   
-  cnts <- hist( x$dist, plot=FALSE, breaks=nbins )
+  cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, breaks=nbins )
   xscl <- cnts$mid[2] - cnts$mid[1]
   
   #   Gotta add bars on the left if first bar is not at w.lo.  I.e., if first 
@@ -44,7 +44,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
     # do the hist again, this time specifying breaks exactly
     brks <- seq(x$w.lo, x$w.hi, by=xscl)
     brks <- c(brks, brks[length(brks)] + xscl )   # make sure last bin goes outside range of data
-    cnts <- hist( x.dist, plot=FALSE, breaks=brks, include.lowest=TRUE )
+    cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, breaks=brks, include.lowest=TRUE )
   }
   
   like <- match.fun( paste( x$like.form, ".like", sep=""))
@@ -177,7 +177,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
   }
   #area2 <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
   #print(c(area,area2))
-  text( max(x.seq), max(y.lims)-0.025*diff(y.lims), paste("ESW =", round(area,3)), adj=1)
+  #text( max(x.seq), max(y.lims)-0.025*diff(y.lims), paste("ESW =", round(area,3)), adj=1)
   
   #   If model did not converge, print a message on the graph.
   if( x$convergence != 0 ){
@@ -202,23 +202,23 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
     for(i in 1:length(newdata)){
       legend.factors <- vector(length = length(x$legend.names))
       for(j in 2:ncol(x$covars)){
-        if(!is.null(x$factor.names)){
-          if(any(startsWith(colnames(x$covars)[j], x$factor.names))){
-            for(k in 1:length(x$factor.names)){
-              if(startsWith(colnames(x$covars)[j], x$factor.names[k])){
-                if(is.na(legend.factors[k])){
-                  legend.factors[k] <- paste0(newdata[[i]][j], ",")
-                }
-                else{
-                  legend.factors[k] <- paste0(legend.factors[k], newdata[[i]][j], ",")
-                }
+        if(any(startsWith(colnames(x$covars)[j], as.character(x$factor.names)))){
+          for(k in 1:length(x$factor.names)){
+            if(startsWith(colnames(x$covars)[j], x$factor.names[k])){
+              if(is.na(legend.factors[k])){
+                legend.factors[k] <- paste0(newdata[[i]][j], ",")
+              }
+              else{
+                legend.factors[k] <- paste0(legend.factors[k], signif(newdata[[i]][j],3), ",")
               }
             }
           }
-          else{
-            legend.names[i] <- paste0(legend.names[i], " ", colnames(x$covars)[j], " = ", newdata[[i]][j], ",")
-          }
         }
+        
+        else{
+          legend.names[i] <- paste0(legend.names[i], " ", colnames(x$covars)[j], " = ", signif(newdata[[i]][j],3), ",")
+        }
+        
       }
       if(!is.null(x$factor.names)){
         for(k in 1:length(x$factor.names)){
@@ -227,7 +227,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
       }
       legend.names[i] <- substr(legend.names[i], 2, nchar(legend.names[i])-1)
     }
-    legend('topright', legend = legend.names, lty = 1:ncol(y), lwd = 2, col = 2:(ncol(y)+1))
+    legend('topright', legend = legend.names, lty = 1:ncol(y), lwd = 2, col = 2:(ncol(y)+1), cex = 0.7)
   }
   
   #x$xscl.plot <- xscl   # gonna need this to plot something on the graph.

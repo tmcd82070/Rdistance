@@ -36,7 +36,7 @@ F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, point.
       low <- c(rep(-Inf, np))
     }
     else if(point.transects){
-      start <- 30 #c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(0, np - 1))
+      start <- c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(0, np - 1))
       low <- c(0, rep(-Inf, np - 1 ))
     }
     else{
