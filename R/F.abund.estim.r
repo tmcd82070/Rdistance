@@ -62,8 +62,8 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     s <- 0
     for(i in 1:nrow(detection.data)){
       if(is.null(dfunc$covars)){temp <- NULL}else{temp <- t(as.matrix(dfunc$covars[i,]))}
-      f.max <- F.maximize.g(dfunc, covars = temp)
-      new.term <- detection.data$groupsize[i]*f.max/f.like(a = dfunc$parameters,
+      #f.max <- F.maximize.g(dfunc, covars = temp)
+      new.term <- detection.data$groupsize[i]/f.like(a = dfunc$parameters,
                                                   dist = dfunc$dist[i],
                                                   covars = temp,
                                                   w.lo = dfunc$w.lo,
@@ -71,15 +71,15 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
                                                   series = dfunc$series,
                                                   expansions = dfunc$expansions,
                                                   point.transects = dfunc$point.transects,
-                                                  scale = T)
-      if(dfunc$point.transects){
-        new.esw <- effective.radius(dfunc)
-      }
-      else{
-        new.esw <- ESW(dfunc, temp)  # get effective strip width
-      }
+                                                  scale = F)
+      # if(dfunc$point.transects){
+      #   new.esw <- effective.radius(dfunc)
+      # }
+      # else{
+      #   new.esw <- ESW(dfunc, temp)  # get effective strip width
+      # }
       if(!is.na(new.term)){
-        s <- s + new.term/new.esw
+        s <- s + new.term/dfunc$w.hi
       }
     }
     print(paste("s:", s))
