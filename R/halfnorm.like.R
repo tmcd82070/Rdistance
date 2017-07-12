@@ -7,6 +7,7 @@
 #'   coefficients for the expansion terms follow coefficients for the canonical parameters.  If \code{p} is the number of canonical parameters, coefficients
 #'   for the expansion terms are \code{a[(p+1):length(a)]}.
 #' @param dist A numeric vector containing the observed distances.
+#' @param covars Data frame containing values of covariates at each observation in \code{dist}.
 #' @param w.lo Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.
 #'   Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
 #' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
@@ -19,6 +20,7 @@
 #'   If \code{scale} equals TRUE, a numerical integration routine (\code{\link{integration.constant}}) is called, which in turn calls this likelihood function again
 #'   with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
 #'   constant of integration.  All user defined likelihoods must have and use this parameter.
+#' @param point.transects Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
 #' @details The half-normal likelihood is \deqn{f(x|a) = \exp(-x^2 / a^2)}{f(x|a) = exp(-x^2 / a^2)}where \eqn{a} is the standard error parameter to be estimated.
 #'   If \eqn{a} is small, width of the half-normal is small and sightability declines rapidly as distance increases. If \eqn{a} is large, width of the half-hormal is 
 #'   large and sightability may not decline much between \eqn{w.lo} and \eqn{w.hi}.
@@ -28,9 +30,20 @@
 #'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}
 #'   {f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 #' @value A numeric vector the same length and order as \code{dist} containing the likelihood contribution for corresponding distances in \code{dist}. 
-#' Assuming \code{L} is the returned vector from one of these functions, the full log likelihood of all the data is \code{-sum(log(L), na.rm=T)}. Note that the returned likelihood value for distances less than \code{w.lo} or greater than \code{w.hi} is \code{NA}, and thus it is prudent to use \code{na.rm=TRUE} in the sum. If \code{scale} = TRUE, the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, the integral of the likelihood is an arbitrary. 
+#'   Assuming \code{L} is the returned vector from one of these functions, the full log likelihood of all the data is \code{-sum(log(L), na.rm=T)}. Note that the
+#'   returned likelihood value for distances less than \code{w.lo} or greater than \code{w.hi} is \code{NA}, and thus it is prudent to use \code{na.rm=TRUE} in the
+#'   sum. If \code{scale} = TRUE, the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, the integral of the likelihood is
+#'   arbitrary.
+#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
+#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
+#' @seealso \code{\link{F.dfunc.estim}},
+#'          \code{\link{hazrate.like}},
+#'          \code{\link{uniform.like}},
+#'          \code{\link{negexp.like}},
+#'          \code{\link{Gamma.like}}
+#' @keywords models
 
-halfnorm.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, point.transects = F, ...){
+halfnorm.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = FALSE, ...){
   #   Computes half norm likelihood, scaled appropriately to integrate to 1.0, for every
   #   observation. I.e., returns a vector. 
   #
