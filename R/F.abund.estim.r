@@ -39,19 +39,67 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   
   # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
   (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
-
+  
   # sample size (number of detections, NOT individuals)
   (n <- nrow(detection.data))
   
   # group sizes
   (avg.group.size <- mean(detection.data$groupsize))
-
+  
   # total transect length and ESW
   (tot.trans.len <- sum(transect.data$length))
-  (esw <- ESW(dfunc))  # get effective strip width
-
-  # estimate abundance
-  (n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len))
+  
+  if(dfunc$point.transects){
+    esw <- effective.radius(dfunc)
+  }
+  else{
+    esw <- ESW(dfunc)  # get effective strip width
+  }
+  
+  if(is.null(dfunc$covars)){temp <- matrix(nrow = 0, ncol = 0)}else{temp <- dfunc$covars}
+  if(ncol(temp) > 1 | dfunc$point.transects){
+    f.like <- match.fun(paste( dfunc$like.form, ".like", sep=""))
+    s <- 0
+    for(i in 1:nrow(detection.data)){
+      if(is.null(dfunc$covars)){temp <- NULL}else{temp <- t(as.matrix(dfunc$covars[i,]))}
+      f.max <- F.maximize.g(dfunc, covars = temp)
+      new.term <- detection.data$groupsize[i]*f.max/f.like(a = dfunc$parameters,
+                                                  dist = dfunc$dist[i],
+                                                  covars = temp,
+                                                  w.lo = dfunc$w.lo,
+                                                  w.hi = dfunc$w.hi,
+                                                  series = dfunc$series,
+                                                  expansions = dfunc$expansions,
+                                                  point.transects = dfunc$point.transects,
+                                                  scale = T)
+      if(dfunc$point.transects){
+        new.esw <- effective.radius(dfunc)
+      }
+      else{
+        new.esw <- ESW(dfunc, temp)  # get effective strip width
+      }
+      if(!is.na(new.term)){
+        s <- s + new.term/new.esw
+      }
+    }
+    print(paste("s:", s))
+    if(dfunc$point.transects){
+      a <- pi*esw^2*n
+    }
+    else{
+      a <- 2 * tot.trans.len
+    }
+    #print(paste("tot.trans.len:", tot.trans.len))
+    #print(paste("area:", area))
+    #print(paste("a:", a))
+    n.hat <- s * area/a
+  }
+  else{
+    # Abundance in covered area
+    # estimate abundance
+    print(paste("s:", avg.group.size * n / esw))
+    n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len)
+  }
   
   # store output
   ans <- dfunc
@@ -61,87 +109,88 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   ans$esw <- esw
   ans$tran.len <- tot.trans.len
   ans$avg.group.size <- avg.group.size
-
-
-
+  
+  
+  
   if (!is.null(ci)) {
     # Compute bootstrap CI by resampling transects
-
-      g.x.scl.orig <- dfunc$call.g.x.scl  # g(0) or g(x) estimate
+    
+    g.x.scl.orig <- dfunc$call.g.x.scl  # g(0) or g(x) estimate
+    
+    n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
+    
+    # Turn on progress bar (if utils is installed)
+    if ("utils" %in% installed.packages()[, "Package"]) {
+      pb <- txtProgressBar(1, R)
+      show.progress = TRUE
+    } else show.progress = FALSE
+    
+    
+    # Bootstrap
+    cat("Computing bootstrap confidence interval on N...\n")
+    for(i in 1:R){
+      # sample rows, with replacement, from transect data
+      new.transect.data <- transect.data[sample(nrow(transect.data), nrow(transect.data), replace=TRUE), ]
       
-      n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
+      new.trans <- as.character(new.transect.data$siteID)  # which transects were sampled?
+      trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
       
-      # Turn on progress bar (if utils is installed)
-      if ("utils" %in% installed.packages()[, "Package"]) {
-        pb <- txtProgressBar(1, R)
-        show.progress = TRUE
-      } else show.progress = FALSE
+      # subset distance data from these transects
+      if( class(new.transect.data$siteID) == "factor" ){
+        new.trans <- unique(droplevels(new.transect.data$siteID))
+      } else {
+        new.trans <- unique(new.transect.data$siteID)
+      }
+      new.detection.data <- detection.data[detection.data$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
+      
+      # replicate according to freqency in new sample
+      # merge to add Freq column to indicate how many times to repeat each row
+      red <- merge(new.detection.data, trans.freq, by.x="siteID", by.y="new.trans")
+      # expand this reduced set my replicating rows
+      new.detection.data <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
+      
+      # Extract distances
+      new.x <- new.detection.data$dist
+      
+      #update g(0) or g(x) estimate.
+      if (is.data.frame(g.x.scl.orig)) {
+        g.x.scl.bs <- g.x.scl.orig[sample(1:nrow(g.x.scl.orig), 
+                                          replace = TRUE), ]
+      } else g.x.scl.bs <- g.x.scl.orig
       
       
-      # Bootstrap
-      cat("Computing bootstrap confidence interval on N...\n")
-      for(i in 1:R){
-        # sample rows, with replacement, from transect data
-        new.transect.data <- transect.data[sample(nrow(transect.data), nrow(transect.data), replace=TRUE), ]
-        
-        new.trans <- as.character(new.transect.data$siteID)  # which transects were sampled?
-        trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
-        
-        # subset distance data from these transects
-        if( class(new.transect.data$siteID) == "factor" ){
-          new.trans <- unique(droplevels(new.transect.data$siteID))
-        } else {
-          new.trans <- unique(new.transect.data$siteID)
-        }
-        new.detection.data <- detection.data[detection.data$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
-        
-        # replicate according to freqency in new sample
-        # merge to add Freq column to indicate how many times to repeat each row
-        red <- merge(new.detection.data, trans.freq, by.x="siteID", by.y="new.trans")
-        # expand this reduced set my replicating rows
-        new.detection.data <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
-        
-        # Extract distances
-        new.x <- new.detection.data$dist
-        
-        #update g(0) or g(x) estimate.
-        if (is.data.frame(g.x.scl.orig)) {
-          g.x.scl.bs <- g.x.scl.orig[sample(1:nrow(g.x.scl.orig), 
-                                            replace = TRUE), ]
-        } else g.x.scl.bs <- g.x.scl.orig
-        
-        
-        # estimate distance function
-        dfunc.bs <- F.dfunc.estim(new.x, likelihood = dfunc$like.form, 
-                                  w.lo = dfunc$w.lo, w.hi = dfunc$w.hi, expansions = dfunc$expansions, 
-                                  series = dfunc$series, x.scl = dfunc$call.x.scl, 
-                                  g.x.scl = g.x.scl.bs, observer = dfunc$call.observer, 
-                                  warn = FALSE)
-        
-        # Store ESW if it converged
-        if (dfunc.bs$convergence == 0) {
-          esw.bs <- ESW(dfunc.bs)
-          if (esw.bs <= dfunc$w.hi) {
-            
-            # Calculate observed metrics
-            # sample size
-            n.bs <- nrow(new.detection.data)
-            
-            # group sizes
-            avg.group.size.bs <- mean(new.detection.data$groupsize)
-            
-            # Store observed metrics
-            #esw <- ESW(dfunc.bs)  #get effective strip width
-            tot.trans.len.bs <- sum(new.transect.data$length)
-            n.hat.bs[i] <- avg.group.size.bs * n.bs * area/(2 * esw.bs * tot.trans.len.bs)  # area stays same as original?   
-            
-          }  # end if esw.bs <= w.hi
-          if (plot.bs) 
-            f.plot.bs(dfunc.bs, x.scl.plot, y.scl.plot, col = "blue", lwd = 0.5)
+      
+      # estimate distance function
+      dfunc.bs <- F.dfunc.estim2(new.x ~ 1, likelihood = dfunc$like.form, 
+                                 w.lo = dfunc$w.lo, w.hi = dfunc$w.hi, expansions = dfunc$expansions, 
+                                 series = dfunc$series, x.scl = dfunc$call.x.scl, 
+                                 g.x.scl = g.x.scl.bs, observer = dfunc$call.observer, point.transects = dfunc$point.transects, 
+                                 warn = FALSE)
+      
+      # Store ESW if it converged
+      if (dfunc.bs$convergence == 0) {
+        esw.bs <- ESW(dfunc.bs)
+        if (esw.bs <= dfunc$w.hi) {
           
-          if (show.progress) setTxtProgressBar(pb, i)
-        }  # end if dfunc.bs converged
-      }  # end bootstrap
+          # Calculate observed metrics
+          # sample size
+          n.bs <- nrow(new.detection.data)
+          
+          # group sizes
+          avg.group.size.bs <- mean(new.detection.data$groupsize)
+          
+          # Store observed metrics
+          #esw <- ESW(dfunc.bs)  #get effective strip width
+          tot.trans.len.bs <- sum(new.transect.data$length)
+          n.hat.bs[i] <- avg.group.size.bs * n.bs * area/(2 * esw.bs * tot.trans.len.bs)  # area stays same as original?   
+          
+        }  # end if esw.bs <= w.hi
+        if (plot.bs) 
+          f.plot.bs(dfunc.bs, x.scl.plot, y.scl.plot, col = "blue", lwd = 0.5)
+        
+        if (show.progress) setTxtProgressBar(pb, i)
+      }  # end if dfunc.bs converged
+    }  # end bootstrap
     
     
     # close progress bar  
@@ -165,8 +214,8 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     # Don't compute CI if ci is null
     ans$B <- NA
     ans$ci <- c(NA, NA)
-    }  # end else
-
+  }  # end else
+  
   
   
   # Compute transect-level densities
@@ -185,7 +234,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     
     # Calculate transect-level abundance (density)
     nhat.df$nhat <- (nhat.df$rawcount * area) / (2 * esw * nhat.df$length)   
-
+    
     # Check that transect-level abundances match total abundance
     #mean(nhat.df$nhat)
     #ans$n.hat
@@ -203,6 +252,6 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   ans$alpha <- ci
   class(ans) <- c("abund", class(dfunc))
   ans
-
+  
   
 }  # end function

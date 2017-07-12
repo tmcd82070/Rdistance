@@ -1,4 +1,4 @@
-ESW <- function( obj ){
+ESW <- function( obj, covars = NULL ){
 #
 #   obj = a dfunc object.  It may optionally contain a g0 component.
 #       if no g0, assume g0 = 1
@@ -9,7 +9,10 @@ ESW <- function( obj ){
 #   we will do numerical integration.  This is a bit slower, and a bit less accurate in 
 #   some cases, but is more general.  This allows user defined distance functions to be 
 #   added easily. 
-
+if(is.null(covars)){
+  covars <- obj$covars
+}
+  
 like <- match.fun(paste( obj$like.form, ".like", sep=""))
 
 if( is.null(obj$covars) )
@@ -23,7 +26,7 @@ if( (obj$like.form == "hazrate") & (obj$x.scl == obj$w.lo) ){
     x <- seq( obj$w.lo, obj$w.hi, length=seq.length)
 }
 
-y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = obj$covars, expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
+y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = covars, expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
 
 
 if( is.null( obj$g.x.scl ) ){
@@ -35,7 +38,7 @@ if( is.null( obj$g.x.scl ) ){
     g.at.x0 <- obj$g.x.scl
     x0 <- obj$x.scl
 }
-f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, covars = obj$covars, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
+f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, covars = covars, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
 
 y <- y * g.at.x0 / f.at.x0
 
