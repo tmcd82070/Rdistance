@@ -21,7 +21,7 @@
 #'   \code{print.abund}, and \code{plot.dfunc}, so there should be little harm in setting \code{warn = FALSE}.
 #' @details Given a specified likelihood (e.g., "halfnorm"), maximum likelihood is used to estimate the parameter(s) of that likelihood function that best fit the distance data.
 #'   When the resulting detection function is plotted (see Examples), bins are plotted behind the detection function for visualization; however, the function is fit to the actual data, not to the bins.
-#' @value  An object of class 'dfunc'.  Objects of class 'dfunc' are lists 
+#' @return  An object of class 'dfunc'.  Objects of class 'dfunc' are lists 
 #'   containing the following components:
 #'   \item{parameters}{The vector of estimated parameter values. 
 #'     Length of this vector for built-in likelihood is the 
@@ -42,8 +42,8 @@
 #'   \item{call}{The original call of this function.}
 #'   \item{fit}{The fitted object returned by \code{nlminb}.  See documentation 
 #'     for \code{nlminb}.}
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#'         Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
+#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
+#'         Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}\cr
 #'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
 #' @seealso See \code{\link{uniform.like}} for details on the "uniform", "halfnorm", "hazrate", and "negexp" likelihoods.  See \code{\link{Gamma.like}} for details on "Gamma". 
 #'   And see package vignettes for information on custom, user-defined likelihoods.  See also \code{\link{F.abund.estim}}, \code{\link{F.automated.CDA}}
@@ -54,7 +54,7 @@
 #'   un.dfunc <- F.dfunc.estim(dist ~ 1, sparrow, likelihood="uniform", w.hi = 150)
 #'   hn.dfunc <- F.dfunc.estim(dist ~ 1, thrasher, likelihood="halfnorm", w.hi = 150, point.transects = T)
 #'   ne.dfunc <- F.dfunc.estim(dist ~ shrub + obsever, sparrow, likelihood="negexp", w.hi = 150, expansions = 2, series = "simple")
-#'   hz.dfunc <- F.dfunc.estim(dist ~ observer + bare, thrasher, likelihood="hazrate", w.hi = 150, point.transects = T, expansions = 5, series = "cosine)
+#'   hz.dfunc <- F.dfunc.estim(dist ~ observer + bare, thrasher, likelihood="hazrate", w.hi = 150, point.transects = T, expansions = 5, series = "cosine")
 #'   ga.dfunc <- F.dfunc.estim(dist ~ 1, sparrow, likelihood="Gamma", w.hi = 150, x.scl="max") 
 #'   
 #'   # Plot the first four detection functions
@@ -63,7 +63,7 @@
 #'   plot(hn.dfunc)
 #'   plot(ne.dfunc)
 #'   plot(hz.dfunc)
-#' @keyword model
+#' @keywords model
 
 F.dfunc.estim2 <- function (formula, data = NULL, likelihood="halfnorm", point.transects = F, w.lo=0, w.hi=max(dist), 
                             expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){

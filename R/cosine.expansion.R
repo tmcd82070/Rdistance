@@ -18,7 +18,7 @@
 #'     \item \bold{Fifth term}: \deqn{h_5(x)=\cos(6\pi x),}{h5(x) = cos(6*Pi*x),}
 #'   }
 #'   The maximum number of expansion terms computed is 5.
-#' @value A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the cosine expansions of 
+#' @return A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the cosine expansions of 
 #'   \code{x}. Column 1 is the first expansion term of \code{x}, column 2 is the second expansion term of \code{x}, and so on 
 #'   up to \code{expansions}.
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}

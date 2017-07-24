@@ -1,3 +1,55 @@
+#' @name plot.dfunc
+#' @aliases plot.dfunc
+#' @title Plot a distance function.
+#' @description Plot method for an estimated distance function. Estimated distance fnctions are of class 'dfunc'
+#' @usage \method{plot}{dfunc}(x, include.zero = FALSE, nbins="Sturges", newdata = NULL, legend = TRUE, ...)
+#' @param x An estimated distance function resulting from a call to \code{F.dfunc.estim}.
+#' @param include.zero Boolean value specifying whether to include 0 in the plot.  A value of TRUE
+#'   will include 0 on the left hand end of the x-axis regardless of the range of 
+#'   distances.  A value of FALSE will plot only the range on input distanced.
+#' @param nbins Internally, this function uses \code{hist} to compute histogram bars for the plot.  
+#'   This argument is the \code{breaks} argument to \code{hist}.  This can be either a vector giving the 
+#'   breakpoints between bars, a single number giving the suggested number of bars, a string naming an algorithm 
+#'   to compute the number of bars, or a function to compute the number of bars.  See \code{help(hist)} 
+#'   for all options.
+#' @param newdata Matrix containing values of covariates to plot. Each row is a set of covariate values (i.e. each column contains all values of each covariate)
+#' @param legend Boolean. If TRUE, a legend will be included on plot detailing covariate values plotted. 
+#' @param \dots Other arguments to \code{barplot}, such as \code{cex}, \code{col}, \code{bty}, etc.
+#'   The following plot parameters cannot be included in \dots: 
+#'     \code{space}, \code{density}, \code{ylim}, \code{xlim}, and \code{border}.  In addition, 
+#'   \code{main}, \code{ylab}, and \code{xlab} should not be used because the internal 
+#'   values will overwrite whatever values are given.
+#' @details A scaled histogram is plotted, and the estimated distance function is plotted over the top
+#'   of it.  The form of the likelihood and any series expansions is printed in the main title.
+#'   Convergence of the distance function is checked.  If the distance funtion did not converge, a 
+#'   warning is printed over the top of the histogram.  If one or more parameter estimates are 
+#'   at their limits (likely indicating non-covergence or poor fit), another warning is printed. 
+#'   If the distance function did converge, the ESW is printed on the plot.
+#' @return The input distance function is returned, with two additional components related to the plot
+#'   that may be needed if additional lines or text is to added to the plot by the user.  These
+#'   additional components are: 
+#'     
+#'   \item{xscl.plot}{Scaling factor for horizontal coordinates.  Due to the way \code{barplot} works, 
+#'     the x-axis has been scaled.  The internal coordinates of the bars are 1, 2, \ldots, nbars.
+#'     To plot something at a distance coordinate of x, x must be divided by this value.  For example, 
+#'     to draw a vertical line at a value of 10 on the x-axis, the correct call is \code{abline(v=10/obj$xscl.plot)}.  }
+#'   
+#'   \item{yscl}{Scaling factor for vertical coordinates.  The histogram and distance function plotted by 
+#'     this routine are scaled so that height of the distance function at \code{w.lo} is \code{g0}.  Usually, this means 
+#'     the distance curve is scaled so that the y-intercept is 1, or that g(0) = 1.  To add a plot feature 
+#'     at a real coordinate of y, y must be divided by this returned parameters.  For example, to draw 
+#'     a horizontal line at y-axis coordinate of 1.0, issue \code{abline(h=1/obj$yscl)}.  }
+#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
+#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{print.dfunc}}, \code{\link{print.abund}}
+#' @examples \dontrun{
+#'   set.seed(87654)
+#'   x <- rgamma(1000, 2, 2) 
+#'   fit <- F.dfunc.estim(x, likelihood="Gamma")
+#'   plot(fit)  
+#'   }
+#' @keywords models
+
 plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, legend = TRUE, ... ){
   #
   #   Plot method for distance functions.

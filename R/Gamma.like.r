@@ -26,7 +26,7 @@
 #'   the gamma shape parameter is \code{a[1]} while the gamma scale parameter is \code{(a[2]/gamma(r)) * (((r - 1)/exp(1))^(r - 1))}. Currently, this function 
 #'   implements a non-covariate version of the gamma detection function used by Becker and Quang (2009).  In future, linear equations will relate covariate values 
 #'   to values of the gamma paramters.  This future implementation will fully replicate the distance functions of Becker and Quang (2009).
-#' @value A numeric vector the same length and order as \code{dist} containing the likelihood contribution for distances in \code{dist}.  Assuming 
+#' @return A numeric vector the same length and order as \code{dist} containing the likelihood contribution for distances in \code{dist}.  Assuming 
 #'   \code{L=gamma.like(c(r,lam),dist)}, the full log likelihood of all the data is \code{-sum(log(L), na.rm=T)}. Note that the returned likelihood value for 
 #'   distances less than \code{w.lo} or greater than \code{w.hi} is \code{NA}, and thus it is prudent to use \code{na.rm=TRUE} in the sum. If \code{scale} = TRUE, 
 #'   the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, the integral of the likelihood is an arbitrary constant.

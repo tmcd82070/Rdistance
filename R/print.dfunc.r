@@ -17,7 +17,7 @@
 #'   \item \samp{AIC} : Value of AIC for the distance function.
 #' }
 #' The number of digits printed is controled by \code{options()$digits}.
-#' @value The input value of \code{obj} is invisibly returned.
+#' @return The input value of \code{obj} is invisibly returned.
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #' @seealso \code{\link{F.dfunc.estim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}

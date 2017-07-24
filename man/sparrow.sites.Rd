@@ -28,6 +28,6 @@ See the package vignettes for \code{Rdistance} tutorials using these datasets.
 
 
 \seealso{\code{\link{sparrow.detections}}}
-\source{Jason Carlisle's dissertation data, University of Wyoming.}}
+\source{Jason Carlisle's dissertation data, University of Wyoming.}
 \references{Carlisle, J.D. 2017. The effect of sage-grouse conservation on wildlife species of concern:  implications for the umbrella species concept. Dissertation. University of Wyoming, Laramie, Wyoming, USA.}
 \keyword{datasets}

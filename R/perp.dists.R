@@ -1,5 +1,5 @@
 #' @name perp.dists
-#' @alias perp.dists
+#' @aliases perp.dists
 #' @title Compute off-transect ditances from sighting distances and angles
 #' @description Computes off-transect (also called 'perpendicular') distances from measures of sighting distance and sighting angle.
 #' @usage perp.dists(s.dist, s.angle, data)
@@ -9,7 +9,7 @@
 #' @param data data.frame object containing sighting distance and sighting angle.
 #' @details If observers recorded sighting distance and sighting angle (as is often common in line transect surveys), use this function to convert 
 #'   to off-transect distances, the required input data for \code{F.dfunc.estim}.
-#' @value A vector of off-transect (or perpendicular) distances.  Units are the same as \code{obs.dist}.
+#' @return A vector of off-transect (or perpendicular) distances.  Units are the same as \code{obs.dist}.
 #' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. 
 #'   \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 #' @author Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}

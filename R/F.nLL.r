@@ -18,7 +18,7 @@
 #'   The default of 0 equates to no expansion terms of any type.
 #' @param point.transects Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
 #' @param for.optim Boolean. If TRUE, values are multpilied by 10^9 to help optim converge more consistently.
-#' @value A scalar, the negative of the log likelihood given the parameters in \code{a}, likelihood, and expansion terms.
+#' @return A scalar, the negative of the log likelihood given the parameters in \code{a}, likelihood, and expansion terms.
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #' @seealso See \code{\link{uniform.like}} for definitions of all the likelihoods; \code{\link{F.dfunc.estim}}

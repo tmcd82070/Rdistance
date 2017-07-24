@@ -18,7 +18,7 @@
 #'     \item \bold{Fourth term}: \deqn{h_4(x)=x^10 - 45x^8 + 630x^6 - 3150x^4 + 4725x^2 - 945,}{h4(x) = (x)^10 - 45*(x)^8 + 630*(x)^6 - 3150*(x)^4 + 4725*(x)^2 - 945,}
 #'   }
 #'   The maximum number of expansion terms computed is 4.
-#' @value A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the Hermite polynomial expansions of \code{x}. 
+#' @return A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the Hermite polynomial expansions of \code{x}. 
 #'   Column 1 is the first expansion term of \code{x}, column 2 is the second expansion term of \code{x}, and so on up to \code{expansions}.
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
