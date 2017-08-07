@@ -1,3 +1,6 @@
+#' @importFrom pracma erf
+#' @export
+
 integration.constant <- function( dist, density, w.lo, w.hi, covars, a, expansions, point.transects, ...){
   #
   #   Return the scalar so that integral from 0 to w of underlying density

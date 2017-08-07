@@ -51,6 +51,7 @@
 #'   
 #'   F.start.limits( "Gamma", 0, 0, 1000, 1000*runif(100) )
 #' @keywords models
+#' @export
 
 F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, point.transects = FALSE ){
   #

@@ -73,6 +73,7 @@
 #'   F.gx.estim(un.dfunc, x.scl="max", g.x.scl=dbl.obs, observer=1 )
 #'   }
 #' @keywords model
+#' @export
 
 F.gx.estim <- function( fit, x.scl=NULL, g.x.scl=NULL, observer=NULL ){
 #

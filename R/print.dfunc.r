@@ -31,6 +31,7 @@
 #' # Print the output                 
 #' print(dfunc)
 #' @keywords models
+#' @export
 
 print.dfunc <- function( x, ... ){
 #

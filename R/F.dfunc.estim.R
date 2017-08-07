@@ -1,3 +1,5 @@
+#' @export
+
 F.dfunc.estim <- function (dist, likelihood="halfnorm", w.lo=0, w.hi=max(dist), 
                             expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){
   

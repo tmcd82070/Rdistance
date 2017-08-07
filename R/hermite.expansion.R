@@ -28,7 +28,8 @@
 #'   x <- rnorm(1000) * 100
 #'   x <- x[ 0 < x & x < 100 ]
 #'   herm.expn <- hermite.expansion( x, 5 )
-#' @keywords models
+#' @keywords model
+#' @export
 
 hermite.expansion <- function(x, expansions){
 # Calculates hermite expansion for detection function.

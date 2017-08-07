@@ -20,6 +20,7 @@
 #' sparrow.detections$dist <- perp.dists(s.dist="sightdist", s.angle="sightangle",
 #'                                       data=sparrow.detections)
 #' # Proceed to fitting the detection function with F.dfunc.estim
+#' @export
 
 perp.dists <- function(s.dist, s.angle, data){
   

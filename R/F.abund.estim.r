@@ -1,3 +1,5 @@
+#' @export
+
 F.abund.estim <- function(dfunc, detection.data, transect.data,
                           area=1, ci=0.95, R=500, by.id=FALSE,
                           plot.bs=FALSE){
@@ -63,15 +65,16 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     for(i in 1:nrow(detection.data)){
       if(is.null(dfunc$covars)){temp <- NULL}else{temp <- t(as.matrix(dfunc$covars[i,]))}
       #f.max <- F.maximize.g(dfunc, covars = temp)
-      new.term <- detection.data$groupsize[i]/f.like(a = dfunc$parameters,
-                                                  dist = dfunc$dist[i],
-                                                  covars = temp,
-                                                  w.lo = dfunc$w.lo,
-                                                  w.hi = dfunc$w.hi,
-                                                  series = dfunc$series,
-                                                  expansions = dfunc$expansions,
-                                                  point.transects = dfunc$point.transects,
-                                                  scale = F)
+      new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],
+                                                                   density = paste(dfunc$like.form, ".like", sep=""),
+                                                                   w.lo = dfunc$w.lo,
+                                                                   w.hi = dfunc$w.hi,
+                                                                   covars = temp,
+                                                                   a = dfunc$parameters,
+                                                                   expansions = dfunc$expansions,
+                                                                   point.transects = dfunc$point.transects,
+                                                                   series = dfunc$series,
+                                                                   scale = F)
       # if(dfunc$point.transects){
       #   new.esw <- effective.radius(dfunc)
       # }
@@ -79,10 +82,10 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
       #   new.esw <- ESW(dfunc, temp)  # get effective strip width
       # }
       if(!is.na(new.term)){
-        s <- s + new.term/dfunc$w.hi
+        s <- s + new.term
       }
     }
-    print(paste("s:", s))
+    #print(paste("s:", s))
     if(dfunc$point.transects){
       a <- pi*esw^2*n
     }
@@ -97,7 +100,6 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   else{
     # Abundance in covered area
     # estimate abundance
-    print(paste("s:", avg.group.size * n / esw))
     n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len)
   }
   

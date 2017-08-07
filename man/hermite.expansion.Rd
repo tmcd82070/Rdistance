@@ -47,4 +47,4 @@ set.seed(83828233)
 Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 }
-\keyword{models}
+\keyword{model}

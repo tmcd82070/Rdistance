@@ -19,6 +19,7 @@
 #' fit$x.scl            # same thing
 #' }
 #' @keywords model
+#' @export
 
 F.maximize.g <- function( fit, covars = NULL ){
 #

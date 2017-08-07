@@ -23,6 +23,7 @@
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #' @seealso See \code{\link{uniform.like}} for definitions of all the likelihoods; \code{\link{F.dfunc.estim}}
 #' @keywords models
+#' @export
 
 F.nLL <- function(a, dist, covars = NULL, like, w.lo=0, w.hi=max(dist), series, expansions=0, point.transects, for.optim = F){
 

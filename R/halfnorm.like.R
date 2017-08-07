@@ -42,6 +42,7 @@
 #'          \code{\link{negexp.like}},
 #'          \code{\link{Gamma.like}}
 #' @keywords models
+#' @export
 
 halfnorm.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = FALSE, ...){
   #   Computes half norm likelihood, scaled appropriately to integrate to 1.0, for every

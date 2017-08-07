@@ -24,6 +24,7 @@
 #'   # Extract the coefficient(s)
 #'   coef(dfunc)
 #' @keywords model
+#' @export
 
 coef.dfunc <- function(object, ...){
 object$parameters

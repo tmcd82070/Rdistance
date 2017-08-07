@@ -1,3 +1,5 @@
+#' @export
+
 F.automated.CDA <- function (detection.data, transect.data, 
                              w.lo=0, w.hi=max(dist),
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),

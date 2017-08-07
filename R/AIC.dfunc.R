@@ -50,6 +50,7 @@
 #'   AIC(dfunc, k=2, n=Inf)  # AIC
 #'   AIC(dfunc, k=log(length(dfunc$dist)), n=Inf)  # BIC
 #' @keywords model
+#' @export
 
 AIC.dfunc=function (object, ..., k = 2, n = length(object$dist)) 
 {

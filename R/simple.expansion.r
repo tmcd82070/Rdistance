@@ -28,6 +28,7 @@
 #'   x <- x[ 0 < x & x < 100 ]
 #'   simp.expn <- simple.expansion(x, 4)
 #' @keywords models
+#' @export
 
 simple.expansion <- function(x, expansions){
 # Calculates simple polynomial for detection function.

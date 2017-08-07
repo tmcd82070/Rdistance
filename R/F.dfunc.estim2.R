@@ -64,6 +64,7 @@
 #'   plot(ne.dfunc)
 #'   plot(hz.dfunc)
 #' @keywords model
+#' @export
 
 F.dfunc.estim2 <- function (formula, data = NULL, likelihood="halfnorm", point.transects = F, w.lo=0, w.hi=max(dist), 
                             expansions=0, series="cosine", x.scl=0, g.x.scl=1, observer="both", warn=TRUE){

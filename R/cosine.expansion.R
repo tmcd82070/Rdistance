@@ -30,6 +30,7 @@
 #'   x <- x[ 0 < x & x < 100 ]
 #'   cos.expn <- cosine.expansion(x, 5)
 #' @keywords models
+#' @export
 
 cosine.expansion <- function(x, expansions){
 # Calculates cosine expansion for detection function.

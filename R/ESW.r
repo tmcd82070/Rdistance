@@ -53,6 +53,7 @@
 #' # Compute effective strip width (ESW)
 #' ESW(dfunc)
 #' @keywords modeling
+#' @export
 
 ESW <- function( obj, covars = NULL ){
 #

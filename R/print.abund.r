@@ -25,6 +25,7 @@
 #'   # Print the output                 
 #'   print(fit)
 #' @keywords models
+#' @export
 
 print.abund <- function( x, ... ){
 #

@@ -34,6 +34,7 @@
 #'   F.double.obs.prob( obsrv, observer=2 )
 #'   F.double.obs.prob( obsrv, observer="both" )
 #' @keywords model
+#' @export
 
 F.double.obs.prob <- function( df, observer = "both" ){
 #

@@ -49,6 +49,7 @@
 #'   plot(fit)  
 #'   }
 #' @keywords models
+#' @export
 
 plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, legend = TRUE, ... ){
   #

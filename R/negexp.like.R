@@ -40,6 +40,7 @@
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{Gamma.like}}
 #' @keywords models
+#' @export
 
 negexp.like <- function (a, dist, w.lo = 0, covars = NULL, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = F, ...){
 #
