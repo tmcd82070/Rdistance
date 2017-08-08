@@ -26,6 +26,6 @@ The equivalent of Effective Strip Width for point transects.
 \code{\link{F.dfunc.estim}} \code{\link{ESW}}
 }
 \author{
-Aidan McDonald, WEST, Inc., \email(aidan@mcdcentral.org)
+Aidan McDonald, WEST, Inc., \email{aidan@mcdcentral.org}
 }
 \keyword{modeling}

@@ -112,9 +112,8 @@ F.dfunc.estim <- function (formula, data = NULL, likelihood="halfnorm", point.tr
   call <- match.call()
   
   strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, dist, covars, point.transects)
-  #strt.lims <- NULL
-  #for (i in 1:ncovars)
-  #  strt.lims[i] <- 1
+  
+  # Perform optimization
   fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, upper = strt.lims$uplimit,
                method = c("L-BFGS-B"),
                control = list(trace = 0, maxit = 1000), dist = dist, like = likelihood, covars = covars,
@@ -129,6 +128,7 @@ F.dfunc.estim <- function (formula, data = NULL, likelihood="halfnorm", point.tr
   
   ans$loglik <- F.nLL(ans$parameters, ans$dist, covars = ans$covars, like = ans$like.form, w.lo = ans$w.lo, w.hi = ans$w.hi, series = ans$series, expansions = ans$expansions, point.transects = ans$point.transects, for.optim = F)
   
+  # Assemble results
   class(ans) <- "dfunc"
   gx <- F.gx.estim(ans)
   ans$x.scl <- gx$x.scl

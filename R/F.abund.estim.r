@@ -90,14 +90,14 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   if(!("groupsize" %in% names(detection.data))) stop("There is no column named 'groupsize' in your detection.data.")
   
   if(!("siteID" %in% names(transect.data))) stop("There is no column named 'siteID' in your transect.data.")
-  if(!("length" %in% names(transect.data))) stop("There is no column named 'length' in your transect.data.")
+  # if(!("length" %in% names(transect.data))) stop("There is no column named 'length' in your transect.data.") # OUTDATED ERROR CHECK: NOT COMPATIBLE WITH POINT TRANSECTS
   
   if(any(is.na(detection.data$dist))) stop("Please remove rows for which detection.data$dist is NA.")
   if(any(is.na(detection.data$siteID))) stop("Please remove rows for which detection.data$siteID is NA.")
   if(any(is.na(detection.data$groupsize))) stop("Please remove rows for which detection.data$groupsize is NA.")
   
   if(any(is.na(transect.data$siteID))) stop("Please remove NA's from transect.data$siteID.")
-  if(any(is.na(transect.data$length))) stop("Please remove NA's from transect.data$length.")
+  # if(any(is.na(transect.data$length))) stop("Please remove NA's from transect.data$length.") # OUTDATED ERROR CHECK: NOT COMPATIBLE WITH POINT TRANSECTS
   
   
   # Plotting
@@ -139,12 +139,11 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   }
   
   if(is.null(dfunc$covars)){temp <- matrix(nrow = 0, ncol = 0)}else{temp <- dfunc$covars}
-  if(ncol(temp) > 1 | dfunc$point.transects){
+  if(ncol(temp) > 1 | dfunc$point.transects){ # If line transects + covariates or point transects, estimate abundance the general way
     f.like <- match.fun(paste( dfunc$like.form, ".like", sep=""))
     s <- 0
     for(i in 1:nrow(detection.data)){
       if(is.null(dfunc$covars)){temp <- NULL}else{temp <- t(as.matrix(dfunc$covars[i,]))}
-      #f.max <- F.maximize.g(dfunc, covars = temp)
       new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],
                                                                    density = paste(dfunc$like.form, ".like", sep=""),
                                                                    w.lo = dfunc$w.lo,
@@ -153,33 +152,21 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
                                                                    a = dfunc$parameters,
                                                                    expansions = dfunc$expansions,
                                                                    point.transects = dfunc$point.transects,
-                                                                   series = dfunc$series,
-                                                                   scale = F)
-      # if(dfunc$point.transects){
-      #   new.esw <- effective.radius(dfunc)
-      # }
-      # else{
-      #   new.esw <- ESW(dfunc, temp)  # get effective strip width
-      # }
+                                                                   series = dfunc$series)
       if(!is.na(new.term)){
         s <- s + new.term
       }
     }
-    #print(paste("s:", s))
     if(dfunc$point.transects){
-      a <- pi*esw^2*n
+      a <- pi*esw*n
     }
     else{
       a <- 2 * tot.trans.len
     }
-    #print(paste("tot.trans.len:", tot.trans.len))
-    #print(paste("area:", area))
-    #print(paste("a:", a))
+    
     n.hat <- s * area/a
   }
-  else{
-    # Abundance in covered area
-    # estimate abundance
+  else{ # Shorter abundance estimation for line transects without covariates
     n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len)
   }
   
@@ -193,7 +180,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
   ans$avg.group.size <- avg.group.size
   
   
-  
+  # %%%%%%%%%%%%%%%%% NEEDS TO BE UPDATED FOR COVARIATES %%%%%%%%%%%%%%%%%
   if (!is.null(ci)) {
     # Compute bootstrap CI by resampling transects
     
