@@ -1,32 +1,54 @@
-F.maximize.g <- function( fit ){
+#' @name F.maximize.g
+#' @aliases F.maximize.g
+#' @title F.maximize.g - Fincds the coordinate of the maximum of a distance function.
+#' @description Find the x coordinate that maximizes g(x).
+#' @usage F.maximize.g(fit, covars = NULL)
+#' @param x An estimated 'dfunc' object produced by \code{F.dfunc.estim}.
+#' @param covars Covariate values to calculate maximum for.
+#' @return The value of x that maximizes g(x) in \code{fit}.
+#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#' @seealso \code{\link{F.dfunc.estim}}
+#' @examples \dontrun{
+#' # Fake data
+#' set.seed(22223333)
+#' x <- rgamma(100, 10, 1)
+#' 
+#' fit <- F.dfunc.estim( x, likelihood="Gamma", x.scl="max" )
+#' 
+#' F.maximize.g( fit )  # should be near 10.
+#' fit$x.scl            # same thing
+#' }
+#' @keywords model
+#' @export
+
+F.maximize.g <- function( fit, covars = NULL ){
 #
 #   Maximize the distance function in fit.  That is, find x such that g(x) is at its
 #   maximum.  G is smooth, so this is easy for nlminb.
 #
 
-g.neg <-  function(x, params, like, w.lo=0, w.hi=max(dist), series, expansions=0){
+g.neg <-  function(x, params, covars = NULL, like, w.lo=0, w.hi=max(dist), series, expansions=0, point.transects = F){
 
-    
     f.like <- match.fun(paste( like, ".like", sep=""))
 
-    g.x <- f.like( params, x, w.lo=w.lo, w.hi=w.hi, series, expansions )
+    g.x <- f.like( a = params, dist = x, covars = covars, w.lo=w.lo, w.hi=w.hi, series = series, expansions = expansions, point.transects = point.transects )
 
-    -g.x * 100000
+    -g.x * 10000000000
 }
 
-x.start <- (fit$w.lo + fit$w.hi) / 2
+x.start <- (fit$w.lo + fit$w.hi) / 10 + fit$w.lo
 
-x.max <- nlminb(x.start, g.neg,  params = fit$parameters, w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
-    expansions=fit$expansions, series=fit$series, lower=fit$w.lo, upper=fit$w.hi)
-
+x.max <- optim(par = x.start, fn = g.neg,  params = fit$parameters, method = "L-BFGS-B", w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
+    expansions=fit$expansions, series=fit$series, lower=fit$w.lo, upper=fit$w.hi, covars = covars, point.transects = fit$point.transects)
 
 if( x.max$convergence != 0 ){
     warning(paste("Maximum of g() could not be found. Message=", x.max$message))
-    x.max = NA
+    x.max <- NA
 } else {
     x.max <- x.max$par
 }
 
-x.max
+-g.neg(x = x.max, params = fit$parameters, covars = covars, w.lo = fit$w.lo, w.hi = fit$w.hi, like = fit$like.form,
+       expansions = fit$expansions, series = fit$series, point.transects = fit$point.transects)/10000000000
 
 }
