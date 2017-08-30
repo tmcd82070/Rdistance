@@ -1,19 +1,19 @@
 ---
 title: "Modeling Abundance in Relation to Covariates"
 author: "Jason D. Carlisle and Trent L. McDonald"
-date: "July 21, 2015"
+date: "July 20, 2017"
 output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{Rdistance_BeginnerTutorial}
+  %\VignetteIndexEntry{Rdistance_CovariatesOnAbundance}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 # Introduction
-This tutorial builds on the introductory material presented in the **Rdistance Tutorial for Beginners**.  The goal of a distance-sampling study is often to relate abundance to some other variable, e.g., a covariate describing the habitat at each survey site.  `Rdistance` can provide you with site-level estimates of abundance that are corrected for imperfect detection. You can then use these estimates as the response variable in one of the many modeling frameworks available in Program R that you're likely already familiar with (e.g., `lm`, `glm`, `lme4`, etc.).  Here, we make use of the example datasets already contained within `Rdistance` (i.e., line transect surveys of sparrows), to demonstrate an example modeling workflow.  This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
+This tutorial builds on the introductory material presented in the **Rdistance Tutorial for Beginners**.  The goal of a distance-sampling study is often to relate abundance to some other variable, e.g., a covariate describing the habitat at each survey site.  Hierarchical distance sampling methods have been developed which combine the estimation of detection probability and abundance in one modeling framework (Royle et al. 2004).  But traditionally, a two-staged approach (?? Buckland et al. 2009 ??) has been used to relate abundance to covariates when using distance sampling:  first, model the detection function and inflate the observed counts based on the estimated detection probability to estimate density at each sample unit (e.g., transect); second, regress density on covariates.  Following such an approach, `Rdistance` can provide you with site-level estimates of abundance that are corrected for imperfect detection (stage 1). You can then use these estimates as the response variable in one of the many modeling frameworks available in Program R that you're likely already familiar with (e.g., `lm`, `glm`, `lme4`, etc.; stage 2).  Here, we make use of the example sparrow dataset contained within `Rdistance` (i.e., line transect surveys of Brewer's Sparrows), to demonstrate an example workflow of a conventional two-stage analytical approach.  This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
 
 # Estimate abundance at each site
-The process of generating an overall, study-area estimate of abundance is outlined in the **Rdistance Tutorial for Beginners**.  Use the `by.id` argument (`by.id=TRUE`) within `F.abund.estim` or `F.automated.CDA` to estimate abundance for each site surveyed.
+The process of generating an overall, study-area estimate of abundance is outlined in the **Rdistance Tutorial for Beginners**.  In contrast, here we want an abundance estimate specific to each site, not the study area as a whole.  We can obtain an abundance estimate for each site surveyed using the `by.id` argument (`by.id=TRUE`) within `F.abund.estim` or `F.automated.CDA`.
 
 ```{r}
 require(Rdistance)
@@ -32,7 +32,7 @@ Because `by.id=TRUE`, a data.frame of the site-level abundances is stored in the
 head(auto$nhat.df)
 ```
 
-Because distances were measured in meters and `area=10000`, abundance (density) estimates are given as the number of sparrows per hectare.
+Because distances were measured in meters and `area=10000`, abundance (density) estimates are given as the number of sparrows per hectare (ha).
 
 # Model abundance estimates
 
