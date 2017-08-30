@@ -1,10 +1,11 @@
 #' @name F.abund.estim
 #' @aliases F.abund.estim
+#' 
 #' @title Estimate abundance from distance-sampling data.
 #' @description Estimate abundance (or density) given an estimated detection function and supplemental information 
 #'   on observed group sizes, transect lengths, area surveyed, etc.  Also computes confidence intervals of abundance 
 #'   (or density) using the bias corrected bootstrap method.
-#' @usage F.abund.estim(dfunc, detection.data, transect.data, area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE)
+#'   
 #' @param dfunc An estimated 'dfunc' object produced by \code{F.dfunc.estim}.
 #' @param detection.data A data.frame where each row represents one detection (see example dataset, \code{\link{sparrow.detections}})
 #'   and with at least the following three columns with the names \code{siteID}, \code{groupsize}, and \code{dist}:

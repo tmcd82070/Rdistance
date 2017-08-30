@@ -4,7 +4,8 @@
 \alias{F.abund.estim}
 \title{Estimate abundance from distance-sampling data.}
 \usage{
-F.abund.estim(dfunc, detection.data, transect.data, area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE)
+F.abund.estim(dfunc, detection.data, transect.data, area = 1, ci = 0.95,
+  R = 500, by.id = FALSE, plot.bs = FALSE)
 }
 \arguments{
 \item{dfunc}{An estimated 'dfunc' object produced by \code{F.dfunc.estim}.}
