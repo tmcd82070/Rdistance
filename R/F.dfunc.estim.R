@@ -21,8 +21,9 @@
 #' "hazrate", "negexp", and "Gamma". See vignette for a way to use 
 #' user-define likelihoods.
 #' 
-#' @param point.transects Boolean. TRUE if using point transect data, 
-#' FALSE if using line transect data.
+#' @param point.transects A logical scalar specifying whether input data come
+#' from a point-transect survey type (TRUE),
+#' or a line-transect survey type (FALSE).
 #' 
 #' @param w.lo Lower or left-truncation limit of the distances in distance data. 
 #' This is the minimum possible off-transect distance. Default is 0.
@@ -158,7 +159,7 @@
 #' @export
 
 F.dfunc.estim <- function (formula, data = NULL, likelihood="halfnorm", 
-                  point.transects = F, w.lo=0, w.hi=max(dist), 
+                  point.transects = FALSE, w.lo=0, w.hi=max(dist), 
                   expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
                   observer="both", warn=TRUE){
   
