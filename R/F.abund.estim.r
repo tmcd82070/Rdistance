@@ -231,7 +231,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
       
       
       # estimate distance function
-      dfunc.bs <- F.dfunc.estim2(new.x ~ 1, likelihood = dfunc$like.form, 
+      dfunc.bs <- F.dfunc.estim(new.x ~ 1, likelihood = dfunc$like.form, 
                                  w.lo = dfunc$w.lo, w.hi = dfunc$w.hi, expansions = dfunc$expansions, 
                                  series = dfunc$series, x.scl = dfunc$call.x.scl, 
                                  g.x.scl = g.x.scl.bs, observer = dfunc$call.observer, point.transects = dfunc$point.transects, 
