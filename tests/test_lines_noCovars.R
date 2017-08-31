@@ -185,6 +185,8 @@ auto <- F.automated.CDA(formula=dist~1, detection.data=sparrow.detections, trans
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
-
-
+# This used to be the best-fitting detection function
+best.old <- F.dfunc.estim(formula=dist~1, data=sparrow.detections, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
+plot(best.old)
+best.old
 
