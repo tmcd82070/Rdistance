@@ -6,6 +6,8 @@
 #'   likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
 #'   series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
 #'   area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE, plot=TRUE, ...)
+#' @param formula This parameter is passed to \code{F.dfunc.estim}.
+#'   See \code{F.dfunc.estim} documentation for definition. 
 #' @param detection.data This parameter is passed to \code{F.dfunc.estim} and \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
 #' @param transect.data This parameter is passed to \code{F.abund.estim}.
@@ -65,7 +67,7 @@
 #' @keywords model
 #' @export
 
-F.automated.CDA <- function (detection.data, transect.data, 
+F.automated.CDA <- function (formula, detection.data, transect.data, 
                              w.lo=0, w.hi=max(dist),
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
                              series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
@@ -90,7 +92,7 @@ F.automated.CDA <- function (detection.data, transect.data,
   
   
   # extract distance vector from detection.data
-  dist <- detection.data$dist
+  # dist <- detection.data$dist
   
   
   # function to save results
@@ -152,7 +154,7 @@ F.automated.CDA <- function (detection.data, transect.data,
   cat("Likelihood\tSeries\tExpans\tConverged?\tScale?\tAIC\n")
   for (like in likelihoods) {
     if (like == "Gamma") {
-      dfunc <- F.dfunc.estim(dist, likelihood = like, w.lo = w.lo, 
+      dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, w.lo = w.lo, 
                              w.hi = w.hi, ...)
       ser <- ""
       expan <- 0
@@ -165,7 +167,7 @@ F.automated.CDA <- function (detection.data, transect.data,
       for (expan in expansions) {
         if (expan == 0) {
           ser <- "cosine"
-          dfunc <- F.dfunc.estim(dist, likelihood = like, 
+          dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, 
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                  series = ser, ...)
           fit.table <- f.save.result(fit.table, dfunc, 
@@ -175,7 +177,7 @@ F.automated.CDA <- function (detection.data, transect.data,
         }
         else {
           for (ser in series) {
-            dfunc <- F.dfunc.estim(dist, likelihood = like, 
+            dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, 
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                    series = ser, ...)
             fit.table <- f.save.result(fit.table, dfunc, 
@@ -199,7 +201,7 @@ F.automated.CDA <- function (detection.data, transect.data,
                           Inf)
   fit.table <- fit.table[order(fit.table$aic), ]
 
-  dfunc <- F.dfunc.estim(dist, likelihood = fit.table$like[1], 
+  dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = fit.table$like[1], 
                          w.lo = w.lo, w.hi = w.hi, expansions = fit.table$expansions[1], 
                          series = fit.table$series[1], ...)
   if (plot) {
