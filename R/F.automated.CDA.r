@@ -2,7 +2,7 @@
 #' @aliases F.automated.CDA
 #' @title Automated classical distance analysis.
 #' @description Perform automated classical detection function selection and estimation of abundance.
-#' @usage F.automated.CDA(detection.data, transect.data, w.lo=0, w.hi=max(dist),
+#' @usage F.automated.CDA(detection.data, site.data, w.lo=0, w.hi=max(dist),
 #'   likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
 #'   series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
 #'   area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE, plot=TRUE, ...)
@@ -10,8 +10,11 @@
 #'   See \code{F.dfunc.estim} documentation for definition. 
 #' @param detection.data This parameter is passed to \code{F.dfunc.estim} and \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
-#' @param transect.data This parameter is passed to \code{F.abund.estim}.
+#' @param site.data This parameter is passed to \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
+#' @param point.transects A logical scalar specifying whether input data come
+#' from a point-transect survey type (TRUE),
+#' or a line-transect survey type (FALSE).
 #' @param w.lo This parameter is passed to \code{F.dfunc.estim}.
 #'   See \code{F.dfunc.estim} documentation for definition.
 #' @param w.hi This parameter is passed to \code{F.dfunc.estim}.
@@ -59,7 +62,7 @@
 #'   # And estimate abundance (density per ha in this case) given the 'best' detection function
 #'   # Note, area=10000 converts to density per hectare (for distances measured in meters)
 #'   # Note, a person should do more than R=20 iterations 
-#'   F.automated.CDA(detection.data=sparrow.detections, transect.data=sparrow.transects,
+#'   F.automated.CDA(detection.data=sparrow.detections, site.data=sparrow.sites,
 #'                   likelihood=c("halfnorm", "hazrate", "negexp"),
 #'                   series=c("cosine", "simple"),
 #'                   expansions=c(0, 1), area=10000, R=20, ci=0.95, by.id=FALSE,
@@ -67,28 +70,29 @@
 #' @keywords model
 #' @export
 
-F.automated.CDA <- function (formula, detection.data, transect.data, 
+F.automated.CDA <- function (formula, detection.data, site.data, 
                              w.lo=0, w.hi=max(dist),
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
-                             series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
+                             series=c("cosine", "hermite", "simple"), expansions=0:3,
+                             point.transects=FALSE, warn=TRUE,
                              area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE,                          
                              plot=TRUE, ...){
   
   
-    # Stop and print error if key columns of detection.data or transect.data are missing or contain NAs
+    # Stop and print error if key columns of detection.data or site.data are missing or contain NAs
   if(!("dist" %in% names(detection.data))) stop("There is no column named 'dist' in your detection.data.")
   if(!("siteID" %in% names(detection.data))) stop("There is no column named 'siteID' in your detection.data.")
   if(!("groupsize" %in% names(detection.data))) stop("There is no column named 'groupsize' in your detection.data.")
   
-  if(!("siteID" %in% names(transect.data))) stop("There is no column named 'siteID' in your transect.data.")
-  if(!("length" %in% names(transect.data))) stop("There is no column named 'length' in your transect.data.")
+  if(!("siteID" %in% names(site.data))) stop("There is no column named 'siteID' in your site.data.")
+  # if(!("length" %in% names(site.data))) stop("There is no column named 'length' in your site.data.")
   
   if(any(is.na(detection.data$dist))) stop("Please remove rows for which detection.data$dist is NA.")
   if(any(is.na(detection.data$siteID))) stop("Please remove rows for which detection.data$siteID is NA.")
   if(any(is.na(detection.data$groupsize))) stop("Please remove rows for which detection.data$groupsize is NA.")
   
-  if(any(is.na(transect.data$siteID))) stop("Please remove NA's from transect.data$siteID.")
-  if(any(is.na(transect.data$length))) stop("Please remove NA's from transect.data$length.")
+  if(any(is.na(site.data$siteID))) stop("Please remove NA's from site.data$siteID.")
+  # if(any(is.na(site.data$length))) stop("Please remove NA's from site.data$length.")
   
   
   # extract distance vector from detection.data
@@ -98,7 +102,12 @@ F.automated.CDA <- function (formula, detection.data, transect.data,
   # function to save results
   f.save.result <- function(results, dfunc, like, ser, expan, 
                             plot) {
-    esw <- ESW(dfunc)
+    if(point.transects){
+      esw <- effective.radius(dfunc)
+    } else {
+      esw <- ESW(dfunc)
+    }
+    
     if (!is.na(esw) & (esw > dfunc$w.hi)) {
       scl.ok <- "Not ok"
       scl.ok.flag <- 0
@@ -155,7 +164,7 @@ F.automated.CDA <- function (formula, detection.data, transect.data,
   for (like in likelihoods) {
     if (like == "Gamma") {
       dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, w.lo = w.lo, 
-                             w.hi = w.hi, ...)
+                             w.hi = w.hi, point.transects=point.transects, ...)
       ser <- ""
       expan <- 0
       fit.table <- f.save.result(fit.table, dfunc, like, 
@@ -169,7 +178,7 @@ F.automated.CDA <- function (formula, detection.data, transect.data,
           ser <- "cosine"
           dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, 
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
-                                 series = ser, ...)
+                                 series = ser, point.transects=point.transects, ...)
           fit.table <- f.save.result(fit.table, dfunc, 
                                      like, ser, expan, plot)
           cont <- fit.table$k
@@ -179,7 +188,7 @@ F.automated.CDA <- function (formula, detection.data, transect.data,
           for (ser in series) {
             dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, 
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
-                                   series = ser, ...)
+                                   series = ser, point.transects=point.transects, ...)
             fit.table <- f.save.result(fit.table, dfunc, 
                                        like, ser, expan, plot)
             cont <- fit.table$k
@@ -203,14 +212,14 @@ F.automated.CDA <- function (formula, detection.data, transect.data,
 
   dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = fit.table$like[1], 
                          w.lo = w.lo, w.hi = w.hi, expansions = fit.table$expansions[1], 
-                         series = fit.table$series[1], ...)
+                         series = fit.table$series[1], point.transects=point.transects, ...)
   if (plot) {
     plot(dfunc)
     mtext("BEST FITTING FUNCTION", side = 3, cex = 1.5, line = 3)
   }
 
   
-  abund <- F.abund.estim(dfunc, detection.data=detection.data, transect.data=transect.data,
+  abund <- F.abund.estim(dfunc, detection.data=detection.data, site.data=site.data,
                          area=area, ci=ci, R=R, plot.bs=plot.bs, by.id=by.id)
 
 #   }
