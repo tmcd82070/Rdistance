@@ -159,15 +159,12 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
       }
     }
     if(dfunc$point.transects){
-      a <- pi*esw*n
+      a <- pi*esw*n  # area for point transects
+    } else {
+      a <- 2 * tot.trans.len  # area for line transects
     }
-    else{
-      a <- 2 * tot.trans.len
-    }
-    
     n.hat <- s * area/a
-  }
-  else{ # Shorter abundance estimation for line transects without covariates
+  } else { # Shorter abundance estimation for line transects without covariates
     n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len)
   }
   
@@ -193,7 +190,9 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     if ("utils" %in% installed.packages()[, "Package"]) {
       pb <- txtProgressBar(1, R)
       show.progress = TRUE
-    } else show.progress = FALSE
+    } else {
+      show.progress = FALSE
+    } 
     
     
     # Bootstrap
@@ -226,7 +225,9 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
       if (is.data.frame(g.x.scl.orig)) {
         g.x.scl.bs <- g.x.scl.orig[sample(1:nrow(g.x.scl.orig), 
                                           replace = TRUE), ]
-      } else g.x.scl.bs <- g.x.scl.orig
+      } else {
+        g.x.scl.bs <- g.x.scl.orig
+      }
       
       
       
@@ -280,7 +281,7 @@ F.abund.estim <- function(dfunc, detection.data, transect.data,
     ans$B <- n.hat.bs
     if (any(is.na(n.hat.bs))) cat(paste(sum(is.na(n.hat.bs)), "of", R, "iterations did not converge.\n"))
     
-  }  else {
+  } else {
     # Don't compute CI if ci is null
     ans$B <- NA
     ans$ci <- c(NA, NA)
