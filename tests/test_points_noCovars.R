@@ -1,13 +1,13 @@
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 # Rdistance:  an R package for distance-sampling analysis
 
-# This script tests the line-transect workflow, with no covariates
-# Everything appears to be working as of 8/30/2017
+# This script tests the point-transect workflow, with no covariates
+# 
 
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 8/30/2017
+# Last updated 9/1/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -17,60 +17,16 @@
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# Outline -----
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# This script contains the following sections:
-# 1) Install and load Rdistance
-# 2) Read in input data
-# 3) Fit a detection function
-# 4) Estimate abundance given the detection function
-# 5) Use AICc to select a detection function and estimate abundance
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-
-
-
-# #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# # 1) Install and load Rdistance -----
-# #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# # As of publication, the Rdistance package is not on CRAN, but can be installed from a GitHub repository, which will
-# # require using the devtools package.  The Rdistance package may be further developed after publication, but this demo
-# # is current and compatible with Rdistance version 1.3.2.
-# 
-# # Check if Rdistance is installed.  If yes, load it.  If not, install it, then load it.
-# # Rdistance depends only on base R packages
-# 
-# if("Rdistance" %in% rownames(installed.packages()) == FALSE){
-#   install.packages("Rdistance")
-# }
-# require(Rdistance)
-# 
-# 
-# # View help documentation for the Rdistance package
-# ?Rdistance
-# 
-# # View help documentation for key Rdistance functions
-# ?F.dfunc.estim
-# ?F.abund.estim
-# ?F.automated.CDA
-# 
-# # View help documentation for Rdistance example datasets
-# ?sparrow.detections
-# ?sparrow.sites
-# #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-
-
-
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 # 2) Read in input data -----
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 # Rdistance requires two input datasets.  These can be prepared outside of R and read in as data.frames using,
-# for example, read.csv.  We make use of the sparrow example datasets already contained within Rdistance.
+# for example, read.csv.  We make use of the thrasher example datasets already contained within Rdistance.
 
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
-data(sparrow.detections)
-head(sparrow.detections)
+data(thrasher.detections)
+head(thrasher.detections)
 
 
 
@@ -83,8 +39,8 @@ head(sparrow.detections)
 # The second required dataset is a transect data.frame
 # Each row is a transect, and the siteID and length columns are required (as named)
 # Other columns (e.g., transect-level covariates) are ignored, but may be useful in modeling abundance later
-data(sparrow.sites)
-head(sparrow.sites)
+data(thrasher.sites)
+head(thrasher.sites)
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 
@@ -96,36 +52,33 @@ head(sparrow.sites)
 
 
 # Distance-sampling analysis is done on perpendicular distances (i.e., the distance from each detected group to the
-# transect, not to the observer).  We have provided the perpendicular distances (named `dist`) in the example data, but
-# observers originally recorded sighting distances and sighting angles.  Here we use the `perp.dists` function to
-# (re)calculate the perpendicular distances (`dist`) and remove the `sightdist` and `sightangle` columns.  See the help
-# documentation for `perp.dists` for details.
+# transect, not to the observer) for line transects and radial distances for point transects.  The radial distances are
+# provided in thrasher.detections
 
 
-# sparrow.detections$dist2 <- perp.dists(s.dist="sightdist", s.angle="sightangle", data=sparrow.detections)
-# 
-# sparrow.detections <- sparrow.detections[, -which(names(sparrow.detections) %in% c("sightdist", "sightangle", "dist2"))]                                                                  
-# head(sparrow.detections)
+
 
 
 
 # Explore the distribution of distances.
-hist(sparrow.detections$dist, col="grey", main="", xlab="Distance (m)")
-rug(sparrow.detections$dist)
-summary(sparrow.detections$dist)
+hist(thrasher.detections$dist, col="grey", main="", xlab="Distance (m)")
+rug(thrasher.detections$dist)
+summary(thrasher.detections$dist)
 
 
-
-
+quantile(thrasher.detections$dist, c(0.5, 0.85, 0.9, 0.95))
+trunc <- 175
 
 # Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the
 # half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
-# automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater
-# than 150 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 150.
-sparrow.dfunc <- F.dfunc.estim(formula=dist~1, data=sparrow.detections, likelihood="halfnorm", w.hi=150)
-plot(sparrow.dfunc)
-sparrow.dfunc
+# automated process that fits multiple detection functions and compares them using AICc.  Larger distances are quite
+# sparse, so here we right-truncate the data, tossing out detections where `dist` > trunc.
+thrasher.dfunc <- F.dfunc.estim(formula=dist~1, data=thrasher.detections, likelihood="halfnorm", w.hi=trunc, point.transects=TRUE)
+plot(thrasher.dfunc)
+thrasher.dfunc
 
+ESW(thrasher.dfunc)
+effective.radius(thrasher.dfunc)
 
 # The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
 # abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
@@ -137,12 +90,12 @@ sparrow.dfunc
 # 4) Estimate abundance given the detection function -----
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 # Estimating abundance requires the additional information contained in the second required dataset, described earlier,
-# where each row represents one transect. Load the example dataset of surveyed sparrow transects from the package.
+# where each row represents one transect. Load the example dataset of surveyed thrasher transects from the package.
 
 
 # Next, estimate abundance (or density in this case) using `F.abund.estim`.  If `area`=1, then density is given in the
-# squared units of the distance measurements --- in this case, sparrows per square meter.  Instead, we set `area`=10000
-# in order to convert to sparrows per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance
+# squared units of the distance measurements --- in this case, thrashers per square meter.  Instead, we set `area`=10000
+# in order to convert to thrashers per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance
 # estimate is detailed in the help documentation for `F.abund.estim`.
 
 # Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`),
@@ -151,7 +104,8 @@ sparrow.dfunc
 # runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be
 # necessary to stabilize CI estimates.
 
-fit <- F.abund.estim(sparrow.dfunc, detection.data=sparrow.detections, site.data=sparrow.sites,
+# (jdc) the bootstrap isn't right...
+fit <- F.abund.estim(thrasher.dfunc, detection.data=thrasher.detections, site.data=thrasher.sites,
                      area=10000, R=100, ci=0.95, plot.bs=TRUE)
 fit
 
@@ -176,19 +130,10 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-auto <- F.automated.CDA(formula=dist~1, detection.data=sparrow.detections, site.data=sparrow.sites,
-                        w.hi=150, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
+auto <- F.automated.CDA(formula=dist~1, detection.data=thrasher.detections, site.data=thrasher.sites,
+                        w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE, point.transects=TRUE)
 
 
-# Before the package overhaul, the top-ranked detection function was the negative
-# exponential likelihood, with one cosine expansion.
 
-# Now the uniform, 0 expansions is top-ranked.
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-
-# This used to be the best-fitting detection function
-best.old <- F.dfunc.estim(formula=dist~1, data=sparrow.detections, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
-plot(best.old)
-best.old
-
