@@ -43,8 +43,9 @@ print.dfunc <- function( x, ... ){
         cat("Coefficients:\n")
         print.default(format(coef(x)), print.gap = 2,
             quote = FALSE)
+    } else {
+      cat("No coefficients\n")
     }
-    else cat("No coefficients\n")
 
     cat("\n")
 
@@ -66,8 +67,7 @@ print.dfunc <- function( x, ... ){
     cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
     if(x$point.transects){
       cat(paste("Effective radius:", format(effective.radius(x)), "\n"))
-    }
-    else{
+    } else {
       cat(paste("Effective strip width:", format(ESW(x)), "\n"))
     }
     
