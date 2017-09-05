@@ -158,10 +158,28 @@
 #' @keywords model
 #' @export
 
-F.dfunc.estim <- function (formula, data = NULL, likelihood="halfnorm", 
+F.dfunc.estim <- function (formula, detection.data, site.data=NULL, likelihood="halfnorm", 
                   point.transects = FALSE, w.lo=0, w.hi=max(dist), 
                   expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
                   observer="both", warn=TRUE){
+  
+  
+  
+  # If site.data is provided
+  # Merge site-level covariates to detection data
+  # For current version (2.0?), restricting to only site-level covariates (no detection-level covariates)
+  if (!is.null(site.data)) {
+    data <- merge(detection.data, site.data, by="siteID", all.x=TRUE)
+  }
+  # Add some error catching or warning about NAs for columns in the specified formula?
+  
+  
+  
+  # (jdc) I don't understand this chunk
+  # The help for the formula argument says "If covariates do not appear in \code{data}, they must 
+  # be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)"
+  # I assume this chunk implements that.
+  
   
   if (missing(data))
     data <- environment(formula)
@@ -191,7 +209,7 @@ F.dfunc.estim <- function (formula, data = NULL, likelihood="halfnorm",
   if(ncovars==1)
     covars <- NULL
   
-  vnames<-dimnames(covars)[[2]]
+  vnames <- dimnames(covars)[[2]]
 
   # Stop and print error if dist vector contains NAs
   if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
