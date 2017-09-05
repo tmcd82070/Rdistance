@@ -492,32 +492,60 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   
   
   
+  
+  
+  #%%%%%%%%%%%%%%%%%#
   # (jdc) The by.id option needs to be updated for points and covars
   
   # Compute transect-level densities
   if (by.id) {
     
     # Starting df
-    nhat.df <- site.data[, c("siteID", "length")]
+    # nhat.df <- site.data[, c("siteID", "length")]
+    nhat.df <- data.frame(siteID = site.data$siteID, nhat=NA)
     
     # Summarize raw count (truncated observations excluded previously) by transect
     rawcount <- data.frame(rawcount = tapply(detection.data$groupsize, detection.data$siteID, sum))
     rawcount <- cbind(siteID = rownames(rawcount), rawcount)
-    
+
     # Merge and replace NA with 0 for 0-count transects
     nhat.df <- merge(nhat.df, rawcount, by="siteID", all.x=TRUE)
     nhat.df$rawcount[is.na(nhat.df$rawcount)] <- 0
+
+    # # Calculate transect-level abundance (density)
+    # nhat.df$nhat <- (nhat.df$rawcount * area) / (2 * esw * nhat.df$length)
+    # 
+    # # Check that transect-level abundances match total abundance
+    # #mean(nhat.df$nhat)
+    # #ans$n.hat
+    # 
+    # # Remove the length column
+    # nhat.df <- nhat.df[, -2]
+    
     
     # Calculate transect-level abundance (density)
-    nhat.df$nhat <- (nhat.df$rawcount * area) / (2 * esw * nhat.df$length)   
+    # Loop through each transect (site)
+    # This loop could be replaced with something faster
+    # For example, rawcount is already calculated in estimate.nhat
+    for (i in 1:nrow(nhat.df)) {
+      
+      # nhat is 0 where the count is 0
+      if (nhat.df[i, "rawcount"] == 0) {
+        nhat.df[i, "nhat"] <- 0
+        next()
+      }
+      
+      site <- nhat.df[i, "siteID"]
+      # Subset both input datasets to only that site
+      dd <- detection.data[detection.data$siteID == site, ]
+      sd <- site.data[site.data$siteID == site, ]
+      
+      # Estimate abundance
+      nhat.df[i, "nhat"] <- estimate.nhat(dfunc=dfunc, detection.data=dd, site.data=sd)$n.hat
+      
+    }
     
-    # Check that transect-level abundances match total abundance
-    #mean(nhat.df$nhat)
-    #ans$n.hat
-    
-    # Remove the length column
-    nhat.df <- nhat.df[, -2]
-    
+
     # Save in output list
     ans$nhat.df <- nhat.df
   }  # end if by.id
