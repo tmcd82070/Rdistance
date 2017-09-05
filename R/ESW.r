@@ -56,6 +56,12 @@
 #' @export
 
 ESW <- function( obj, covars = NULL ){
+  
+  # Issue error if the input detection function was fit to point-transect data
+  # Eventually, it would be nice to build the effective.radius code into ESW, so it could handle either.
+  if(obj$point.transects) stop("ESW is for line transects only.  See effective.radius for the point-transect equivalent.")
+  
+  
 #
 #   obj = a dfunc object.  It may optionally contain a g0 component.
 #       if no g0, assume g0 = 1
