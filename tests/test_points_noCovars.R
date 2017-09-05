@@ -2,12 +2,11 @@
 # Rdistance:  an R package for distance-sampling analysis
 
 # This script tests the point-transect workflow, with no covariates
-# 
 
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 9/1/2017
+# Last updated 9/5/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -104,8 +103,8 @@ effective.radius(thrasher.dfunc)
 # runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be
 # necessary to stabilize CI estimates.
 
-# (jdc) the bootstrap isn't right...
-fit <- F.abund.estim(thrasher.dfunc, detection.data=thrasher.detections, site.data=thrasher.sites,
+# (jdc) the plotting of the bootstrap isn't right...
+fit <- F.abund.estim(dfunc=thrasher.dfunc, detection.data=thrasher.detections, site.data=thrasher.sites,
                      area=10000, R=100, ci=0.95, plot.bs=TRUE)
 fit
 
@@ -115,6 +114,14 @@ fit
 # object (here called `fit`).
 fit$n.hat
 fit$ci
+
+
+# 
+# fitby <- F.abund.estim(dfunc=thrasher.dfunc, detection.data=thrasher.detections, site.data=thrasher.sites,
+#                      area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
+# fitby
+
+
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
@@ -130,10 +137,41 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-auto <- F.automated.CDA(formula=dist~1, detection.data=thrasher.detections, site.data=thrasher.sites,
-                        w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE, point.transects=TRUE)
-
+# auto <- F.automated.CDA(formula=dist~1, detection.data=thrasher.detections, site.data=thrasher.sites,
+#                         w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE, point.transects=TRUE)
+# 
 
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+
+
+
+# Compare to Distance
+
+
+# Format detection data
+d.data <- thrasher.detections[c("dist", "groupsize")]
+names(d.data) <- c("distance", "size")  # meet naming conventions
+d.data$object <- 1:nrow(d.data)  # add object ID
+
+# Produce and format 3 other required data.frames
+d.region <- data.frame(Region.Label="main", Area=10000)
+
+d.sample <- data.frame(Sample.Label = thrasher.sites$siteID, Effort = 1)  # Effort for points is number of visits (see ?flatfile)
+d.sample$Region.Label <- "main"
+
+d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=thrasher.detections$siteID)
+
+# Fit model and estimate abundance
+(ds.fit <- ds(data=d.data, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
+              truncation=trunc, transect="point", key="hn", adjustment=NULL, dht.group=FALSE))
+
+plot(ds.fit)
+print(ds.fit)
+summary(ds.fit)  # Because distance is measured in m, and I set Area to 10000 (m^2 to ha), the Abundance estimate is really density per ha
+
+# Some output
+ds.fit$ddf$lnl  # likelihood
+ds.fit$ddf$criterion  # AIC
