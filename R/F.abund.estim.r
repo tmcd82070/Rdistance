@@ -140,10 +140,11 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
     (avg.group.size <- mean(detection.data$groupsize))
     
     # total transect length and ESW
-    if(dfunc$point.transects){
+    if (dfunc$point.transects) {
       tot.trans.len <- NULL  # no transect length
+      tot.sites <- nrow(site.data)  # number of sites
       esw <- effective.radius(dfunc)  # point count equivalent of effective strip width
-    } else{
+    } else {
       tot.trans.len <- sum(site.data$length)  # total transect length
       esw <- ESW(dfunc)  # get effective strip width
     }
@@ -151,12 +152,13 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
     
     # Estimate abundance
     if (is.null(dfunc$covars)) {
-      temp <- matrix(nrow = 0, ncol = 0)
+      temp <- matrix(nrow = 0, ncol = 0)  # (jdc) isn't this just getting overwritten with NULL ~10 lines below?
     } else {
       temp <- dfunc$covars
     }
-    # If line transects + covariates or point transects, estimate abundance the general way
-    if (ncol(temp) > 1 | dfunc$point.transects) { 
+    # If covariates (for line or point transects) estimate abundance the general way
+    # If no covariates, use the faster, standard equations (see after else)
+    if (ncol(temp) > 1) { 
       f.like <- match.fun(paste( dfunc$like.form, ".like", sep=""))
       s <- 0
       for (i in 1:nrow(detection.data)) {
@@ -165,7 +167,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
         } else {
           temp <- t(as.matrix(dfunc$covars[i,]))
         }
-        new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],
+        new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],  # (jdc) the integration constant doesn't change for different dist values (tested w/line data)
                                                                      density = paste(dfunc$like.form, ".like", sep=""),
                                                                      w.lo = dfunc$w.lo,
                                                                      w.hi = dfunc$w.hi,
@@ -179,16 +181,23 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
         }
       }
       if (dfunc$point.transects) {
-        a <- pi*esw*n  # area for point transects
+        a <- pi * esw * n  # area for point transects  # (jdc) why is this n (number of detections), should be tot.sites (number of points), no?
       } else {
         a <- 2 * tot.trans.len  # area for line transects
       }
       n.hat <- s * area/a
-    } else {
-      # Shorter abundance estimation for line transects without covariates
-      n.hat <- avg.group.size * n * area/(2 * esw * tot.trans.len)
       
-      # Couldn't we include a shorter abund estimate for point counts with no covariates too?
+      
+    } else {
+      
+      # Standard (and faster) methods when there are no covariates
+      if (dfunc$point.transects) {
+        # Standard method for points with no covariates
+        n.hat <- (avg.group.size * n * area) / (pi * (esw^2) * tot.sites)
+      } else {
+        # Standard method for lines with no covariates
+        n.hat <- (avg.group.size * n * area) / (2 * esw * tot.trans.len)
+      }
     }
     
     
