@@ -313,7 +313,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
     
     # Turn on progress bar (if utils is installed)
     if ("utils" %in% installed.packages()[, "Package"]) {
-      pb <- txtProgressBar(1, R)
+      pb <- txtProgressBar(1, R, style=3)
       show.progress = TRUE
     } else {
       show.progress = FALSE
