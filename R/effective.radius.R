@@ -17,6 +17,10 @@
 
 effective.radius <- function(x){
   
+  # Issue error if the input detection function was fit to line-transect data
+  # Eventually, it would be nice to build the effective.radius code into ESW, so ESW could handle either.
+  if(!(x$point.transects)) stop("effective.radius is for point transects only.  See ESW for the line-transect equivalent.")
+  
   integral <- integration.constant(x$dist, match.fun(paste( x$like.form, ".like", sep="")), x$w.lo, x$w.hi, covars = x$covars, x$parameters, x$expansions, point.transects = x$point.transects, series = x$series)
   
   rho <- sqrt(2*integral*x$dist)[1]
