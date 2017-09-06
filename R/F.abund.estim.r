@@ -386,10 +386,9 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       if (is.null(dfunc$covars)) {
         covars <- 1
       } else {
-        # (jdc) need to double-check this
-        # When there are covars in the dfunc, are they ready to paste in to the formula as-is?
+        covars <- colnames(dfunc$covars)[colnames(dfunc$covars) != "(Intercept)"]
       }
-      (fmla <- as.formula(paste("dist ~ ", paste(colnames(dfunc$covars)[colnames(dfunc$covars) != "(Intercept)"], collapse= "+"))))
+      (fmla <- as.formula(paste("dist ~ ", paste(covars, collapse= "+"))))
       
       
       dfunc.bs <- F.dfunc.estim(formula = fmla,
