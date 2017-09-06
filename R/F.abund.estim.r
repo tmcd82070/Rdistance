@@ -352,6 +352,14 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       # expand this reduced set my replicating rows
       new.detection.data <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
       
+      # And merge on site-level covariates
+      # Not needed if no covars, but cost in time should be negligible
+      # This ended up adding too many rows if merged to new.site.data, so merging with original site.data
+      new.merge.data <- merge(new.detection.data, site.data, by="siteID")
+      # unique(droplevels(new.detection.data$siteID))
+      # unique(droplevels(new.site.data$siteID))
+      # length(new.trans)
+      
       # Extract distances
       # new.x <- new.detection.data$dist
       
@@ -381,11 +389,11 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
         # (jdc) need to double-check this
         # When there are covars in the dfunc, are they ready to paste in to the formula as-is?
       }
-      (fmla <- as.formula(paste("dist ~ ", paste(covars, collapse= "+"))))
+      (fmla <- as.formula(paste("dist ~ ", paste(colnames(dfunc$covars)[colnames(dfunc$covars) != "(Intercept)"], collapse= "+"))))
       
       
       dfunc.bs <- F.dfunc.estim(formula = fmla,
-                                data = new.detection.data,
+                                data = new.merge.data,
                                 likelihood = dfunc$like.form, 
                                 w.lo = dfunc$w.lo,
                                 w.hi = dfunc$w.hi,
