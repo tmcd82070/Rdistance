@@ -1,4 +1,8 @@
 # Rdistance
+
+[![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
+[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/Rdistance)](http://cran.rstudio.com/web/packages/Rdistance/index.html)
+
 **Rdistance - Distance Sampling Analyses for Abundance Estimation**
 
 **Description:**
