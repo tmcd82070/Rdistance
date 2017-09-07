@@ -4,16 +4,19 @@
 \alias{F.automated.CDA}
 \title{Automated classical distance analysis.}
 \usage{
-F.automated.CDA(detection.data, transect.data, w.lo=0, w.hi=max(dist),
+F.automated.CDA(detection.data, site.data, w.lo=0, w.hi=max(dist),
   likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
   series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
   area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE, plot=TRUE, ...)
 }
 \arguments{
+\item{formula}{This parameter is passed to \code{F.dfunc.estim}.
+See \code{F.dfunc.estim} documentation for definition.}
+
 \item{detection.data}{This parameter is passed to \code{F.dfunc.estim} and \code{F.abund.estim}.
 See \code{F.abund.estim} documentation for definition.}
 
-\item{transect.data}{This parameter is passed to \code{F.abund.estim}.
+\item{site.data}{This parameter is passed to \code{F.abund.estim}.
 See \code{F.abund.estim} documentation for definition.}
 
 \item{w.lo}{This parameter is passed to \code{F.dfunc.estim}.
@@ -30,6 +33,10 @@ Valid values are 'simple', 'hermite', and 'cosine'. See Details for the models t
 
 \item{expansions}{Vector of the number of expansion terms to consider during model selection. 
 Valid values are 0 through 3. See Details for the models this routine considers.}
+
+\item{point.transects}{A logical scalar specifying whether input data come
+from a point-transect survey type (TRUE),
+or a line-transect survey type (FALSE).}
 
 \item{warn}{This parameter is passed to \code{F.dfunc.estim}.
 \code{F.dfunc.estim} documentation for definition.}
@@ -80,7 +87,7 @@ During model selection, each series and number of expansions is crossed with eac
   # And estimate abundance (density per ha in this case) given the 'best' detection function
   # Note, area=10000 converts to density per hectare (for distances measured in meters)
   # Note, a person should do more than R=20 iterations 
-  F.automated.CDA(detection.data=sparrow.detections, transect.data=sparrow.transects,
+  F.automated.CDA(detection.data=sparrow.detections, site.data=sparrow.sites,
                   likelihood=c("halfnorm", "hazrate", "negexp"),
                   series=c("cosine", "simple"),
                   expansions=c(0, 1), area=10000, R=20, ci=0.95, by.id=FALSE,

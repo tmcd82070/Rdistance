@@ -4,8 +4,8 @@
 \alias{F.dfunc.estim}
 \title{Estimate a detection function from distance-sampling data.}
 \usage{
-F.dfunc.estim(formula, data = NULL, likelihood = "halfnorm",
-  point.transects = F, w.lo = 0, w.hi = max(dist), expansions = 0,
+F.dfunc.estim(formula, detection.data, likelihood = "halfnorm",
+  point.transects = FALSE, w.lo = 0, w.hi = max(dist), expansions = 0,
   series = "cosine", x.scl = 0, g.x.scl = 1, observer = "both",
   warn = TRUE)
 }
@@ -18,15 +18,19 @@ contains the names of covariate vectors to fit in the detection
 function. If covariates do not appear in \code{data}, they must 
 be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
 
-\item{data}{Data frame containing columns named in \code{formula}.}
+\item{detection.data}{Data frame containing columns named in \code{formula}.
+If covariates are included in formula, they must be merged into 
+\code{detection.data} prior to calling this function (e.g., 
+data <- merge(detections,transects,by="siteID) ).}
 
 \item{likelihood}{String specifying the likelihood to fit. Built-in 
 likelihoods at present are "uniform", "halfnorm", 
 "hazrate", "negexp", and "Gamma". See vignette for a way to use 
 user-define likelihoods.}
 
-\item{point.transects}{Boolean. TRUE if using point transect data, 
-FALSE if using line transect data.}
+\item{point.transects}{A logical scalar specifying whether input data come
+from a point-transect survey type (TRUE),
+or a line-transect survey type (FALSE).}
 
 \item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
 This is the minimum possible off-transect distance. Default is 0.}
@@ -38,7 +42,11 @@ could be observed. Default is the maximum of \code{dist}.}
 \item{expansions}{A scalar specifying the number of terms 
 in \code{series} to compute. Depending on the series, 
 this could be 0 through 5.  The default of 0 equates 
-to no expansion terms of any type.}
+to no expansion terms of any type.  No expansion terms 
+are allowed (i.e., \code{expansions} is forced to 0) if 
+covariates are present in the detection function 
+(i.e., right-hand side of \code{formula} includes
+something other than \code{1}).}
 
 \item{series}{If \code{expansions} > 0, this string 
 specifies the type of expansion to use. Valid values at 

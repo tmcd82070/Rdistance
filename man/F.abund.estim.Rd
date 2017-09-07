@@ -4,7 +4,7 @@
 \alias{F.abund.estim}
 \title{Estimate abundance from distance-sampling data.}
 \usage{
-F.abund.estim(dfunc, detection.data, transect.data, area = 1, ci = 0.95,
+F.abund.estim(dfunc, detection.data, site.data, area = 1, ci = 0.95,
   R = 500, by.id = FALSE, plot.bs = FALSE)
 }
 \arguments{
@@ -18,7 +18,7 @@ and with at least the following three columns with the names \code{siteID}, \cod
   \item \code{dist} = the perpendicular, off-transect distance.
 }}
 
-\item{transect.data}{A data.frame where each transect surveyed is represented as one row (see example dataset, 
+\item{site.data}{A data.frame where each transect surveyed is represented as one row (see example dataset, 
 \code{\link{sparrow.transects}}) and with at least the following two columns with the names \code{siteID} and \code{length}:
   \itemize{
     \item \code{siteID} = the name of the transect.  This vector is used during bootstrapping to resample transects.
@@ -91,7 +91,7 @@ The abundance estimate is
   # Estimate abundance given a detection function
   # Note, area=10000 converts to density per hectare (for distances measured in meters)
   # Note, a person should do more than R=20 iterations 
-  fit <- F.abund.estim(dfunc, detection.data=sparrow.detections, transect.data=sparrow.transects,
+  fit <- F.abund.estim(dfunc, detection.data=sparrow.detections, site.data=sparrow.sites,
                        area=10000, R=20, ci=0.95, plot.bs=TRUE, by.id=FALSE)
 }
 \references{

@@ -14,7 +14,10 @@
 #' function. If covariates do not appear in \code{data}, they must 
 #' be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)
 #' 
-#' @param data Data frame containing columns named in \code{formula}.
+#' @param detection.data Data frame containing columns named in \code{formula}.
+#' If covariates are included in formula, they must be merged into 
+#' \code{detection.data} prior to calling this function (e.g., 
+#' data <- merge(detections,transects,by="siteID) ).
 #' 
 #' @param likelihood String specifying the likelihood to fit. Built-in 
 #' likelihoods at present are "uniform", "halfnorm", 
@@ -35,7 +38,11 @@
 #' @param expansions A scalar specifying the number of terms 
 #' in \code{series} to compute. Depending on the series, 
 #' this could be 0 through 5.  The default of 0 equates 
-#' to no expansion terms of any type.
+#' to no expansion terms of any type.  No expansion terms 
+#' are allowed (i.e., \code{expansions} is forced to 0) if 
+#' covariates are present in the detection function 
+#' (i.e., right-hand side of \code{formula} includes
+#' something other than \code{1}). 
 #' 
 #' @param series If \code{expansions} > 0, this string 
 #' specifies the type of expansion to use. Valid values at 
@@ -158,15 +165,14 @@
 #' @keywords model
 #' @export
 
-F.dfunc.estim <- function (formula, data = NULL, likelihood="halfnorm", 
+F.dfunc.estim <- function (formula, detection.data, likelihood="halfnorm", 
                   point.transects = FALSE, w.lo=0, w.hi=max(dist), 
                   expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
                   observer="both", warn=TRUE){
   
-  if (missing(data))
-    data <- environment(formula)
   cl <- match.call()
   mf <- match.call(expand.dots = FALSE)
+  names(mf)[names(mf)=="detection.data"] <- "data"
   m <- match(c("formula", "data"), names(mf), 0L)
   mf <- mf[c(1L, m)]
   names(mf)[names(mf)=="formula"] <- "formula"
@@ -178,20 +184,41 @@ F.dfunc.estim <- function (formula, data = NULL, likelihood="halfnorm",
   covars <- if (!is.empty.model(mt)){
     model.matrix(mt, mf, contrasts)
   }
+
+  # Eventually, I'd like to use a constant
+  # column for covars to allow intercept only 
+  # models.  That is, report a beta coefficient 
+  # for ~1 models, and allow expansions in this case. 
+  # For now, however, we'll just do the "old" method
+  # of estimating the distance function parameter directly.
   
-  # Find which columns are factors
-  factor.names <- NULL
+  ncovars <- ncol(covars)
+  factor.names <- NULL 
+  if(ncovars==1){
+    if( attr(covars,"assign")==0 ){
+      # constant; intercept only model
+      covars <- NULL
+    }
+  } 
+
+  # We are not allowing expansion terms in presence of covariates
+  if( !is.null(covars) & expansions > 0 ){
+    expansions=0
+    if(warn) warning("Expansions not allowed when covariates are present. Expansions set to 0.")
+  }
+  
+  # Find which columns are factors.
+  # This works when covars is NULL and must be called 
+  # even when ncovars == 1 to cover case like dist ~ -1+x (no intercept)
   for(i in 1:ncol(mf)){
     if(class(mf[,i]) == "factor"){
       factor.names <- c(factor.names, names(mf)[i])
     }
   }
-  
-  ncovars <- ncol(covars)
-  if(ncovars==1)
-    covars <- NULL
+
   
   vnames<-dimnames(covars)[[2]]
+
 
   # Stop and print error if dist vector contains NAs
   if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
