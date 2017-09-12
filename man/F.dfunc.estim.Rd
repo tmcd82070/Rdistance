@@ -4,10 +4,10 @@
 \alias{F.dfunc.estim}
 \title{Estimate a detection function from distance-sampling data.}
 \usage{
-F.dfunc.estim(formula, detection.data, likelihood = "halfnorm",
+F.dfunc.estim(formula, detection.data, site.data, likelihood = "halfnorm",
   point.transects = FALSE, w.lo = 0, w.hi = max(dist), expansions = 0,
   series = "cosine", x.scl = 0, g.x.scl = 1, observer = "both",
-  warn = TRUE)
+  warn = TRUE, transectID = NULL, pointID = "point", length = "length")
 }
 \arguments{
 \item{formula}{A standard formula object (eg dist ~ 1, 
@@ -18,10 +18,30 @@ contains the names of covariate vectors to fit in the detection
 function. If covariates do not appear in \code{data}, they must 
 be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
 
-\item{detection.data}{Data frame containing columns named in \code{formula}.
-If covariates are included in formula, they must be merged into 
-\code{detection.data} prior to calling this function (e.g., 
-data <- merge(detections,transects,by="siteID) ).}
+\item{detection.data}{A data frame containing detection distances 
+(either off-transect or radial from point), \emph{site ID}, and 
+potentially group size (see example data set \code{\link{sparrow.detections}}).  
+\code{detection.data} contains one row per detected group. The column
+containing detection
+distances must be specified on the left-hand side of \code{formula}.
+The site ID  column(s) (see argument \code{siteID}) must specify the site
+(transect or point) associated with the detection so that this 
+data frame can be merged with \code{site.data}.}
+
+\item{site.data}{A data.frame containing site (transect and point)
+ ID's and any 
+\emph{site level} covariates to included in the distance function. 
+Every unique surveyed site (transect or point) is represented on
+one row of this data set.  See arguments \code{transectID} and 
+\code{pointID} for an explanation of site and transect ID's. 
+
+If sites are transects, 
+this data frame must also contain transect length. By 
+default, transect length is assumed to be in column 'length' 
+but can be specified using argument \code{length}. 
+
+The total number of sites surveyed is \code{nrow(site.data)}. 
+Duplicate site-level IDs are not allowed in \code{site.data}.}
 
 \item{likelihood}{String specifying the likelihood to fit. Built-in 
 likelihoods at present are "uniform", "halfnorm", 
@@ -29,8 +49,8 @@ likelihoods at present are "uniform", "halfnorm",
 user-define likelihoods.}
 
 \item{point.transects}{A logical scalar specifying whether input data come
-from a point-transect survey type (TRUE),
-or a line-transect survey type (FALSE).}
+from point-transect surveys (TRUE),
+or line-transect surveys (FALSE).}
 
 \item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
 This is the minimum possible off-transect distance. Default is 0.}
@@ -73,6 +93,24 @@ convergence and boundary conditions are printed
 by \code{print.dfunc}, \code{print.abund}, and 
 \code{plot.dfunc}, so there should be little harm in 
 setting \code{warn = FALSE}.}
+
+\item{transectID}{A character vector naming the transect ID column(s) in
+\code{detection.data} and \code{site.data}.  Transects can be the 
+basic sampling unit (when \code{point.transects}=FALSE) or 
+contain multiple sampling units (e.g., when \code{point.transects}=TRUE). 
+For line-transects, the \code{transectID} column(s) alone is 
+sufficient to specify unique sample sites. 
+For point-transects, the amalgomation of \code{transectID} and 
+\code{pointID} specify unique sampling sites.  See Details.}
+
+\item{pointID}{A character vector specifying the point ID column(s)
+in \code{detection.data} and \code{site.data}. For point-transect data, 
+the site ID's used to merge the input data set is 
+\code{paste0(transectID,"."pointID)}.}
+
+\item{length}{Character string specifying the (single) column in 
+\code{site.data} that contains transect length. This is ignored if 
+\code{point.transects} = TRUE.}
 }
 \value{
 An object of class 'dfunc'.  Objects of class 'dfunc' 
@@ -117,6 +155,44 @@ Fit a specific detection function to a set of
 observed off-transect distances.
 }
 \details{
+To save space and to easily specify sites without detections, 
+all site ID's, regardless whether a detection occured there,
+and \emph{site level} covariates are stored in 
+the \code{site.data} data frame.  Detection distances and group
+sizes are measured at the \emph{detection level} and 
+are stored in the 
+\code{detection.data} data frame.  
+
+The input data frames, \code{detection.data} and \code{site.data},
+must be merge-able on unique sites.  For line-transects, 
+site ID's are unique values of the \code{transectID} column 
+in \code{site.data} and   
+\code{merge(detection.data,site.data,by=transectID)} must work.
+For point-transects, 
+site ID's are unique values of \code{paste(transectID,pointID)}
+and   
+\code{merge(detection.data,site.data,by=c(transectID, pointID)} must work.
+ 
+By default,\code{transectID} and \code{pointID} are NULL and
+the merge is done on all common columns.
+That is, when \code{transectID} is NULL, this routine assumes unique
+\emph{transects} are specified by unique combinations of the common variables (i.e.,
+\code{intersect(names(detection.data), names(site.data))}). 
+
+An error occurs if there are no common column names between 
+\code{detection.data} and \code{site.data}.
+Duplicate site IDs are not allowed in \code{site.data}. 
+If the same site is surveyed in
+multiple years, specify another transect ID column (e.g., \code{transectID =
+c("year","transectID")}).  Duplicate site ID's are allowed in 
+\code{detection.data}.  
+
+During bootstrap estimation of variance, unique \emph{transects} (i.e,. values of 
+the transect ID column(s)) are resampled with replacement. The number 
+of sample units is \code{length(unique(site.data[,transectID]))}, 
+and the user must be assured that resampling multiple rows of 
+\code{site.data} is appropriate. 
+
 Given a specified sighting function (e.g., "halfnorm"), 
 maximum likelihood is used to estimate the parameter(s) of 
 the function (e.g., standard error) that best fit the distance data.
