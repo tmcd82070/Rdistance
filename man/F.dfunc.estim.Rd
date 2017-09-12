@@ -121,6 +121,11 @@ are lists containing the following components:
     number of expansion terms plus one if the likelihood is 
     either 'hazrate' or 'uniform' (hazrate and uniform have
     two parameters). }
+  \item{varcovar}{The variance-covariance matrix for coefficients 
+    of the distance function, estimated by the inverse of the Hessian
+    of the fit evaluated at the estimates.  There is no guarentee this 
+    matrix is positive-definite and should be viewed with caution.  
+    Error estimates derived from bootstrapping are generally more reliable.}   
   \item{loglik}{The maximized value of the log likelihood 
     (more specifically, the minimized value of the negative 
     log likelihood).}

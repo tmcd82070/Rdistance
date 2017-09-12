@@ -1,10 +1,13 @@
 #' @name print.dfunc
-#' @aliases print.dfunc
+#' 
 #' @title Print a distance function object.
+#' 
 #' @description Print method for distance functions produced by F.dfunc.estim, that are of class \code{dfund}.
-#' @usage \method{print}{dfunc}(x, ...)
+#' 
 #' @param x An estimated distance function resulting from a call to \code{F.dfunc.estim}.
+#' 
 #' @param \dots Included for compatability with other print methods.  Ignored here.
+#' 
 #' @details The call, coefficients of the distanced function, whether the estimation converged, 
 #' the likelihood and expansion function, and other statistics are printed.  At the bottom
 #' of the output, the following quantities are printed,
@@ -40,8 +43,13 @@ print.dfunc <- function( x, ... ){
 
     cat("Call: ", deparse(x$call), "\n\n", sep = "")
     if (length(coef(x))) {
+        seCoef <- sqrt(diag(x$varcovar))
+        waldZ <- coef(x) / seCoef
+        pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
+        coefMat <- cbind(format(coef(x)), format(seCoef), format(waldZ), format(pWaldZ))
+        dimnames(coefMat)[[2]] <- c("Estimate", "SE", "z", "p(>|z|)")
         cat("Coefficients:\n")
-        print.default(format(coef(x)), print.gap = 2,
+        print.default(coefMat, print.gap = 2,
             quote = FALSE)
     } else {
       cat("No coefficients\n")

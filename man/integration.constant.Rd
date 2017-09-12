@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.constant.R
 \name{integration.constant}
 \alias{integration.constant}
-\title{Compute the integration contant for distance density functions.}
+\title{Compute the integration constant for distance density functions.}
 \usage{
 integration.constant(dist, density, w.lo, w.hi, covars, a, expansions,
   point.transects, ...)

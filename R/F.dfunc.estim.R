@@ -164,6 +164,11 @@
 #'     number of expansion terms plus one if the likelihood is 
 #'     either 'hazrate' or 'uniform' (hazrate and uniform have
 #'     two parameters). }
+#'   \item{varcovar}{The variance-covariance matrix for coefficients 
+#'     of the distance function, estimated by the inverse of the Hessian
+#'     of the fit evaluated at the estimates.  There is no guarentee this 
+#'     matrix is positive-definite and should be viewed with caution.  
+#'     Error estimates derived from bootstrapping are generally more reliable.}   
 #'   \item{loglik}{The maximized value of the log likelihood 
 #'     (more specifically, the minimized value of the negative 
 #'     log likelihood).}
@@ -324,11 +329,14 @@ F.dfunc.estim <- function (formula, detection.data, site.data, likelihood="halfn
           like = likelihood, covars = covars,
           w.lo = w.lo, w.hi = w.hi, expansions = expansions, 
           series = series, point.transects = point.transects, 
-          for.optim = T)
+          for.optim = T, hessian = TRUE)
+  
+  varcovar <- solve(fit$hessian)
   
   names(fit$par) <- strt.lims$names
   
-  ans <- list(parameters = fit$par, 
+  ans <- list(parameters = fit$par,
+              varcovar = varcovar,
               loglik = fit$value, 
               convergence = fit$convergence, 
               like.form = likelihood, 
