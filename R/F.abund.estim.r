@@ -392,7 +392,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       
       
       dfunc.bs <- F.dfunc.estim(formula = fmla,
-                                data = new.merge.data,
+                                detection.data = new.merge.data,
                                 likelihood = dfunc$like.form, 
                                 w.lo = dfunc$w.lo,
                                 w.hi = dfunc$w.hi,
@@ -513,6 +513,9 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   #%%%%%%%%%%%%%%%%%#
   # (jdc) The by.id option needs to be updated for points and covars
   
+  # The cols in the returned nhat.df should include siteID, rawcount, nhat, p, and ESW
+  
+  
   # Compute transect-level densities
   if (by.id) {
     
@@ -520,7 +523,9 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
     # nhat.df <- site.data[, c("siteID", "length")]
     nhat.df <- data.frame(siteID = site.data$siteID, nhat=NA)
     
-    # Summarize raw count (truncated observations excluded previously) by transect
+    # Summarize raw count by transect
+    # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
+    (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
     rawcount <- data.frame(rawcount = tapply(detection.data$groupsize, detection.data$siteID, sum))
     rawcount <- cbind(siteID = rownames(rawcount), rawcount)
 

@@ -1,7 +1,7 @@
 #' @name integration.constant
 #' @aliases integration.constant
 #' 
-#' @title Compute the integration contant for distance density functions.
+#' @title Compute the integration constant for distance density functions.
 #' 
 #' @description Using numerical integration, this function computes 
 #' the area under a distance function between two limits (\code{w.lo} 
