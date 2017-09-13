@@ -1,7 +1,6 @@
 #' @name hazrate.like
 #' @title Hazard rate likelihood function for distance analyses.
 #' @description This function computes likelihood contributions for off-transect sighting distances, scaled appropriately, for use as a distance likelihood.
-#' @usage hazrate.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, point.transects = F, ...)
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
 #'   (i.e., \code{expansions = 0}), the distance likelihoods contain one or two canonical parameters (see Details). If one or more expansions are called for,
 #'   coefficients for the expansion terms follow coefficients for the canonical parameters.  If \code{p} is the number of canonical parameters, coefficients
@@ -21,13 +20,16 @@
 #'   with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
 #'   constant of integration.  All user defined likelihoods must have and use this parameter.
 #' @param point.transects Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
-#' @details The hazard rate likelihood is \deqn{f(x|a,b) = 1 - \exp(-(x/a)^(-b))}{f(x|a,b) = 1 - exp(-(x/a)^(-b))} where \eqn{a} is a variance parameter, and \eqn{b}
+#' @details The hazard rate likelihood is 
+#' \deqn{f(x|a,b) = 1 - \exp(-(x/a)^{-b})}{f(x|a,b) = 1 - exp(-(x/a)^(-b))} where \eqn{a} is a variance parameter, and \eqn{b}
 #'   is a slope parameter to be estimated. 
+#'   
 #'   \bold{Expansion Terms}: If \code{expansions} = k (k > 0), the expansion function specified by \code{series} is called (see for example
 #'   \code{\link{cosine.expansion}}). Assuming \eqn{h_{ij}(x)}{h_ij(x)} is the \eqn{j^{th}}{j-th} expansion term for the \eqn{i^{th}}{i-th} distance and that 
 #'   \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}are (estimated) coefficients for the expansion terms, the likelihood contribution for the \eqn{i^{th}}{i-th} 
 #'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}
 #'   {f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+#'   
 #' @return A numeric vector the same length and order as \code{dist} containing the likelihood contribution for corresponding distances in \code{dist}. 
 #'   Assuming \code{L} is the returned vector from one of these functions, the full log likelihood of all the data is \code{-sum(log(L), na.rm=T)}. Note that the
 #'   returned likelihood value for distances less than \code{w.lo} or greater than \code{w.hi} is \code{NA}, and thus it is prudent to use \code{na.rm=TRUE} in the
@@ -44,28 +46,7 @@
 #' @export
 
 hazrate.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = FALSE, ...){
-#
-#   Compute hazard rate likelihood
-#
-#   Input:
-#   a = parameter values. Length and meaning depend on series and expansions.
-#       a must be at least length = 2
-#   dist = input observed distance data
-#   w = right truncation value, same units as dist
-#   series = character values specifying type of expansion.  Currently only
-#       "cosine", "simple", and "hermite" work. Default is no series expansions. Default is "cosine"
-#   expansions = number of expansion terms.  This controls whether series
-#       expansion terms are fitted. Default = 0 does not fit any terms.
-#       If >0, fit the number of expansion terms specified of the type
-#       specified by series.  Max terms depends on series.
-#   scale = logical, whether or not to scale the likelihood values so 
-#       that the underlying density integrates to 1. This parameter is used 
-#       to stop the recursion. 
-#
-#   Output:
-#   A vector same length as dist, containing likelihood values, scaled appropriately.
-#   Likelihood for all distances >w are set to NA
-#	
+	
 
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   

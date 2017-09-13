@@ -1,55 +1,79 @@
 #' @name F.automated.CDA
 #' @aliases F.automated.CDA
 #' @title Automated classical distance analysis.
-#' @description Perform automated classical detection function selection and estimation of abundance.
-#' @usage F.automated.CDA(detection.data, site.data, w.lo=0, w.hi=max(dist),
-#'   likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
-#'   series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
-#'   area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE, plot=TRUE, ...)
+#' @description Perform automated classical detection function selection and 
+#' estimation of abundance.
+#' 
 #' @param formula This parameter is passed to \code{F.dfunc.estim}.
 #'   See \code{F.dfunc.estim} documentation for definition. 
-#' @param detection.data This parameter is passed to \code{F.dfunc.estim} and \code{F.abund.estim}.
-#'   See \code{F.abund.estim} documentation for definition.
+#' @param detection.data This parameter is passed to \code{F.dfunc.estim} 
+#' and \code{F.abund.estim}. See \code{F.abund.estim} documentation for definition.
+#' 
 #' @param site.data This parameter is passed to \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
+#'   
 #' @param point.transects A logical scalar specifying whether input data come
 #' from a point-transect survey type (TRUE),
 #' or a line-transect survey type (FALSE).
+#' 
 #' @param w.lo This parameter is passed to \code{F.dfunc.estim}.
 #'   See \code{F.dfunc.estim} documentation for definition.
+#'   
 #' @param w.hi This parameter is passed to \code{F.dfunc.estim}.
 #'   See \code{F.dfunc.estim} documentation for definition.
+#'   
 #' @param warn This parameter is passed to \code{F.dfunc.estim}.
 #'   \code{F.dfunc.estim} documentation for definition.
+#'   
 #' @param area This parameter is passed to \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
+#'   
 #' @param ci This parameter is passed to \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
+#'   
 #' @param R This parameter is passed to \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
+#'   
 #' @param by.id This parameter is passed to \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
+#'   
 #' @param plot.bs This parameter is passed to \code{F.abund.estim}.
 #'   See \code{F.abund.estim} documentation for definition.
-#' @param likelihoods Vector of strings specifying the likelihoods to consider during model selection.
-#'   Valid values at present are "uniform", "halfnorm", "hazrate", "negexp", and "Gamma". See Details for the models this routine considers.
+#'   
+#' @param likelihoods Vector of strings specifying the 
+#' likelihoods to consider during model selection. Valid values 
+#' at present are "uniform", "halfnorm", "hazrate", "negexp", 
+#' and "Gamma". See Details for the models this routine considers.
+#' 
 #' @param series Vector of series types to consider during model selection. 
-#'   Valid values are 'simple', 'hermite', and 'cosine'. See Details for the models this routine considers.
-#' @param expansions Vector of the number of expansion terms to consider during model selection. 
-#'   Valid values are 0 through 3. See Details for the models this routine considers.
+#'   Valid values are 'simple', 'hermite', and 'cosine'. See Details for 
+#'   the models this routine considers.
+#'   
+#' @param expansions Vector of the number of expansion terms to 
+#' consider during model selection. Valid values are 0 through 3. 
+#' See Details for the models this routine considers. 
+#' 
 #' @param plot Logical scalar specifying whether to plot models during model selection. 
 #'   If \code{TRUE}, a histogram with fitted distance function is plotted for every fitted model. 
 #'   The function pauses between each plot and prompts the user for whether they want to continue or not. 
 #'   For completely automated estimation, set \code{plot} = \code{FALSE}.
+#'   
 #' @param ... Additional parameters passed to \code{F.dfunc.estim}, which in turn are passed to \code{F.gx.estim}. 
 #'   These include \code{x.scl}, \code{g.x.scl}, and \code{observer} for estimating double observer probabilities.
-#' @details During model selection, each series and number of expansions is crossed with each of the likelihoods. For example, 
-#'   if \code{likelihoods} has 3 elements, \code{series} has 2 elements, and \code{expansions} has 4 elements, the total number of models 
-#'   fitted is 3 (likelihoods) * 2 (series) * 4 (expansions) = 24 models.  The default specification fits 41 detection functions from the 
-#'   "halfnorm", "hazrate", "uniform", "negexp", and "Gamma" likelihoods (note that Gamma does not currently implement expansions, see 
-#'   \code{\link{Gamma.like}}).  The model with lowest AIC is choosen as 'best', and estimation of abundance proceeds using that model.
+#'   
+#' @details During model selection, each series and number of expansions is crossed with 
+#' each of the likelihoods. For example, if \code{likelihoods} has 3 elements, 
+#' \code{series} has 2 elements, and \code{expansions} has 4 elements, 
+#' the total number of models fitted is 3 (likelihoods) * 2 (series) * 4 (expansions) 
+#' = 24 models.  The default specification fits 41 detection functions 
+#' from the "halfnorm", "hazrate", "uniform", "negexp", and "Gamma" likelihoods 
+#' (note that Gamma does not currently implement expansions, see 
+#' \code{\link{Gamma.like}}).  The model with lowest AIC is choosen 
+#' as 'best', and estimation of abundance proceeds using that model.
+#' 
 #' @return An 'abundance estimate' object (see \code{F.abund.estim} and \code{F.dfunc.estim}). 
 #'   Returned abundance estimates are based on the best fitting distance function among those fitted.
+#'   
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
 #'         Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
