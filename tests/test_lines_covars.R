@@ -109,7 +109,7 @@ head(sparrow.sites)
 
 
 # Explore the distribution of distances.
-hist(sparrow.detections$dist, col="grey", main="", xlab="Distance (m)")
+hist(sparrow.detections$dist, col="grey", main="", xlab="Distance (m)", breaks=20)
 rug(sparrow.detections$dist)
 summary(sparrow.detections$dist)
 

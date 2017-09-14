@@ -67,7 +67,7 @@ apply(thrasher.sites[3:6], 2, function(x) sd(x)/mean(x))
 
 
 # Explore the distribution of distances.
-hist(thrasher.detections$dist, col="grey", main="", xlab="Distance (m)")
+hist(thrasher.detections$dist, col="grey", main="", xlab="Distance (m)", breaks=20)
 rug(thrasher.detections$dist)
 summary(thrasher.detections$dist)
 

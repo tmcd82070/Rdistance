@@ -53,8 +53,8 @@
 # ?F.automated.CDA
 # 
 # # View help documentation for Rdistance example datasets
-# ?sparrow.detections
-# ?sparrow.sites
+# ?sparrowDetectionData
+# ?sparrowSiteData
 # #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 
@@ -68,8 +68,8 @@
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
-data(sparrow.detections)
-head(sparrow.detections)
+data(sparrowDetectionData)
+head(sparrowDetectionData)
 
 
 
@@ -82,8 +82,8 @@ head(sparrow.detections)
 # The second required dataset is a transect data.frame
 # Each row is a transect, and the siteID and length columns are required (as named)
 # Other columns (e.g., transect-level covariates) are ignored, but may be useful in modeling abundance later
-data(sparrow.sites)
-head(sparrow.sites)
+data(sparrowSiteData)
+head(sparrowSiteData)
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 
@@ -101,17 +101,17 @@ head(sparrow.sites)
 # documentation for `perp.dists` for details.
 
 
-# sparrow.detections$dist2 <- perp.dists(s.dist="sightdist", s.angle="sightangle", data=sparrow.detections)
+# sparrowDetectionData$dist2 <- perp.dists(s.dist="sightdist", s.angle="sightangle", data=sparrowDetectionData)
 # 
-# sparrow.detections <- sparrow.detections[, -which(names(sparrow.detections) %in% c("sightdist", "sightangle", "dist2"))]                                                                  
-# head(sparrow.detections)
+# sparrowDetectionData <- sparrowDetectionData[, -which(names(sparrowDetectionData) %in% c("sightdist", "sightangle", "dist2"))]                                                                  
+# head(sparrowDetectionData)
 
 
 
 # Explore the distribution of distances.
-hist(sparrow.detections$dist, col="grey", main="", xlab="Distance (m)")
-rug(sparrow.detections$dist)
-summary(sparrow.detections$dist)
+hist(sparrowDetectionData$dist, col="grey", main="", xlab="Distance (m)")
+rug(sparrowDetectionData$dist)
+summary(sparrowDetectionData$dist)
 
 
 
@@ -122,10 +122,13 @@ summary(sparrow.detections$dist)
 # automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater
 # than 150 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 150.
 trunc <- 150
-sparrow.dfunc <- F.dfunc.estim(formula=dist~1, data=sparrow.detections, likelihood="halfnorm", w.hi=trunc)
+sparrow.dfunc <- F.dfunc.estim(formula=dist~1, detection.data=sparrowDetectionData, likelihood="halfnorm", w.hi=trunc)
 plot(sparrow.dfunc)
 sparrow.dfunc
 
+
+ESW(sparrow.dfunc)
+effectiveDistance(sparrow.dfunc)
 
 # The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
 # abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
@@ -151,7 +154,7 @@ sparrow.dfunc
 # runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be
 # necessary to stabilize CI estimates.
 
-fit <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrow.detections, site.data=sparrow.sites,
+fit <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
                      area=10000, R=100, ci=0.95, plot.bs=TRUE)
 fit
 
@@ -166,7 +169,7 @@ fit$n.hat
 fit$ci
 
 # 
-# fitby <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrow.detections, site.data=sparrow.sites,
+# fitby <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
 #                        area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
 # fitby
 
@@ -185,7 +188,7 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-# auto <- F.automated.CDA(formula=dist~1, detection.data=sparrow.detections, site.data=sparrow.sites,
+# auto <- F.automated.CDA(formula=dist~1, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
 #                         w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
 
 
@@ -197,7 +200,7 @@ fit$ci
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 # This used to be the best-fitting detection function
-# best.old <- F.dfunc.estim(formula=dist~1, data=sparrow.detections, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
+# best.old <- F.dfunc.estim(formula=dist~1, data=sparrowDetectionData, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
 # plot(best.old)
 # best.old
 
@@ -207,18 +210,18 @@ fit$ci
 # Compare to Distance
 
 # Format detection data
-d.data <- sparrow.detections[c("dist", "groupsize")]
+d.data <- sparrowDetectionData[c("dist", "groupsize")]
 names(d.data) <- c("distance", "size")  # meet naming conventions
 d.data$object <- 1:nrow(d.data)  # add object ID
 
 # Produce and format 3 other required data.frames
 d.region <- data.frame(Region.Label="main", Area=10000)
 
-d.sample <- sparrow.sites[c("siteID", "length")]
+d.sample <- sparrowSiteData[c("siteID", "length")]
 names(d.sample)[1:2] <- c("Sample.Label", "Effort")
 d.sample$Region.Label <- "main"
 
-d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrow.detections$siteID)
+d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrowDetectionData$siteID)
 
 # Fit model and estimate abundance
 (ds.fit <- ds(data=d.data, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
