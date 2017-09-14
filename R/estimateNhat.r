@@ -66,10 +66,10 @@ estimateNhat <- function(dfunc, detection.data, site.data, area){
   tot.sites <- nrow(site.data)  # number of points or number of transects
   if (dfunc$point.transects) {
     tot.trans.len <- NULL  # no transect length
-    esw <- effective.radius(dfunc)  # point count equivalent of effective strip width
+    esw <- effectiveDistance(dfunc)  # point count equivalent of effective strip width
   } else {
     tot.trans.len <- sum(site.data$length)  # total transect length
-    esw <- ESW(dfunc)  # get effective strip width
+    esw <- effectiveDistance(dfunc)  # get effective strip width
   }
   
   

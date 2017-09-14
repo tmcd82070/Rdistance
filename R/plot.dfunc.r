@@ -222,12 +222,8 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
   lines( rep(x.seq[length(x.seq)], 2), c(0,y[length(x.seq)]), col="red", lwd=2 )
   
   #   print area under the curve
-  if(x$point.transects){
-    area <- effective.radius(x)
-  }
-  else{
-    area <- ESW(x)
-  }
+  area <- effectiveDistance(x)
+
   #area2 <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
   #print(c(area,area2))
   #text( max(x.seq), max(y.lims)-0.025*diff(y.lims), paste("ESW =", round(area,3)), adj=1)

@@ -23,7 +23,7 @@ the likelihood and expansion function, and other statistics are printed.  At the
 of the output, the following quantities are printed,
 \itemize{  
   \item \samp{Strip} : The left (\code{w.lo}) and right (\code{w.hi}) truncation values.
-  \item \samp{Effective strip width} : Effective strip half-width as computed by \code{ESW}.
+  \item \samp{Effective strip width or detection radius} : ESW or EDR as computed by \code{effectiveDistance}.
   \item \samp{Scaling} : The horizontal and vertical coordinates used to scale the distance function. 
   Usually, the horizontal coordinate is 0 and the vertical coordinate is 1 (i.e., g(0) = 1).
   \item \samp{Log likelihood} : Value of the maximized log likelihood.

@@ -19,7 +19,8 @@ function. If covariates do not appear in \code{data}, they must
 be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
 
 \item{detection.data}{A data frame containing detection distances 
-(either off-transect or radial from point), \code{transectID}, and 
+(either perpendicular for line-transect or radial for point-transect
+designs), \code{transectID}, and 
 potentially group size (see example data set \code{\link{sparrow.detections}}).
 \code{detection.data} contains one row per detected group. The column
 containing detection
@@ -29,9 +30,9 @@ The site ID  column(s) (see argument \code{siteID}) must specify the site
 data frame can be merged with \code{site.data}. See \bold{Input data frames} 
 for when \code{detection.data} and \code{site.data} are required inputs.}
 
-\item{site.data}{A data.frame containing site (transect and point)
- ID's and any 
-\emph{site level} covariates to include in the distance function. 
+\item{site.data}{A data.frame containing site (transect or point)
+ IDs and any 
+\emph{site level} covariates to include in the detection function. 
 Every unique surveyed site (transect or point) is represented on
 one row of this data set, whether or not targets were sighted 
 at the site.  See arguments \code{transectID} and 

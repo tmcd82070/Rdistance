@@ -317,13 +317,10 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       
       # Store ESW if it converged
       if (dfunc.bs$convergence == 0) {
-       # and if the ESW is less than w.hi (a coarse error check)
-        if (dfunc$point.transects) {
-         esw.bs <- effective.radius(dfunc.bs)
-       } else {
-         esw.bs <- ESW(dfunc.bs)
-       }
-       if (esw.bs <= dfunc$w.hi) {
+        # and if the ESW is less than w.hi (a coarse error check)
+        esw.bs <- effectiveDistance.radius(dfunc.bs)
+        
+        if (esw.bs <= dfunc$w.hi) {
          # Estimate abundance
          abund.bs <- estimateNhat(dfunc=dfunc.bs,
                                    detection.data=new.detection.data,

@@ -126,12 +126,10 @@ F.automated.CDA <- function (formula, detection.data, site.data,
   # function to save results
   f.save.result <- function(results, dfunc, like, ser, expan, 
                             plot) {
-    if(point.transects){
-      esw <- effective.radius(dfunc)
-    } else {
-      esw <- ESW(dfunc)
-    }
     
+    esw <- effectiveDistance(dfunc)
+    
+
     if (!is.na(esw) & (esw > dfunc$w.hi)) {
       scl.ok <- "Not ok"
       scl.ok.flag <- 0

@@ -43,7 +43,7 @@
 #' @return A scalar equal to the area under the detection function from \code{obj$w.lo} to \code{obj$w.hi}.
 #' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#' @seealso \code{\link{F.dfunc.estim}}
+#' @seealso \code{\link{F.dfunc.estim}} \code{\link{EDR}}
 #' @examples # Load the example dataset of sparrow detections from package
 #' data(sparrow.detections)
 #' 
@@ -58,8 +58,8 @@
 ESW <- function( obj, covars = NULL ){
   
   # Issue error if the input detection function was fit to point-transect data
-  # Eventually, it would be nice to build the effective.radius code into ESW, so it could handle either.
-  if(obj$point.transects) stop("ESW is for line transects only.  See effective.radius for the point-transect equivalent.")
+
+  if(obj$point.transects) stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   
   
 #
