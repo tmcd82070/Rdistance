@@ -15,8 +15,9 @@
 #' be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)
 #' 
 #' @param detection.data A data frame containing detection distances 
-#' (either off-transect or radial from point), \emph{site ID}, and 
-#' potentially group size (see example data set \code{\link{sparrow.detections}}).  
+#' (either perpendicular for line-transect or radial for point-transect
+#' designs), \emph{site ID}, and potentially group size (see example data
+#' set \code{\link{sparrow.detections}}).  
 #' \code{detection.data} contains one row per detected group. The column
 #' containing detection
 #' distances must be specified on the left-hand side of \code{formula}.
@@ -24,9 +25,9 @@
 #' (transect or point) associated with the detection so that this 
 #' data frame can be merged with \code{site.data}. 
 #' 
-#' @param site.data A data.frame containing site (transect and point)
-#'  ID's and any 
-#' \emph{site level} covariates to included in the distance function. 
+#' @param site.data A data.frame containing site (transect or point)
+#'  IDs and any 
+#' \emph{site level} covariates to include in the detection function. 
 #' Every unique surveyed site (transect or point) is represented on
 #' one row of this data set.  See arguments \code{transectID} and 
 #' \code{pointID} for an explanation of site and transect ID's. 
