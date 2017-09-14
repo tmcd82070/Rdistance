@@ -53,7 +53,7 @@ by F.abund.estim during bootstrapping.
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-        Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}\cr
+        Jason Carlisle, University of Wyoming and WEST Inc, \email{jcarlisle@west-inc.com}\cr
         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
 }
 \keyword{model}

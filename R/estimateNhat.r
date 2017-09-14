@@ -28,7 +28,7 @@
 #'    \item{avg.group.size}{Average group size}
 #'    
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-#'         Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}\cr
+#'         Jason Carlisle, University of Wyoming and WEST Inc, \email{jcarlisle@west-inc.com}\cr
 #'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
 #'     
 #' @seealso \code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}

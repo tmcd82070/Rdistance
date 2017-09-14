@@ -40,5 +40,5 @@ Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993.
 \code{\link{F.dfunc.estim}}
 }
 \author{
-Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
+Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 }

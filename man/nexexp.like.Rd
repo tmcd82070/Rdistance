@@ -62,7 +62,7 @@ The negative exponential likelihood is \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -
          \code{\link{Gamma.like}}
 }
 \author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
+Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
+        Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
 }
 \keyword{models}

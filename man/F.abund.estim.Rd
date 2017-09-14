@@ -103,6 +103,6 @@ Manly, B. F. J. (1997) \emph{Randomization, bootstrap, and monte carlo methods i
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-        Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
+        Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 }
 \keyword{model}

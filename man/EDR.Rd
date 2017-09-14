@@ -29,6 +29,6 @@ Effective Strip Width (ESW).
 \code{\link{F.dfunc.estim}} \code{\link{ESW}}
 }
 \author{
-Aidan McDonald, WEST, Inc., \email{aidan@mcdcentral.org}
+Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
 }
 \keyword{modeling}

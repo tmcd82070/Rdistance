@@ -63,7 +63,7 @@
 #'   \item{nhat.df}{A data.frame of transect-level abundance (or density) estimates (if \code{by.id = TRUE}).}
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-#'         Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
+#'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 #' @references Manly, B. F. J. (1997) \emph{Randomization, bootstrap, and monte carlo methods in biology}, London: Chapman and Hall.
 #' @seealso \code{\link{F.dfunc.estim}}
 #' @examples # Load the example datasets of sparrow detections and transects from package

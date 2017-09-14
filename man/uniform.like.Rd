@@ -71,7 +71,7 @@ The uniform likelihood is not technically uniform, but can look similar to a uni
          \code{\link{Gamma.like}}
 }
 \author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
+Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
+        Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
 }
 \keyword{models}

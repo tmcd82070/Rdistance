@@ -46,7 +46,7 @@ print(dfunc)
 \code{\link{F.dfunc.estim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
 }
 \author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
+Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
+        Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
 }
 \keyword{models}

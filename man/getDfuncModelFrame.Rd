@@ -27,5 +27,5 @@ call this routine.  Trying to do the model extraction directly in F.dfunc.estim
 did not work because of some vageries of scoping the Trent does not understand.
 }
 \author{
-Trent McDonald
+Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 }

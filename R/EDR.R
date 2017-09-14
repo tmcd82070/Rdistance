@@ -13,7 +13,7 @@
 #' @details The point-transect equivalent to
 #' Effective Strip Width (ESW).
 #' @return A scalar equal to the area under the detection function from \code{obj$w.lo} to \code{obj$w.hi}.
-#' @author Aidan McDonald, WEST, Inc., \email{aidan@mcdcentral.org}
+#' @author Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
 #' @seealso \code{\link{F.dfunc.estim}} \code{\link{ESW}}
 #' @keywords modeling
 #' @export

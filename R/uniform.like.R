@@ -42,8 +42,8 @@
 #'   returned likelihood value for distances less than \code{w.lo} or greater than \code{w.hi} is \code{NA}, and thus it is prudent to use \code{na.rm=TRUE} in the
 #'   sum. If \code{scale} = TRUE, the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, the integral of the likelihood is
 #'   arbitrary.
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
+#' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
+#'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
 #' @seealso \code{\link{F.dfunc.estim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{hazrate.like}},

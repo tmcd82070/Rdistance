@@ -76,7 +76,7 @@
 #'   
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-#'         Jason Carlisle, University of Wyoming, \email{jason.d.carlisle@gmail.com}
+#'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 #' @seealso \code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}
 #' @examples # Load the example datasets of sparrow detections and transects from package
 #'   data(sparrow.detections)
