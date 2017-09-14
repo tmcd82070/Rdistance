@@ -19,20 +19,22 @@ function. If covariates do not appear in \code{data}, they must
 be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
 
 \item{detection.data}{A data frame containing detection distances 
-(either off-transect or radial from point), \emph{site ID}, and 
-potentially group size (see example data set \code{\link{sparrow.detections}}).  
+(either off-transect or radial from point), \code{transectID}, and 
+potentially group size (see example data set \code{\link{sparrow.detections}}).
 \code{detection.data} contains one row per detected group. The column
 containing detection
 distances must be specified on the left-hand side of \code{formula}.
 The site ID  column(s) (see argument \code{siteID}) must specify the site
 (transect or point) associated with the detection so that this 
-data frame can be merged with \code{site.data}.}
+data frame can be merged with \code{site.data}. See \bold{Input data frames} 
+for when \code{detection.data} and \code{site.data} are required inputs.}
 
 \item{site.data}{A data.frame containing site (transect and point)
  ID's and any 
-\emph{site level} covariates to included in the distance function. 
+\emph{site level} covariates to include in the distance function. 
 Every unique surveyed site (transect or point) is represented on
-one row of this data set.  See arguments \code{transectID} and 
+one row of this data set, whether or not targets were sighted 
+at the site.  See arguments \code{transectID} and 
 \code{pointID} for an explanation of site and transect ID's. 
 
 If sites are transects, 
@@ -41,7 +43,10 @@ default, transect length is assumed to be in column 'length'
 but can be specified using argument \code{length}. 
 
 The total number of sites surveyed is \code{nrow(site.data)}. 
-Duplicate site-level IDs are not allowed in \code{site.data}.}
+Duplicate site-level IDs are not allowed in \code{site.data}. 
+
+See \bold{Input data frames} 
+for when \code{detection.data} and \code{site.data} are required inputs.}
 
 \item{likelihood}{String specifying the likelihood to fit. Built-in 
 likelihoods at present are "uniform", "halfnorm", 
@@ -101,12 +106,18 @@ contain multiple sampling units (e.g., when \code{point.transects}=TRUE).
 For line-transects, the \code{transectID} column(s) alone is 
 sufficient to specify unique sample sites. 
 For point-transects, the amalgomation of \code{transectID} and 
-\code{pointID} specify unique sampling sites.  See Details.}
+\code{pointID} specify unique sampling sites.  
+See \bold{Input data frames}.}
 
 \item{pointID}{A character vector specifying the point ID column(s)
 in \code{detection.data} and \code{site.data}. For point-transect data, 
-the site ID's used to merge the input data set is 
-\code{paste0(transectID,"."pointID)}.}
+the site ID's used to merge the input data sets are the unique combinations
+of \code{c(transectID,pointID)}.  If \code{transectID} is NULL, 
+\code{pointID} is ignored.  That is, multiple points per transect are not 
+allowed when the merge is based solely on common variables in the 
+input data frames.  This probably does not matter for estimation of 
+the distance function but probably does matter for bootstrap estimation 
+of variance in \code{\link{F.abund.estim}}.}
 
 \item{length}{Character string specifying the (single) column in 
 \code{site.data} that contains transect length. This is ignored if 
@@ -159,8 +170,10 @@ are lists containing the following components:
 Fit a specific detection function to a set of 
 observed off-transect distances.
 }
-\details{
-To save space and to easily specify sites without detections, 
+\section{Input data frames}{
+
+To save space and to easily specify 
+sites without detections, 
 all site ID's, regardless whether a detection occured there,
 and \emph{site level} covariates are stored in 
 the \code{site.data} data frame.  Detection distances and group
@@ -168,20 +181,56 @@ sizes are measured at the \emph{detection level} and
 are stored in the 
 \code{detection.data} data frame.  
 
+\subsection{Data frame requirements}{The following explains  
+conditions under which various combinations of the input data frames 
+are required.
+
+   \enumerate{
+      \item \bold{Detection data and site data both required:}\cr
+         Both \code{detection.data} and \code{site.data}  
+         are required if \emph{site level} covariates are 
+         specified on the right-hand side of \code{formula}. 
+         \emph{Detection level} covariates are not currently allowed.
+  
+      \item \bold{Detection data only required:}\cr
+         The \code{detection.data} data frame alone can be 
+         specified if no covariates 
+         are included in the distance function (i.e., right-hand side of 
+         \code{formula} is "~1"). Note that this routine (\code{F.dfunc.estim})
+         does not need to know about sites where zero targets were detected, hence
+         \code{site.data} can be missing when no covariates are involved.
+  
+      \item \bold{Neither detection data nor site data required}\cr
+         Neither \code{detection.data} nor \code{site.data}  
+         are required if all variables specified in \code{formula} 
+         are within the scope of this routine (e.g., in the global working
+         environment). Scoping rules here work the same as for other modeling 
+         routines in R such as \code{lm} and \code{glm}. Like other modeling 
+         routines, it is possible to mix and match the location of variables in 
+         the model.  Some variables can be in the \code{.GlobalEnv} while others 
+         are in either \code{detection.data} or \code{site.data}. 
+   }
+    
+}
+
+\subsection{Relationship between data frames (transect and point ID's)}{
 The input data frames, \code{detection.data} and \code{site.data},
 must be merge-able on unique sites.  For line-transects, 
-site ID's are unique values of the \code{transectID} column 
-in \code{site.data} and   
-\code{merge(detection.data,site.data,by=transectID)} must work.
+site ID's (i.e., transect ID's) are unique values of 
+the \code{transectID} column in \code{site.data}.  In this case,
+the following merge must work:  
+\code{merge(detection.data,site.data,by=transectID)}.
 For point-transects, 
-site ID's are unique values of \code{paste(transectID,pointID)}
-and   
-\code{merge(detection.data,site.data,by=c(transectID, pointID)} must work.
+site ID's (i.e., point ID's) are unique values 
+of the combination \code{paste(transectID,pointID)}.
+In this case, the following merge must work:    
+\code{merge(detection.data,site.data,by=c(transectID, pointID)}.
  
 By default,\code{transectID} and \code{pointID} are NULL and
 the merge is done on all common columns.
 That is, when \code{transectID} is NULL, this routine assumes unique
-\emph{transects} are specified by unique combinations of the common variables (i.e.,
+\emph{transects} are specified by unique combinations of the 
+common variables (i.e., unique values of
 \code{intersect(names(detection.data), names(site.data))}). 
 
 An error occurs if there are no common column names between 
@@ -192,11 +241,16 @@ multiple years, specify another transect ID column (e.g., \code{transectID =
 c("year","transectID")}).  Duplicate site ID's are allowed in 
 \code{detection.data}.  
 
-During bootstrap estimation of variance, unique \emph{transects} (i.e,. values of 
-the transect ID column(s)) are resampled with replacement. The number 
-of sample units is \code{length(unique(site.data[,transectID]))}, 
-and the user must be assured that resampling multiple rows of 
-\code{site.data} is appropriate. 
+To help explain the relationship between data frames, bear in 
+mind that  during bootstrap estimation of variance
+in \code{\link{F.abund.estim}}, 
+unique \emph{transects} (i.e., unique values of 
+the transect ID column(s)), not \emph{detections} or 
+\emph{points}, are resampled with replacement. 
+}
+}
+
+\section{Likelihood functions}{
 
 Given a specified sighting function (e.g., "halfnorm"), 
 maximum likelihood is used to estimate the parameter(s) of 
@@ -207,6 +261,7 @@ behind the detection
 function for visualization; however, the function is fit to 
 the actual data, not to the bins.
 }
+
 \examples{
 # Prep example sparrow and thrasher detections. 
 # Merge in transect-level detection covariates.

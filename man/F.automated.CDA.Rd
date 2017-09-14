@@ -4,17 +4,19 @@
 \alias{F.automated.CDA}
 \title{Automated classical distance analysis.}
 \usage{
-F.automated.CDA(detection.data, site.data, w.lo=0, w.hi=max(dist),
-  likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
-  series=c("cosine", "hermite", "simple"), expansions=0:3, warn=TRUE,
-  area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE, plot=TRUE, ...)
+F.automated.CDA(formula, detection.data, site.data, w.lo = 0,
+  w.hi = max(dist), likelihoods = c("halfnorm", "hazrate", "uniform",
+  "negexp", "Gamma"), series = c("cosine", "hermite", "simple"),
+  expansions = 0:3, point.transects = FALSE, warn = TRUE, area = 1,
+  ci = 0.95, R = 500, by.id = FALSE, plot.bs = FALSE, plot = TRUE,
+  ...)
 }
 \arguments{
 \item{formula}{This parameter is passed to \code{F.dfunc.estim}.
 See \code{F.dfunc.estim} documentation for definition.}
 
-\item{detection.data}{This parameter is passed to \code{F.dfunc.estim} and \code{F.abund.estim}.
-See \code{F.abund.estim} documentation for definition.}
+\item{detection.data}{This parameter is passed to \code{F.dfunc.estim} 
+and \code{F.abund.estim}. See \code{F.abund.estim} documentation for definition.}
 
 \item{site.data}{This parameter is passed to \code{F.abund.estim}.
 See \code{F.abund.estim} documentation for definition.}
@@ -25,14 +27,18 @@ See \code{F.dfunc.estim} documentation for definition.}
 \item{w.hi}{This parameter is passed to \code{F.dfunc.estim}.
 See \code{F.dfunc.estim} documentation for definition.}
 
-\item{likelihoods}{Vector of strings specifying the likelihoods to consider during model selection.
-Valid values at present are "uniform", "halfnorm", "hazrate", "negexp", and "Gamma". See Details for the models this routine considers.}
+\item{likelihoods}{Vector of strings specifying the 
+likelihoods to consider during model selection. Valid values 
+at present are "uniform", "halfnorm", "hazrate", "negexp", 
+and "Gamma". See Details for the models this routine considers.}
 
 \item{series}{Vector of series types to consider during model selection. 
-Valid values are 'simple', 'hermite', and 'cosine'. See Details for the models this routine considers.}
+Valid values are 'simple', 'hermite', and 'cosine'. See Details for 
+the models this routine considers.}
 
-\item{expansions}{Vector of the number of expansion terms to consider during model selection. 
-Valid values are 0 through 3. See Details for the models this routine considers.}
+\item{expansions}{Vector of the number of expansion terms to 
+consider during model selection. Valid values are 0 through 3. 
+See Details for the models this routine considers.}
 
 \item{point.transects}{A logical scalar specifying whether input data come
 from a point-transect survey type (TRUE),
@@ -69,14 +75,19 @@ An 'abundance estimate' object (see \code{F.abund.estim} and \code{F.dfunc.estim
   Returned abundance estimates are based on the best fitting distance function among those fitted.
 }
 \description{
-Perform automated classical detection function selection and estimation of abundance.
+Perform automated classical detection function selection and 
+estimation of abundance.
 }
 \details{
-During model selection, each series and number of expansions is crossed with each of the likelihoods. For example, 
-  if \code{likelihoods} has 3 elements, \code{series} has 2 elements, and \code{expansions} has 4 elements, the total number of models 
-  fitted is 3 (likelihoods) * 2 (series) * 4 (expansions) = 24 models.  The default specification fits 41 detection functions from the 
-  "halfnorm", "hazrate", "uniform", "negexp", and "Gamma" likelihoods (note that Gamma does not currently implement expansions, see 
-  \code{\link{Gamma.like}}).  The model with lowest AIC is choosen as 'best', and estimation of abundance proceeds using that model.
+During model selection, each series and number of expansions is crossed with 
+each of the likelihoods. For example, if \code{likelihoods} has 3 elements, 
+\code{series} has 2 elements, and \code{expansions} has 4 elements, 
+the total number of models fitted is 3 (likelihoods) * 2 (series) * 4 (expansions) 
+= 24 models.  The default specification fits 41 detection functions 
+from the "halfnorm", "hazrate", "uniform", "negexp", and "Gamma" likelihoods 
+(note that Gamma does not currently implement expansions, see 
+\code{\link{Gamma.like}}).  The model with lowest AIC is choosen 
+as 'best', and estimation of abundance proceeds using that model.
 }
 \examples{
 # Load the example datasets of sparrow detections and transects from package

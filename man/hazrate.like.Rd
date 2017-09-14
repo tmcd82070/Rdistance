@@ -4,7 +4,9 @@
 \alias{hazrate.like}
 \title{Hazard rate likelihood function for distance analyses.}
 \usage{
-hazrate.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, point.transects = F, ...)
+hazrate.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
+  series = "cosine", expansions = 0, scale = TRUE,
+  point.transects = FALSE, ...)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
@@ -46,8 +48,10 @@ A numeric vector the same length and order as \code{dist} containing the likelih
 This function computes likelihood contributions for off-transect sighting distances, scaled appropriately, for use as a distance likelihood.
 }
 \details{
-The hazard rate likelihood is \deqn{f(x|a,b) = 1 - \exp(-(x/a)^(-b))}{f(x|a,b) = 1 - exp(-(x/a)^(-b))} where \eqn{a} is a variance parameter, and \eqn{b}
+The hazard rate likelihood is 
+\deqn{f(x|a,b) = 1 - \exp(-(x/a)^{-b})}{f(x|a,b) = 1 - exp(-(x/a)^(-b))} where \eqn{a} is a variance parameter, and \eqn{b}
   is a slope parameter to be estimated. 
+  
   \bold{Expansion Terms}: If \code{expansions} = k (k > 0), the expansion function specified by \code{series} is called (see for example
   \code{\link{cosine.expansion}}). Assuming \eqn{h_{ij}(x)}{h_ij(x)} is the \eqn{j^{th}}{j-th} expansion term for the \eqn{i^{th}}{i-th} distance and that 
   \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}are (estimated) coefficients for the expansion terms, the likelihood contribution for the \eqn{i^{th}}{i-th} 

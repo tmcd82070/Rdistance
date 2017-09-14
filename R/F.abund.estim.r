@@ -124,104 +124,13 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   
   
   
-  # (jdc) this portion is repeated in each bootstrap iteration, so it made sense to define
-  # it once as a function, and call this function as needed
-  # This should be split out as a separate .R file.
-  estimate.nhat <- function(dfunc, detection.data, site.data){
-    # Truncate detections and calculate some n, avg.group.isze, tot.trans.len, and esw
-    
-    # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
-    (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
-    
-    # sample size (number of detections, NOT individuals)
-    (n <- nrow(detection.data))
-    
-    # group sizes
-    (avg.group.size <- mean(detection.data$groupsize))
-    
-    # total transect length and ESW
-    if (dfunc$point.transects) {
-      tot.trans.len <- NULL  # no transect length
-      tot.sites <- nrow(site.data)  # number of sites
-      esw <- effective.radius(dfunc)  # point count equivalent of effective strip width
-    } else {
-      tot.trans.len <- sum(site.data$length)  # total transect length
-      esw <- ESW(dfunc)  # get effective strip width
-    }
-    
-    
-    # Estimate abundance
-    if (is.null(dfunc$covars)) {
-      temp <- matrix(nrow = 0, ncol = 0)  # (jdc) isn't this just getting overwritten with NULL ~10 lines below?
-    } else {
-      temp <- dfunc$covars
-    }
-    # If covariates (for line or point transects) estimate abundance the general way
-    # If no covariates, use the faster, standard equations (see after else)
-    if (ncol(temp) > 1) { 
-      f.like <- match.fun(paste( dfunc$like.form, ".like", sep=""))
-      s <- 0
-      for (i in 1:nrow(detection.data)) {
-        if (is.null(dfunc$covars)) {
-          temp <- NULL
-        } else {
-          temp <- t(as.matrix(dfunc$covars[i,]))
-        }
-        new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],  # (jdc) the integration constant doesn't change for different dist values (tested w/line data)
-                                                                     density = paste(dfunc$like.form, ".like", sep=""),
-                                                                     w.lo = dfunc$w.lo,
-                                                                     w.hi = dfunc$w.hi,
-                                                                     covars = temp,
-                                                                     a = dfunc$parameters,
-                                                                     expansions = dfunc$expansions,
-                                                                     point.transects = dfunc$point.transects,
-                                                                     series = dfunc$series)
-        if (!is.na(new.term)) {
-          s <- s + new.term
-        }
-      }
-      if (dfunc$point.transects) {
-        a <- pi * esw * n  # area for point transects  # (jdc) why is this n (number of detections), should be tot.sites (number of points), no?
-      } else {
-        a <- 2 * tot.trans.len  # area for line transects
-      }
-      n.hat <- s * area/a
-      
-      
-    } else {
-      
-      # Standard (and faster) methods when there are no covariates
-      if (dfunc$point.transects) {
-        # Standard method for points with no covariates
-        n.hat <- (avg.group.size * n * area) / (pi * (esw^2) * tot.sites)
-      } else {
-        # Standard method for lines with no covariates
-        n.hat <- (avg.group.size * n * area) / (2 * esw * tot.trans.len)
-      }
-    }
-    
-    
-    # Output to return as list
-    abund <- list(dfunc = dfunc,
-                  n.hat = n.hat,
-                  n = n,
-                  area = area,
-                  esw = esw,
-                  tran.len = tot.trans.len,
-                  avg.group.size = avg.group.size)
-    
-    return(abund)
-  }  # end estimate.nhat function
-  
-  
-  
   
   
   
   
   
   # Estimate abundance
-  (abund <- estimate.nhat(dfunc=dfunc, detection.data=detection.data, site.data=site.data))
+  (abund <- estimateNhat(dfunc=dfunc, detection.data=detection.data, site.data=site.data))
   
   # # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
   # (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
@@ -416,7 +325,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
        }
        if (esw.bs <= dfunc$w.hi) {
          # Estimate abundance
-         abund.bs <- estimate.nhat(dfunc=dfunc.bs,
+         abund.bs <- estimateNhat(dfunc=dfunc.bs,
                                    detection.data=new.detection.data,
                                    site.data=new.site.data)
          
@@ -547,7 +456,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
     # Calculate transect-level abundance (density)
     # Loop through each transect (site)
     # This loop could be replaced with something faster
-    # For example, rawcount is already calculated in estimate.nhat
+    # For example, rawcount is already calculated in estimateNhat
     for (i in 1:nrow(nhat.df)) {
       
       # nhat is 0 where the count is 0
@@ -562,7 +471,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       sd <- site.data[site.data$siteID == site, ]
       
       # Estimate abundance
-      nhat.df[i, "nhat"] <- estimate.nhat(dfunc=dfunc, detection.data=dd, site.data=sd)$n.hat
+      nhat.df[i, "nhat"] <- estimateNhat(dfunc=dfunc, detection.data=dd, site.data=sd)$n.hat
       
     }
     
