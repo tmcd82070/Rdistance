@@ -1,4 +1,4 @@
-#' @title estimateNhat - Estimate abundance
+#' @title Abundance point estimates
 #' 
 #' @description Estimate abundance given a distance function, 
 #' detection data, site data, and area.  This is called internally 
@@ -47,7 +47,7 @@
 #'
 #' @export 
 
-estimateNhat <- function(dfunc, detection.data, site.data, area){
+F.estimateN <- function(dfunc, detection.data, site.data, area){
   # Truncate detections and calculate some n, avg.group.isze, 
   # tot.trans.len, and esw
   
