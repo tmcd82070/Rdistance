@@ -311,3 +311,29 @@ save(sparrow.detections, file="C:/R_Code/Rdistance/data/sparrow.detections.rda")
 save(sparrow.sites, file="C:/R_Code/Rdistance/data/sparrow.sites.rda")
 save(thrasher.detections, file="C:/R_Code/Rdistance/data/thrasher.detections.rda")
 save(thrasher.sites, file="C:/R_Code/Rdistance/data/thrasher.sites.rda")
+
+
+
+
+
+# Added in Sept 2017 for version 2.0 release
+# Rename objects and .rda files
+
+load("C:/R_Code/Rdistance/data/sparrow.detections.rda")
+sparrowDetectionData <- sparrow.detections
+save(sparrowDetectionData, file="C:/R_Code/Rdistance/data/sparrowDetectionData.rda")
+
+load("C:/R_Code/Rdistance/data/sparrow.sites.rda")
+sparrowSiteData <- sparrow.sites
+save(sparrowSiteData, file="C:/R_Code/Rdistance/data/sparrowSiteData.rda")
+
+
+load("C:/R_Code/Rdistance/data/thrasher.detections.rda")
+thrasherDetectionData <- thrasher.detections
+save(thrasherDetectionData, file="C:/R_Code/Rdistance/data/thrasherDetectionData.rda")
+
+load("C:/R_Code/Rdistance/data/thrasher.sites.rda")
+thrasherSiteData <- thrasher.sites
+save(thrasherSiteData, file="C:/R_Code/Rdistance/data/thrasherSiteData.rda")
+
+# END
