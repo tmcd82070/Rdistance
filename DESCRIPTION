@@ -1,6 +1,6 @@
 Package: Rdistance
 Type: Package
-Title: Distance Sampling Analyses
+Title: Analysis of Distance Sampling Data
 Version: 2.0.0
 Date: 2017-08-30
 Authors@R: c(
@@ -17,7 +17,7 @@ Authors@R: c(
   person("Brook", "Russelland", email="", role=c("ctb")), 
   person("Patrick", "McKann", email="", role=c("ctb"))
   )
-Description: Distance-sampling analyses for abundance estimation.  Estimates distance-based detection functions and abundances.
+Description: Distance-sampling analyses for estimation of detection functions and abundance.  Line and point transect data accomodated in one routine that accepts detection covariates in an formula object.  Automated bootstrapping of abundance estimates and automated likelihood selection. Study area or site-level abundance estimates available.
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki
 BugReports: https://github.com/tmcd82070/Rdistance/issues
