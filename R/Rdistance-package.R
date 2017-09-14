@@ -1,10 +1,12 @@
-#' Rdistance - Distance Sampling Analyses for Line Transect Data
+#' Rdistance - Distance Sampling Analyses for Abundance Estimation
 #' 
-#' \bold{Description} - This package contains functions and associated routines
-#' to analyze line transect data, and functionality for point count data is
-#' forthcoming.  A large suite of classical, parametric detection functions are
-#' included (see \code{\link{F.dfunc.estim}}), and the package can also
-#' accommodate user-defined detection functions (see package vignettes).
+#' Distance-sampling is a popular method for abundance 
+#' estimation in ecology. This package contains functions and associated
+#' routines to analyze distance-sampling data collected at point or line
+#' transects. A large suite of classical, parametric detection functions are
+#' included, and the package can
+#' also accommodate user-defined detection functions.  Covariates can be
+#' included in the detection function.
 #' 
 #' \bold{Background} - Line transect surveys are conducted by traversing
 #' \emph{randomly} placed transects in a study area with the objective of
@@ -43,10 +45,10 @@
 #' requests, etc. through the package's GitHub website
 #' (\url{https://github.com/tmcd82070/Rdistance}).
 #' 
-#' The best place to start learning the routines of \code{Rdistance} is the
-#' \emph{Rdistance Tutorial for Beginners} vignette avialable through the
-#' package's GitHub website (\url{https://github.com/tmcd82070/Rdistance}) or
-#' CRAN.  Additionally, the examples in the help files for
+#' \bold{Resources} - The best place to start learning about \code{Rdistance}
+#' is at the package's GitHub Wiki, which hosts several tutorial vignettes and
+#' FAQs (\url{https://github.com/tmcd82070/Rdistance/wiki}).
+#' Additionally, the examples in the help files for
 #' \code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}, and
 #' \code{\link{F.automated.CDA}} highlight the package's primary functionality.
 #' 
@@ -57,14 +59,18 @@
 #' \code{ls(pos="package:Rdistance")}.
 #' 
 #' @name Rdistance-package
+#' 
 #' @aliases Rdistance-package distance Rdistance
+#' 
 #' @docType package
+#' 
 #' @author Main authtor and maintainer: Trent McDonald
 #' <tmcdonald@@west-inc.com>
 #' 
-#' Coauthors: Ryan Nielson and Jason Carlisle
+#' Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 #' 
 #' Contributors: Ben Augustine, James Griswold, Joel Reynolds, Pham Quang, Earl
 #' Becker, Aaron Christ, Brook Russelland, and Patrick McKann
+#' 
 #' @keywords package
 NULL

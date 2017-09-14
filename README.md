@@ -6,8 +6,12 @@
 **Rdistance - Distance Sampling Analyses for Abundance Estimation**
 
 **Description:**
-Distance-sampling is a popular method for abundance estimation in ecology.  This package contains functions and associated routines to analyze distance-sampling data collected at line or point transects.  A large suite of classical, parametric detection functions are included, and the package can also accommodate user-defined detection functions.
-
+Distance-sampling is a popular method for abundance estimation in
+ecology. This package contains functions and associated routines to analyze
+distance-sampling data collected at point or line transects. A large suite of
+classical, parametric detection functions are included, and the package can also
+accommodate user-defined detection functions.  Covariates can be included in the
+detection function.
 **Rdistance Resources:**
 The best place to start learning about `Rdistance` is at the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
 

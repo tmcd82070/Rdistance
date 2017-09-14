@@ -1,14 +1,14 @@
 Package: Rdistance
 Type: Package
-Title: Distance Sampling Analyses
+Title: Distance Sampling Analyses for Abundance Estimation
 Version: 2.0.0
-Date: 2017-08-30
+Date: 2017-09-14
 Authors@R: c(
   person("Trent", "McDonald", email="tmcdonald@west-inc.com", role=c("cre","aut")), 
   person("Ryan", "Nielson", email="rnielson@west-inc.com", role=c("aut")), 
-  person("Jason", "Carlisle", email="jason.d.carlisle@gmail.com", role=c("aut")),
+  person("Jason", "Carlisle", email="jcarlisle@west-inc.com", role=c("aut")),
   person("Aidan", "McDonald", email="aidan@mcdcentral.org", role=c("aut")), 
-  person("Ben", "Augustine", email="ben.augustine@uky.edu", role=c("ctb")),
+  person("Ben", "Augustine", email="", role=c("ctb")),
   person("James", "Griswald", email="", role=c("ctb")),
   person("Joel", "Reynolds", email="", role=c("ctb")), 
   person("Pham", "Quang", email="", role=c("ctb")), 
@@ -17,7 +17,12 @@ Authors@R: c(
   person("Brook", "Russelland", email="", role=c("ctb")), 
   person("Patrick", "McKann", email="", role=c("ctb"))
   )
-Description: Distance-sampling analyses for abundance estimation.  Estimates distance-based detection functions and abundances.
+Description: Distance-sampling is a popular method for abundance estimation in
+  ecology. This package contains functions and associated routines to analyze
+  distance-sampling data collected at point or line transects. A large suite of
+  classical, parametric detection functions are included, and the package can also
+  accommodate user-defined detection functions.  Covariates can be included in the
+  detection function.
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki
 BugReports: https://github.com/tmcd82070/Rdistance/issues
