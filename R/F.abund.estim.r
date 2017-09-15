@@ -100,6 +100,12 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   if(any(is.na(site.data$siteID))) stop("Please remove NA's from site.data$siteID.")
   # if(any(is.na(site.data$length))) stop("Please remove NA's from site.data$length.") # OUTDATED ERROR CHECK: NOT COMPATIBLE WITH POINT TRANSECTS
   
+  
+  # Stop and print error if siteIDs are not unique
+  if(anyDuplicated(site.data$siteID) > 0) stop("Site IDs must be unique.")
+  
+  
+  
   # (jdc) (we should split f.plot.bs out as a separate .R file, yes?)
   # Plotting 
   f.plot.bs <- function(x, xscl, yscl, ...) {
