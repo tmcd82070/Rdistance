@@ -2,7 +2,6 @@
 #' @aliases effective.radius
 #' @title Effective Transect Radius for estimated detection functions with point transects
 #' @description Computes effective transect radius for estimated detection functions with point transects.
-#' @usage effective.radius(x)
 #' @param obj An estimated detection function object.  An estimated detection
 #'   function object has class 'dfunc', and is usually produced by a call to 
 #'   \code{F.dfunc.estim}. The estimated detection function may optionally contain 
@@ -15,15 +14,15 @@
 #' @keywords modeling
 #' @export
 
-effective.radius <- function(x){
+effective.radius <- function(obj){
   
   # Issue error if the input detection function was fit to line-transect data
   # Eventually, it would be nice to build the effective.radius code into ESW, so ESW could handle either.
-  if(!(x$point.transects)) stop("effective.radius is for point transects only.  See ESW for the line-transect equivalent.")
+  if(!(obj$point.transects)) stop("effective.radius is for point transects only.  See ESW for the line-transect equivalent.")
   
-  integral <- integration.constant(x$dist, match.fun(paste( x$like.form, ".like", sep="")), x$w.lo, x$w.hi, covars = x$covars, x$parameters, x$expansions, point.transects = x$point.transects, series = x$series)
+  integral <- integration.constant(obj$dist, match.fun(paste( obj$like.form, ".like", sep="")), obj$w.lo, obj$w.hi, covars = obj$covars, obj$parameters, obj$expansions, point.transects = obj$point.transects, series = obj$series)
   
-  rho <- sqrt(2*integral*x$dist)[1]
+  rho <- sqrt(2*integral*obj$dist)[1]
   
   rho
 }

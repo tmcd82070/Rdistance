@@ -19,7 +19,8 @@ is assumed.}
 A scalar equal to the area under the detection function from \code{obj$w.lo} to \code{obj$w.hi}.
 }
 \description{
-Computes effective strip width (ESW) for estimated detection functions.
+Computes effective strip width (ESW) for 
+estimated detection functions.
 }
 \details{
 The effective strip width (ESW) of a distance function is its integral. 

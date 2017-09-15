@@ -4,7 +4,7 @@
 \alias{effective.radius}
 \title{Effective Transect Radius for estimated detection functions with point transects}
 \usage{
-effective.radius(x)
+effective.radius(obj)
 }
 \arguments{
 \item{obj}{An estimated detection function object.  An estimated detection

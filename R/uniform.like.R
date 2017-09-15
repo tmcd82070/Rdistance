@@ -122,41 +122,10 @@
 #' @keywords models
 #' @export
 
-uniform.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = F, ...){
-#
-#   Compute the uniform likelihood, scaled appropriately, for all distance values in dist.
-#
-#   The likelihood is actually a "heavy-side" function of the form,
-#
-#       f(x; a,b) = 1 - 1 / (1 + exp(-b*(x-a))) = exp( -b*(x-a) ) / (1 + exp( -b*(x-a) ))
-#
-#   which you can see is basically a logistic function.  Parameter a is the location of the
-#   "discontinuity" (=inversef(.5) = a) and b is the "knee" or sharpness of the knee at a.
-#
-#   Input:
-#   a = parameter values. Length and meaning depend on series and expansions. If
-#       no expansion terms called for (ie., straight logistic) a is
-#       length 2, where a[1] is upper end of support (i.e., density is approximately U[0,a]),
-#       and a[2] is sharpness of the decline (or knee) at a[1]
-#       If expansions are called for a[3:length(a)] are coefficients of the
-#       expansion.
-#   dist = input observed distance data
-#   w = right truncation value, same units as dist
-#   series = character values specifying type of expansion.  Currently only
-#       "cosine" and "simple" work. Default is no series expansions.
-#   expansions = number of expansion terms.  This controls whether series
-#       expansion terms are fitted. Default = 0 does not fit any terms.
-#       If >0, fit the number of expansion terms specified of the type
-#       specified by series.  Max terms depends on series.
-#   scale = logical, whether or not to scale the likelihood values so
-#       that the underlying density integrates to 1. This parameter is used
-#       to stop the recursion.
-#
-#   Output:
-#   A vector same length as dist, containing likelihood values, scaled appropriately.
-#   Likelihood for all distances >w are set to NA
-#	
-
+uniform.like <- function(a, dist, covars = NULL, w.lo = 0, 
+                         w.hi = max(dist), series = "cosine", 
+                         expansions = 0, scale = TRUE, 
+                         point.transects = F, ...){
 
     #   A couple internal functions first.
     #   This is the heavy-side function.  Basically, a steep logistic. f is just heavi flipped over
@@ -167,14 +136,24 @@ uniform.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), ser
     dist[ (dist < w.lo) | (dist > w.hi) ] = NA
     beta <- c(0,0)
     if(!is.null(covars)){
-      s <- 0
-      for (i in 1:(ncol(covars)))
-        s <- s + a[i]*covars[,i]
+      q <- ncol(covars)
+      beta <- a[1:q]
+      s <- drop( covars %*% beta )
+      # s <- 0
+      # for (i in 1:(ncol(covars)))
+      #   s <- s + a[i]*covars[,i]
       beta1 <- exp(s)
-    } else {beta1 <- a[1]}
+    } else {
+      beta1 <- a[1]
+    }
     beta2 <- a[length(a)-expansions]
     
-	key <- f(beta1, beta2, dist)
+    print(beta1)
+    print(beta2)
+    
+	  key <- f(beta1, beta2, dist)
+	  print(key)
+	  
     dfunc <- key
     w <- w.hi - w.lo
 #    cat(paste( "w.lo=", w.lo, "w.hi=", w.hi, "\n"))

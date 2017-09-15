@@ -91,15 +91,16 @@ F.estimateN <- function(dfunc, detection.data, site.data, area){
       } else {
         temp <- t(as.matrix(dfunc$covars[i,]))
       }
-      new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],  # (jdc) the integration constant doesn't change for different dist values (tested w/line data)
-                                                                   density = paste(dfunc$like.form, ".like", sep=""),
-                                                                   w.lo = dfunc$w.lo,
-                                                                   w.hi = dfunc$w.hi,
-                                                                   covars = temp,
-                                                                   a = dfunc$parameters,
-                                                                   expansions = dfunc$expansions,
-                                                                   point.transects = dfunc$point.transects,
-                                                                   series = dfunc$series)
+      new.term <- detection.data$groupsize[i] / ESW(dfunc)
+      # new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],  # (jdc) the integration constant doesn't change for different dist values (tested w/line data)
+      #                                                              density = paste(dfunc$like.form, ".like", sep=""),
+      #                                                              w.lo = dfunc$w.lo,
+      #                                                              w.hi = dfunc$w.hi,
+      #                                                              covars = temp,
+      #                                                              a = dfunc$parameters,
+      #                                                              expansions = dfunc$expansions,
+      #                                                              point.transects = dfunc$point.transects,
+      #                                                              series = dfunc$series)
       if (!is.na(new.term)) {
         s <- s + new.term
       }
@@ -109,7 +110,7 @@ F.estimateN <- function(dfunc, detection.data, site.data, area){
     } else {
       a <- 2 * esw * tot.trans.len  # area for line transects
     }
-    n.hat <- avg.group.size * s * area/a
+    n.hat <-  s * area/a
     
     
   } else {
