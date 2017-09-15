@@ -130,7 +130,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   
   
   # Estimate abundance
-  (abund <- estimateNhat(dfunc=dfunc, detection.data=detection.data, site.data=site.data))
+  (abund <- estimateNhat(dfunc=dfunc, detection.data=detection.data, site.data=site.data, area=area))
   
   # # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
   # (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
@@ -324,7 +324,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
          # Estimate abundance
          abund.bs <- estimateNhat(dfunc=dfunc.bs,
                                    detection.data=new.detection.data,
-                                   site.data=new.site.data)
+                                   site.data=new.site.data, area=area)
          
          n.hat.bs[i] <- abund.bs$n.hat
       
@@ -466,9 +466,10 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       # Subset both input datasets to only that site
       dd <- detection.data[detection.data$siteID == site, ]
       sd <- site.data[site.data$siteID == site, ]
+      ad <- area # (jdc), placeholder for now, what would the appropriate area be?
       
       # Estimate abundance
-      nhat.df[i, "nhat"] <- estimateNhat(dfunc=dfunc, detection.data=dd, site.data=sd)$n.hat
+      nhat.df[i, "nhat"] <- estimateNhat(dfunc=dfunc, detection.data=dd, site.data=sd, area=ad)$n.hat
       
     }
     
