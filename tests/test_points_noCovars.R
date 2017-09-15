@@ -72,8 +72,8 @@ trunc <- 175
 # half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
 # automated process that fits multiple detection functions and compares them using AICc.  Larger distances are quite
 # sparse, so here we right-truncate the data, tossing out detections where `dist` > trunc.
-thrasher.dfunc <- F.dfunc.estim(formula=dist~1, detection.data=thrasherDetectionData, likelihood="halfnorm",
-                                w.hi=trunc, point.transects=TRUE)
+thrasher.dfunc <- dfuncEstim(formula=dist~1, detectionData=thrasherDetectionData, likelihood="halfnorm",
+                                w.hi=trunc, pointSurvey=TRUE)
 plot(thrasher.dfunc)
 thrasher.dfunc
 
@@ -106,7 +106,7 @@ effectiveDistance(thrasher.dfunc)
 # necessary to stabilize CI estimates.
 
 # (jdc) the plotting of the bootstrap isn't right...
-fit <- F.abund.estim(dfunc=thrasher.dfunc, detection.data=thrasherDetectionData, site.data=thrasherSiteData,
+fit <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
                      area=10000, R=100, ci=0.95, plot.bs=TRUE)
 fit
 
@@ -151,7 +151,7 @@ fit$ci
 
 
 # Compare to Distance
-
+require(Distance)
 
 # Format detection data
 d.data <- thrasherDetectionData[c("dist", "groupsize")]
@@ -184,7 +184,7 @@ AIC(ds.fit)  # Distance = 1761.898
 
 # Abund
 fit$n.hat  # 0.4687061
-fit$ci  # depends on the bootstrap, about 0.36 - 0.57
+fit$ci  # depends on the bootstrap, about 0.37 - 0.57
 ds.fit$dht$individuals$N  # 0.4686923 (0.3792886 - 0.5791696)
 # ds.fit$dht$individuals$N$Estimate
 # ds.fit$dht$individuals$N$lcl

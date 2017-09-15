@@ -120,9 +120,9 @@ summary(sparrowDetectionData$dist)
 # Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the
 # half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
 # automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater
-# than 150 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 150.
-trunc <- 150
-sparrow.dfunc <- F.dfunc.estim(formula=dist~1, detection.data=sparrowDetectionData, likelihood="halfnorm", w.hi=trunc)
+# than 100 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 100.
+trunc <- 100
+sparrow.dfunc <- dfuncEstim(formula=dist~1, detectionData=sparrowDetectionData, likelihood="halfnorm", w.hi=trunc)
 plot(sparrow.dfunc)
 sparrow.dfunc
 
@@ -154,7 +154,7 @@ effectiveDistance(sparrow.dfunc)
 # runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be
 # necessary to stabilize CI estimates.
 
-fit <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
+fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                      area=10000, R=100, ci=0.95, plot.bs=TRUE)
 fit
 
@@ -208,6 +208,7 @@ fit$ci
 
 
 # Compare to Distance
+require(Distance)
 
 # Format detection data
 d.data <- sparrowDetectionData[c("dist", "groupsize")]
@@ -230,7 +231,23 @@ d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=spa
 plot(ds.fit)
 print(ds.fit)
 summary(ds.fit)
+# See Abundance estimate in Summery for individuals section
 
 
 
-# ESW, p, and nhat all match
+# Results very, very similar
+# AIC
+AIC(fit)  # Rdistance = 2970.604
+AIC(ds.fit)  # Distance = 2970.594
+
+# Abund
+fit$n.hat  # 0.8634171
+fit$ci  # depends on the bootstrap, about 0.67 - 1.10
+ds.fit$dht$individuals$N  # 0.8634164 (0.6943432 - 1.073659)
+# ds.fit$dht$individuals$N$Estimate
+# ds.fit$dht$individuals$N$lcl
+# ds.fit$dht$individuals$N$ucl
+
+# Sigma
+coef(fit)  # 46.3587
+exp(ds.fit$ddf$ds$aux$ddfobj$scale$parameters)  # 46.35865
