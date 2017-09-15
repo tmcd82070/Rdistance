@@ -1,44 +1,44 @@
-#' @name F.automated.CDA
-#' @aliases F.automated.CDA
+#' @name autoDistSamp
+#' @aliases autoDistSamp
 #' @title Automated classical distance analysis.
 #' @description Perform automated classical detection function selection and 
 #' estimation of abundance.
 #' 
-#' @param formula This parameter is passed to \code{F.dfunc.estim}.
-#'   See \code{F.dfunc.estim} documentation for definition. 
-#' @param detection.data This parameter is passed to \code{F.dfunc.estim} 
-#' and \code{F.abund.estim}. See \code{F.abund.estim} documentation for definition.
+#' @param formula This parameter is passed to \code{dfuncEstim}.
+#'   See \code{dfuncEstim} documentation for definition. 
+#' @param detectionData This parameter is passed to \code{dfuncEstim} 
+#' and \code{abundEstim}. See \code{abundEstim} documentation for definition.
 #' 
-#' @param site.data This parameter is passed to \code{F.abund.estim}.
-#'   See \code{F.abund.estim} documentation for definition.
+#' @param siteData This parameter is passed to \code{abundEstim}.
+#'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param point.transects A logical scalar specifying whether input data come
+#' @param pointSurvey A logical scalar specifying whether input data come
 #' from a point-transect survey type (TRUE),
 #' or a line-transect survey type (FALSE).
 #' 
-#' @param w.lo This parameter is passed to \code{F.dfunc.estim}.
-#'   See \code{F.dfunc.estim} documentation for definition.
+#' @param w.lo This parameter is passed to \code{dfuncEstim}.
+#'   See \code{dfuncEstim} documentation for definition.
 #'   
-#' @param w.hi This parameter is passed to \code{F.dfunc.estim}.
-#'   See \code{F.dfunc.estim} documentation for definition.
+#' @param w.hi This parameter is passed to \code{dfuncEstim}.
+#'   See \code{dfuncEstim} documentation for definition.
 #'   
-#' @param warn This parameter is passed to \code{F.dfunc.estim}.
-#'   \code{F.dfunc.estim} documentation for definition.
+#' @param warn This parameter is passed to \code{dfuncEstim}.
+#'   \code{dfuncEstim} documentation for definition.
 #'   
-#' @param area This parameter is passed to \code{F.abund.estim}.
-#'   See \code{F.abund.estim} documentation for definition.
+#' @param area This parameter is passed to \code{abundEstim}.
+#'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param ci This parameter is passed to \code{F.abund.estim}.
-#'   See \code{F.abund.estim} documentation for definition.
+#' @param ci This parameter is passed to \code{abundEstim}.
+#'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param R This parameter is passed to \code{F.abund.estim}.
-#'   See \code{F.abund.estim} documentation for definition.
+#' @param R This parameter is passed to \code{abundEstim}.
+#'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param by.id This parameter is passed to \code{F.abund.estim}.
-#'   See \code{F.abund.estim} documentation for definition.
+#' @param by.id This parameter is passed to \code{abundEstim}.
+#'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param plot.bs This parameter is passed to \code{F.abund.estim}.
-#'   See \code{F.abund.estim} documentation for definition.
+#' @param plot.bs This parameter is passed to \code{abundEstim}.
+#'   See \code{abundEstim} documentation for definition.
 #'   
 #' @param likelihoods Vector of strings specifying the 
 #' likelihoods to consider during model selection. Valid values 
@@ -58,7 +58,7 @@
 #'   The function pauses between each plot and prompts the user for whether they want to continue or not. 
 #'   For completely automated estimation, set \code{plot} = \code{FALSE}.
 #'   
-#' @param ... Additional parameters passed to \code{F.dfunc.estim}, which in turn are passed to \code{F.gx.estim}. 
+#' @param ... Additional parameters passed to \code{dfuncEstim}, which in turn are passed to \code{F.gx.estim}. 
 #'   These include \code{x.scl}, \code{g.x.scl}, and \code{observer} for estimating double observer probabilities.
 #'   
 #' @details During model selection, each series and number of expansions is crossed with 
@@ -71,13 +71,13 @@
 #' \code{\link{Gamma.like}}).  The model with lowest AIC is choosen 
 #' as 'best', and estimation of abundance proceeds using that model.
 #' 
-#' @return An 'abundance estimate' object (see \code{F.abund.estim} and \code{F.dfunc.estim}). 
+#' @return An 'abundance estimate' object (see \code{abundEstim} and \code{dfuncEstim}). 
 #'   Returned abundance estimates are based on the best fitting distance function among those fitted.
 #'   
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
 #'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
-#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 #' @examples # Load the example datasets of sparrow detections and transects from package
 #'   data(sparrow.detections)
 #'   data(sparrow.transects)
@@ -86,7 +86,7 @@
 #'   # And estimate abundance (density per ha in this case) given the 'best' detection function
 #'   # Note, area=10000 converts to density per hectare (for distances measured in meters)
 #'   # Note, a person should do more than R=20 iterations 
-#'   F.automated.CDA(detection.data=sparrow.detections, site.data=sparrow.sites,
+#'   autoDistSamp(detectionData=sparrow.detections, siteData=sparrow.sites,
 #'                   likelihood=c("halfnorm", "hazrate", "negexp"),
 #'                   series=c("cosine", "simple"),
 #'                   expansions=c(0, 1), area=10000, R=20, ci=0.95, by.id=FALSE,
@@ -94,33 +94,33 @@
 #' @keywords model
 #' @export
 
-F.automated.CDA <- function (formula, detection.data, site.data, 
+autoDistSamp <- function (formula, detectionData, siteData, 
                              w.lo=0, w.hi=max(dist),
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
                              series=c("cosine", "hermite", "simple"), expansions=0:3,
-                             point.transects=FALSE, warn=TRUE,
+                             pointSurvey=FALSE, warn=TRUE,
                              area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE,                          
                              plot=TRUE, ...){
   
   
-    # Stop and print error if key columns of detection.data or site.data are missing or contain NAs
-  if(!("dist" %in% names(detection.data))) stop("There is no column named 'dist' in your detection.data.")
-  if(!("siteID" %in% names(detection.data))) stop("There is no column named 'siteID' in your detection.data.")
-  if(!("groupsize" %in% names(detection.data))) stop("There is no column named 'groupsize' in your detection.data.")
+    # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
+  if(!("dist" %in% names(detectionData))) stop("There is no column named 'dist' in your detectionData.")
+  if(!("siteID" %in% names(detectionData))) stop("There is no column named 'siteID' in your detectionData.")
+  if(!("groupsize" %in% names(detectionData))) stop("There is no column named 'groupsize' in your detectionData.")
   
-  if(!("siteID" %in% names(site.data))) stop("There is no column named 'siteID' in your site.data.")
-  # if(!("length" %in% names(site.data))) stop("There is no column named 'length' in your site.data.")
+  if(!("siteID" %in% names(siteData))) stop("There is no column named 'siteID' in your siteData.")
+  # if(!("length" %in% names(siteData))) stop("There is no column named 'length' in your siteData.")
   
-  if(any(is.na(detection.data$dist))) stop("Please remove rows for which detection.data$dist is NA.")
-  if(any(is.na(detection.data$siteID))) stop("Please remove rows for which detection.data$siteID is NA.")
-  if(any(is.na(detection.data$groupsize))) stop("Please remove rows for which detection.data$groupsize is NA.")
+  if(any(is.na(detectionData$dist))) stop("Please remove rows for which detectionData$dist is NA.")
+  if(any(is.na(detectionData$siteID))) stop("Please remove rows for which detectionData$siteID is NA.")
+  if(any(is.na(detectionData$groupsize))) stop("Please remove rows for which detectionData$groupsize is NA.")
   
-  if(any(is.na(site.data$siteID))) stop("Please remove NA's from site.data$siteID.")
-  # if(any(is.na(site.data$length))) stop("Please remove NA's from site.data$length.")
+  if(any(is.na(siteData$siteID))) stop("Please remove NA's from siteData$siteID.")
+  # if(any(is.na(siteData$length))) stop("Please remove NA's from siteData$length.")
   
   
-  # extract distance vector from detection.data
-  # dist <- detection.data$dist
+  # extract distance vector from detectionData
+  # dist <- detectionData$dist
   
   
   # function to save results
@@ -177,7 +177,7 @@ F.automated.CDA <- function (formula, detection.data, site.data,
   }
   
   
-  # Fit detection functions (F.dfunc.estim appears 4 times below)
+  # Fit detection functions (dfuncEstim appears 4 times below)
   
   wwarn <- options()$warn
   options(warn = -1)
@@ -185,8 +185,8 @@ F.automated.CDA <- function (formula, detection.data, site.data,
   cat("Likelihood\tSeries\tExpans\tConverged?\tScale?\tAIC\n")
   for (like in likelihoods) {
     if (like == "Gamma") {
-      dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, w.lo = w.lo, 
-                             w.hi = w.hi, point.transects=point.transects, ...)
+      dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = like, w.lo = w.lo, 
+                             w.hi = w.hi, pointSurvey=pointSurvey, ...)
       ser <- ""
       expan <- 0
       fit.table <- f.save.result(fit.table, dfunc, like, 
@@ -198,9 +198,9 @@ F.automated.CDA <- function (formula, detection.data, site.data,
       for (expan in expansions) {
         if (expan == 0) {
           ser <- "cosine"
-          dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, 
+          dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = like, 
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
-                                 series = ser, point.transects=point.transects, ...)
+                                 series = ser, pointSurvey=pointSurvey, ...)
           fit.table <- f.save.result(fit.table, dfunc, 
                                      like, ser, expan, plot)
           cont <- fit.table$k
@@ -208,9 +208,9 @@ F.automated.CDA <- function (formula, detection.data, site.data,
         }
         else {
           for (ser in series) {
-            dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = like, 
+            dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = like, 
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
-                                   series = ser, point.transects=point.transects, ...)
+                                   series = ser, pointSurvey=pointSurvey, ...)
             fit.table <- f.save.result(fit.table, dfunc, 
                                        like, ser, expan, plot)
             cont <- fit.table$k
@@ -232,16 +232,16 @@ F.automated.CDA <- function (formula, detection.data, site.data,
                           Inf)
   fit.table <- fit.table[order(fit.table$aic), ]
 
-  dfunc <- F.dfunc.estim(formula = formula, data = detection.data, likelihood = fit.table$like[1], 
+  dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = fit.table$like[1], 
                          w.lo = w.lo, w.hi = w.hi, expansions = fit.table$expansions[1], 
-                         series = fit.table$series[1], point.transects=point.transects, ...)
+                         series = fit.table$series[1], pointSurvey=pointSurvey, ...)
   if (plot) {
     plot(dfunc)
     mtext("BEST FITTING FUNCTION", side = 3, cex = 1.5, line = 3)
   }
 
   
-  abund <- F.abund.estim(dfunc, detection.data=detection.data, site.data=site.data,
+  abund <- abundEstim(dfunc, detectionData=detectionData, siteData=siteData,
                          area=area, ci=ci, R=R, plot.bs=plot.bs, by.id=by.id)
 
 #   }

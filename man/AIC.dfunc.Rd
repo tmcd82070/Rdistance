@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{An estimated detection function object.  An estimated detection 
 function object has class 'dfunc', and is usually produced by a call to 
-\code{F.dfunc.estim}.}
+\code{dfuncEstim}.}
 
 \item{\dots}{Required for compatability with the general \code{AIC} method.  Any 
 extra arguments to this function are ignored.}
@@ -52,7 +52,7 @@ Regular Akaike's information criterion
   data(sparrow.detections)
   
   # Fit detection function to perpendicular, off-transect distances
-  dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+  dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
   
   # Compute fit statistics
   AIC(dfunc)  # AICc
@@ -67,7 +67,7 @@ Burnham, K. P., and D. R. Anderson, 2002. \emph{Model Selection and Multimodel I
   World Scientific. ISBN 981023242X
 }
 \seealso{
-\code{\link{coef}}, \code{\link{F.dfunc.estim}}
+\code{\link{coef}}, \code{\link{dfuncEstim}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

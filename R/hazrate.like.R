@@ -12,14 +12,14 @@
 #' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
 #'   Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
 #' @param series A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-#'   \code{\link{F.dfunc.estim}} about defining other series.
+#'   \code{\link{dfuncEstim}} about defining other series.
 #' @param expansions A scalar specifying the number of terms in \code{series}. Depending on the series, this could be 0 through 5.
 #'   The default of 0 equates to no expansion terms of any type.
 #' @param scale Logical scaler indicating whether or not to scale the likelihood so it integrates to 1. This parameter is used to stop recursion in other functions.
 #'   If \code{scale} equals TRUE, a numerical integration routine (\code{\link{integration.constant}}) is called, which in turn calls this likelihood function again
 #'   with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
 #'   constant of integration.  All user defined likelihoods must have and use this parameter.
-#' @param point.transects Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
+#' @param pointSurvey Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
 #' @details The hazard rate likelihood is 
 #' \deqn{f(x|a,b) = 1 - \exp(-(x/a)^{-b})}{f(x|a,b) = 1 - exp(-(x/a)^(-b))} where \eqn{a} is a variance parameter, and \eqn{b}
 #'   is a slope parameter to be estimated. 
@@ -37,7 +37,7 @@
 #'   arbitrary.
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}},
+#' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{uniform.like}},
 #'          \code{\link{negexp.like}},
@@ -45,7 +45,7 @@
 #' @keywords models
 #' @export
 
-hazrate.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = FALSE, ...){
+hazrate.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE, ...){
 	
 
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
@@ -92,7 +92,7 @@ hazrate.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), ser
     #}
 
     if( scale ){
-        dfunc = dfunc / integration.constant(dist, hazrate.like, w.lo=w.lo, w.hi=w.hi, a=a, covars = covars, series=series,expansions=expansions, point.transects = point.transects, ...)
+        dfunc = dfunc / integration.constant(dist, hazrate.like, w.lo=w.lo, w.hi=w.hi, a=a, covars = covars, series=series,expansions=expansions, pointSurvey = pointSurvey, ...)
     }
     
     c(dfunc)

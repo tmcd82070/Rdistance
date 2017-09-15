@@ -1,5 +1,5 @@
-#' @name F.dfunc.estim
-#' @aliases F.dfunc.estim
+#' @name dfuncEstim
+#' @aliases dfuncEstim
 #' 
 #' @title Estimate a detection function from distance-sampling data.
 #' 
@@ -14,19 +14,19 @@
 #' function. If covariates do not appear in \code{data}, they must 
 #' be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)
 #' 
-#' @param detection.data A data frame containing detection distances 
+#' @param detectionData A data frame containing detection distances 
 #' (either perpendicular for line-transect or radial for point-transect
 #' designs), \code{transectID}, and 
 #' potentially group size (see example data set \code{\link{sparrow.detections}}).
-#' \code{detection.data} contains one row per detected group. The column
+#' \code{detectionData} contains one row per detected group. The column
 #' containing detection
 #' distances must be specified on the left-hand side of \code{formula}.
 #' The site ID  column(s) (see argument \code{siteID}) must specify the site
 #' (transect or point) associated with the detection so that this 
-#' data frame can be merged with \code{site.data}. See \bold{Input data frames} 
-#' for when \code{detection.data} and \code{site.data} are required inputs. 
+#' data frame can be merged with \code{siteData}. See \bold{Input data frames} 
+#' for when \code{detectionData} and \code{siteData} are required inputs. 
 #' 
-#' @param site.data A data.frame containing site (transect or point)
+#' @param siteData A data.frame containing site (transect or point)
 #'  IDs and any 
 #' \emph{site level} covariates to include in the detection function. 
 #' Every unique surveyed site (transect or point) is represented on
@@ -39,11 +39,11 @@
 #' default, transect length is assumed to be in column 'length' 
 #' but can be specified using argument \code{length}. 
 #' 
-#' The total number of sites surveyed is \code{nrow(site.data)}. 
-#' Duplicate site-level IDs are not allowed in \code{site.data}. 
+#' The total number of sites surveyed is \code{nrow(siteData)}. 
+#' Duplicate site-level IDs are not allowed in \code{siteData}. 
 #' 
 #' See \bold{Input data frames} 
-#' for when \code{detection.data} and \code{site.data} are required inputs. 
+#' for when \code{detectionData} and \code{siteData} are required inputs. 
 #' 
 #' 
 #' @param likelihood String specifying the likelihood to fit. Built-in 
@@ -51,7 +51,7 @@
 #' "hazrate", "negexp", and "Gamma". See vignette for a way to use 
 #' user-define likelihoods.
 #' 
-#' @param point.transects A logical scalar specifying whether input data come
+#' @param pointSurvey A logical scalar specifying whether input data come
 #' from point-transect surveys (TRUE),
 #' or line-transect surveys (FALSE).  
 #' 
@@ -98,9 +98,9 @@
 #' setting \code{warn = FALSE}.
 #' 
 #' @param transectID A character vector naming the transect ID column(s) in
-#' \code{detection.data} and \code{site.data}.  Transects can be the 
-#' basic sampling unit (when \code{point.transects}=FALSE) or 
-#' contain multiple sampling units (e.g., when \code{point.transects}=TRUE). 
+#' \code{detectionData} and \code{siteData}.  Transects can be the 
+#' basic sampling unit (when \code{pointSurvey}=FALSE) or 
+#' contain multiple sampling units (e.g., when \code{pointSurvey}=TRUE). 
 #' For line-transects, the \code{transectID} column(s) alone is 
 #' sufficient to specify unique sample sites. 
 #' For point-transects, the amalgomation of \code{transectID} and 
@@ -108,28 +108,28 @@
 #' See \bold{Input data frames}. 
 #' 
 #' @param pointID A character vector specifying the point ID column(s)
-#' in \code{detection.data} and \code{site.data}. For point-transect data, 
+#' in \code{detectionData} and \code{siteData}. For point-transect data, 
 #' the site ID's used to merge the input data sets are the unique combinations
 #' of \code{c(transectID,pointID)}.  If \code{transectID} is NULL, 
 #' \code{pointID} is ignored.  That is, multiple points per transect are not 
 #' allowed when the merge is based solely on common variables in the 
 #' input data frames.  This probably does not matter for estimation of 
 #' the distance function but probably does matter for bootstrap estimation 
-#' of variance in \code{\link{F.abund.estim}}. 
+#' of variance in \code{\link{abundEstim}}. 
 #' 
 #' @param length Character string specifying the (single) column in 
-#' \code{site.data} that contains transect length. This is ignored if 
-#' \code{point.transects} = TRUE.
+#' \code{siteData} that contains transect length. This is ignored if 
+#' \code{pointSurvey} = TRUE.
 #' 
 #' @section Input data frames:
 #' To save space and to easily specify 
 #' sites without detections, 
 #' all site ID's, regardless whether a detection occured there,
 #' and \emph{site level} covariates are stored in 
-#' the \code{site.data} data frame.  Detection distances and group
+#' the \code{siteData} data frame.  Detection distances and group
 #' sizes are measured at the \emph{detection level} and 
 #' are stored in the 
-#' \code{detection.data} data frame.  
+#' \code{detectionData} data frame.  
 #' 
 #' \subsection{Data frame requirements}{The following explains  
 #' conditions under which various combinations of the input data frames 
@@ -137,63 +137,63 @@
 #' 
 #'    \enumerate{
 #'       \item \bold{Detection data and site data both required:}\cr
-#'          Both \code{detection.data} and \code{site.data}  
+#'          Both \code{detectionData} and \code{siteData}  
 #'          are required if \emph{site level} covariates are 
 #'          specified on the right-hand side of \code{formula}. 
 #'          \emph{Detection level} covariates are not currently allowed.
 #'   
 #'       \item \bold{Detection data only required:}\cr
-#'          The \code{detection.data} data frame alone can be 
+#'          The \code{detectionData} data frame alone can be 
 #'          specified if no covariates 
 #'          are included in the distance function (i.e., right-hand side of 
-#'          \code{formula} is "~1"). Note that this routine (\code{F.dfunc.estim})
+#'          \code{formula} is "~1"). Note that this routine (\code{dfuncEstim})
 #'          does not need to know about sites where zero targets were detected, hence
-#'          \code{site.data} can be missing when no covariates are involved.
+#'          \code{siteData} can be missing when no covariates are involved.
 #'   
 #'       \item \bold{Neither detection data nor site data required}\cr
-#'          Neither \code{detection.data} nor \code{site.data}  
+#'          Neither \code{detectionData} nor \code{siteData}  
 #'          are required if all variables specified in \code{formula} 
 #'          are within the scope of this routine (e.g., in the global working
 #'          environment). Scoping rules here work the same as for other modeling 
 #'          routines in R such as \code{lm} and \code{glm}. Like other modeling 
 #'          routines, it is possible to mix and match the location of variables in 
 #'          the model.  Some variables can be in the \code{.GlobalEnv} while others 
-#'          are in either \code{detection.data} or \code{site.data}. 
+#'          are in either \code{detectionData} or \code{siteData}. 
 #'    }
 #'     
 #' }
 #' 
 #' \subsection{Relationship between data frames (transect and point ID's)}{
-#' The input data frames, \code{detection.data} and \code{site.data},
+#' The input data frames, \code{detectionData} and \code{siteData},
 #' must be merge-able on unique sites.  For line-transects, 
 #' site ID's (i.e., transect ID's) are unique values of 
-#' the \code{transectID} column in \code{site.data}.  In this case,
+#' the \code{transectID} column in \code{siteData}.  In this case,
 #' the following merge must work:  
-#' \code{merge(detection.data,site.data,by=transectID)}.
+#' \code{merge(detectionData,siteData,by=transectID)}.
 #' For point-transects, 
 #' site ID's (i.e., point ID's) are unique values 
 #' of the combination \code{paste(transectID,pointID)}.
 #' In this case, the following merge must work:    
-#' \code{merge(detection.data,site.data,by=c(transectID, pointID)}.
+#' \code{merge(detectionData,siteData,by=c(transectID, pointID)}.
 #'  
 #' By default,\code{transectID} and \code{pointID} are NULL and
 #' the merge is done on all common columns.
 #' That is, when \code{transectID} is NULL, this routine assumes unique
 #' \emph{transects} are specified by unique combinations of the 
 #' common variables (i.e., unique values of
-#' \code{intersect(names(detection.data), names(site.data))}). 
+#' \code{intersect(names(detectionData), names(siteData))}). 
 #' 
 #' An error occurs if there are no common column names between 
-#' \code{detection.data} and \code{site.data}.
-#' Duplicate site IDs are not allowed in \code{site.data}. 
+#' \code{detectionData} and \code{siteData}.
+#' Duplicate site IDs are not allowed in \code{siteData}. 
 #' If the same site is surveyed in
 #' multiple years, specify another transect ID column (e.g., \code{transectID =
 #' c("year","transectID")}).  Duplicate site ID's are allowed in 
-#' \code{detection.data}.  
+#' \code{detectionData}.  
 #' 
 #' To help explain the relationship between data frames, bear in 
 #' mind that  during bootstrap estimation of variance
-#' in \code{\link{F.abund.estim}}, 
+#' in \code{\link{abundEstim}}, 
 #' unique \emph{transects} (i.e., unique values of 
 #' the transect ID column(s)), not \emph{detections} or 
 #' \emph{points}, are resampled with replacement. 
@@ -249,7 +249,7 @@
 #'   \item{fit}{The fitted object returned by \code{optim}.  
 #'     See documentation for \code{optim}.}
 #'   \item{factor.names}{The names of any factors in \code{formula}}
-#'   \item{point.transects}{The input value of \code{point.transects}. 
+#'   \item{pointSurvey}{The input value of \code{pointSurvey}. 
 #'     This is TRUE if distances are radial from a point. FALSE 
 #'     if distances are perpendicular off-transect. }
 #'     
@@ -257,7 +257,7 @@
 #'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}\cr
 #'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
 #'         
-#' @seealso \code{\link{F.abund.estim}}, \code{\link{F.automated.CDA}}.
+#' @seealso \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 #' See \code{\link{uniform.like}} for details on the "uniform", 
 #' "halfnorm", "hazrate", and "negexp" likelihoods.  
 #' See \code{\link{Gamma.like}} for details on "Gamma". 
@@ -275,21 +275,21 @@
 #'thrasher <- merge(thrasher.detections, thrasher.sites, by="siteID")
 #'   
 #'# Fit multiple detection functions to perpendicular, off-transect distances
-#'un.dfunc <- F.dfunc.estim(dist ~ 1, sparrow, likelihood="uniform", 
+#'un.dfunc <- dfuncEstim(dist ~ 1, sparrow, likelihood="uniform", 
 #'            w.hi = 150)
 #'            
-#'hn.dfunc <- F.dfunc.estim(dist ~ 1, thrasher, likelihood="halfnorm", 
-#'            w.hi = 150, point.transects = T)
+#'hn.dfunc <- dfuncEstim(dist ~ 1, thrasher, likelihood="halfnorm", 
+#'            w.hi = 150, pointSurvey = T)
 #'            
-#'hn2.dfunc <- F.dfunc.estim(dist ~ sagemean, sparrow, 
+#'hn2.dfunc <- dfuncEstim(dist ~ sagemean, sparrow, 
 #'            likelihood="halfnorm", w.hi = 150, expansions = 1, 
 #'            series = "simple")
 #'            
-#'hz.dfunc <- F.dfunc.estim(dist ~ observer + bare, thrasher, 
-#'            likelihood="hazrate", w.hi = 150, point.transects = T, 
+#'hz.dfunc <- dfuncEstim(dist ~ observer + bare, thrasher, 
+#'            likelihood="hazrate", w.hi = 150, pointSurvey = T, 
 #'            expansions = 5, series = "cosine")
 #'            
-#'ga.dfunc <- F.dfunc.estim(dist ~ 1, sparrow, likelihood="Gamma", 
+#'ga.dfunc <- dfuncEstim(dist ~ 1, sparrow, likelihood="Gamma", 
 #'            w.hi = 150, x.scl="max") 
 #'   
 #'# Plot the first four detection functions
@@ -302,29 +302,29 @@
 #' @keywords model
 #' @export
 
-F.dfunc.estim <- function (formula, detection.data, site.data, likelihood="halfnorm", 
-                  point.transects = FALSE, w.lo=0, w.hi=max(dist), 
+dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm", 
+                  pointSurvey = FALSE, w.lo=0, w.hi=max(dist), 
                   expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
                   observer="both", warn=TRUE, transectID=NULL, pointID="point", 
                   length="length"){
   
   cl <- match.call()
   
-  if(!missing(detection.data) & !missing(site.data)){
+  if(!missing(detectionData) & !missing(siteData)){
     if( is.null(transectID) ){
-      transectID <- intersect( names(detection.data), names(site.data) )
-      if( point.transects ){
+      transectID <- intersect( names(detectionData), names(siteData) )
+      if( pointSurvey ){
         pointID <- NULL  # multiple pts per transect not allowed when no transectID specified
       } 
     }
-    if( point.transects ){
+    if( pointSurvey ){
       siteID.cols <- c(transectID, pointID)
     } else {
       siteID.cols <- c(transectID)
     }
-    data <- merge(detection.data, site.data, by=siteID.cols)
-  } else if(!missing(detection.data)){
-    data <- detection.data
+    data <- merge(detectionData, siteData, by=siteID.cols)
+  } else if(!missing(detectionData)){
+    data <- detectionData
   } else{
     data <- NULL
   }
@@ -375,7 +375,7 @@ F.dfunc.estim <- function (formula, detection.data, site.data, likelihood="halfn
   if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
   
   strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, 
-                              dist, covars, point.transects)
+                              dist, covars, pointSurvey)
   
   # Perform optimization
   fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, 
@@ -383,7 +383,7 @@ F.dfunc.estim <- function (formula, detection.data, site.data, likelihood="halfn
           control = list(trace = 0, maxit = 1000), dist = dist, 
           like = likelihood, covars = covars,
           w.lo = w.lo, w.hi = w.hi, expansions = expansions, 
-          series = series, point.transects = point.transects, 
+          series = series, pointSurvey = pointSurvey, 
           for.optim = T, hessian = TRUE)
   
   varcovar <- solve(fit$hessian)
@@ -407,12 +407,12 @@ F.dfunc.estim <- function (formula, detection.data, site.data, likelihood="halfn
               call.observer = observer, 
               fit = fit, 
               factor.names = factor.names, 
-              point.transects = point.transects)
+              pointSurvey = pointSurvey)
   
   ans$loglik <- F.nLL(ans$parameters, ans$dist, covars = ans$covars, 
                       like = ans$like.form, w.lo = ans$w.lo, w.hi = ans$w.hi, 
                       series = ans$series, expansions = ans$expansions, 
-                      point.transects = ans$point.transects, for.optim = F)
+                      pointSurvey = ans$pointSurvey, for.optim = F)
   
   # Assemble results
   class(ans) <- "dfunc"

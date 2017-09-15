@@ -57,8 +57,8 @@ requests, etc. through the package's GitHub website
 is at the package's GitHub Wiki, which hosts several tutorial vignettes and
 FAQs (\url{https://github.com/tmcd82070/Rdistance/wiki}).
 Additionally, the examples in the help files for
-\code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}, and
-\code{\link{F.automated.CDA}} highlight the package's primary functionality.
+\code{\link{dfuncEstim}}, \code{\link{abundEstim}}, and
+\code{\link{autoDistSamp}} highlight the package's primary functionality.
 
 \tabular{ll}{ Package: \tab Rdistance\cr Type: \tab Package\cr License: \tab
 GNU General Public License\cr }

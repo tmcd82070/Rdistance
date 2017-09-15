@@ -4,7 +4,7 @@
 \alias{F.start.limits}
 \title{F.start.limits - Set starting values and limits for parameters of Rdistance functions.}
 \usage{
-F.start.limits(like, expan, w.lo, w.hi, dist, covars = NULL, point.transects = FALSE)
+F.start.limits(like, expan, w.lo, w.hi, dist, covars = NULL, pointSurvey = FALSE)
 }
 \arguments{
 \item{like}{String specifying the likelihood for the distance function.  Possible values are 
@@ -23,7 +23,7 @@ normal likelihood, "uniform" for the uniform likelihood,
 
 \item{covars}{Matrix of covariate values.}
 
-\item{point.transects}{Boolean. TRUE if point transect data, FALSE if line transect data.}
+\item{pointSurvey}{Boolean. TRUE if point transect data, FALSE if line transect data.}
 }
 \value{
 A list containing the following components
@@ -68,7 +68,7 @@ F.start.limits( "uniform", 0, 0, 1000 )
   F.start.limits( "Gamma", 0, 0, 1000, 1000*runif(100) )
 }
 \seealso{
-\code{\link{F.dfunc.estim}}
+\code{\link{dfuncEstim}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

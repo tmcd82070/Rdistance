@@ -13,7 +13,7 @@
 #' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. 
 #'   \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 #' @author Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
-#' @seealso \code{\link{F.dfunc.estim}}
+#' @seealso \code{\link{dfuncEstim}}
 #' @examples # Load the example dataset of sparrow detections from package
 #' data(sparrow.detections)
 #' # Compute perpendicular, off-transect distances from the observer's sight distance and angle

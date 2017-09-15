@@ -4,17 +4,17 @@
 \alias{estimateNhat}
 \title{estimateNhat - Estimate abundance}
 \usage{
-estimateNhat(dfunc, detection.data, site.data, area)
+estimateNhat(dfunc, detectionData, siteData, area)
 }
 \arguments{
-\item{dfunc}{An estimate distance function (see \code{F.dfunc.estim}).}
+\item{dfunc}{An estimate distance function (see \code{dfuncEstim}).}
 
-\item{detection.data}{A data frame containing information on 
+\item{detectionData}{A data frame containing information on 
 detections, such as distance and which transect or point they occured
-on (see \code{F.dfunc.estim}).}
+on (see \code{dfuncEstim}).}
 
-\item{site.data}{A data frame containing information on the 
-transects or points surveyed  (see \code{F.dfunc.estim}).}
+\item{siteData}{A data frame containing information on the 
+transects or points surveyed  (see \code{dfuncEstim}).}
 
 \item{area}{Total area of inference. Study area size.}
 }
@@ -34,7 +34,7 @@ A list containing the following components:
 \description{
 Estimate abundance given a distance function, 
 detection data, site data, and area.  This is called internally 
-by F.abund.estim during bootstrapping.
+by abundEstim during bootstrapping.
 }
 \examples{
 # Load the example datasets of sparrow detections and transects from package
@@ -42,14 +42,14 @@ by F.abund.estim during bootstrapping.
   data(sparrow.transects)
   
   # Fit detection function to perpendicular, off-transect distances
-  dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+  dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
   
   # Estimate abundance given a detection function
   n.hat <- estimate.nhat(dfunc, sparrow.detections, sparrow.sites)
   
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}
+\code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr

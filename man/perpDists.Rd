@@ -37,7 +37,7 @@ Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993.
   \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 }
 \seealso{
-\code{\link{F.dfunc.estim}}
+\code{\link{dfuncEstim}}
 }
 \author{
 Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}

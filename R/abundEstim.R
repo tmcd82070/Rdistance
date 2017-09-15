@@ -1,20 +1,20 @@
-#' @name F.abund.estim
-#' @aliases F.abund.estim
+#' @name abundEstim
+#' @aliases abundEstim
 #' 
 #' @title Estimate abundance from distance-sampling data.
 #' @description Estimate abundance (or density) given an estimated detection function and supplemental information 
 #'   on observed group sizes, transect lengths, area surveyed, etc.  Also computes confidence intervals of abundance 
 #'   (or density) using the bias corrected bootstrap method.
 #'   
-#' @param dfunc An estimated 'dfunc' object produced by \code{F.dfunc.estim}.
-#' @param detection.data A data.frame where each row represents one detection (see example dataset, \code{\link{sparrow.detections}})
+#' @param dfunc An estimated 'dfunc' object produced by \code{dfuncEstim}.
+#' @param detectionData A data.frame where each row represents one detection (see example dataset, \code{\link{sparrow.detections}})
 #'   and with at least the following three columns with the names \code{siteID}, \code{groupsize}, and \code{dist}:
 #'   \itemize{
 #'     \item \code{siteID} = the name of the transect.
 #'     \item \code{groupsize} = the number of individuals in the detected group.
 #'     \item \code{dist} = the perpendicular, off-transect distance.
 #'   }
-#' @param site.data A data.frame where each transect surveyed is represented as one row (see example dataset, 
+#' @param siteData A data.frame where each transect surveyed is represented as one row (see example dataset, 
 #' \code{\link{sparrow.transects}}) and with at least the following two columns with the names \code{siteID} and \code{length}:
 #'   \itemize{
 #'     \item \code{siteID} = the name of the transect.  This vector is used during bootstrapping to resample transects.
@@ -45,7 +45,7 @@
 #'   iterations are performed, afterwhich the bias corrected confidence intervals are computed 
 #'   using the method given in Manly (1997, section 3.4).
 #' @return An 'abundance estimate' object, a list of class c("abund", "dfunc"), containing 
-#'   all the components of a "dfunc" object (see \code{F.dfunc.estim}), plus, 
+#'   all the components of a "dfunc" object (see \code{dfuncEstim}), plus, 
 #'   \item{n.hat}{Estimated abundance in the study area (if \code{area} > 1) 
 #'     or estimated density in the study area (if \code{area} = 1).}
 #'   \item{ci}{The bias corrected bootstrap confidence interval for \code{n.hat}.  The names of this component 
@@ -65,44 +65,44 @@
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
 #'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 #' @references Manly, B. F. J. (1997) \emph{Randomization, bootstrap, and monte carlo methods in biology}, London: Chapman and Hall.
-#' @seealso \code{\link{F.dfunc.estim}}
+#' @seealso \code{\link{dfuncEstim}}
 #' @examples # Load the example datasets of sparrow detections and transects from package
 #'   data(sparrow.detections)
 #'   data(sparrow.transects)
 #'   
 #'   # Fit detection function to perpendicular, off-transect distances
-#'   dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+#'   dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 #'   
 #'   # Estimate abundance given a detection function
 #'   # Note, area=10000 converts to density per hectare (for distances measured in meters)
 #'   # Note, a person should do more than R=20 iterations 
-#'   fit <- F.abund.estim(dfunc, detection.data=sparrow.detections, site.data=sparrow.sites,
+#'   fit <- abundEstim(dfunc, detectionData=sparrow.detections, siteData=sparrow.sites,
 #'                        area=10000, R=20, ci=0.95, plot.bs=TRUE, by.id=FALSE)
 #' @keywords model
 #' @export
 
-F.abund.estim <- function(dfunc, detection.data, site.data,
+abundEstim <- function(dfunc, detectionData, siteData,
                           area=1, ci=0.95, R=500, by.id=FALSE,
                           plot.bs=FALSE){
   
-  # Stop and print error if key columns of detection.data or site.data are missing or contain NAs
-  if(!("dist" %in% names(detection.data))) stop("There is no column named 'dist' in your detection.data.")
-  if(!("siteID" %in% names(detection.data))) stop("There is no column named 'siteID' in your detection.data.")
-  if(!("groupsize" %in% names(detection.data))) stop("There is no column named 'groupsize' in your detection.data.")
+  # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
+  if(!("dist" %in% names(detectionData))) stop("There is no column named 'dist' in your detectionData.")
+  if(!("siteID" %in% names(detectionData))) stop("There is no column named 'siteID' in your detectionData.")
+  if(!("groupsize" %in% names(detectionData))) stop("There is no column named 'groupsize' in your detectionData.")
   
-  if(!("siteID" %in% names(site.data))) stop("There is no column named 'siteID' in your site.data.")
-  # if(!("length" %in% names(site.data))) stop("There is no column named 'length' in your site.data.") # OUTDATED ERROR CHECK: NOT COMPATIBLE WITH POINT TRANSECTS
+  if(!("siteID" %in% names(siteData))) stop("There is no column named 'siteID' in your siteData.")
+  # if(!("length" %in% names(siteData))) stop("There is no column named 'length' in your siteData.") # OUTDATED ERROR CHECK: NOT COMPATIBLE WITH POINT TRANSECTS
   
-  if(any(is.na(detection.data$dist))) stop("Please remove rows for which detection.data$dist is NA.")
-  if(any(is.na(detection.data$siteID))) stop("Please remove rows for which detection.data$siteID is NA.")
-  if(any(is.na(detection.data$groupsize))) stop("Please remove rows for which detection.data$groupsize is NA.")
+  if(any(is.na(detectionData$dist))) stop("Please remove rows for which detectionData$dist is NA.")
+  if(any(is.na(detectionData$siteID))) stop("Please remove rows for which detectionData$siteID is NA.")
+  if(any(is.na(detectionData$groupsize))) stop("Please remove rows for which detectionData$groupsize is NA.")
   
-  if(any(is.na(site.data$siteID))) stop("Please remove NA's from site.data$siteID.")
-  # if(any(is.na(site.data$length))) stop("Please remove NA's from site.data$length.") # OUTDATED ERROR CHECK: NOT COMPATIBLE WITH POINT TRANSECTS
+  if(any(is.na(siteData$siteID))) stop("Please remove NA's from siteData$siteID.")
+  # if(any(is.na(siteData$length))) stop("Please remove NA's from siteData$length.") # OUTDATED ERROR CHECK: NOT COMPATIBLE WITH POINT TRANSECTS
   
   
   # Stop and print error if siteIDs are not unique
-  if(anyDuplicated(site.data$siteID) > 0) stop("Site IDs must be unique.")
+  if(anyDuplicated(siteData$siteID) > 0) stop("Site IDs must be unique.")
   
   
   
@@ -136,23 +136,23 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   
   
   # Estimate abundance
-  (abund <- estimateNhat(dfunc=dfunc, detection.data=detection.data, site.data=site.data, area=area))
+  (abund <- estimateNhat(dfunc=dfunc, detectionData=detectionData, siteData=siteData, area=area))
   
   # # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
-  # (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
+  # (detectionData <- detectionData[detectionData$dist >= dfunc$w.lo & detectionData$dist <= dfunc$w.hi, ])
   # 
   # # sample size (number of detections, NOT individuals)
-  # (n <- nrow(detection.data))
+  # (n <- nrow(detectionData))
   # 
   # # group sizes
-  # (avg.group.size <- mean(detection.data$groupsize))
+  # (avg.group.size <- mean(detectionData$groupsize))
   # 
   # # total transect length and ESW
-  # if(dfunc$point.transects){
+  # if(dfunc$pointSurvey){
   #   tot.trans.len <- NULL
   #   esw <- effective.radius(dfunc)
   # } else{
-  #   tot.trans.len <- sum(site.data$length)  # total transect length
+  #   tot.trans.len <- sum(siteData$length)  # total transect length
   #   esw <- ESW(dfunc)  # get effective strip width
   # }
   
@@ -164,29 +164,29 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   #   temp <- dfunc$covars
   # }
   # # If line transects + covariates or point transects, estimate abundance the general way
-  # if (ncol(temp) > 1 | dfunc$point.transects) { 
+  # if (ncol(temp) > 1 | dfunc$pointSurvey) { 
   #   f.like <- match.fun(paste( dfunc$like.form, ".like", sep=""))
   #   s <- 0
-  #   for (i in 1:nrow(detection.data)) {
+  #   for (i in 1:nrow(detectionData)) {
   #     if (is.null(dfunc$covars)) {
   #       temp <- NULL
   #     } else {
   #       temp <- t(as.matrix(dfunc$covars[i,]))
   #     }
-  #     new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],
+  #     new.term <- detectionData$groupsize[i]/integration.constant(dist = dfunc$dist[i],
   #                                                                  density = paste(dfunc$like.form, ".like", sep=""),
   #                                                                  w.lo = dfunc$w.lo,
   #                                                                  w.hi = dfunc$w.hi,
   #                                                                  covars = temp,
   #                                                                  a = dfunc$parameters,
   #                                                                  expansions = dfunc$expansions,
-  #                                                                  point.transects = dfunc$point.transects,
+  #                                                                  pointSurvey = dfunc$pointSurvey,
   #                                                                  series = dfunc$series)
   #     if (!is.na(new.term)) {
   #       s <- s + new.term
   #     }
   #   }
-  #   if (dfunc$point.transects) {
+  #   if (dfunc$pointSurvey) {
   #     a <- pi*esw*n  # area for point transects
   #   } else {
   #     a <- 2 * tot.trans.len  # area for line transects
@@ -248,35 +248,35 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
     cat("Computing bootstrap confidence interval on N...\n")
     for(i in 1:R){
       # sample rows, with replacement, from transect data
-      new.site.data <- site.data[sample(nrow(site.data), nrow(site.data), replace=TRUE), ]
+      new.siteData <- siteData[sample(nrow(siteData), nrow(siteData), replace=TRUE), ]
       
-      new.trans <- as.character(new.site.data$siteID)  # which transects were sampled?
+      new.trans <- as.character(new.siteData$siteID)  # which transects were sampled?
       trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
       
       # subset distance data from these transects
-      if( class(new.site.data$siteID) == "factor" ){
-        new.trans <- unique(droplevels(new.site.data$siteID))
+      if( class(new.siteData$siteID) == "factor" ){
+        new.trans <- unique(droplevels(new.siteData$siteID))
       } else {
-        new.trans <- unique(new.site.data$siteID)
+        new.trans <- unique(new.siteData$siteID)
       }
-      new.detection.data <- detection.data[detection.data$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
+      new.detectionData <- detectionData[detectionData$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
       
       # replicate according to freqency in new sample
       # merge to add Freq column to indicate how many times to repeat each row
-      red <- merge(new.detection.data, trans.freq, by.x="siteID", by.y="new.trans")
+      red <- merge(new.detectionData, trans.freq, by.x="siteID", by.y="new.trans")
       # expand this reduced set my replicating rows
-      new.detection.data <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
+      new.detectionData <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
       
       # And merge on site-level covariates
       # Not needed if no covars, but cost in time should be negligible
-      # This ended up adding too many rows if merged to new.site.data, so merging with original site.data
-      new.merge.data <- merge(new.detection.data, site.data, by="siteID")
-      # unique(droplevels(new.detection.data$siteID))
-      # unique(droplevels(new.site.data$siteID))
+      # This ended up adding too many rows if merged to new.siteData, so merging with original siteData
+      new.mergeData <- merge(new.detectionData, siteData, by="siteID")
+      # unique(droplevels(new.detectionData$siteID))
+      # unique(droplevels(new.siteData$siteID))
       # length(new.trans)
       
       # Extract distances
-      # new.x <- new.detection.data$dist
+      # new.x <- new.detectionData$dist
       
       #update g(0) or g(x) estimate.
       if (is.data.frame(g.x.scl.orig)) {
@@ -289,10 +289,10 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       
       
       # # estimate distance function
-      # dfunc.bs <- F.dfunc.estim(new.x ~ 1, likelihood = dfunc$like.form, 
+      # dfunc.bs <- dfuncEstim(new.x ~ 1, likelihood = dfunc$like.form, 
       #                            w.lo = dfunc$w.lo, w.hi = dfunc$w.hi, expansions = dfunc$expansions, 
       #                            series = dfunc$series, x.scl = dfunc$call.x.scl, 
-      #                            g.x.scl = g.x.scl.bs, observer = dfunc$call.observer, point.transects = dfunc$point.transects, 
+      #                            g.x.scl = g.x.scl.bs, observer = dfunc$call.observer, pointSurvey = dfunc$pointSurvey, 
       #                            warn = FALSE)
       
       
@@ -306,8 +306,8 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       (fmla <- as.formula(paste("dist ~ ", paste(covars, collapse= "+"))))
       
       
-      dfunc.bs <- F.dfunc.estim(formula = fmla,
-                                detection.data = new.merge.data,
+      dfunc.bs <- dfuncEstim(formula = fmla,
+                                detectionData = new.mergeData,
                                 likelihood = dfunc$like.form, 
                                 w.lo = dfunc$w.lo,
                                 w.hi = dfunc$w.hi,
@@ -316,7 +316,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
                                 x.scl = dfunc$call.x.scl, 
                                 g.x.scl = g.x.scl.bs,
                                 observer = dfunc$call.observer,
-                                point.transects = dfunc$point.transects, 
+                                pointSurvey = dfunc$pointSurvey, 
                                 warn = FALSE)
       
       
@@ -329,8 +329,8 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
         if (esw.bs <= dfunc$w.hi) {
          # Estimate abundance
          abund.bs <- estimateNhat(dfunc=dfunc.bs,
-                                   detection.data=new.detection.data,
-                                   site.data=new.site.data, area=area)
+                                   detectionData=new.detectionData,
+                                   siteData=new.siteData, area=area)
          
          n.hat.bs[i] <- abund.bs$n.hat
       
@@ -352,7 +352,7 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
     
       # # Store ESW if it converged
       # if (dfunc.bs$convergence == 0) {
-      #   if (dfunc$point.transects) {
+      #   if (dfunc$pointSurvey) {
       #     esw.bs <- effective.radius(dfunc.bs)
       #   } else {
       #     esw.bs <- ESW(dfunc.bs)
@@ -362,17 +362,17 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       #     
       #     # Calculate observed metrics
       #     # sample size
-      #     n.bs <- nrow(new.detection.data)
+      #     n.bs <- nrow(new.detectionData)
       #     
       #     # group sizes
-      #     avg.group.size.bs <- mean(new.detection.data$groupsize)
+      #     avg.group.size.bs <- mean(new.detectionData$groupsize)
       #     
       #     # Store observed metrics
       #     # Area covered in bootstrap survey
-      #     if(dfunc$point.transects){
+      #     if(dfunc$pointSurvey){
       #       a.bs <- pi * esw.bs^2 * n.bs  # area for point transects
       #     } else {
-      #       tot.trans.len.bs <- sum(new.site.data$length)
+      #       tot.trans.len.bs <- sum(new.siteData$length)
       #       a.bs <- 2 * esw.bs * tot.trans.len.bs  # area for line transects
       #     }
       #     
@@ -432,13 +432,13 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
   if (by.id) {
     
     # Starting df
-    # nhat.df <- site.data[, c("siteID", "length")]
-    nhat.df <- data.frame(siteID = site.data$siteID, nhat=NA)
+    # nhat.df <- siteData[, c("siteID", "length")]
+    nhat.df <- data.frame(siteID = siteData$siteID, nhat=NA)
     
     # Summarize raw count by transect
     # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
-    (detection.data <- detection.data[detection.data$dist >= dfunc$w.lo & detection.data$dist <= dfunc$w.hi, ])
-    rawcount <- data.frame(rawcount = tapply(detection.data$groupsize, detection.data$siteID, sum))
+    (detectionData <- detectionData[detectionData$dist >= dfunc$w.lo & detectionData$dist <= dfunc$w.hi, ])
+    rawcount <- data.frame(rawcount = tapply(detectionData$groupsize, detectionData$siteID, sum))
     rawcount <- cbind(siteID = rownames(rawcount), rawcount)
 
     # Merge and replace NA with 0 for 0-count transects
@@ -470,12 +470,12 @@ F.abund.estim <- function(dfunc, detection.data, site.data,
       
       site <- nhat.df[i, "siteID"]
       # Subset both input datasets to only that site
-      dd <- detection.data[detection.data$siteID == site, ]
-      sd <- site.data[site.data$siteID == site, ]
+      dd <- detectionData[detectionData$siteID == site, ]
+      sd <- siteData[siteData$siteID == site, ]
       ad <- area # (jdc), placeholder for now, what would the appropriate area be?
       
       # Estimate abundance
-      nhat.df[i, "nhat"] <- estimateNhat(dfunc=dfunc, detection.data=dd, site.data=sd, area=ad)$n.hat
+      nhat.df[i, "nhat"] <- estimateNhat(dfunc=dfunc, detectionData=dd, siteData=sd, area=ad)$n.hat
       
     }
     

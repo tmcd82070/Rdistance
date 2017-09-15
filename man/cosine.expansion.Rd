@@ -42,8 +42,8 @@ set.seed(33328)
   cos.expn <- cosine.expansion(x, 5)
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
-  of user defined likelihoods in \code{\link{F.dfunc.estim}}.
+\code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
+  of user defined likelihoods in \code{\link{dfuncEstim}}.
 }
 \author{
 Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}

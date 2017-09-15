@@ -31,10 +31,10 @@ distance sampling data collected by surveying line transects or point
 transects.  They also allow the user to step through the tutorials described
 in the package vignettes.  Only the detection data is needed to fit a
 detection function (if there are no covariates in the detection function;
-see \code{\link{F.dfunc.estim}}), but both detection and
+see \code{\link{dfuncEstim}}), but both detection and
 the additional site data are needed to estimate abundance (or to include
 site-level covariates in the detection function; see
-\code{\link{F.abund.estim}}).
+\code{\link{abundEstim}}).
 }
 \details{
 Line transect (sparrow) data come from 72 transects, each 500 meters long,

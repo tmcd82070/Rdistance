@@ -9,7 +9,7 @@ F.maximize.g(fit, covars = NULL)
 \arguments{
 \item{covars}{Covariate values to calculate maximum for.}
 
-\item{x}{An estimated 'dfunc' object produced by \code{F.dfunc.estim}.}
+\item{x}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
 }
 \value{
 The value of x that maximizes g(x) in \code{fit}.
@@ -23,14 +23,14 @@ Find the x coordinate that maximizes g(x).
 set.seed(22223333)
 x <- rgamma(100, 10, 1)
 
-fit <- F.dfunc.estim( x, likelihood="Gamma", x.scl="max" )
+fit <- dfuncEstim( x, likelihood="Gamma", x.scl="max" )
 
 F.maximize.g( fit )  # should be near 10.
 fit$x.scl            # same thing
 }
 }
 \seealso{
-\code{\link{F.dfunc.estim}}
+\code{\link{dfuncEstim}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

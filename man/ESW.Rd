@@ -9,7 +9,7 @@ ESW(obj, covars = NULL)
 \arguments{
 \item{obj}{An estimated detection function object.  An estimated detection
 function object has class 'dfunc', and is usually produced by a call to 
-\code{F.dfunc.estim}. The estimated detection function may optionally contain 
+\code{dfuncEstim}. The estimated detection function may optionally contain 
 a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
 is assumed.}
 
@@ -59,7 +59,7 @@ The effective strip width (ESW) of a distance function is its integral.
 data(sparrow.detections)
 
 # Fit detection function to perpendicular, off-transect distances
-dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 
 # Compute effective strip width (ESW)
 ESW(dfunc)
@@ -68,7 +68,7 @@ ESW(dfunc)
 Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 }
 \seealso{
-\code{\link{F.dfunc.estim}} \code{\link{EDR}}
+\code{\link{dfuncEstim}} \code{\link{EDR}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

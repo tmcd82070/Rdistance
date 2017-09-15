@@ -39,8 +39,8 @@ set.seed(883839)
   simp.expn <- simple.expansion(x, 4)
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{cosine.expansion}}, \code{\link{hermite.expansion}}, and the discussion 
-  of user defined likelihoods in \code{\link{F.dfunc.estim}}.
+\code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{hermite.expansion}}, and the discussion 
+  of user defined likelihoods in \code{\link{dfuncEstim}}.
 }
 \author{
 Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}

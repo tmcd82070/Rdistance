@@ -9,7 +9,7 @@ EDR(obj)
 \arguments{
 \item{obj}{An estimated detection function object.  An estimated detection
 function object has class 'dfunc', and is usually produced by a call to 
-\code{F.dfunc.estim}. The estimated detection function may optionally contain 
+\code{dfuncEstim}. The estimated detection function may optionally contain 
 a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
 is assumed.}
 }
@@ -26,7 +26,7 @@ The point-transect equivalent to
 Effective Strip Width (ESW).
 }
 \seealso{
-\code{\link{F.dfunc.estim}} \code{\link{ESW}}
+\code{\link{dfuncEstim}} \code{\link{ESW}}
 }
 \author{
 Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}

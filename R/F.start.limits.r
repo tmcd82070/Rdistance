@@ -6,7 +6,7 @@
 #'   all likelihoods and expansion terms.  This function is called by 
 #'   other routines in \code{Rdistance}, and is not intended to 
 #'   be called by the user.
-#' @usage F.start.limits(like, expan, w.lo, w.hi, dist, covars = NULL, point.transects = FALSE)
+#' @usage F.start.limits(like, expan, w.lo, w.hi, dist, covars = NULL, pointSurvey = FALSE)
 #' @param like String specifying the likelihood for the distance function.  Possible values are 
 #'   "hazrate" for hazard rate likelihood, "halfnorm" for the half 
 #'   normal likelihood, "uniform" for the uniform likelihood, 
@@ -17,7 +17,7 @@
 #' @param w.hi Upper or right-truncation limit of the distances. This is the maximum off-transect distance that could be observed.
 #' @param dist The vector of observed off-transect distances being analyzed.  This vector is only required for \code{like} = "Gamma" and "halfnorm".
 #' @param covars Matrix of covariate values.
-#' @param point.transects Boolean. TRUE if point transect data, FALSE if line transect data.
+#' @param pointSurvey Boolean. TRUE if point transect data, FALSE if line transect data.
 #' @details The number of parameters to be fitted is 
 #'   \code{expan + 1 + 1*(like \%in\% c("hazrate", "uniform"))}.
 #'   This is the length of all vectors returned in the output list.
@@ -28,7 +28,7 @@
 #'   \item{names}{Vector of names for the likelihood parameters and expansion terms.}
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}}
+#' @seealso \code{\link{dfuncEstim}}
 #' @examples F.start.limits( "uniform", 0, 0, 1000 )
 #'   F.start.limits( "uniform", 1, 0, 1000 )
 #'   F.start.limits( "uniform", 2, 0, 1000 )
@@ -53,7 +53,7 @@
 #' @keywords models
 #' @export
 
-F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, point.transects = FALSE ){
+F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, pointSurvey = FALSE ){
   #
   #   Establish starting value for parameters, and limits passed to the optimizer
   #
@@ -90,7 +90,7 @@ F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, point.
       start <- c(log(sqrt(sum( (dist - w.lo)^2 )/length(dist))), rep(0, np - 1))
       low <- c(rep(-Inf, np))
     }
-    else if(point.transects){
+    else if(pointSurvey){
       start <- c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(0, np - 1))
       low <- c(0, rep(-Inf, np - 1 ))
     }

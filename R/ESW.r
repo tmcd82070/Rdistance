@@ -5,7 +5,7 @@
 #' @usage ESW(obj, covars = NULL)
 #' @param obj An estimated detection function object.  An estimated detection
 #'   function object has class 'dfunc', and is usually produced by a call to 
-#'   \code{F.dfunc.estim}. The estimated detection function may optionally contain 
+#'   \code{dfuncEstim}. The estimated detection function may optionally contain 
 #'   a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
 #'   is assumed.
 #' @param covars Covariate values for which to calculate ESW.
@@ -43,12 +43,12 @@
 #' @return A scalar equal to the area under the detection function from \code{obj$w.lo} to \code{obj$w.hi}.
 #' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#' @seealso \code{\link{F.dfunc.estim}} \code{\link{EDR}}
+#' @seealso \code{\link{dfuncEstim}} \code{\link{EDR}}
 #' @examples # Load the example dataset of sparrow detections from package
 #' data(sparrow.detections)
 #' 
 #' # Fit detection function to perpendicular, off-transect distances
-#' dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+#' dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 #' 
 #' # Compute effective strip width (ESW)
 #' ESW(dfunc)
@@ -59,7 +59,7 @@ ESW <- function( obj, covars = NULL ){
   
   # Issue error if the input detection function was fit to point-transect data
 
-  if(obj$point.transects) stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
+  if(obj$pointSurvey) stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   
   
 #
@@ -89,7 +89,7 @@ if( (obj$like.form == "hazrate") & (obj$x.scl == obj$w.lo) ){
     x <- seq( obj$w.lo, obj$w.hi, length=seq.length)
 }
 
-y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = covars, expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
+y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = covars, expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi, pointSurvey = obj$pointSurvey )
 
 
 if( is.null( obj$g.x.scl ) ){
@@ -101,7 +101,7 @@ if( is.null( obj$g.x.scl ) ){
     g.at.x0 <- obj$g.x.scl
     x0 <- obj$x.scl
 }
-f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, covars = covars, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi, point.transects = obj$point.transects )
+f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, covars = covars, expansions=obj$expansions, w.lo=obj$w.lo, w.hi=obj$w.hi, pointSurvey = obj$pointSurvey )
 
 y <- y * g.at.x0 / f.at.x0
 

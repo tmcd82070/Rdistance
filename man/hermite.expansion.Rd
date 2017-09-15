@@ -40,8 +40,8 @@ set.seed(83828233)
   herm.expn <- hermite.expansion( x, 5 )
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{cosine.expansion}}, \code{\link{simple.expansion}}, and the discussion 
-  of user defined likelihoods in \code{\link{F.dfunc.estim}}.
+\code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{simple.expansion}}, and the discussion 
+  of user defined likelihoods in \code{\link{dfuncEstim}}.
 }
 \author{
 Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}

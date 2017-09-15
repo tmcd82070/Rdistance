@@ -2,7 +2,7 @@
 #' @aliases Gamma.like
 #' @title Gamma likelihood for distance analyses
 #' @description Computes the gamma likelihood, scaled appropriately, for use as a likelihood in estimating a distance function.
-#' @usage Gamma.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE, point.transects = F, ...)
+#' @usage Gamma.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE, pointSurvey = F, ...)
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
 #'   (i.e., \code{expansions = 0}), the distance likelihoods contain one or two canonical parameters (see Details). If one or more expansions are called for,
 #'   coefficients for the expansion terms follow coefficients for the canonical parameters.  If \code{p} is the number of canonical parameters, coefficients
@@ -14,14 +14,14 @@
 #' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
 #'   Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
 #' @param series A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-#'   \code{\link{F.dfunc.estim}} about defining other series.
+#'   \code{\link{dfuncEstim}} about defining other series.
 #' @param expansions A scalar specifying the number of terms in \code{series}. Depending on the series, this could be 0 through 5.
 #'   The default of 0 equates to no expansion terms of any type.
 #' @param scale Logical scaler indicating whether or not to scale the likelihood so it integrates to 1. This parameter is used to stop recursion in other functions.
 #'   If \code{scale} equals TRUE, a numerical integration routine (\code{\link{integration.constant}}) is called, which in turn calls this likelihood function again
 #'   with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
 #'   constant of integration.  All user defined likelihoods must have and use this parameter.
-#' @param point.transects Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
+#' @param pointSurvey Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
 #' @details This function utilizes the built-in R function \code{dgamma} to evaluate the gamma density function.  Using the parameterization of \code{dgamma}, 
 #'   the gamma shape parameter is \code{a[1]} while the gamma scale parameter is \code{(a[2]/gamma(r)) * (((r - 1)/exp(1))^(r - 1))}. Currently, this function 
 #'   implements a non-covariate version of the gamma detection function used by Becker and Quang (2009).  In future, linear equations will relate covariate values 
@@ -34,7 +34,7 @@
 #'   Journal of Agricultural, Biological, and Environmental Statistics 14(2):207-223.
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, \code{\link{uniform.like}}, \code{\link{negexp.like}}
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, \code{\link{uniform.like}}, \code{\link{negexp.like}}
 #' @examples \dontrun{
 #' set.seed(238642)
 #' x <- seq( 0, 100, length=100)
@@ -53,13 +53,13 @@
 #' lam <- 10
 #' b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
 #' x <- rgamma(1000, shape=r, scale=b*lam)
-#' dfunc <- F.dfunc.estim( x, likelihood="Gamma" )
+#' dfunc <- dfuncEstim( x, likelihood="Gamma" )
 #' plot(dfunc)
 #' }
 #' @keywords models
 #' @export
 
-Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE, point.transects = F, ...){
+Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE, pointSurvey = F, ...){
 #
 #   Compute gamma likelihood.
 #
@@ -130,7 +130,7 @@ Gamma.like <- function(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="c
     like <- dgamma( dist, shape=r, scale=lam*b )
 
     if( scale ){
-         like = like / integration.constant(dist, Gamma.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a, series=series, expansions=expansions, point.transects = point.transects, ...)
+         like = like / integration.constant(dist, Gamma.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a, series=series, expansions=expansions, pointSurvey = pointSurvey, ...)
     }
 
     like

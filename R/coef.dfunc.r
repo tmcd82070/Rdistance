@@ -6,7 +6,7 @@
 #' @usage \method{coef}{dfunc}(object, \dots)
 #' @param object An estimated distance function object.  An estimated distance 
 #'   function object has class 'dfunc', and is usually produced by a call to 
-#'   \code{F.dfunc.estim}.
+#'   \code{dfuncEstim}.
 #' @param \dots Required for compatability with the general \code{coef} method.  Any 
 #'   extra arguments to this function are ignored.
 #' @details This is an extractor function for the parameters of an estimated detection function. 
@@ -14,12 +14,12 @@
 #' @return The estimated parameter vector for the detection function. Length and interpretation of values 
 #'   in this vector vary depending on the form of the detection function and expansion terms.
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#' @seealso \code{\link{AIC}}, \code{\link{F.dfunc.estim}}
+#' @seealso \code{\link{AIC}}, \code{\link{dfuncEstim}}
 #' @examples # Load the example dataset of sparrow detections from package
 #'   data(sparrow.detections)
 #'   
 #'   # Fit detection function to perpendicular, off-transect distances
-#'   dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+#'   dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 #'   
 #'   # Extract the coefficient(s)
 #'   coef(dfunc)

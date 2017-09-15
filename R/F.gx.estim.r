@@ -3,7 +3,7 @@
 #' @title F.gx.estim - Estimate g(0) or g(x).
 #' @description Estimate g(0) or g(x) for a specified distance function.
 #' @usage F.gx.estim(fit, x.scl=NULL, g.x.scl=NULL, observer=NULL)
-#' @param fit An estimated \code{dfunc} object.  See \code{F.dfunc.estim}.
+#' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
 #' @param x.scl The x coordinate (a distance) at which to scale the distance funciton to \code{g.x.scl}.  See Details.
 #' @param g.x.scl Height of the distance function at coordinate x. i.e., the distance function 
 #'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. See Details.
@@ -42,9 +42,9 @@
 #'   
 #'   When \code{x.scl}, \code{g.x.scl}, or \code{observer} are NULL, the routine will look for \code{$call.x.scl}, or \code{$call.g.x.scl}, or 
 #'   \code{$call.observer} components of the \code{fit} object.  This means the 3 parameters to be specified 
-#'   during the original call to \code{F.dfunc.estim}. Later, different values can be specified in a call to \code{F.gx.estim} 
+#'   during the original call to \code{dfuncEstim}. Later, different values can be specified in a call to \code{F.gx.estim} 
 #'   without having to re-estimate the distance function. Because of this feature, the default values of \code{x.scl} = 0 and 
-#'   \code{g.x.scl} = 1 and \code{observer} = "both" are specified in the call to \code{F.dfunc.estim}. 
+#'   \code{g.x.scl} = 1 and \code{observer} = "both" are specified in the call to \code{dfuncEstim}. 
 #'   
 #'   Structure of the double observer data frame:  When \code{g.x.scl} is a data frame, it is assumed to contain 
 #'   the components \code{$obsby.1} and \code{$obsby.2} (no flexibility on names). 
@@ -54,15 +54,15 @@
 #'   \item{x.scl}{The value of x (distance) at which g() is evaluated.  }
 #'   \item{comp2 }{The estimated value of g() when evaluated at \code{x.scl}.  }
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#' @seealso \code{\link{F.dfunc.estim}}
+#' @seealso \code{\link{dfuncEstim}}
 #' @examples \dontrun{
 #'   # Non-double observer example
 #'   set.seed(555574)
 #'   x <- rnorm(1000) * 100
 #'   x <- x[ 0 < x & x < 100 ]
-#'   un.dfunc <- F.dfunc.estim( x, likelihood="uniform", w.hi = 100)    
+#'   un.dfunc <- dfuncEstim( x, likelihood="uniform", w.hi = 100)    
 #'   F.gx.estim(un.dfunc)
-#'   gam.dfunc <- F.dfunc.estim( x, likelihood="Gamma", w.hi = 100)    
+#'   gam.dfunc <- dfuncEstim( x, likelihood="Gamma", w.hi = 100)    
 #'   F.gx.estim(gam.dfunc)
 #'   
 #'   # Double observer example

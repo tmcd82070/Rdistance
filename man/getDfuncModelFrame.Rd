@@ -7,7 +7,7 @@
 getDfuncModelFrame(formula, data)
 }
 \arguments{
-\item{formula}{A dfunc formula object.  See F.dfunc.estim}
+\item{formula}{A dfunc formula object.  See \code{dfuncEstim}.}
 
 \item{data}{The data frame from which variables in formula (potentially) come.}
 }
@@ -21,9 +21,9 @@ data set. This routine is intended to only be called from within other Rdistance
 functions.
 }
 \details{
-This routine is needed to get the scoping correct in \code{F.dfunc.estim}. 
-In \code{F.dfunc.estim}, we first merge the detection and site data frames, then 
-call this routine.  Trying to do the model extraction directly in F.dfunc.estim
+This routine is needed to get the scoping correct in \code{dfuncEstim}. 
+In \code{dfuncEstim}, we first merge the detection and site data frames, then 
+call this routine.  Trying to do the model extraction directly in \code{dfuncEstim}
 did not work because of some vageries of scoping the Trent does not understand.
 }
 \author{

@@ -5,8 +5,8 @@
 \title{Half-normal likelihood function for distance analyses.}
 \usage{
 halfnorm.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
-  series = "cosine", expansions = 0, scale = TRUE,
-  point.transects = FALSE, ...)
+  series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE,
+  ...)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and 
@@ -38,7 +38,7 @@ in the output.}
 
 \item{series}{A string specifying the type of expansion to use.
 Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-  \code{\link{F.dfunc.estim}} about defining other series.}
+  \code{\link{dfuncEstim}} about defining other series.}
 
 \item{expansions}{A scalar specifying the number of terms 
 in \code{series}. Depending on the series, this could be 0 through 5.
@@ -55,7 +55,7 @@ the likelihood and when its value is being used to compute the
 constant of integration.  All user defined likelihoods must have 
 and use this parameter.}
 
-\item{point.transects}{Boolean. TRUE if distances in \code{dist} are 
+\item{pointSurvey}{Boolean. TRUE if distances in \code{dist} are 
 radial from point 
 transects, FALSE if distances are perpendicular off-transect distances.}
 }
@@ -93,7 +93,7 @@ will occur between 0 and 2\emph{a}.
   {f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 }
 \seealso{
-\code{\link{F.dfunc.estim}},
+\code{\link{dfuncEstim}},
          \code{\link{hazrate.like}},
          \code{\link{uniform.like}},
          \code{\link{negexp.like}},

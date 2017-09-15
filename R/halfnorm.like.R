@@ -35,7 +35,7 @@
 #' 
 #' @param series A string specifying the type of expansion to use.  
 #' Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-#'   \code{\link{F.dfunc.estim}} about defining other series.
+#'   \code{\link{dfuncEstim}} about defining other series.
 #'   
 #' @param expansions A scalar specifying the number of terms 
 #' in \code{series}. Depending on the series, this could be 0 through 5.
@@ -52,7 +52,7 @@
 #' constant of integration.  All user defined likelihoods must have 
 #' and use this parameter.
 #' 
-#' @param point.transects Boolean. TRUE if distances in \code{dist} are 
+#' @param pointSurvey Boolean. TRUE if distances in \code{dist} are 
 #' radial from point 
 #' transects, FALSE if distances are perpendicular off-transect distances.
 #' 
@@ -85,7 +85,7 @@
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #'         
-#' @seealso \code{\link{F.dfunc.estim}},
+#' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{uniform.like}},
 #'          \code{\link{negexp.like}},
@@ -95,7 +95,7 @@
 
 halfnorm.like <- function(a, dist, covars = NULL, w.lo = 0, 
      w.hi = max(dist), series = "cosine", expansions = 0, 
-     scale = TRUE, point.transects = FALSE, ...){
+     scale = TRUE, pointSurvey = FALSE, ...){
 
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
@@ -143,7 +143,7 @@ halfnorm.like <- function(a, dist, covars = NULL, w.lo = 0,
       dfunc = dfunc / integration.constant(dist, halfnorm.like, 
               covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,
               series=series, expansions=expansions, 
-              point.transects = point.transects, ...)   # scales underlying density to integrate to 1.0
+              pointSurvey = pointSurvey, ...)   # scales underlying density to integrate to 1.0
     
     
     #df2 <- dfunc[ order(dist) ]

@@ -45,7 +45,7 @@
 #' could be 0 through 5. The default of 0 equates to no 
 #' expansion terms of any type.
 #' 
-#' @param point.transects Boolean. TRUE if \code{dist} is point 
+#' @param pointSurvey Boolean. TRUE if \code{dist} is point 
 #' transect data, FALSE if line transect data.
 #' 
 #' @param for.optim Boolean. If TRUE, values are multpilied 
@@ -58,18 +58,18 @@
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #'         
 #' @seealso See \code{\link{uniform.like}} for definitions of 
-#' all the likelihoods; \code{\link{F.dfunc.estim}}
+#' all the likelihoods; \code{\link{dfuncEstim}}
 #' 
 #' @keywords models
 #' @export
 
-F.nLL <- function(a, dist, covars = NULL, like, w.lo=0, w.hi=max(dist), series, expansions=0, point.transects, for.optim = F){
+F.nLL <- function(a, dist, covars = NULL, like, w.lo=0, w.hi=max(dist), series, expansions=0, pointSurvey, for.optim = F){
 
     f.like <- match.fun(paste( like, ".like", sep=""))
    
     L <- f.like( a = a, dist = dist, covars = covars, w.lo = w.lo, w.hi = w.hi, 
                  series = series, expansions = expansions, 
-                 point.transects = point.transects)
+                 pointSurvey = pointSurvey)
     
     if(for.optim){
       L <- L*10^9

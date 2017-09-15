@@ -23,8 +23,8 @@
 #'   up to \code{expansions}.
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
-#'   of user defined likelihoods in \code{\link{F.dfunc.estim}}.
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
+#'   of user defined likelihoods in \code{\link{dfuncEstim}}.
 #' @examples set.seed(33328)
 #'   x <- rnorm(1000) * 100
 #'   x <- x[ 0 < x & x < 100 ]

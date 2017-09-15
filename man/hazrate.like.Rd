@@ -5,8 +5,8 @@
 \title{Hazard rate likelihood function for distance analyses.}
 \usage{
 hazrate.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
-  series = "cosine", expansions = 0, scale = TRUE,
-  point.transects = FALSE, ...)
+  series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE,
+  ...)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
@@ -25,7 +25,7 @@ Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and the
 Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.}
 
 \item{series}{A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-\code{\link{F.dfunc.estim}} about defining other series.}
+\code{\link{dfuncEstim}} about defining other series.}
 
 \item{expansions}{A scalar specifying the number of terms in \code{series}. Depending on the series, this could be 0 through 5.
 The default of 0 equates to no expansion terms of any type.}
@@ -35,7 +35,7 @@ If \code{scale} equals TRUE, a numerical integration routine (\code{\link{integr
 with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
 constant of integration.  All user defined likelihoods must have and use this parameter.}
 
-\item{point.transects}{Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.}
+\item{pointSurvey}{Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.}
 }
 \value{
 A numeric vector the same length and order as \code{dist} containing the likelihood contribution for corresponding distances in \code{dist}. 
@@ -59,7 +59,7 @@ The hazard rate likelihood is
   {f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 }
 \seealso{
-\code{\link{F.dfunc.estim}},
+\code{\link{dfuncEstim}},
          \code{\link{halfnorm.like}},
          \code{\link{uniform.like}},
          \code{\link{negexp.like}},

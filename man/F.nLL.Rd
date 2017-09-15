@@ -6,7 +6,7 @@
 a set of distance values.}
 \usage{
 F.nLL(a, dist, covars = NULL, like, w.lo = 0, w.hi = max(dist), series,
-  expansions = 0, point.transects, for.optim = F)
+  expansions = 0, pointSurvey, for.optim = F)
 }
 \arguments{
 \item{a}{A vector of parameter values for
@@ -46,7 +46,7 @@ in \code{series} to compute. Depending on the series, this
 could be 0 through 5. The default of 0 equates to no 
 expansion terms of any type.}
 
-\item{point.transects}{Boolean. TRUE if \code{dist} is point 
+\item{pointSurvey}{Boolean. TRUE if \code{dist} is point 
 transect data, FALSE if line transect data.}
 
 \item{for.optim}{Boolean. If TRUE, values are multpilied 
@@ -63,7 +63,7 @@ a vector of observed distances given a specified likelihood,
 }
 \seealso{
 See \code{\link{uniform.like}} for definitions of 
-all the likelihoods; \code{\link{F.dfunc.estim}}
+all the likelihoods; \code{\link{dfuncEstim}}
 }
 \author{
 Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}

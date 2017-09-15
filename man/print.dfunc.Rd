@@ -7,7 +7,7 @@
 \method{print}{dfunc}(x, ...)
 }
 \arguments{
-\item{x}{An estimated distance function resulting from a call to \code{F.dfunc.estim}.}
+\item{x}{An estimated distance function resulting from a call to \code{dfuncEstim}.}
 
 \item{\dots}{Included for compatability with other print methods.  Ignored here.}
 }
@@ -15,7 +15,7 @@
 The input value of \code{obj} is invisibly returned.
 }
 \description{
-Print method for distance functions produced by F.dfunc.estim, that are of class \code{dfund}.
+Print method for distance functions produced by dfuncEstim, that are of class \code{dfunc}.
 }
 \details{
 The call, coefficients of the distanced function, whether the estimation converged, 
@@ -37,13 +37,13 @@ data(sparrow.detections)
 data(sparrow.transects)
 
 # Fit detection function to perpendicular, off-transect distances
-dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 
 # Print the output                 
 print(dfunc)
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
+\code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
 }
 \author{
 Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}

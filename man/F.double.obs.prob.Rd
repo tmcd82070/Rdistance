@@ -47,7 +47,7 @@ When \code{observer} = "both", the observers are assumed to be independent. In t
   F.double.obs.prob( obsrv, observer="both" )
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{F.abund.estim}}
+\code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

@@ -22,8 +22,8 @@
 #'   Column 1 is the first expansion term of \code{x}, column 2 is the second expansion term of \code{x}, and so on up to \code{expansions}.
 #' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{cosine.expansion}}, \code{\link{simple.expansion}}, and the discussion 
-#'   of user defined likelihoods in \code{\link{F.dfunc.estim}}.
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{simple.expansion}}, and the discussion 
+#'   of user defined likelihoods in \code{\link{dfuncEstim}}.
 #' @examples set.seed(83828233)
 #'   x <- rnorm(1000) * 100
 #'   x <- x[ 0 < x & x < 100 ]

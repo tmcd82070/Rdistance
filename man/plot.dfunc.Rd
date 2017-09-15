@@ -7,7 +7,7 @@
 \method{plot}{dfunc}(x, include.zero = FALSE, nbins="Sturges", newdata = NULL, legend = TRUE, ...)
 }
 \arguments{
-\item{x}{An estimated distance function resulting from a call to \code{F.dfunc.estim}.}
+\item{x}{An estimated distance function resulting from a call to \code{dfuncEstim}.}
 
 \item{include.zero}{Boolean value specifying whether to include 0 in the plot.  A value of TRUE
 will include 0 on the left hand end of the x-axis regardless of the range of 
@@ -60,12 +60,12 @@ A scaled histogram is plotted, and the estimated distance function is plotted ov
 \dontrun{
   set.seed(87654)
   x <- rgamma(1000, 2, 2) 
-  fit <- F.dfunc.estim(x, likelihood="Gamma")
+  fit <- dfuncEstim(x, likelihood="Gamma")
   plot(fit)  
   }
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{print.dfunc}}, \code{\link{print.abund}}
+\code{\link{dfuncEstim}}, \code{\link{print.dfunc}}, \code{\link{print.abund}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

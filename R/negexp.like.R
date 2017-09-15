@@ -1,7 +1,7 @@
 #' @name nexexp.like
 #' @title Negative exponential likelihood function for distance analyses.
 #' @description This function computes likelihood contributions for off-transect sighting distances, scaled appropriately, for use as a distance likelihood.
-#' @usage negexp.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, point.transects = F, ...)
+#' @usage negexp.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, pointSurvey = F, ...)
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
 #'   (i.e., \code{expansions = 0}), the distance likelihoods contain one or two canonical parameters (see Details). If one or more expansions are called for,
 #'   coefficients for the expansion terms follow coefficients for the canonical parameters.  If \code{p} is the number of canonical parameters, coefficients
@@ -13,14 +13,14 @@
 #' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
 #'   Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
 #' @param series A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-#'   \code{\link{F.dfunc.estim}} about defining other series.
+#'   \code{\link{dfuncEstim}} about defining other series.
 #' @param expansions A scalar specifying the number of terms in \code{series}. Depending on the series, this could be 0 through 5.
 #'   The default of 0 equates to no expansion terms of any type.
 #' @param scale Logical scaler indicating whether or not to scale the likelihood so it integrates to 1. This parameter is used to stop recursion in other functions.
 #'   If \code{scale} equals TRUE, a numerical integration routine (\code{\link{integration.constant}}) is called, which in turn calls this likelihood function again
 #'   with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
 #'   constant of integration.  All user defined likelihoods must have and use this parameter.
-#' @param point.transects Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
+#' @param pointSurvey Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
 #' @details The negative exponential likelihood is \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is a slope parameter to be estimated. 
 #'   \bold{Expansion Terms}: If \code{expansions} = k (k > 0), the expansion function specified by \code{series} is called (see for example
 #'   \code{\link{cosine.expansion}}). Assuming \eqn{h_{ij}(x)}{h_ij(x)} is the \eqn{j^{th}}{j-th} expansion term for the \eqn{i^{th}}{i-th} distance and that 
@@ -34,7 +34,7 @@
 #'   arbitrary.
 #' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}},
+#' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{uniform.like}},
 #'          \code{\link{hazrate.like}},
@@ -42,7 +42,7 @@
 #' @keywords models
 #' @export
 
-negexp.like <- function (a, dist, w.lo = 0, covars = NULL, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = F, ...){
+negexp.like <- function (a, dist, w.lo = 0, covars = NULL, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, pointSurvey = F, ...){
 #
 #   Compute negative exponential likelihood
 #
@@ -126,7 +126,7 @@ negexp.like <- function (a, dist, w.lo = 0, covars = NULL, w.hi = max(dist), ser
     }
 
     if( scale ){
-        dfunc = dfunc / integration.constant(dist, negexp.like, covars = covars, w.lo=w.lo,w.hi=w.hi,a=a,series=series,expansions=expansions, point.transects = point.transects, ...)  # makes integral from w.lo to w.hi = 1.0
+        dfunc = dfunc / integration.constant(dist, negexp.like, covars = covars, w.lo=w.lo,w.hi=w.hi,a=a,series=series,expansions=expansions, pointSurvey = pointSurvey, ...)  # makes integral from w.lo to w.hi = 1.0
     }
     
     c(dfunc)

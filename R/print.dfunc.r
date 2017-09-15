@@ -2,9 +2,9 @@
 #' 
 #' @title Print a distance function object.
 #' 
-#' @description Print method for distance functions produced by F.dfunc.estim, that are of class \code{dfund}.
+#' @description Print method for distance functions produced by dfuncEstim, that are of class \code{dfunc}.
 #' 
-#' @param x An estimated distance function resulting from a call to \code{F.dfunc.estim}.
+#' @param x An estimated distance function resulting from a call to \code{dfuncEstim}.
 #' 
 #' @param \dots Included for compatability with other print methods.  Ignored here.
 #' 
@@ -23,13 +23,13 @@
 #' @return The input value of \code{obj} is invisibly returned.
 #' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
 #' @examples # Load the example datasets of sparrow detections and transects from package
 #' data(sparrow.detections)
 #' data(sparrow.transects)
 #' 
 #' # Fit detection function to perpendicular, off-transect distances
-#' dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+#' dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 #' 
 #' # Print the output                 
 #' print(dfunc)
@@ -73,7 +73,7 @@ print.dfunc <- function( x, ... ){
     cat(paste("Function:", casefold(x$like.form, upper=TRUE), mess, "\n") )
 
     cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
-    if(x$point.transects){
+    if(x$pointSurvey){
       cat(paste("Effective detection radius (EDR):", format(effectiveDistance(x)), "\n"))
     } else {
       cat(paste("Effective strip width (ESW):", format(effectiveDistance(x)), "\n"))

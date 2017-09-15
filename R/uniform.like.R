@@ -1,7 +1,7 @@
 #' @name uniform.like
 #' @title Uniform likelihood function for distance analyses.
 #' @description This function computes likelihood contributions for off-transect sighting distances, scaled appropriately, for use as a distance likelihood.
-#' @usage uniform.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, point.transects = F, ...)
+#' @usage uniform.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, pointSurvey = F, ...)
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
 #'   (i.e., \code{expansions = 0}), the distance likelihoods contain one or two canonical parameters (see Details). If one or more expansions are called for,
 #'   coefficients for the expansion terms follow coefficients for the canonical parameters.  If \code{p} is the number of canonical parameters, coefficients
@@ -13,14 +13,14 @@
 #' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
 #'   Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
 #' @param series A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-#'   \code{\link{F.dfunc.estim}} about defining other series.
+#'   \code{\link{dfuncEstim}} about defining other series.
 #' @param expansions A scalar specifying the number of terms in \code{series}. Depending on the series, this could be 0 through 5.
 #'   The default of 0 equates to no expansion terms of any type.
 #' @param scale Logical scaler indicating whether or not to scale the likelihood so it integrates to 1. This parameter is used to stop recursion in other functions.
 #'   If \code{scale} equals TRUE, a numerical integration routine (\code{\link{integration.constant}}) is called, which in turn calls this likelihood function again
 #'   with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
 #'   constant of integration.  All user defined likelihoods must have and use this parameter.
-#' @param point.transects Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
+#' @param pointSurvey Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
 #' @details The uniform likelihood is not technically uniform, but can look similar to a uniform if the data warrant.  The uniform likelihood is actually the 
 #'   \emph{heavy side} or \emph{logistic} function of the form, \deqn{f(x|a,b) = 1 - \frac{1}{1 + \exp(-b(x-a))} = \frac{\exp( -b(x-a) )}{1 + exp( -b(x-a) )},}
 #'   {f(x|a,b) = 1 - 1 / (1 + exp(-b*(x-a))) = exp(-b*(x-a)) / (1 + exp(-b*(x-a))),} where \eqn{a} and \eqn{b} are the parameters to be estimated.  Parameter 
@@ -44,7 +44,7 @@
 #'   arbitrary.
 #' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}},
+#' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{negexp.like}},
@@ -52,7 +52,7 @@
 #' @keywords models
 #' @export
 
-uniform.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, point.transects = F, ...){
+uniform.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, pointSurvey = F, ...){
 #
 #   Compute the uniform likelihood, scaled appropriately, for all distance values in dist.
 #
@@ -135,7 +135,7 @@ uniform.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), ser
     }
 
     if( scale ){
-            dfunc = dfunc / integration.constant(dist, uniform.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions, point.transects = point.transects, ...)   # scales density so integrate from w.lo to w.hi is 1.0
+            dfunc = dfunc / integration.constant(dist, uniform.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions, pointSurvey = pointSurvey, ...)   # scales density so integrate from w.lo to w.hi is 1.0
     }
 
 #   df2 <- dfunc[ order(dist) ]

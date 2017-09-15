@@ -3,7 +3,7 @@
 #' @title Plot a distance function.
 #' @description Plot method for an estimated distance function. Estimated distance fnctions are of class 'dfunc'
 #' @usage \method{plot}{dfunc}(x, include.zero = FALSE, nbins="Sturges", newdata = NULL, legend = TRUE, ...)
-#' @param x An estimated distance function resulting from a call to \code{F.dfunc.estim}.
+#' @param x An estimated distance function resulting from a call to \code{dfuncEstim}.
 #' @param include.zero Boolean value specifying whether to include 0 in the plot.  A value of TRUE
 #'   will include 0 on the left hand end of the x-axis regardless of the range of 
 #'   distances.  A value of FALSE will plot only the range on input distanced.
@@ -41,11 +41,11 @@
 #'     a horizontal line at y-axis coordinate of 1.0, issue \code{abline(h=1/obj$yscl)}.  }
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{print.dfunc}}, \code{\link{print.abund}}
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{print.dfunc}}, \code{\link{print.abund}}
 #' @examples \dontrun{
 #'   set.seed(87654)
 #'   x <- rgamma(1000, 2, 2) 
-#'   fit <- F.dfunc.estim(x, likelihood="Gamma")
+#'   fit <- dfuncEstim(x, likelihood="Gamma")
 #'   plot(fit)  
 #'   }
 #' @keywords models
@@ -120,11 +120,11 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
       for(j in 1:length(x.seq)){
         temp.covars[[i]][j,] <- unname(newdata[[i]])
       }
-      y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+      y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
     }
   }
   else{
-    y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+    y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
   }
   
   if( include.zero & x$like.form == "hazrate" ){
@@ -142,7 +142,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
   }
   if(!is.null(x$covars)){
     for(i in 1:length(newdata)){
-      f.max <- F.maximize.g(x, t(temp.covars[[i]][1,]))  #like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+      f.max <- F.maximize.g(x, t(temp.covars[[i]][1,]))  #like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
       if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
         yscl <- 1.0
@@ -160,13 +160,13 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", newdata = NULL, 
     for(j in 1:length(x.seq)){
       mean.covars[j,] <- temp
     }
-    f.max <- F.maximize.g(x, t(mean.covars[1,]))#like( x$parameters, x0 - x$w.lo, covars = mean.covars, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+    f.max <- F.maximize.g(x, t(mean.covars[1,]))#like( x$parameters, x0 - x$w.lo, covars = mean.covars, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
     yscl <- g.at.x0 / f.max
     if(length(yscl > 1)){yscl <- yscl[1]}
     ybarhgts <- cnts$density * yscl
   }
   else{
-    f.max <- F.maximize.g(x, covars = NULL) #like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, point.transects = x$point.transects )
+    f.max <- F.maximize.g(x, covars = NULL) #like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
     if(any(is.na(f.max) | (f.max <= 0))){
       #   can happen when parameters at the border of parameter space
       yscl <- 1.0

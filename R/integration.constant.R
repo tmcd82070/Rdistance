@@ -35,7 +35,7 @@
 #' 
 #' @param expansions Number of expansions in \code{density}.
 #' 
-#' @param point.transects Boolean. TRUE if point transect data, 
+#' @param pointSurvey Boolean. TRUE if point transect data, 
 #' FALSE if line transect data.
 #' 
 #' @param \dots Additional parameters to the likelihood 
@@ -56,7 +56,7 @@
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
 #'         
-#' @seealso \code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
 #' 
 #' @examples 
 #' #   The following result should be approximately 75
@@ -74,7 +74,7 @@
 #' @export
 
 integration.constant <- function(dist, density, w.lo, w.hi, covars, a, 
-                                 expansions, point.transects, ...){
+                                 expansions, pointSurvey, ...){
 
   density = match.fun(density)
   seqx = seq(w.lo, w.hi, length=200)
@@ -86,7 +86,7 @@ integration.constant <- function(dist, density, w.lo, w.hi, covars, a,
     temp.scaler <- vector(length = nrow(unique.covars))
     scaler <- vector(length = nrow(covars), "numeric")
     
-    if(point.transects){
+    if(pointSurvey){
       for(i in 1:nrow(unique.covars)){
         for(j in 1:length(seqx)){
           temp.covars[j,] <- unique.covars[i,]
@@ -143,11 +143,11 @@ integration.constant <- function(dist, density, w.lo, w.hi, covars, a,
     df <- data.frame(unique.covars,temp.scaler)
     z <- merge(covars, df, by.x = names(as.data.frame(covars)), by.y = names(df[, names(df) != "temp.scaler"]), sort = F)
     scaler <- z$temp.scaler
-    if(point.transects){
+    if(pointSurvey){
       scaler <- scaler/dist
     }
   }
-  else if(point.transects){
+  else if(pointSurvey){
     seqy <- seqx * density( dist = seqx, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
     
     #   Trapazoid rule

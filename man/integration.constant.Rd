@@ -5,7 +5,7 @@
 \title{Compute the integration constant for distance density functions.}
 \usage{
 integration.constant(dist, density, w.lo, w.hi, covars, a, expansions,
-  point.transects, ...)
+  pointSurvey, ...)
 }
 \arguments{
 \item{dist}{Vector of detection distance values.}
@@ -36,7 +36,7 @@ value for perpendicular distances.}
 
 \item{expansions}{Number of expansions in \code{density}.}
 
-\item{point.transects}{Boolean. TRUE if point transect data, 
+\item{pointSurvey}{Boolean. TRUE if point transect data, 
 FALSE if line transect data.}
 
 \item{\dots}{Additional parameters to the likelihood 
@@ -74,7 +74,7 @@ print(int.y)
 
 }
 \seealso{
-\code{\link{F.dfunc.estim}}, \code{\link{halfnorm.like}}
+\code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

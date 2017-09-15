@@ -7,13 +7,13 @@
 #' @usage effectiveDistance(obj, covars = NULL)
 #' @param obj An estimated detection function object.  An estimated detection
 #'   function object has class 'dfunc', and is usually produced by a call to 
-#'   \code{F.dfunc.estim}. The estimated detection function may optionally contain 
+#'   \code{dfuncEstim}. The estimated detection function may optionally contain 
 #'   a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
 #'   is assumed.
 #' @param covars Covariate values for which to calculate ESW.
 #' @details Serves as a wrapper for \code{\link{ESW}} and \code{\link{EDR}}.
 #' @return A scalar equal to the area under the detection function from \code{obj$w.lo} to \code{obj$w.hi}.
-#' @seealso \code{\link{F.dfunc.estim}} \code{\link{ESW}} \code{\link{EDR}}
+#' @seealso \code{\link{dfuncEstim}} \code{\link{ESW}} \code{\link{EDR}}
 #' @keywords modeling
 #' @export
 
@@ -21,7 +21,7 @@ effectiveDistance <- function(obj, covars = NULL){
   
   # call ESW for line transects and EDR for point transects
 
-  if (obj$point.transects) {
+  if (obj$pointSurvey) {
     EDR(obj)
   } else {
     ESW(obj, covars)

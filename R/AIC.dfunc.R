@@ -5,7 +5,7 @@
 #' @usage \method{AIC}{dfunc}(object, \dots, k = 2, n=length(object$dist))
 #' @param object An estimated detection function object.  An estimated detection 
 #'   function object has class 'dfunc', and is usually produced by a call to 
-#'   \code{F.dfunc.estim}.
+#'   \code{dfuncEstim}.
 #' @param \dots Required for compatability with the general \code{AIC} method.  Any 
 #'   extra arguments to this function are ignored.
 #' @param k Scalar penalty to use in the computations.  See Details.
@@ -38,12 +38,12 @@
 #'   McQuarrie, A. D. R., and Tsai, C.-L., 1998. \emph{Regression and Time Series Model Selection.} 
 #'   World Scientific. ISBN 981023242X
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#' @seealso \code{\link{coef}}, \code{\link{F.dfunc.estim}}
+#' @seealso \code{\link{coef}}, \code{\link{dfuncEstim}}
 #' @examples # Load the example dataset of sparrow detections from package
 #'   data(sparrow.detections)
 #'   
 #'   # Fit detection function to perpendicular, off-transect distances
-#'   dfunc <- F.dfunc.estim(sparrow.detections, w.hi=150)
+#'   dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 #'   
 #'   # Compute fit statistics
 #'   AIC(dfunc)  # AICc
