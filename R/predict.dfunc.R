@@ -12,7 +12,15 @@
 #' type = "parameters" is implemented and returns 
 #' parameters of the likelihood function.  
 #' 
-#' @return A vector of predicted parameters or inflation factors.
+#' @return A matrix of predicted parameter for the distance function
+#' estimated in \code{dfunc}. The returned matrix has first dimension
+#' (nrow) equal to either the number of detection distanced 
+#' in \code{detectionData} or number of rows in \code{newdata}. 
+#' The returned matrix's second dimension (ncol) is \emph{p} where 
+#' \emph{p} is the number of canonical parameters in the likelihood 
+#' plus the number of expansion terms.  Without expansion terms, \emph{p} 
+#' is either 1 or 2 depending on the liklihood (e.g., \code{halfnorm} has 
+#' one parameter, \code{hazrate} has two). 
 #' 
 #' @author Trent McDonald
 #' 
