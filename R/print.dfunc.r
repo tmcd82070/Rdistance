@@ -73,10 +73,19 @@ print.dfunc <- function( x, ... ){
     cat(paste("Function:", casefold(x$like.form, upper=TRUE), mess, "\n") )
 
     cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
-    if(x$pointSurvey){
-      cat(paste("Effective detection radius (EDR):", format(effectiveDistance(x)), "\n"))
+    
+    if( is.null(x$covars) ){
+      if(x$pointSurvey){
+        cat(paste("Effective detection radius (EDR):", format(effectiveDistance(x)), "\n"))
+      } else {
+        cat(paste("Effective strip width (ESW):", format(effectiveDistance(x)), "\n"))
+      }
     } else {
-      cat(paste("Effective strip width (ESW):", format(effectiveDistance(x)), "\n"))
+      if(x$pointSurvey){
+        cat(paste("Mean effective detection radius (EDR):", format(mean(effectiveDistance(x))), "\n"))
+      } else {
+        cat(paste("Mean effective strip width (ESW):", format(mean(effectiveDistance(x))), "\n"))
+      }
     }
     
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
