@@ -1,14 +1,16 @@
-#' @name ESW
-#' @aliases ESW
 #' @title Effective Strip Width for estimated detection functions
-#' @description Computes effective strip width (ESW) for estimated detection functions.
-#' @usage ESW(obj, covars = NULL)
+#' 
+#' @description Computes effective strip width (ESW) for 
+#' estimated detection functions.
+#' 
 #' @param obj An estimated detection function object.  An estimated detection
 #'   function object has class 'dfunc', and is usually produced by a call to 
 #'   \code{dfuncEstim}. The estimated detection function may optionally contain 
 #'   a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
 #'   is assumed.
+#'   
 #' @param covars Covariate values for which to calculate ESW.
+#' 
 #' @details The effective strip width (ESW) of a distance function is its integral. 
 #'   That is, ESW is the area under the 
 #'   distance function from its left-truncation limit (\code{obj$w.lo}) to its 
