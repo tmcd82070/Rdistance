@@ -51,7 +51,7 @@
 #' value is being used to compute the constant of integration.  
 #' All user defined likelihoods must have and use this parameter.
 #' 
-#' @param point.transects Boolean. TRUE if \code{dist} is point 
+#' @param pointSurvey Boolean. TRUE if \code{dist} is point 
 #' transect data, FALSE if line transect data.
 #' 
 #' @details The uniform likelihood is not technically uniform. 
@@ -131,7 +131,7 @@
 uniform.like <- function(a, dist, covars = NULL, w.lo = 0, 
                          w.hi = max(dist), series = "cosine", 
                          expansions = 0, scale = TRUE, 
-                         point.transects = F, ...){
+                         pointSurvey = F, ...){
 
     #   A couple internal functions first.
     #   This is the heavy-side function.  Basically, a steep logistic. f is just heavi flipped over
