@@ -8,11 +8,9 @@
 #' @param newdata A data frame containing new values of 
 #' the covariates at which predictions are to be computed. 
 #' 
-#' @param type The type of predictions desired. Type = "parameters"
-#' predicts parameters of the likelihood function.  Type = "inflation"
-#' predicts the inflation factor for all observations.  Inflation 
-#' factors use likelihood parameters to compute effective sampling distances
-#' (ESW or ESR) and inverts them. 
+#' @param type The type of predictions desired. Currently, only 
+#' type = "parameters" is implemented and returns 
+#' parameters of the likelihood function.  
 #' 
 #' @return A vector of predicted parameters or inflation factors.
 #' 
@@ -21,9 +19,17 @@
 #' @export
 #' 
 #' 
+
+# Extra Roxygen comments when we get around implmenting other types of
+# predictions 
+# Type = "inflation" predicts the inflation factor for all
+# observations.  Inflation factors use likelihood parameters to compute
+# effective sampling distances (ESW or ESR) and inverts them.
+
+
  
 predict.dfunc <- function(object, newdata, 
-          type = c("parameters", "inflation"), ...) 
+          type = c("parameters"), ...) 
 {
   if (!inherits(object, "dfunc")) 
     stop("object is not a dfunc")
@@ -62,10 +68,11 @@ predict.dfunc <- function(object, newdata,
 
   dimnames(params)[[2]] <- likeParamNames(object$like.form)
   
-  type <- match.arg(type)
-  if(type == "inflation"){
-    params <- effectiveDistance()
-  }
+  # Implement different types of predictions here. 
+  # type <- match.arg(type)
+  # if(type == "inflation"){
+  #   params <- effectiveDistance()
+  # }
 
   params
 }
