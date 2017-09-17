@@ -48,13 +48,13 @@
 # ?Rdistance
 # 
 # # View help documentation for key Rdistance functions
-# ?F.dfunc.estim
-# ?F.abund.estim
+# ?dfuncEstim
+# ?abundEstim
 # ?F.automated.CDA
 # 
 # # View help documentation for Rdistance example datasets
-# ?sparrow.detections
-# ?sparrow.sites
+# ?sparrowDetectionData
+# ?sparrowSiteData
 # #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 
@@ -68,8 +68,8 @@
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
-data(sparrow.detections)
-head(sparrow.detections)
+data(sparrowDetectionData)
+head(sparrowDetectionData)
 
 
 
@@ -82,8 +82,8 @@ head(sparrow.detections)
 # The second required dataset is a transect data.frame
 # Each row is a transect, and the siteID and length columns are required (as named)
 # Other columns (e.g., transect-level covariates) are ignored, but may be useful in modeling abundance later
-data(sparrow.sites)
-head(sparrow.sites)
+data(sparrowSiteData)
+head(sparrowSiteData)
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 
@@ -101,59 +101,59 @@ head(sparrow.sites)
 # documentation for `perp.dists` for details.
 
 
-# sparrow.detections$dist2 <- perp.dists(s.dist="sightdist", s.angle="sightangle", data=sparrow.detections)
+# sparrowDetectionData$dist2 <- perp.dists(s.dist="sightdist", s.angle="sightangle", data=sparrowDetectionData)
 # 
-# sparrow.detections <- sparrow.detections[, -which(names(sparrow.detections) %in% c("sightdist", "sightangle", "dist2"))]                                                                  
-# head(sparrow.detections)
+# sparrowDetectionData <- sparrowDetectionData[, -which(names(sparrowDetectionData) %in% c("sightdist", "sightangle", "dist2"))]                                                                  
+# head(sparrowDetectionData)
 
 
 
 # Explore the distribution of distances.
-hist(sparrow.detections$dist, col="grey", main="", xlab="Distance (m)", breaks=20)
-rug(sparrow.detections$dist)
-summary(sparrow.detections$dist)
+hist(sparrowDetectionData$dist, col="grey", main="", xlab="Distance (m)", breaks=20)
+rug(sparrowDetectionData$dist)
+summary(sparrowDetectionData$dist)
 
 
 
 
 
-# Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the
+# Next, fit a detection function (plotted as a red line) using `dfuncEstim`.  For now, we will proceed using the
 # half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
 # automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater
 # than 150 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 150.
 
 # Merge site-level covariates to detection data
-sparrow.merge <- merge(sparrow.detections, sparrow.sites, by="siteID")
+sparrow.merge <- merge(sparrowDetectionData, sparrowSiteData, by="siteID")
 
 trunc <- 150
-sparrow.dfunc <- F.dfunc.estim(formula=dist~shrub, data=sparrow.merge, likelihood="halfnorm", w.hi=trunc)
+sparrow.dfunc <- dfuncEstim(formula=dist~shrub, data=sparrow.merge, likelihood="halfnorm", w.hi=trunc)
 plot(sparrow.dfunc)
 sparrow.dfunc
 
 # Convergence failure when covariate is bare
-# x <- F.dfunc.estim(formula=dist~bare, data=sparrow.merge, likelihood="halfnorm", w.hi=trunc)
+# x <- dfuncEstim(formula=dist~bare, data=sparrow.merge, likelihood="halfnorm", w.hi=trunc)
 # Warning message:
-#   In F.dfunc.estim(formula = dist ~ bare, data = sparrow.merge, likelihood = "halfnorm",  :
+#   In dfuncEstim(formula = dist ~ bare, data = sparrow.merge, likelihood = "halfnorm",  :
 #                      ERROR: ABNORMAL_TERMINATION_IN_LNSRCH
 
 
 
-# sparrow.dfunc <- F.dfunc.estim(formula=dist~shrub, data=sparrow.merge, likelihood="halfnorm", w.hi=150)
+# sparrow.dfunc <- dfuncEstim(formula=dist~shrub, data=sparrow.merge, likelihood="halfnorm", w.hi=150)
 mean(sparrow.merge$shrub)
-mean(sparrow.sites$shrub)
+mean(sparrowSiteData$shrub)
 plot(sparrow.dfunc)
 sparrow.dfunc
 
 # Plot for different covar values
-plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrow.sites$shrub), max(sparrow.sites$shrub), length.out=4)))
+plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max(sparrowSiteData$shrub), length.out=4)))
 
 # And add more bins
-plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrow.sites$shrub), max(sparrow.sites$shrub), length.out=4)),
+plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max(sparrowSiteData$shrub), length.out=4)),
      nbins=20)
 
 
 # # abund
-# fit <- F.abund.estim(sparrow.dfunc, detection.data=sparrow.detections, transect.data=sparrow.sites,
+# fit <- abundEstim(sparrow.dfunc, detection.data=sparrowDetectionData, transect.data=sparrowSiteData,
 #                      area=10000, R=100, ci=0.95, plot.bs=TRUE)
 # 
 # fit
@@ -180,12 +180,12 @@ plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrow.sites$shrub), max(s
 # where each row represents one transect. Load the example dataset of surveyed sparrow transects from the package.
 
 
-# Next, estimate abundance (or density in this case) using `F.abund.estim`.  If `area`=1, then density is given in the
+# Next, estimate abundance (or density in this case) using `abundEstim`.  If `area`=1, then density is given in the
 # squared units of the distance measurements --- in this case, sparrows per square meter.  Instead, we set `area`=10000
 # in order to convert to sparrows per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance
-# estimate is detailed in the help documentation for `F.abund.estim`.
+# estimate is detailed in the help documentation for `abundEstim`.
 
-# Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`),
+# Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `abundEstim`),
 # and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).
 # Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between
 # runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be
@@ -194,7 +194,7 @@ plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrow.sites$shrub), max(s
 
 # (jdc) the bootstrap-replicate detection lines (plot.bs=TRUE) aren't in the right place, but the bootstrap-generated CIs appear plausible
 # 
-fit <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrow.detections, site.data=sparrow.sites,
+fit <- abundEstim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
                      area=10000, R=75, ci=0.95, plot.bs=TRUE)
 fit
 
@@ -209,7 +209,7 @@ fit$n.hat
 fit$ci
 
 # 
-# fitby <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrow.detections, site.data=sparrow.sites,
+# fitby <- abundEstim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
 #                        area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
 # fitby
 
@@ -228,7 +228,7 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-# auto <- F.automated.CDA(formula=dist~1, detection.data=sparrow.detections, site.data=sparrow.sites,
+# auto <- F.automated.CDA(formula=dist~1, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
 #                         w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
 
 
@@ -240,7 +240,7 @@ fit$ci
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 # This used to be the best-fitting detection function
-# best.old <- F.dfunc.estim(formula=dist~1, data=sparrow.detections, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
+# best.old <- dfuncEstim(formula=dist~1, data=sparrowDetectionData, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
 # plot(best.old)
 # best.old
 
@@ -250,6 +250,7 @@ fit$ci
 # Compare to Distance
 
 # Format detection data
+sparrow.merge <- merge(sparrowDetectionData, sparrowSiteData, by="siteID")
 d.data <- sparrow.merge[c("dist", "groupsize", "shrub")]
 names(d.data) <- c("distance", "size", "shrub")  # meet naming conventions
 d.data$object <- 1:nrow(d.data)  # add object ID
@@ -257,23 +258,29 @@ d.data$object <- 1:nrow(d.data)  # add object ID
 # Produce and format 3 other required data.frames
 d.region <- data.frame(Region.Label="main", Area=10000)
 
-d.sample <- sparrow.sites[c("siteID", "length")]
+d.sample <- sparrowSiteData[c("siteID", "length")]
 names(d.sample)[1:2] <- c("Sample.Label", "Effort")
 d.sample$Region.Label <- "main"
 
-d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrow.detections$siteID)
+d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrowDetectionData$siteID)
 
 # Fit model and estimate abundance
 (ds.fit <- ds(data=d.data, formula= ~shrub, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
-              truncation=trunc, transect="line", key="hn", adjustment=NULL, dht.group=FALSE))
+              truncation=207, transect="line", key="hn", adjustment=NULL, dht.group=FALSE))
 
 plot(ds.fit)
 print(ds.fit)
 summary(ds.fit)
 
 
+# Trent's RDistance fitting
+fit <- dfuncEstim(formula = dist ~ shrub, detectionData = sparrowDetectionData,
+                  siteData = sparrowSiteData, likelihood = "halfnorm")
+fit <- abundEstim(fit, sparrowDetectionData, sparrowSiteData, ci=.95, 
+                   R=100, area=10000)
 
-# Results similar, but don't match exactly
+
+# Very very similar results, but don't match exactly
 # AIC
 AIC(fit)  # Rdistance
 AIC(ds.fit)  # Distance

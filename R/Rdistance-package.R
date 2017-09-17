@@ -64,7 +64,7 @@
 #' 
 #' @docType package
 #' 
-#' @author Main authtor and maintainer: Trent McDonald
+#' @author Main author and maintainer: Trent McDonald
 #' <tmcdonald@@west-inc.com>
 #' 
 #' Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald

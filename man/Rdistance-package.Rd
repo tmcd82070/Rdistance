@@ -67,7 +67,7 @@ A list of routines can be obtained by loading \code{Rdistance} and issuing
 \code{ls(pos="package:Rdistance")}.
 }
 \author{
-Main authtor and maintainer: Trent McDonald
+Main author and maintainer: Trent McDonald
 <tmcdonald@west-inc.com>
 
 Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald

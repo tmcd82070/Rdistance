@@ -59,61 +59,37 @@ estimateN <- function(dfunc, detectionData, siteData, area){
   # sample size (number of detections, NOT individuals)
   (n <- nrow(detectionData))
   
-  # group sizes
-  (avg.group.size <- mean(detectionData$groupsize))
-  
-  # total transect length and ESW
+  # total transect length
   tot.sites <- nrow(siteData)  # number of points or number of transects
   if (dfunc$pointSurvey) {
     tot.trans.len <- NULL  # no transect length
-    esw <- effectiveDistance(dfunc)  # point count equivalent of effective strip width
   } else {
     tot.trans.len <- sum(siteData$length)  # total transect length
-    esw <- effectiveDistance(dfunc)  # get effective strip width
   }
   
+
+  avg.group.size <- mean(detectionData$groupsize)
   
   # Estimate abundance
-  if (is.null(dfunc$covars)) {
-    temp <- matrix(nrow = 0, ncol = 0)  # (jdc) isn't this just getting overwritten with NULL ~10 lines below?
-  } else {
-    temp <- dfunc$covars
-  }
-  
+
   # If covariates (for line or point transects) estimate abundance the general way
   # If no covariates, use the faster, standard equations (see after else)
-  if (ncol(temp) > 1) { 
-    f.like <- match.fun(paste( dfunc$like.form, ".like", sep=""))
-    s <- 0
-    for (i in 1:nrow(detectionData)) {
-      if (is.null(dfunc$covars)) {
-        temp <- NULL
-      } else {
-        temp <- t(as.matrix(dfunc$covars[i,]))
-      }
-      new.term <- detection.data$groupsize[i] / ESW(dfunc)
-      # new.term <- detection.data$groupsize[i]/integration.constant(dist = dfunc$dist[i],  # (jdc) the integration constant doesn't change for different dist values (tested w/line data)
-      #                                                              density = paste(dfunc$like.form, ".like", sep=""),
-      #                                                              w.lo = dfunc$w.lo,
-      #                                                              w.hi = dfunc$w.hi,
-      #                                                              covars = temp,
-      #                                                              a = dfunc$parameters,
-      #                                                              expansions = dfunc$expansions,
-      #                                                              point.transects = dfunc$point.transects,
-      #                                                              series = dfunc$series)
-      if (!is.na(new.term)) {
-        s <- s + new.term
-      }
-    }
+  if (!is.null(dfunc$covars)) { 
+    
+    esw <- effectiveDistance(dfunc)
+    
     if (dfunc$pointSurvey) {
-      a <- pi * esw^2 * tot.sites  # area for point transects  
+      sampledArea <- pi * esw^2 * tot.sites  # area for point transects  
     } else {
-      a <- 2 * esw * tot.trans.len  # area for line transects
+      sampledArea <- 2 * esw * tot.trans.len  # area for line transects
     }
-    n.hat <-  s * area/a
+    n.hat <-  sum(detectionData$groupsize / sampledArea) * area
     
     
   } else {
+
+    
+    esw <- effectiveDistance(dfunc)  
     
     # Standard (and faster) methods when there are no covariates
     if (dfunc$pointSurvey) {

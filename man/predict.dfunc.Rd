@@ -4,8 +4,7 @@
 \alias{predict.dfunc}
 \title{Predict method for dfunc objects}
 \usage{
-\method{predict}{dfunc}(object, newdata, type = c("parameters", "inflation"),
-  ...)
+\method{predict}{dfunc}(object, newdata, type = c("parameters"), ...)
 }
 \arguments{
 \item{object}{An estimated dfunc object.  See \code{\link{dfuncEstim}}.}
@@ -13,14 +12,20 @@
 \item{newdata}{A data frame containing new values of 
 the covariates at which predictions are to be computed.}
 
-\item{type}{The type of predictions desired. Type = "parameters"
-predicts parameters of the likelihood function.  Type = "inflation"
-predicts the inflation factor for all observations.  Inflation 
-factors use likelihood parameters to compute effective sampling distances
-(ESW or ESR) and inverts them.}
+\item{type}{The type of predictions desired. Currently, only 
+type = "parameters" is implemented and returns 
+parameters of the likelihood function.}
 }
 \value{
-A vector of predicted parameters or inflation factors.
+A matrix of predicted parameter for the distance function
+estimated in \code{dfunc}. The returned matrix has first dimension
+(nrow) equal to either the number of detection distanced 
+in \code{detectionData} or number of rows in \code{newdata}. 
+The returned matrix's second dimension (ncol) is \emph{p} where 
+\emph{p} is the number of canonical parameters in the likelihood 
+plus the number of expansion terms.  Without expansion terms, \emph{p} 
+is either 1 or 2 depending on the liklihood (e.g., \code{halfnorm} has 
+one parameter, \code{hazrate} has two).
 }
 \description{
 Predict likelihood parameters or inflation 

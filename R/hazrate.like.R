@@ -113,14 +113,19 @@ hazrate.like <- function(a, dist, covars = NULL, w.lo = 0,
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
     if(!is.null(covars)){
-      s <- 0
-      for (i in 1:(ncol(covars)))
-        s <- s + a[i]*covars[,i]
-      sigma <- exp(s)
-    } else {sigma <- a[1]}
+      q <- ncol(covars)
+      beta <- a[1:q]
+      s <- drop( covars %*% beta )
+      # s <- 0
+      # for (i in 1:(ncol(covars)))
+      #   s <- s + a[i]*covars[,i]
+      s <- exp(s)
+    } else {
+      s <- a[1]
+    }
 	
 	beta = a[length(a) - expansions]
-	key = 1 - exp(-(dist/sigma)^(-beta))
+	key = 1 - exp(-(dist/s)^(-beta))
     dfunc <- key
     w <- w.hi - w.lo
 
@@ -137,7 +142,7 @@ hazrate.like <- function(a, dist, covars = NULL, w.lo = 0,
             dscl = dist/w
             exp.term <- cosine.expansion( dscl, nexp )
 		} else if (series=="hermite"){
-            dscl = dist/sigma
+            dscl = dist/s
             exp.term <- hermite.expansion( dscl, nexp )
 		} else if (series == "simple") {
             dscl = dist/w

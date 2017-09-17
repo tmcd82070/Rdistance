@@ -2,62 +2,75 @@
 % Please edit documentation in R/ESW.r
 \name{ESW}
 \alias{ESW}
-\title{Effective Strip Width for estimated detection functions}
+\title{Effective Strip Width for line transect data}
 \usage{
-ESW(obj, covars = NULL)
+ESW(obj, newdata)
 }
 \arguments{
-\item{obj}{An estimated detection function object.  An estimated detection
+\item{obj}{An estimated detection function object.  An estimated detection 
 function object has class 'dfunc', and is usually produced by a call to 
 \code{dfuncEstim}. The estimated detection function may optionally contain 
-a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
-is assumed.}
+a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
+1 is assumed.}
 
-\item{covars}{Covariate values for which to calculate ESW.}
+\item{newdata}{A data frame containing new values of 
+the covariates at which ESW's are sought. If NULL or missing, the 
+covariates stored in \code{obj} are used. If covariates are present, 
+this produces one ESW for each detection.  If covariates are not present, 
+this produces one ESW that is constant across all detections.}
 }
 \value{
-A scalar equal to the area under the detection function from \code{obj$w.lo} to \code{obj$w.hi}.
+If covariates are present in \code{obj}, a vector of 
+length equal to the number of detections in \code{obj$dist} containing
+separate ESW's for each detection. If 
+\code{obj} does not contain covariates, a scalar 
+equal to the (constant) ESW for all detections.  In all cases, ESW
+is the area under the detection function from
+  \code{obj$w.lo} to \code{obj$w.hi}.
 }
 \description{
-Computes effective strip width (ESW) for 
-estimated detection functions.
+Computes effective strip width (ESW) for estimated detection
+  functions from line transect data
 }
 \details{
-The effective strip width (ESW) of a distance function is its integral. 
-  That is, ESW is the area under the 
-  distance function from its left-truncation limit (\code{obj$w.lo}) to its 
-  right-truncation limit (\code{obj$w.hi}). 
-  \if{latex}{In mathematical notation,
-    \deqn{ESW = \int_{w.lo}^{w.hi} g(x)dx,}
-    where \eqn{g(x)} is the height of the distance function at distance \eqn{x}, 
-    and \eqn{w.lo} and \eqn{w.hi}
-    are the lower and upper truncation limits used during the survey.  }
-
-  The name \emph{effective strip width} derives from the fact that under perfect detection, 
-  area under the detection function is the half-width of the strip transect.  This means
-  that if \code{obj$w.lo} = 0 and \eqn{g(x)} = 1,
-  area under the detection function is the half-width of the transect (i.e., \code{obj$w.hi}). 
-  In this case, the density of objects is estimated as number sighted 
-  divided by area surveyed, which is \code{obj$w.hi} times total length of transects surveyed. 
-
-  When detection is not perfect, less than the total half-width is \emph{effectively} covered.  
-  Buckland et al. (1993)
-  show that the denominator of the density estimator in this case involves total length of 
-  transects surveyed times area under the detection function (i.e., this integral). By analogy with the 
-  perfect detection case, this integral can then be viewed as the 
-  transect half-width that observers \emph{effectively} cover. In other words, a survey with imperfect detection
-  and ESW equal to X effectively covers the same area as a study with perfect detection out to a distance of X.
-
-  The trapazoid rule is used to numerically integrate under the distance function 
-  in \code{obj} from \code{obj$w.lo} to \code{obj$w.hi}. Two-hundred trapazoids are 
-  used in the approximation to speed calculations.  In some rare cases, two hundred trapazoids 
-  may not be enough.  In these cases, the code for this function can be \code{sink}-ed to a file, 
-  inspected in a text editor, modified 
-  to bump the number of trapazoids, and \code{source}-d back in.
+The effective strip width (ESW) of a distance function is its
+  integral. That is, ESW is the area under the distance function from its
+  left-truncation limit (\code{obj$w.lo}) to its right-truncation limit
+  (\code{obj$w.hi}). \if{latex}{In mathematical notation, \deqn{ESW =
+  \int_{w.lo}^{w.hi} g(x)dx,} where \eqn{g(x)} is the height of the distance
+  function at distance \eqn{x}, and \eqn{w.lo} and \eqn{w.hi} are the lower
+  and upper truncation limits used during the survey.  }
+  
+  The name, \emph{effective strip width}, comes from the fact that under
+  perfect detection, area under the detection function is the entire 
+  half-width of 
+  the strip transect (from \code{obj$w.lo} to \code{obj$w.hi}).  
+  Under perfect detection, density is the number sighted targets 
+  divided by area surveyed, where area surveyed is 
+  \code{obj$w.hi-obj$w.lo} times
+  total length of transects.
+  
+  When detection is not perfect, less than the total half-width is
+  \emph{effectively} covered. Buckland et al. (1993) show that the
+  denominator of the density estimator in this case involves total length of 
+  transects surveyed times area under the detection function (i.e., this
+  integral). By analogy with the perfect detection case, this integral can
+  then be viewed as the transect half-width that observers \emph{effectively}
+  cover. In other words, a survey with imperfect detection and ESW equal to X
+  effectively covers the same area as a study with perfect detection out to a
+  distance of X.
+  
+  The trapazoid rule is used to numerically integrate under the distance
+  function in \code{obj} from \code{obj$w.lo} to \code{obj$w.hi}. Two-hundred
+  trapazoids are used in the approximation to speed calculations.  In some
+  rare cases, two hundred trapazoids may not be enough.  In these cases, the
+  code for this function can be \code{sink}-ed to a file, inspected in a text
+  editor, modified to bump the number of trapazoids, and \code{source}-d back
+  in.
 }
 \examples{
 # Load the example dataset of sparrow detections from package
-data(sparrow.detections)
+data(sparrowDetectionData)
 
 # Fit detection function to perpendicular, off-transect distances
 dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
@@ -66,10 +79,12 @@ dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
 ESW(dfunc)
 }
 \references{
-Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
+Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
+  1993. \emph{Distance Sampling: Estimating Abundance of Biological
+  Populations}. Chapman and Hall, London.
 }
 \seealso{
-\code{\link{dfuncEstim}} \code{\link{EDR}}
+\code{\link{dfuncEstim}}, \code{\link{EDR}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

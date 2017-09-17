@@ -107,16 +107,6 @@
 #' \code{pointID} specify unique sampling sites.  
 #' See \bold{Input data frames}. 
 #' 
-#' @param pointID A character vector specifying the point ID column(s)
-#' in \code{detectionData} and \code{siteData}. For point-transect data, 
-#' the site ID's used to merge the input data sets are the unique combinations
-#' of \code{c(transectID,pointID)}.  If \code{transectID} is NULL, 
-#' \code{pointID} is ignored.  That is, multiple points per transect are not 
-#' allowed when the merge is based solely on common variables in the 
-#' input data frames.  This probably does not matter for estimation of 
-#' the distance function but probably does matter for bootstrap estimation 
-#' of variance in \code{\link{abundEstim}}. 
-#' 
 #' @param length Character string specifying the (single) column in 
 #' \code{siteData} that contains transect length. This is ignored if 
 #' \code{pointSurvey} = TRUE.
