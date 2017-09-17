@@ -15,9 +15,14 @@
 #' 
 #' @param area Total area of inference. Study area size.
 #' 
-#' @return A list containing the following components:
+#' @param bySite A logical scalar indicating whether to compute site-level
+#'   estimates of abundance. The default (\code{bySite=FALSE}) returns only one
+#'   overall abundance estimate. See \bold{Value} and \bold{Details}.
+#'   
+#' 
+#' @return If \code{bySite} is FALSE, a list containing the following components:
 #'    \item{dfunc}{The input distance function}
-#'    \item{n.hat}{The estimate of abundance}
+#'    \item{abundance}{The estimate of abundance}
 #'    \item{n}{Number of groups detected}
 #'    \item{area}{Total area of inference. Study area size}
 #'    \item{esw}{Effective strip width for line-transects, effective
@@ -26,6 +31,40 @@
 #'    total number of points for point-transects.}
 #'    \item{tran.len}{Total transect length. NULL for point-transects.}
 #'    \item{avg.group.size}{Average group size}
+#'    
+#'    If \code{bySite} is TRUE, a data frame containing site-level 
+#'    estimated abundance.  The data frame is an exact copy of \code{siteData}
+#'    with the following columns tacked onto the end:
+#'     
+#'    \item{effDist}{The effective sampling distance at the site.  For line-
+#'    transects, this is ESW at the site.  For points, this is EDR. } 
+#'    \item{pDetection}{Average probability of deteciton at the site. 
+#'    If site-level covars only appear in the distance function, 
+#'    pDetection is constant within a site. When detection-level 
+#'    covariates are present, pDetection is the average at the site. 
+#'    The idea is this could be used as an offset in a subsequent linear model.}
+#'    \item{rawcount}{The total number of detections at the site.}
+#'    \item{abundance}{Estimated abundance at the site. This is the sum
+#'    of inflated group sizes at the site. i.e., each group size 
+#'    at the site is divided by its pDetection, and then summed.    }
+#'    \item{density}{Estimated density at the site. This is abundance 
+#'    at the site divided by the sampled area at the site.  E.g., for 
+#'    line transects, this is abundance divided by \eqn{2*w*length}. For 
+#'    points, this is abundance divided by \eqn{pi*w^2}. }
+#'    
+#' @details 
+#' If \code{x} is the data frame returned when \code{bySite} = TRUE, 
+#' the following is true: 
+#' \enumerate{
+#'   \item For line transects, \code{sum(x$abundance)*area/(2*w*sum(x$length))}
+#'     is the estimate of abundance on the study area or the 
+#'     abundance estimate when \code{bySite} = FALSE.
+#'     
+#'   \item \code{area*sum(x$density)/nrow(x)} is the estimate of abundance 
+#'   on the study area or the abundance estimate when \code{bySite} = FALSE.
+#' 
+#' }
+#'         
 #'    
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
 #'         Jason Carlisle, University of Wyoming and WEST Inc, \email{jcarlisle@west-inc.com}\cr
@@ -47,7 +86,7 @@
 #'
 #' @export 
 
-estimateN <- function(dfunc, detectionData, siteData, area){
+estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
   # Truncate detections and calculate some n, avg.group.isze, 
   # tot.trans.len, and esw
   
@@ -67,52 +106,90 @@ estimateN <- function(dfunc, detectionData, siteData, area){
     tot.trans.len <- sum(siteData$length)  # total transect length
   }
   
+  # Estimate abundance ----
 
-  avg.group.size <- mean(detectionData$groupsize)
-  
-  # Estimate abundance
-
-  # If covariates (for line or point transects) estimate abundance the general way
-  # If no covariates, use the faster, standard equations (see after else)
-  if (!is.null(dfunc$covars)) { 
+  # If dfunc has covariates, esw is a vector of length n. No covars, esw is scalar
+  # If dfunc is pointSurveys, esw is EDR.  If line surveys, esw is ESW.
+  esw <- effectiveDistance(dfunc)
     
-    esw <- effectiveDistance(dfunc)
+  w <- dfunc$w.hi - dfunc$w.lo
+  
+  phat <- esw / w  # [tlm] does this work for points?
+  
+  nhat <- detectionData$groupsize / phat # inflated counts one per detection
+  
+  if( bySite ){
+    # ---- sum statistics by siteID
+
+    nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat)
+    nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum)
+    nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df)
+
+    rawcount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
+    rawcount <- data.frame(siteID = names(rawcount), rawcount=rawcount)
+
+    nhat.df <- merge(rawcount, nhat.df)  # should match perfectly
+
+    # If detectionData$siteID is a factor and has all levels, even zero
+    # sites, don't need to do this.  But, to be safe merge back to 
+    # get zero transects and replace NA with 0 
+
+    # Must do this to get pDetection on 0-sites.  Site must have 
+    # non-missing covars if dfunc has covars
+    esw <- effectiveDistance(dfunc, siteData) 
+    siteData <- data.frame(siteData, esw=esw, pDetection=esw/w)
+    
+    nhat.df <- merge(siteData, nhat.df, by="siteID", all.x=TRUE)
+    nhat.df$rawcount[is.na(nhat.df$rawcount)] <- 0
+    nhat.df$abundance[is.na(nhat.df$abundance)] <- 0
     
     if (dfunc$pointSurvey) {
-      sampledArea <- pi * esw^2 * tot.sites  # area for point transects  
+      sampledArea <- pi * w^2 # area samled for single point  
     } else {
-      sampledArea <- 2 * esw * tot.trans.len  # area for line transects
+      sampledArea <- 2 * w * nhat.df$length  # area sampled for line transects
     }
-    n.hat <-  sum(detectionData$groupsize / sampledArea) * area
-    
+    nhat.df$density <- nhat.df$abundance / sampledArea
     
   } else {
-
     
-    esw <- effectiveDistance(dfunc)  
-    
-    # Standard (and faster) methods when there are no covariates
-    if (dfunc$pointSurvey) {
-      # Standard method for points with no covariates
-      n.hat <- (avg.group.size * n * area) / (pi * (esw^2) * tot.sites)
+    # not bySite
+    if(dfunc$pointSurvey){
+      nhat.df <- sum(nhat) * area / (pi * w^2 * tot.sites)
     } else {
-      # Standard method for lines with no covariates
-      n.hat <- (avg.group.size * n * area) / (2 * esw * tot.trans.len)
+      nhat.df <-  sum(nhat) * area / (2 * w * tot.trans.len)
     }
+    
+    nhat.df <- list(dfunc = dfunc,
+                  abundance = nhat.df,
+                  nhat.sampleArea = sum(nhat),
+                  n.sites = tot.sites,
+                  n.groups = n,
+                  rawcount = sum(detectionData$groupsize),
+                  area = area,
+                  w = w,
+                  tran.len = tot.trans.len,
+                  avg.group.size = mean(detectionData$groupsize),
+                  pDetection = phat)
   }
+    
+  # some interesting tidbits:
+  #  sampled area = tot.trans.len * 2 * (dfunc$w.hi - dfunc$w.lo)
+  #  sum(1/phat) = what Distance calls "N in covered region".  This is
+  #    estimated number of groups in the sampled area.
+  #  sum(1/phat)*mean(detectionData$groupsize) = an estimate of individuals
+  #    in the sampled area. This is probably how Distance would do it.
+  #  sum(detectionData$groupsize/phat) = the HT estimate of individuals 
+  #    in the sampled area.  How RDistance does it. This and the Distance 
+  #    estimate are very close.  Only difference is ratio of sums or sum of 
+  #    ratios.
+  #  sum(detectionData$groupsize) / (sum(1/phat)*mean(detectionData$groupsize)) = 
+  #    n.indivs / (nhat.groups*mean.grp.size) = n.groups / nhat.groups = 
+  #    what Distance calls "Average p".  This is different than mean(phat) 
+  #    the way Rdistance calculates it.
   
   
-  # Output to return as list
-  abund <- list(dfunc = dfunc,
-                n.hat = n.hat,
-                n = n,
-                area = area,
-                esw = esw,
-                n.sites = tot.sites,
-                tran.len = tot.trans.len,
-                avg.group.size = avg.group.size)
-  
-  return(abund)
+
+  return(nhat.df)
 }  # end estimate.nhat function
 
 

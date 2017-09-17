@@ -48,10 +48,6 @@
 #' @param R The number of bootstrap iterations to conduct when \code{ci} is not
 #'   NULL.
 #'   
-#' @param by.id A logical scalar indicating whether to compute transect-level
-#'   estimates of abundance. The default (\code{by.id=FALSE}) returns only one
-#'   overall abundance estimate).
-#'   
 #' @param plot.bs A logical scalar indicating whether to plot individual
 #'   bootstrap iterations.
 #'   
@@ -139,7 +135,7 @@
 #' @export
 
 abundEstim <- function(dfunc, detectionData, siteData,
-                          area=1, ci=0.95, R=500, by.id=FALSE,
+                          area=1, ci=0.95, R=500, 
                           plot.bs=FALSE){
   
   # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
@@ -190,7 +186,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
   
   # Estimate abundance
   abund <- estimateN(dfunc=dfunc, detectionData=detectionData, 
-                        siteData=siteData, area=area)
+                        siteData=siteData, area=area, bySite=FALSE)
   
 
 
@@ -209,11 +205,11 @@ abundEstim <- function(dfunc, detectionData, siteData,
   # but the print.abund and print.dfunc were not working
   # when I just stored ans <- abund.  This is clunky, but resolves the issue.
   ans <- dfunc
-  ans$n.hat <- abund$n.hat
-  ans$n <- abund$n
+  ans$n.hat <- abund$abundance
+  ans$n <- abund$n.groups
   ans$area <- abund$area
-  ans$esw <- abund$esw
-  ans$tran.len <- abund$tot.trans.len
+  ans$esw <- abund$pDetection * abund$w
+  ans$tran.len <- abund$tran.len
   ans$avg.group.size <- abund$avg.group.size
   
   
@@ -306,9 +302,10 @@ abundEstim <- function(dfunc, detectionData, siteData,
          # Estimate abundance
          abund.bs <- estimateN(dfunc=dfunc.bs,
                                    detectionData=new.detectionData,
-                                   siteData=new.siteData, area=area)
+                                   siteData=new.siteData, area=area, 
+                                   bySite=FALSE)
          
-         n.hat.bs[i] <- abund.bs$n.hat
+         n.hat.bs[i] <- abund.bs$abundance
       
 
          if (plot.bs & !dfunc$pointSurvey) {
@@ -332,7 +329,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
     
     
     # Calculate CI from bootstrap replicates using bias-corrected bootstrap method in Manly text
-    p <- mean(n.hat.bs > abund$n.hat, na.rm = TRUE)
+    p <- mean(n.hat.bs > ans$n.hat, na.rm = TRUE)
     z.0 <- qnorm(1 - p)
     z.alpha <- qnorm(1 - ((1 - ci)/2))
     p.L <- pnorm(2 * z.0 - z.alpha)
@@ -350,70 +347,6 @@ abundEstim <- function(dfunc, detectionData, siteData,
   }  # end else
   
 
-  #%%%%%%%%%%%%%%%%%#
-  # (jdc) The by.id option needs to be updated for points and covars
-  
-  # The cols in the returned nhat.df should include siteID, rawcount, nhat, p, and ESW
-  
-  
-  # Compute transect-level densities
-  if (by.id) {
-    
-    # Starting df
-    # nhat.df <- siteData[, c("siteID", "length")]
-    nhat.df <- data.frame(siteID = siteData$siteID, nhat=NA)
-    
-    # Summarize raw count by transect
-    # Apply truncation specified in dfunc object (including dist equal to w.lo and w.hi)
-    detectionData <- detectionData[detectionData$dist >= dfunc$w.lo & detectionData$dist <= dfunc$w.hi, ]
-    rawcount <- data.frame(rawcount = tapply(detectionData$groupsize, detectionData$siteID, sum))
-    rawcount <- cbind(siteID = rownames(rawcount), rawcount)
-
-    # Merge and replace NA with 0 for 0-count transects
-    nhat.df <- merge(nhat.df, rawcount, by="siteID", all.x=TRUE)
-    nhat.df$rawcount[is.na(nhat.df$rawcount)] <- 0
-
-    # # Calculate transect-level abundance (density)
-    # nhat.df$nhat <- (nhat.df$rawcount * area) / (2 * esw * nhat.df$length)
-    # 
-    # # Check that transect-level abundances match total abundance
-    # #mean(nhat.df$nhat)
-    # #ans$n.hat
-    # 
-    # # Remove the length column
-    # nhat.df <- nhat.df[, -2]
-    
-    
-    # Calculate transect-level abundance (density)
-    # Loop through each transect (site)
-    # This loop could be replaced with something faster
-    # For example, rawcount is already calculated in estimateNhat
-    for (i in 1:nrow(nhat.df)) {
-      
-      # nhat is 0 where the count is 0
-      if (nhat.df[i, "rawcount"] == 0) {
-        nhat.df[i, "nhat"] <- 0
-        next()
-      }
-      
-      site <- nhat.df[i, "siteID"]
-      # Subset both input datasets to only that site
-      dd <- detectionData[detectionData$siteID == site, ]
-      sd <- siteData[siteData$siteID == site, ]
-      ad <- area # (jdc), placeholder for now, what would the appropriate area be?
-      
-      # Estimate abundance
-      nhat.df[i, "nhat"] <- estimateNhat(dfunc=dfunc, detectionData=dd, siteData=sd, area=ad)$n.hat
-      
-    }
-    
-
-    # Save in output list
-    ans$nhat.df <- nhat.df
-  }  # end if by.id
-  
-  
-  
   # Output
   ans$alpha <- ci
   class(ans) <- c("abund", class(dfunc))

@@ -4,7 +4,7 @@
 \alias{estimateN}
 \title{Abundance point estimates}
 \usage{
-estimateN(dfunc, detectionData, siteData, area)
+estimateN(dfunc, detectionData, siteData, area = 1, bySite = FALSE)
 }
 \arguments{
 \item{dfunc}{An estimate distance function (see \code{dfuncEstim}).}
@@ -17,11 +17,15 @@ on (see \code{dfuncEstim}).}
 transects or points surveyed  (see \code{dfuncEstim}).}
 
 \item{area}{Total area of inference. Study area size.}
+
+\item{bySite}{A logical scalar indicating whether to compute site-level
+estimates of abundance. The default (\code{bySite=FALSE}) returns only one
+overall abundance estimate. See \bold{Value} and \bold{Details}.}
 }
 \value{
-A list containing the following components:
+If \code{bySite} is FALSE, a list containing the following components:
    \item{dfunc}{The input distance function}
-   \item{n.hat}{The estimate of abundance}
+   \item{abundance}{The estimate of abundance}
    \item{n}{Number of groups detected}
    \item{area}{Total area of inference. Study area size}
    \item{esw}{Effective strip width for line-transects, effective
@@ -30,11 +34,44 @@ A list containing the following components:
    total number of points for point-transects.}
    \item{tran.len}{Total transect length. NULL for point-transects.}
    \item{avg.group.size}{Average group size}
+   
+   If \code{bySite} is TRUE, a data frame containing site-level 
+   estimated abundance.  The data frame is an exact copy of \code{siteData}
+   with the following columns tacked onto the end:
+    
+   \item{effDist}{The effective sampling distance at the site.  For line-
+   transects, this is ESW at the site.  For points, this is EDR. } 
+   \item{pDetection}{Average probability of deteciton at the site. 
+   If site-level covars only appear in the distance function, 
+   pDetection is constant within a site. When detection-level 
+   covariates are present, pDetection is the average at the site. 
+   The idea is this could be used as an offset in a subsequent linear model.}
+   \item{rawcount}{The total number of detections at the site.}
+   \item{abundance}{Estimated abundance at the site. This is the sum
+   of inflated group sizes at the site. i.e., each group size 
+   at the site is divided by its pDetection, and then summed.    }
+   \item{density}{Estimated density at the site. This is abundance 
+   at the site divided by the sampled area at the site.  E.g., for 
+   line transects, this is abundance divided by \eqn{2*w*length}. For 
+   points, this is abundance divided by \eqn{pi*w^2}. }
 }
 \description{
 Estimate abundance given a distance function, 
 detection data, site data, and area.  This is called internally 
 by abundEstim during bootstrapping.
+}
+\details{
+If \code{x} is the data frame returned when \code{bySite} = TRUE, 
+the following is true: 
+\enumerate{
+  \item For line transects, \code{sum(x$abundance)*area/(2*w*sum(x$length))}
+    is the estimate of abundance on the study area or the 
+    abundance estimate when \code{bySite} = FALSE.
+    
+  \item \code{area*sum(x$density)/nrow(x)} is the estimate of abundance 
+  on the study area or the abundance estimate when \code{bySite} = FALSE.
+
+}
 }
 \examples{
 # Load the example datasets of sparrow detections and transects from package

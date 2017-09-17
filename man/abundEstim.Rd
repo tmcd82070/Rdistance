@@ -5,7 +5,7 @@
 \title{Estimate abundance from distance-sampling data.}
 \usage{
 abundEstim(dfunc, detectionData, siteData, area = 1, ci = 0.95, R = 500,
-  by.id = FALSE, plot.bs = FALSE)
+  plot.bs = FALSE)
 }
 \arguments{
 \item{dfunc}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
@@ -49,10 +49,6 @@ method. If \code{ci} = NULL, confidence intervals are not computed.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
 NULL.}
-
-\item{by.id}{A logical scalar indicating whether to compute transect-level
-estimates of abundance. The default (\code{by.id=FALSE}) returns only one
-overall abundance estimate).}
 
 \item{plot.bs}{A logical scalar indicating whether to plot individual
 bootstrap iterations.}
