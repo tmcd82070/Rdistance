@@ -5,7 +5,7 @@
 \title{Estimate abundance from distance-sampling data.}
 \usage{
 abundEstim(dfunc, detectionData, siteData, area = 1, ci = 0.95, R = 500,
-  plot.bs = FALSE)
+  plot.bs = FALSE, bySite = FALSE)
 }
 \arguments{
 \item{dfunc}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
@@ -41,58 +41,80 @@ units of the distance measurements).  For example, if distance values fitted
 in \code{dfunc} are meters, density is number of individuals per
 square meter.  If distances are miles, density is number of
 individuals per square mile.  If \code{area} > 1, total abundance on the
-study area is estimated and units are (number of animals).}
+study area is estimated and units are (number of animals).  This can also
+be used to convert units for density. For example, if distance values fitted
+in \code{dfunc} are meters, and area is set to 10,000, density is number
+of individuals per hectare (ha; 1 ha = 10,000 square meters).
+square meter.}
 
 \item{ci}{A scaler indicating the confidence level of confidence intervals. 
 Confidence intervals are computed using the bias corrected bootstrap
-method. If \code{ci} = NULL, confidence intervals are not computed.}
+method. If \code{ci = NULL}, confidence intervals are not computed.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
 NULL.}
 
 \item{plot.bs}{A logical scalar indicating whether to plot individual
 bootstrap iterations.}
+
+\item{bySite}{A logical scalar indicating whether to compute site-level
+estimates of abundance. The default (\code{bySite=FALSE}) returns only one
+overall abundance estimate. This routine does not calculate confidence
+intervals for these site-level abundance estimates, so \code{ci} is set to
+\code{NULL} if \code{bySite = TRUE}. See \code{\link{estimateN}}.}
 }
 \value{
-An 'abundance estimate' object, a list of class c("abund", "dfunc"),
-  containing all the components of a "dfunc" object (see \code{dfuncEstim}),
-  plus, 
+If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
+  class c("abund", "dfunc"), containing all the components of a "dfunc"
+  object (see \code{dfuncEstim}), plus the following: 
   
-  \item{n.hat}{Estimated abundance in the study area (if \code{area} >
-  1) or estimated density in the study area (if \code{area} = 1).} 
-  
+ \item{abundance}{Estimated abundance in the study area (if \code{area} >
+ 1) or estimated density in the study area (if \code{area} = 1).}
+  \item{n}{The number of detections
+ (not individuals, unless all group sizes = 1) used in the estimate of
+ abundance.}
+  \item{area}{Total area of inference. Study area size}
+  \item{esw}{Effective strip width for line-transects, effective
+  radius for point-transects.  Both derived from \code{dfunc}}.
+  \item{n.sites}{Total number of transects for line-transects, 
+  total number of points for point-transects.}
+  \item{tran.len}{Total transect length. NULL for point-transects.}
+  \item{avg.group.size}{Average group size}
   \item{ci}{The bias corrected bootstrap confidence interval for
   \code{n.hat}.  The names of this component give the quantiles of the
   bootstrap distribution used to compute the bias corrected interval.} 
-  
   \item{B}{A vector or length \code{R} containing all bootstrap estimated
   population sizes. If a particular interation did not converge, the
   corresponding entry in \code{B} will be \code{NA}. The bootstrap
   distribution of \code{n.hat} can be plotted with \code{hist(x$B)}, where
   \code{x} is an 'abundance estimate' object. The confidence interval in
   \code{ci} can be reproduced with \code{quantile(x$B[!is.na(x$B)],
-  p=names(x$ci) )}.   } 
-  
+  p=names(x$ci) )}.}
   \item{alpha}{The (scalar) confidence level of the
   confidence interval for \code{n.hat}.} 
   
-  \item{n}{The number of detections
-  (not individuals, unless all group sizes = 1) used in the estimate of
-  abundance.} 
-  
-  \item{area}{The study area size used in the estimate of
-  abundance.} 
-  
-  \item{tran.len}{The total length of transects used in the
-  estimate of abundance.} 
-  
-  \item{esw}{Effective strip width(s) used in the
-  estimate of abundance.  This can be computed with \code{ESW(dfunc)}.} 
-  
-  \item{avg.group.size}{The average group size used in the estimate.} 
-  
-  \item{nhat.df}{A data.frame of transect-level abundance (or density)
-  estimates (if \code{by.id = TRUE}).}
+  If \code{bySite} is TRUE, a data frame containing site-level 
+  estimated abundance.  The data frame is an exact copy of \code{siteData}
+  with the following columns tacked onto the end:
+   
+  \item{effDist}{The effective sampling distance at the site.  For line-
+  transects, this is ESW at the site.  For points, this is EDR. } 
+  \item{pDetection}{Average probability of deteciton at the site. 
+  If only site-level covariates appear in the distance function, 
+  pDetection is constant within a site. When detection-level 
+  covariates are present, pDetection is the average at the site.}
+  \item{observedCount}{The total number of individuals detected at a site.}
+  \item{abundance}{Estimated abundance at the site. This is the sum
+  of inflated group sizes at the site. i.e., each group size 
+  at the site is divided by its pDetection, and then summed.    }
+  \item{density}{Estimated density at the site. This is abundance 
+  at the site divided by the sampled area at the site.  E.g., for 
+  line transects, this is abundance divided by \eqn{2*w*length}. For 
+  points, this is abundance divided by \eqn{pi*w^2}.}
+  \item{effArea}{The effective area sampled at the site. This could be used
+  as an offset in a subsequent linear model. For 
+  line transects, this is \eqn{2*ESW*length}. For 
+  points, this is \eqn{pi*EDR^2}.}
 }
 \description{
 Estimate abundance (or density) given an estimated detection
@@ -134,8 +156,12 @@ The abundance estimate is \deqn{N =
          
 }
 \references{
-Manly, B. F. J. (1997) \emph{Randomization, bootstrap, and monte
+Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and monte
   carlo methods in biology}, London: Chapman and Hall.
+  
+  Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
+   and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
+   abundance of biological populations}. Oxford University Press, Oxford, UK.
 }
 \seealso{
 \code{\link{dfuncEstim}}

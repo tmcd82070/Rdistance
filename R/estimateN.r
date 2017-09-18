@@ -2,7 +2,7 @@
 #' 
 #' @description Estimate abundance given a distance function, 
 #' detection data, site data, and area.  This is called internally 
-#' by abundEstim during bootstrapping. 
+#' by \code{abundEstim}. 
 #' 
 #' @param dfunc An estimate distance function (see \code{dfuncEstim}).
 #' 
@@ -13,7 +13,8 @@
 #' @param siteData A data frame containing information on the 
 #' transects or points surveyed  (see \code{dfuncEstim}).
 #' 
-#' @param area Total area of inference. Study area size.
+#' @param area Total area of inference, study area size, or unit conversion.
+#' See \code{\link{abundEstim}}.
 #' 
 #' @param bySite A logical scalar indicating whether to compute site-level
 #'   estimates of abundance. The default (\code{bySite=FALSE}) returns only one
@@ -21,12 +22,15 @@
 #'   
 #' 
 #' @return If \code{bySite} is FALSE, a list containing the following components:
-#'    \item{dfunc}{The input distance function}
-#'    \item{abundance}{The estimate of abundance}
-#'    \item{n}{Number of groups detected}
+#'    \item{dfunc}{The input distance function.}
+#'    \item{abundance}{Estimated abundance in the study area (if \code{area} >
+#'   1) or estimated density in the study area (if \code{area} = 1).}
+#'    \item{n}{The number of detections
+#'   (not individuals, unless all group sizes = 1) used in the estimate of
+#'   abundance.}
 #'    \item{area}{Total area of inference. Study area size}
 #'    \item{esw}{Effective strip width for line-transects, effective
-#'    radius for point-transects.  Both derived from \code{dfunc}}
+#'    radius for point-transects.  Both derived from \code{dfunc}}.
 #'    \item{n.sites}{Total number of transects for line-transects, 
 #'    total number of points for point-transects.}
 #'    \item{tran.len}{Total transect length. NULL for point-transects.}
@@ -39,18 +43,21 @@
 #'    \item{effDist}{The effective sampling distance at the site.  For line-
 #'    transects, this is ESW at the site.  For points, this is EDR. } 
 #'    \item{pDetection}{Average probability of deteciton at the site. 
-#'    If site-level covars only appear in the distance function, 
+#'    If only site-level covariates appear in the distance function, 
 #'    pDetection is constant within a site. When detection-level 
-#'    covariates are present, pDetection is the average at the site. 
-#'    The idea is this could be used as an offset in a subsequent linear model.}
-#'    \item{rawcount}{The total number of detections at the site.}
+#'    covariates are present, pDetection is the average at the site.}
+#'    \item{observedCount}{The total number of individuals detected at a site.}
 #'    \item{abundance}{Estimated abundance at the site. This is the sum
 #'    of inflated group sizes at the site. i.e., each group size 
 #'    at the site is divided by its pDetection, and then summed.    }
 #'    \item{density}{Estimated density at the site. This is abundance 
 #'    at the site divided by the sampled area at the site.  E.g., for 
 #'    line transects, this is abundance divided by \eqn{2*w*length}. For 
-#'    points, this is abundance divided by \eqn{pi*w^2}. }
+#'    points, this is abundance divided by \eqn{pi*w^2}.}
+#'    \item{effArea}{The effective area sampled at the site. This could be used
+#'    as an offset in a subsequent linear model. For 
+#'    line transects, this is \eqn{2*ESW*length}. For 
+#'    points, this is \eqn{pi*EDR^2}.}
 #'    
 #' @details 
 #' If \code{x} is the data frame returned when \code{bySite} = TRUE, 
@@ -114,21 +121,27 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
     
   w <- dfunc$w.hi - dfunc$w.lo
   
-  phat <- esw / w  # [tlm] does this work for points?
+  
+  if (dfunc$pointSurvey) {
+    phat <- (esw / w)^2  # for points
+  } else {
+    phat <- esw / w  # for lines
+  }
+  
   
   nhat <- detectionData$groupsize / phat # inflated counts one per detection
   
-  if( bySite ){
+  if (bySite) {
     # ---- sum statistics by siteID
 
     nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat)
     nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum)
     nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df)
 
-    rawcount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
-    rawcount <- data.frame(siteID = names(rawcount), rawcount=rawcount)
+    observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
+    observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount)
 
-    nhat.df <- merge(rawcount, nhat.df)  # should match perfectly
+    nhat.df <- merge(observedCount, nhat.df)  # should match perfectly
 
     # If detectionData$siteID is a factor and has all levels, even zero
     # sites, don't need to do this.  But, to be safe merge back to 
@@ -140,15 +153,26 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
     siteData <- data.frame(siteData, esw=esw, pDetection=esw/w)
     
     nhat.df <- merge(siteData, nhat.df, by="siteID", all.x=TRUE)
-    nhat.df$rawcount[is.na(nhat.df$rawcount)] <- 0
+    nhat.df$observedCount[is.na(nhat.df$observedCount)] <- 0
     nhat.df$abundance[is.na(nhat.df$abundance)] <- 0
     
+    # Calculate density
     if (dfunc$pointSurvey) {
       sampledArea <- pi * w^2 # area samled for single point  
     } else {
       sampledArea <- 2 * w * nhat.df$length  # area sampled for line transects
     }
-    nhat.df$density <- nhat.df$abundance / sampledArea
+    nhat.df$density <- (nhat.df$abundance * area) / sampledArea
+    
+    
+    # Calculate effective area ("effective" as in ESW)
+    # This is suggested as the offset term in a GLM model of density
+    if (dfunc$pointSurvey) {
+      nhat.df$effArea <- (pi * nhat.df$esw^2) / area  # for points
+    } else {
+      nhat.df$effArea <- (nhat.df$length * nhat.df$esw * 2) / area  # for lines
+    }
+    
     
   } else {
     
@@ -164,7 +188,7 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
                   nhat.sampleArea = sum(nhat),
                   n.sites = tot.sites,
                   n.groups = n,
-                  rawcount = sum(detectionData$groupsize),
+                  observedCount = sum(detectionData$groupsize),
                   area = area,
                   w = w,
                   tran.len = tot.trans.len,

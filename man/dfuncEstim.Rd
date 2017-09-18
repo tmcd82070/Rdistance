@@ -289,6 +289,11 @@ plot(hn2.dfunc)
 plot(hz.dfunc)
 
 }
+\references{
+Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
+   and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
+   abundance of biological populations}. Oxford University Press, Oxford, UK.
+}
 \seealso{
 \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 See \code{\link{uniform.like}} for details on the "uniform", 
