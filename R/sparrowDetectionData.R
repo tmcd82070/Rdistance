@@ -40,7 +40,7 @@
 #' angle (degrees) from the transect line to the detected group.  \item
 #' \code{dist}: Number, the perpendicular, off-transect distance (m) from the
 #' transect to the detected group.  This is the distance used in analysis.
-#' Calculated using \code{\link{perp.dists}}.  }
+#' Calculated using \code{\link{perpDists}}.  }
 #' 
 #' @seealso \code{\link{sparrowSiteData}}
 #' 

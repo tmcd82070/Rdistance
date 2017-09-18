@@ -33,7 +33,7 @@
 #' 
 #' @param series A string specifying the type of expansion to 
 #' use.  Currently, valid values are 'simple', 'hermite', and 
-#' 'cosine'; but, see \code{\link{F.dfunc.estim}} about 
+#' 'cosine'; but, see \code{\link{dfuncEstim}} about 
 #' defining other series.
 #' 
 #' @param expansions A scalar specifying the number of terms 
@@ -120,7 +120,7 @@
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #'         
-#' @seealso \code{\link{F.dfunc.estim}},
+#' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{negexp.like}},

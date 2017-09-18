@@ -38,7 +38,7 @@ set to \code{NA} in the output.}
 
 \item{series}{A string specifying the type of expansion to 
 use.  Currently, valid values are 'simple', 'hermite', and 
-'cosine'; but, see \code{\link{F.dfunc.estim}} about 
+'cosine'; but, see \code{\link{dfuncEstim}} about 
 defining other series.}
 
 \item{expansions}{A scalar specifying the number of terms 
@@ -129,7 +129,7 @@ f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) +
 c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 }
 \seealso{
-\code{\link{F.dfunc.estim}},
+\code{\link{dfuncEstim}},
          \code{\link{halfnorm.like}},
          \code{\link{hazrate.like}},
          \code{\link{negexp.like}},

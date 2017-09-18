@@ -13,7 +13,7 @@ the observer to the detected group.  \item \code{sightangle}: Number, the
 angle (degrees) from the transect line to the detected group.  \item
 \code{dist}: Number, the perpendicular, off-transect distance (m) from the
 transect to the detected group.  This is the distance used in analysis.
-Calculated using \code{\link{perp.dists}}.  }}
+Calculated using \code{\link{perpDists}}.  }}
 \source{
 A subset of Jason Carlisle's dissertation data, University of Wyoming.
 }

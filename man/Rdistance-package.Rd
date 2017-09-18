@@ -23,7 +23,7 @@ during line transect surveys consists of sighting records for
 \emph{targets}, usually either individuals or groups of some species.  Among
 the collected data, off-transect distances are recorded or computed from
 other information such as sighting distance and angle (see
-\code{\link{perp.dists}}).  Off-transect distances are the perpendicular
+\code{\link{perpDists}}).  Off-transect distances are the perpendicular
 distances from the transect to the location of the initial sighting cue.
 The physical locations of sighted targets are often recorded or computed.
 When groups are the target, the number of individuals in the group is
