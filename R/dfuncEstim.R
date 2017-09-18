@@ -243,6 +243,10 @@
 #'     This is TRUE if distances are radial from a point. FALSE 
 #'     if distances are perpendicular off-transect. }
 #'     
+#' @references Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
+#'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
+#'    abundance of biological populations}. Oxford University Press, Oxford, UK.
+#'     
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
 #'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}\cr
 #'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
