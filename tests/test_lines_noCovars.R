@@ -6,7 +6,7 @@
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 9/5/2017
+# Last updated 9/18/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -168,13 +168,32 @@ fit
 fit$n.hat
 fit$ci
 
-# 
-# fitby <- F.abund.estim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
-#                        area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
-# fitby
 
+
+
+
+
+
+
+# Toggle on bySite option, to estimate abundance for each transect
+
+fitSite <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                      area=10000, ci=NULL, bySite=TRUE)
+fitSite
+
+# plot(fitSite)
+
+mean(fitSite$density)
+fit$n.hat
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
+
+
+
+
+
+
+
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 # 5) Use AICc to select a detection function and estimate abundance -----
