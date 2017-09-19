@@ -156,7 +156,6 @@ are lists containing the following components:
   \item{pointSurvey}{The input value of \code{pointSurvey}. 
     This is TRUE if distances are radial from a point. FALSE 
     if distances are perpendicular off-transect. }
-  \item{formula}{The formula specified for the detection function.}
 }
 \description{
 Fit a specific detection function to a set of 
