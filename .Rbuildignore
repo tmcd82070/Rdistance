@@ -1,6 +1,5 @@
 ^cran-comments\.md$
 ^cran-check\.R$
-^PreppingExampleData\.R$
 ^Rdistance\.Rproj$
 ^README\.md$
 ^\.Rproj\.user$
