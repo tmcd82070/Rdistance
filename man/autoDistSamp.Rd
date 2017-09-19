@@ -8,7 +8,7 @@ autoDistSamp(formula, detectionData, siteData, w.lo = 0, w.hi = max(dist),
   likelihoods = c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
   series = c("cosine", "hermite", "simple"), expansions = 0:3,
   pointSurvey = FALSE, warn = TRUE, area = 1, ci = 0.95, R = 500,
-  by.id = FALSE, plot.bs = FALSE, plot = TRUE, ...)
+  bySite = FALSE, plot.bs = FALSE, plot = TRUE, ...)
 }
 \arguments{
 \item{formula}{This parameter is passed to \code{dfuncEstim}.
@@ -55,7 +55,7 @@ See \code{abundEstim} documentation for definition.}
 \item{R}{This parameter is passed to \code{abundEstim}.
 See \code{abundEstim} documentation for definition.}
 
-\item{by.id}{This parameter is passed to \code{abundEstim}.
+\item{bySite}{This parameter is passed to \code{abundEstim}.
 See \code{abundEstim} documentation for definition.}
 
 \item{plot.bs}{This parameter is passed to \code{abundEstim}.
@@ -100,7 +100,7 @@ as 'best', and estimation of abundance proceeds using that model.
   autoDistSamp(detectionData=sparrow.detections, siteData=sparrow.sites,
                   likelihood=c("halfnorm", "hazrate", "negexp"),
                   series=c("cosine", "simple"),
-                  expansions=c(0, 1), area=10000, R=20, ci=0.95, by.id=FALSE,
+                  expansions=c(0, 1), area=10000, R=20, ci=0.95, bySite=FALSE,
                   plot.bs=FALSE, w.hi=150, plot=TRUE)
 }
 \seealso{

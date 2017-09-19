@@ -34,7 +34,7 @@
 #' @param R This parameter is passed to \code{abundEstim}.
 #'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param by.id This parameter is passed to \code{abundEstim}.
+#' @param bySite This parameter is passed to \code{abundEstim}.
 #'   See \code{abundEstim} documentation for definition.
 #'   
 #' @param plot.bs This parameter is passed to \code{abundEstim}.
@@ -89,7 +89,7 @@
 #'   autoDistSamp(detectionData=sparrow.detections, siteData=sparrow.sites,
 #'                   likelihood=c("halfnorm", "hazrate", "negexp"),
 #'                   series=c("cosine", "simple"),
-#'                   expansions=c(0, 1), area=10000, R=20, ci=0.95, by.id=FALSE,
+#'                   expansions=c(0, 1), area=10000, R=20, ci=0.95, bySite=FALSE,
 #'                   plot.bs=FALSE, w.hi=150, plot=TRUE)
 #' @keywords model
 #' @export
@@ -99,11 +99,12 @@ autoDistSamp <- function (formula, detectionData, siteData,
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
                              series=c("cosine", "hermite", "simple"), expansions=0:3,
                              pointSurvey=FALSE, warn=TRUE,
-                             area=1, ci=0.95, R=500, by.id=FALSE, plot.bs=FALSE,                          
+                             area=1, ci=0.95, R=500, bySite=FALSE, plot.bs=FALSE,                          
                              plot=TRUE, ...){
   
   
-    # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
+  
+  # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
   if(!("dist" %in% names(detectionData))) stop("There is no column named 'dist' in your detectionData.")
   if(!("siteID" %in% names(detectionData))) stop("There is no column named 'siteID' in your detectionData.")
   if(!("groupsize" %in% names(detectionData))) stop("There is no column named 'groupsize' in your detectionData.")
@@ -177,38 +178,43 @@ autoDistSamp <- function (formula, detectionData, siteData,
   }
   
   
+  
+  
+  
   # Fit detection functions (dfuncEstim appears 4 times below)
   
   wwarn <- options()$warn
   options(warn = -1)
   fit.table <- NULL
+  
   cat("Likelihood\tSeries\tExpans\tConverged?\tScale?\tAIC\n")
   for (like in likelihoods) {
     if (like == "Gamma") {
-      dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = like, w.lo = w.lo, 
-                             w.hi = w.hi, pointSurvey=pointSurvey, ...)
+      dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
+                          siteData = siteData, likelihood = like, w.lo = w.lo,
+                          w.hi = w.hi, pointSurvey=pointSurvey, ...)
       ser <- ""
       expan <- 0
       fit.table <- f.save.result(fit.table, dfunc, like, 
                                  ser, expan, plot)
       cont <- fit.table$k
       fit.table <- fit.table$results
-    }
-    else {
+    } else {
       for (expan in expansions) {
         if (expan == 0) {
           ser <- "cosine"
-          dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = like, 
+          dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
+                              siteData = siteData, likelihood = like, 
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                  series = ser, pointSurvey=pointSurvey, ...)
           fit.table <- f.save.result(fit.table, dfunc, 
                                      like, ser, expan, plot)
           cont <- fit.table$k
           fit.table <- fit.table$results
-        }
-        else {
+        } else {
           for (ser in series) {
-            dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = like, 
+            dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
+                                siteData = siteData, likelihood = like, 
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                    series = ser, pointSurvey=pointSurvey, ...)
             fit.table <- f.save.result(fit.table, dfunc, 
@@ -226,13 +232,23 @@ autoDistSamp <- function (formula, detectionData, siteData,
         break
     }
   }
-  if (sum(fit.table$converge != 0) > 0) 
+  
+  
+  
+  if (sum(fit.table$converge != 0) > 0) {
     cat("Note: Some models did not converge or had parameters at their boundaries.\n")
+  }
+    
+  
+  # Sort by AIC
   fit.table$aic <- ifelse(fit.table$converge == 0, fit.table$aic, 
                           Inf)
   fit.table <- fit.table[order(fit.table$aic), ]
 
-  dfunc <- dfuncEstim(formula = formula, data = detectionData, likelihood = fit.table$like[1], 
+  
+  # Refit best dfunc
+  dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
+                      siteData = siteData, likelihood = fit.table$like[1], 
                          w.lo = w.lo, w.hi = w.hi, expansions = fit.table$expansions[1], 
                          series = fit.table$series[1], pointSurvey=pointSurvey, ...)
   if (plot) {
@@ -242,7 +258,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
 
   
   abund <- abundEstim(dfunc, detectionData=detectionData, siteData=siteData,
-                         area=area, ci=ci, R=R, plot.bs=plot.bs, by.id=by.id)
+                         area=area, ci=ci, R=R, plot.bs=plot.bs, bySite=bySite)
 
 #   }
   cat("\n\n---------------- Final Automated CDS Abundance Estimate -------------------------------\n")
