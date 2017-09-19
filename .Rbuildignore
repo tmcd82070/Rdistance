@@ -9,3 +9,4 @@ CodeParkingLot
 distance_old
 .tar.gz$
 .zip$
+^data-raw$
