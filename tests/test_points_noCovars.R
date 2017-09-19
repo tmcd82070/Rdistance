@@ -139,11 +139,13 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-# auto <- F.automated.CDA(formula=dist~1, detection.data=thrasherDetectionData, site.data=thrasherSiteData,
-#                         w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE, point.transects=TRUE)
+# auto <- autoDistSamp(formula=dist~1, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+#                      likelihoods=c("halfnorm", "hazrate", "negexp", "uniform"), expansions=0,
+#                      w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE)
 # 
-
-
+# 
+# auto
+# fit <- auto
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
