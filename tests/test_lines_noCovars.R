@@ -155,7 +155,7 @@ effectiveDistance(sparrow.dfunc)
 # necessary to stabilize CI estimates.
 
 fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
+                     area=10000, R=50, ci=0.95, plot.bs=TRUE)
 fit
 
 
@@ -207,8 +207,8 @@ fit$n.hat
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-# auto <- F.automated.CDA(formula=dist~1, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
-#                         w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
+auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                        w.hi=trunc, plot=FALSE, area=10000, R=50, ci=0.95, plot.bs=TRUE)
 
 
 # Before the package overhaul, the top-ranked detection function was the negative

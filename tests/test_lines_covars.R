@@ -116,47 +116,20 @@ summary(sparrowDetectionData$dist)
 
 
 
+# Fit detection function
 
-# Next, fit a detection function (plotted as a red line) using `dfuncEstim`.  For now, we will proceed using the
-# half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
-# automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater
-# than 150 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 150.
-
-# Merge site-level covariates to detection data
-sparrow.merge <- merge(sparrowDetectionData, sparrowSiteData, by="siteID")
-
-trunc <- 150
-sparrow.dfunc <- dfuncEstim(formula=dist~shrub, data=sparrow.merge, likelihood="halfnorm", w.hi=trunc)
+trunc <- 100
+sparrow.dfunc <- dfuncEstim(formula=dist~shrub, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                            likelihood="halfnorm", w.hi=trunc)
 plot(sparrow.dfunc)
 sparrow.dfunc
 
-# Convergence failure when covariate is bare
-# x <- dfuncEstim(formula=dist~bare, data=sparrow.merge, likelihood="halfnorm", w.hi=trunc)
-# Warning message:
-#   In dfuncEstim(formula = dist ~ bare, data = sparrow.merge, likelihood = "halfnorm",  :
-#                      ERROR: ABNORMAL_TERMINATION_IN_LNSRCH
 
 
-
-# sparrow.dfunc <- dfuncEstim(formula=dist~shrub, data=sparrow.merge, likelihood="halfnorm", w.hi=150)
-mean(sparrow.merge$shrub)
-mean(sparrowSiteData$shrub)
-plot(sparrow.dfunc)
-sparrow.dfunc
 
 # Plot for different covar values
 plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max(sparrowSiteData$shrub), length.out=4)))
 
-# And add more bins
-plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max(sparrowSiteData$shrub), length.out=4)),
-     nbins=20)
-
-
-# # abund
-# fit <- abundEstim(sparrow.dfunc, detection.data=sparrowDetectionData, transect.data=sparrowSiteData,
-#                      area=10000, R=100, ci=0.95, plot.bs=TRUE)
-# 
-# fit
 
 
 
@@ -166,11 +139,6 @@ plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max
 
 
 
-
-# The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
-# abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
-# detection and ESW equal to *X* effectively covers the same area as a study with perfect detection out to a distance
-# of *X*.  See the help documentation for `ESW` for details.
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -194,8 +162,8 @@ plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max
 
 # (jdc) the bootstrap-replicate detection lines (plot.bs=TRUE) aren't in the right place, but the bootstrap-generated CIs appear plausible
 # 
-fit <- abundEstim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
-                     area=10000, R=75, ci=0.95, plot.bs=TRUE)
+fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                     area=10000, R=25, ci=0.95, plot.bs=TRUE)
 fit
 
 
