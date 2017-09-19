@@ -242,6 +242,7 @@
 #'   \item{pointSurvey}{The input value of \code{pointSurvey}. 
 #'     This is TRUE if distances are radial from a point. FALSE 
 #'     if distances are perpendicular off-transect. }
+#'   \item{formula}{The formula specified for the detection function.}
 #'     
 #' @references Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
@@ -401,7 +402,8 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
               call.observer = observer, 
               fit = fit, 
               factor.names = factor.names, 
-              pointSurvey = pointSurvey)
+              pointSurvey = pointSurvey,
+              formula = formula)
   
   ans$loglik <- F.nLL(ans$parameters, ans$dist, covars = ans$covars, 
                       like = ans$like.form, w.lo = ans$w.lo, w.hi = ans$w.hi, 
