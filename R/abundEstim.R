@@ -323,9 +323,9 @@ abundEstim <- function(dfunc, detectionData, siteData,
         
         
         # Re-fit detection function -- same function, new data
-        fmla <- as.formula(dfunc$call[["formula"]])
+        # fmla <- as.formula(dfunc$call[["formula"]])  # (jdc) when called from autoDistSamp, dfunc$call[["formula"]] is "formula"
         
-        dfunc.bs <- dfuncEstim(formula = fmla,
+        dfunc.bs <- dfuncEstim(formula = dfunc$formula,  # (jdc) updated dfuncEstim to store formula separate from call
                                detectionData = new.mergeData,
                                likelihood = dfunc$like.form, 
                                w.lo = dfunc$w.lo,
