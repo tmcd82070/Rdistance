@@ -34,7 +34,7 @@ effectiveDistance <- function(obj, newdata = NULL){
   # call ESW for line transects and EDR for point transects
 
   if (obj$pointSurvey) {
-    EDR(obj,newdat)
+    EDR(obj)  # (jdc)  Trent, I removed the newdata argument here to get some other debugging done.
   } else {
     ESW(obj,newdata)
   }
