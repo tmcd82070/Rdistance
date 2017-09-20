@@ -214,7 +214,7 @@ auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteDat
 # Before the package overhaul, the top-ranked detection function was the negative
 # exponential likelihood, with one cosine expansion.
 
-# Now the uniform, 0 expansions is top-ranked.
+# Now the negexp, 0 expansions is top-ranked.
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
@@ -256,11 +256,11 @@ summary(ds.fit)
 
 # Results very, very similar
 # AIC
-AIC(fit)  # Rdistance = 2970.604
+AIC(fit)  # Rdistance = 2970.605
 AIC(ds.fit)  # Distance = 2970.594
 
 # Abund
-fit$n.hat  # 0.8634171
+fit$n.hat  # 0.863415
 fit$ci  # depends on the bootstrap, about 0.67 - 1.10
 ds.fit$dht$individuals$N  # 0.8634164 (0.6943432 - 1.073659)
 # ds.fit$dht$individuals$N$Estimate
@@ -268,5 +268,5 @@ ds.fit$dht$individuals$N  # 0.8634164 (0.6943432 - 1.073659)
 # ds.fit$dht$individuals$N$ucl
 
 # Sigma
-coef(fit)  # 46.3587
+coef(fit)  # 46.35884
 exp(ds.fit$ddf$ds$aux$ddfobj$scale$parameters)  # 46.35865

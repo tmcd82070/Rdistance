@@ -324,6 +324,13 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
     data <- NULL
   }
   
+  
+  # (jdc) I don't think there was anywhere in this function that was truncating these distances,
+  # (jdc) so dists < w.lo and > w.hi were being included in the MLE
+  data <- data[data$dist >= w.lo & data$dist <= w.hi, ]
+  
+  
+  
   mf <- getDfuncModelFrame(formula, data)
   mt <- attr(mf, "terms")
   dist <- model.response(mf,"any")
