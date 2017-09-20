@@ -5,16 +5,16 @@
 #' estimation of abundance.
 #' 
 #' @param formula This parameter is passed to \code{dfuncEstim}.
-#'   See \code{dfuncEstim} documentation for definition. 
+#'   See \code{dfuncEstim} documentation for definition.
+#'   
 #' @param detectionData This parameter is passed to \code{dfuncEstim} 
 #' and \code{abundEstim}. See \code{abundEstim} documentation for definition.
 #' 
 #' @param siteData This parameter is passed to \code{abundEstim}.
 #'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param pointSurvey A logical scalar specifying whether input data come
-#' from a point-transect survey type (TRUE),
-#' or a line-transect survey type (FALSE).
+#' @param pointSurvey This parameter is passed to \code{dfuncEstim}.
+#'   See \code{dfuncEstim} documentation for definition.
 #' 
 #' @param w.lo This parameter is passed to \code{dfuncEstim}.
 #'   See \code{dfuncEstim} documentation for definition.
@@ -51,7 +51,8 @@
 #'   
 #' @param expansions Vector of the number of expansion terms to 
 #' consider during model selection. Valid values are 0 through 3. 
-#' See Details for the models this routine considers. 
+#' See Details for the models this routine considers. Note, expansion terms are not currently
+#' allowed in models with covariates.
 #' 
 #' @param plot Logical scalar specifying whether to plot models during model selection. 
 #'   If \code{TRUE}, a histogram with fitted distance function is plotted for every fitted model. 
@@ -68,7 +69,8 @@
 #' = 24 models.  The default specification fits 41 detection functions 
 #' from the "halfnorm", "hazrate", "uniform", "negexp", and "Gamma" likelihoods 
 #' (note that Gamma does not currently implement expansions, see 
-#' \code{\link{Gamma.like}}).  The model with lowest AIC is choosen 
+#' \code{\link{Gamma.like}}). Note, expansion terms are not currently
+#' allowed in models with covariates.  The model with lowest AIC is selected 
 #' as 'best', and estimation of abundance proceeds using that model.
 #' 
 #' @return An 'abundance estimate' object (see \code{abundEstim} and \code{dfuncEstim}). 
@@ -202,7 +204,8 @@ autoDistSamp <- function (formula, detectionData, siteData,
     } else {
       for (expan in expansions) {
         if (expan == 0) {
-          ser <- "cosine"
+          ser <- "None"  # (jdc) there is no expansion here, right?  Was returning "cosine" for series
+
           dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
                               siteData = siteData, likelihood = like, 
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
@@ -213,6 +216,20 @@ autoDistSamp <- function (formula, detectionData, siteData,
           fit.table <- fit.table$results
         } else {
           for (ser in series) {
+            
+            
+            # (jdc) We are not allowing expansion terms in presence of covariates
+            # If there are covariates, skip this loop through models with expansions
+            if ( length(attr(terms(formula), "term.labels")) > 0 ) {
+              # (jdc) This warning seems to always be supressed, but I added a note in the help doc
+              # that expansions aren't allowed when there are covariates.
+              # if (warn) {
+                # warning("Expansions not allowed when covariates are present. Models with expansions skipped.")
+              # } 
+              break  # (jdc) should this be break?
+            }
+
+            
             dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
                                 siteData = siteData, likelihood = like, 
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
@@ -261,7 +278,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
                          area=area, ci=ci, R=R, plot.bs=plot.bs, bySite=bySite)
 
 #   }
-  cat("\n\n---------------- Final Automated CDS Abundance Estimate -------------------------------\n")
+  cat("\n\n------------ Abundance Estimate Based on Top-Ranked Detection Function ------------\n")
   print(abund)
   options(warn = wwarn)
   abund

@@ -37,11 +37,11 @@ the models this routine considers.}
 
 \item{expansions}{Vector of the number of expansion terms to 
 consider during model selection. Valid values are 0 through 3. 
-See Details for the models this routine considers.}
+See Details for the models this routine considers. Note, expansion terms are not currently
+allowed in models with covariates.}
 
-\item{pointSurvey}{A logical scalar specifying whether input data come
-from a point-transect survey type (TRUE),
-or a line-transect survey type (FALSE).}
+\item{pointSurvey}{This parameter is passed to \code{dfuncEstim}.
+See \code{dfuncEstim} documentation for definition.}
 
 \item{warn}{This parameter is passed to \code{dfuncEstim}.
 \code{dfuncEstim} documentation for definition.}
@@ -85,7 +85,8 @@ the total number of models fitted is 3 (likelihoods) * 2 (series) * 4 (expansion
 = 24 models.  The default specification fits 41 detection functions 
 from the "halfnorm", "hazrate", "uniform", "negexp", and "Gamma" likelihoods 
 (note that Gamma does not currently implement expansions, see 
-\code{\link{Gamma.like}}).  The model with lowest AIC is choosen 
+\code{\link{Gamma.like}}). Note, expansion terms are not currently
+allowed in models with covariates.  The model with lowest AIC is selected 
 as 'best', and estimation of abundance proceeds using that model.
 }
 \examples{
