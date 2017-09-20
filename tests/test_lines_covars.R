@@ -120,7 +120,7 @@ summary(sparrowDetectionData$dist)
 
 trunc <- 100
 sparrow.dfunc <- dfuncEstim(formula=dist~shrub, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                            likelihood="halfnorm", w.hi=trunc)
+                            likelihood="Gamma", w.hi=trunc)
 
 sparrow.dfunc
 

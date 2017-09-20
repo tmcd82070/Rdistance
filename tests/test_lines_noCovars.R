@@ -219,7 +219,7 @@ auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteDat
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 # This used to be the best-fitting detection function
-# best.old <- F.dfunc.estim(formula=dist~1, data=sparrowDetectionData, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
+# best.old <- dfuncEstim(formula=dist~1, detectionData=sparrowDetectionData, likelihood="negexp", expansions=1, series="cosine", w.hi=100)
 # plot(best.old)
 # best.old
 

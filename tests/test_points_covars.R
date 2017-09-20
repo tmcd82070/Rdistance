@@ -6,7 +6,7 @@
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 9/6/2017
+# Last updated 9/20/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -24,8 +24,8 @@
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
-data(thrasher.detections)
-head(thrasher.detections)
+data(thrasherDetectionData)
+head(thrasherDetectionData)
 
 
 
@@ -38,13 +38,13 @@ head(thrasher.detections)
 # The second required dataset is a transect data.frame
 # Each row is a transect, and the siteID and length columns are required (as named)
 # Other columns (e.g., transect-level covariates) are ignored, but may be useful in modeling abundance later
-data(thrasher.sites)
-head(thrasher.sites)
+data(thrasherSiteData)
+head(thrasherSiteData)
 
 
 
 # CV of each predictor
-apply(thrasher.sites[3:6], 2, function(x) sd(x)/mean(x))
+# apply(thrasherSiteData[3:6], 2, function(x) sd(x)/mean(x))
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -59,7 +59,7 @@ apply(thrasher.sites[3:6], 2, function(x) sd(x)/mean(x))
 
 # Distance-sampling analysis is done on perpendicular distances (i.e., the distance from each detected group to the
 # transect, not to the observer) for line transects and radial distances for point transects.  The radial distances are
-# provided in thrasher.detections
+# provided in thrasherDetectionData
 
 
 
@@ -67,46 +67,43 @@ apply(thrasher.sites[3:6], 2, function(x) sd(x)/mean(x))
 
 
 # Explore the distribution of distances.
-hist(thrasher.detections$dist, col="grey", main="", xlab="Distance (m)", breaks=20)
-rug(thrasher.detections$dist)
-summary(thrasher.detections$dist)
+hist(thrasherDetectionData$dist, col="grey", main="", xlab="Distance (m)", breaks=20)
+rug(thrasherDetectionData$dist)
+summary(thrasherDetectionData$dist)
 
 
-quantile(thrasher.detections$dist, c(0.5, 0.85, 0.9, 0.95))
+quantile(thrasherDetectionData$dist, c(0.5, 0.85, 0.9, 0.95))
 trunc <- 175
 
-# Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the
+# Next, fit a detection function (plotted as a red line) using `dfuncEstim`.  For now, we will proceed using the
 # half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
 # automated process that fits multiple detection functions and compares them using AICc.  Larger distances are quite
 # sparse, so here we right-truncate the data, tossing out detections where `dist` > trunc.
 
-# Merge site-level covariates to detection data
-thrasher.merge <- merge(thrasher.detections, thrasher.sites, by="siteID")
 
 
-thrasher.dfunc <- F.dfunc.estim(formula=dist~height, data=thrasher.merge, likelihood="halfnorm", w.hi=trunc, point.transects=TRUE)
+
+thrasher.dfunc <- dfuncEstim(formula=dist~shrub, detectionData=thrasherDetectionData,
+                             siteData=thrasherSiteData, likelihood="halfnorm", w.hi=trunc, pointSurvey=TRUE)
 plot(thrasher.dfunc)
 thrasher.dfunc
 
 
 
-mean(thrasher.merge$height)
-mean(thrasher.sites$height)
+mean(thrasherSiteData$height)
 plot(thrasher.dfunc)
 thrasher.dfunc
 
 # Plot for different covar values
-plot(thrasher.dfunc, newdata=data.frame(height=seq(min(thrasher.sites$height), max(thrasher.sites$height), length.out=4)))
+plot(thrasher.dfunc, newdata=data.frame(height=seq(min(thrasherSiteData$height), max(thrasherSiteData$height), length.out=4)))
 
-# And add more bins
-plot(thrasher.dfunc, newdata=data.frame(height=seq(min(thrasher.sites$height), max(thrasher.sites$height), length.out=4)),
-     nbins=20)
+
 
 
 
 
 ESW(thrasher.dfunc)
-effective.radius(thrasher.dfunc)
+effectiveDistance(thrasher.dfunc)
 
 # The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
 # abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
@@ -121,20 +118,20 @@ effective.radius(thrasher.dfunc)
 # where each row represents one transect. Load the example dataset of surveyed thrasher transects from the package.
 
 
-# Next, estimate abundance (or density in this case) using `F.abund.estim`.  If `area`=1, then density is given in the
+# Next, estimate abundance (or density in this case) using `abundEstim`.  If `area`=1, then density is given in the
 # squared units of the distance measurements --- in this case, thrashers per square meter.  Instead, we set `area`=10000
 # in order to convert to thrashers per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance
-# estimate is detailed in the help documentation for `F.abund.estim`.
+# estimate is detailed in the help documentation for `abundEstim`.
 
-# Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`),
+# Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `abundEstim`),
 # and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).
 # Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between
 # runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be
 # necessary to stabilize CI estimates.
 
 # (jdc) the plotting of the bootstrap isn't right...
-fit <- F.abund.estim(dfunc=thrasher.dfunc, detection.data=thrasher.detections, site.data=thrasher.sites,
-                     area=10000, R=20, ci=0.95, plot.bs=TRUE)
+fit <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+                     area=10000, R=10, ci=0.95, plot.bs=TRUE)
 fit
 
 
@@ -146,7 +143,7 @@ fit$ci
 
 
 # 
-# fitby <- F.abund.estim(dfunc=thrasher.dfunc, detection.data=thrasher.detections, site.data=thrasher.sites,
+# fitby <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
 #                      area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
 # fitby
 
@@ -166,9 +163,10 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-# auto <- F.automated.CDA(formula=dist~1, detection.data=thrasher.detections, site.data=thrasher.sites,
-#                         w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE, point.transects=TRUE)
-# 
+auto <- autoDistSamp(formula=dist~shrub, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+                        w.hi=trunc, plot=FALSE, area=10000, R=10, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE,
+                     likelihoods=c("halfnorm", "hazrate"))
+
 
 
 
@@ -192,10 +190,10 @@ d.data$object <- 1:nrow(d.data)  # add object ID
 # Produce and format 3 other required data.frames
 d.region <- data.frame(Region.Label="main", Area=10000)
 
-d.sample <- data.frame(Sample.Label = thrasher.sites$siteID, Effort = 1)  # Effort for points is number of visits (see ?flatfile)
+d.sample <- data.frame(Sample.Label = thrasherSiteData$siteID, Effort = 1)  # Effort for points is number of visits (see ?flatfile)
 d.sample$Region.Label <- "main"
 
-d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=thrasher.detections$siteID)
+d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=thrasherDetectionData$siteID)
 
 # Fit model and estimate abundance
 (ds.fit <- ds(data=d.data, formula= ~height, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
