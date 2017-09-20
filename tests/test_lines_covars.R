@@ -121,12 +121,12 @@ summary(sparrowDetectionData$dist)
 trunc <- 100
 sparrow.dfunc <- dfuncEstim(formula=dist~shrub, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                             likelihood="halfnorm", w.hi=trunc)
-plot(sparrow.dfunc)
+
 sparrow.dfunc
 
 
 
-
+plot(sparrow.dfunc)
 # Plot for different covar values
 plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max(sparrowSiteData$shrub), length.out=4)))
 
@@ -195,22 +195,14 @@ fit$ci
 # documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
-
-# auto <- F.automated.CDA(formula=dist~1, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
-#                         w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE)
-
-
-# Before the package overhaul, the top-ranked detection function was the negative
-# exponential likelihood, with one cosine expansion.
-
-# Now the uniform, 0 expansions is top-ranked.
+# (jdc) We don't allow expansions if covariates, but this will run them (after setting expansions to 0)  Need to update autoDistSamp
+auto <- autoDistSamp(formula=dist~shrub, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                     w.hi=trunc, plot=FALSE, area=10000, R=25, ci=0.95, plot.bs=TRUE,
+                     likelihoods=c("halfnorm", "hazrate"), expansions=0:2)
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
-# This used to be the best-fitting detection function
-# best.old <- dfuncEstim(formula=dist~1, data=sparrowDetectionData, likelihood="negexp", expansions=1, series="cosine", w.hi=150)
-# plot(best.old)
-# best.old
+
 
 
 
@@ -234,35 +226,35 @@ d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=spa
 
 # Fit model and estimate abundance
 (ds.fit <- ds(data=d.data, formula= ~shrub, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
-              truncation=207, transect="line", key="hn", adjustment=NULL, dht.group=FALSE))
+              truncation=trunc, transect="line", key="hn", adjustment=NULL, dht.group=FALSE))
 
 plot(ds.fit)
 print(ds.fit)
 summary(ds.fit)
 
 
-# Trent's RDistance fitting
-fit <- dfuncEstim(formula = dist ~ shrub, detectionData = sparrowDetectionData,
-                  siteData = sparrowSiteData, likelihood = "halfnorm")
-fit <- abundEstim(fit, sparrowDetectionData, sparrowSiteData, ci=.95, 
-                   R=100, area=10000)
+# # Trent's RDistance fitting
+# fit <- dfuncEstim(formula = dist ~ shrub, detectionData = sparrowDetectionData,
+#                   siteData = sparrowSiteData, likelihood = "halfnorm")
+# fit <- abundEstim(fit, sparrowDetectionData, sparrowSiteData, ci=.95, 
+#                    R=100, area=10000)
 
 
 # Very very similar results, but don't match exactly
 # AIC
-AIC(fit)  # Rdistance
-AIC(ds.fit)  # Distance
+AIC(fit)  # Rdistance = 2968.479
+AIC(ds.fit)  # Distance = 2968.442
 
 # Abund
-fit$n.hat
-fit$ci
-ds.fit$dht$individuals$N
+fit$n.hat  # 0.8712842
+fit$ci  # depends on the boostrap, usually ~ 0.73 - 0.96
+ds.fit$dht$individuals$N  # 0.8712386 (0.6911681 - 1.098223)
 # ds.fit$dht$individuals$N$Estimate
 # ds.fit$dht$individuals$N$lcl
 # ds.fit$dht$individuals$N$ucl
 
 # Sigma
-coef(fit)
-ds.fit$ddf$ds$aux$ddfobj$scale$parameters
+coef(fit)  # Intercept = 4.09779108, shrub = -0.01951001
+ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept = 4.09907755, shrub = -0.01959484
 
 

@@ -118,11 +118,16 @@ fit$n.hat
 fit$ci
 
 
-# 
-# fitby <- F.abund.estim(dfunc=thrasher.dfunc, detection.data=thrasherDetectionData, site.data=thrasherSiteData,
-#                      area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
-# fitby
+# Toggle on bySite option, to estimate abundance for each transect
+# (jdc) runs with warning that row names were found from a short variable and have been discarded
+fitSite <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+                      area=10000, ci=NULL, bySite=TRUE)
+fitSite
 
+# plot(fitSite)
+
+mean(fitSite$density)
+fit$n.hat
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -139,13 +144,13 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-# auto <- autoDistSamp(formula=dist~1, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-#                      likelihoods=c("halfnorm", "hazrate", "negexp", "uniform"), expansions=0,
-#                      w.hi=trunc, plot=FALSE, area=10000, R=100, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE)
-# 
-# 
-# auto
-# fit <- auto
+auto <- autoDistSamp(formula=dist~1, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+                     likelihoods=c("halfnorm", "hazrate", "negexp", "uniform"), expansions=0,
+                     w.hi=trunc, plot=FALSE, area=10000, R=50, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE)
+
+
+
+
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
@@ -181,7 +186,7 @@ summary(ds.fit)  # Because distance is measured in m, and I set Area to 10000 (m
 
 # Results very, very similar
 # AIC
-AIC(fit)  # Rdistance = 1761.914
+AIC(fit)  # Rdistance = 1761.916
 AIC(ds.fit)  # Distance = 1761.898
 
 # Abund
