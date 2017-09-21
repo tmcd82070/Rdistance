@@ -32,7 +32,7 @@
 # predictions 
 # Type = "inflation" predicts the inflation factor for all
 # observations.  Inflation factors use likelihood parameters to compute
-# effective sampling distances (ESW or ESR) and inverts them.
+# effective sampling distances (ESW or EDR) and inverts them.
 
 
  
