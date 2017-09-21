@@ -23,9 +23,9 @@ Description: Distance-sampling is a popular method for abundance estimation in
   distance-sampling data collected on point or line transects. 
   Line and point transect analayses are accomodated in one routine 
   that accepts a regression-like formula object. Abundance routines
-  perform automated bootstrapping automated distance function 
-  selection. Study area and site-level abundance estimates are available.
-  A large suite of classical, parametric detection functions are 
+  perform automated bootstrapping and automated detection-function 
+  selection. Overall (study area) and site-level abundance estimates are
+  available. A large suite of classical, parametric detection functions are 
   included, and the package can accommodate user-defined detection functions.  
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki

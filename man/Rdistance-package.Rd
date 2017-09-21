@@ -7,13 +7,15 @@
 \alias{Rdistance}
 \title{Rdistance - Distance Sampling Analyses for Abundance Estimation}
 \description{
-Distance-sampling is a popular method for abundance 
-estimation in ecology. This package contains functions and associated
-routines to analyze distance-sampling data collected at point or line
-transects. A large suite of classical, parametric detection functions are
-included, and the package can
-also accommodate user-defined detection functions.  Covariates can be
-included in the detection function.
+Distance-sampling is a popular method for abundance estimation in
+ecology. This package contains functions and associated routines to analyze
+distance-sampling data collected on point or line transects. 
+Line and point transect analayses are accomodated in one routine
+that accepts a regression-like formula object. Abundance routines
+perform automated bootstrapping and automated detection-function 
+selection. Overall (study area) and site-level abundance estimates are
+available. A large suite of classical, parametric detection functions are 
+included, and the package can accommodate user-defined detection functions.
 }
 \details{
 \bold{Background} - Line transect surveys are conducted by traversing
