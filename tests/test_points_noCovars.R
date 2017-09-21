@@ -183,7 +183,6 @@ summary(ds.fit)  # Because distance is measured in m, and I set Area to 10000 (m
 
 
 
-
 # Results very, very similar
 # AIC
 AIC(fit)  # Rdistance = 1761.916

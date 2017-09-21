@@ -74,7 +74,8 @@ predict.dfunc <- function(object, newdata,
     params <- matrix(params, nrow=n, ncol=length(params), byrow=TRUE)
   }  
 
-  dimnames(params)[[2]] <- likeParamNames(object$like.form)
+  
+  #dimnames(params)[[2]] <- likeParamNames(object$like.form)
   
   # Implement different types of predictions here. 
   # type <- match.arg(type)

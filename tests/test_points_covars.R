@@ -102,7 +102,7 @@ plot(thrasher.dfunc, newdata=data.frame(height=seq(min(thrasherSiteData$height),
 
 
 
-ESW(thrasher.dfunc)
+EDR(thrasher.dfunc)
 effectiveDistance(thrasher.dfunc)
 
 # The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
@@ -181,6 +181,7 @@ auto <- autoDistSamp(formula=dist~shrub, detectionData=thrasherDetectionData, si
 # THE MODEL DOES WORK FOR HEIGHT, BUT I SUSPECT THE ISSUE IS THAT THERE'S LITTLE VARIATION IN THE COVARIATE
 # VALUES ACROSS SITES.
 
+# [tlm] Need thrasher.merge here.  Not sure what that is, but it's also late. 
 
 # Format detection data
 d.data <- thrasher.merge[c("dist", "groupsize", "height")]

@@ -151,8 +151,8 @@ ESW <- function( obj, newdata ){
 
     # Trapazoid rule.  
     dy <- x[3]-x[2]
-    y1 <- y[,-1]
-    y  <- y[,-ncol(y)]
+    y1 <- y[,-1,drop=FALSE]
+    y  <- y[,-ncol(y),drop=FALSE]
     esw <- dy*rowSums(y + y1)/2
   }
   
