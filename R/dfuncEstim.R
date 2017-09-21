@@ -388,7 +388,12 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
           series = series, pointSurvey = pointSurvey, 
           for.optim = T, hessian = TRUE)
   
-  varcovar <- solve(fit$hessian)
+  qrh <- qr(fit$hessian)
+  if( qrh$rank < nrow(fit$hessian) ){
+    varcovar <- matrix(NaN,nrow(fit$hessian), ncol(fit$hessian))
+  } else {
+    varcovar <- solve(fit$hessian)
+  }
   
   names(fit$par) <- strt.lims$names
   
