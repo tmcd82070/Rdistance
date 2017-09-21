@@ -7,18 +7,24 @@
 
 **Description:**
 Distance-sampling is a popular method for abundance estimation in
-ecology. This package contains functions and associated routines to analyze
-distance-sampling data collected at point or line transects. A large suite of
-classical, parametric detection functions are included, and the package can also
-accommodate user-defined detection functions.  Covariates can be included in the
-detection function.
+  ecology. This package contains functions and associated routines to analyze
+  distance-sampling data collected on point or line transects. 
+  Line and point transect analayses are accomodated in one routine 
+  that accepts a regression-like formula object. Abundance routines
+  perform automated bootstrapping and automated detection-function 
+  selection. Overall (study area) and site-level abundance estimates are
+  available. A large suite of classical, parametric detection functions are 
+  included, and the package can accommodate user-defined detection functions. 
+  
 **Rdistance Resources:**
-The best place to start learning about `Rdistance` is at the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
+The best place to start learning about `Rdistance` is at one of the upcoming workshops (see below) or the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
 
 ___
 
 **MAJOR UPDATE IN PROGRESS:**
-The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We are undertaking a major update during summer/fall 2017 in preparation for two fall workshops that depend on `Rdistance`.  Primary new features include the ability to analyze data from point transects (1.3.2 only allowed line transects) and the ability to include covariates in the detection function (1.3.2 did not allow covariates).  Stay tuned for new releases.
+The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We are undertaking a major update during summer/fall 2017 in preparation for two workshops that depend on `Rdistance`.  Primary new features include the ability to analyze data from point transects (1.3.2 only allowed line transects) and the ability to include covariates in the detection function (1.3.2 did not allow covariates).  The development version (2.x.x) is not yet on CRAN, but can be installed from GitHub using the `devtools` package:
+
+`devtools::install_github("tmcd82070/Rdistance")`
 
 ___
 
