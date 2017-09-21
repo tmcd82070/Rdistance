@@ -223,10 +223,8 @@ autoDistSamp <- function (formula, detectionData, siteData,
             if ( length(attr(terms(formula), "term.labels")) > 0 ) {
               # (jdc) This warning seems to always be supressed, but I added a note in the help doc
               # that expansions aren't allowed when there are covariates.
-              # if (warn) {
-                # warning("Expansions not allowed when covariates are present. Models with expansions skipped.")
-              # } 
-              break  # (jdc) should this be break?
+              warning("Expansions not allowed when covariates are present. Models with expansions skipped.")
+              break
             }
 
             

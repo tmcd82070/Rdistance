@@ -355,10 +355,18 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   } 
 
   # We are not allowing expansion terms in presence of covariates
-  if( !is.null(covars) & expansions > 0 ){
+  if (!is.null(covars) & expansions > 0) {
     expansions=0
     if(warn) warning("Expansions not allowed when covariates are present. Expansions set to 0.")
   }
+  
+  
+  # The Gamma doesn't work with covariates
+  if (!is.null(covars)) {
+    stop("The Gamma likelihood does not allow covariates in the detection function.")
+  }
+  
+  
   
   # Find which columns are factors.
   # This works when covars is NULL and must be called 
@@ -389,8 +397,9 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
           for.optim = T, hessian = TRUE)
   
   qrh <- qr(fit$hessian)
-  if( qrh$rank < nrow(fit$hessian) ){
-    varcovar <- matrix(NaN,nrow(fit$hessian), ncol(fit$hessian))
+  if (qrh$rank < nrow(fit$hessian)) {
+    warning("Singular variance-covariance matrix.")
+    varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
   } else {
     varcovar <- solve(fit$hessian)
   }

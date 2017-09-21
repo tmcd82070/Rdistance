@@ -57,8 +57,12 @@ print.dfunc <- function( x, ... ){
 
     cat("\n")
 
-    if( x$convergence == 0 ){
+    if( x$convergence == 0 ) {
+      if(any(is.na(diag(x$varcov)))) {
+        mess <- "FAILURE (singular variance-covariance matrix)"
+      } else {
         mess <- "Success"
+      }
     } else {
         mess <- paste( "FAILURE (Exit code=", x$convergence, ", ", x$fit$message, ")")
     }
