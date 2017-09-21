@@ -362,7 +362,7 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   
   
   # The Gamma doesn't work with covariates
-  if (!is.null(covars) & likelihood="Gamma") {
+  if (!is.null(covars) & likelihood=="Gamma") {
     stop("The Gamma likelihood does not allow covariates in the detection function.")
   }
   
