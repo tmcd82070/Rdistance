@@ -73,6 +73,6 @@ Main author and maintainer: Trent McDonald
 Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 
 Contributors: Ben Augustine, James Griswold, Joel Reynolds, Pham Quang, Earl
-Becker, Aaron Christ, Brook Russelland, and Patrick McKann
+Becker, Aaron Christ, Brook Russelland, Patrick McKann, and Lacey Jeroue
 }
 \keyword{package}
