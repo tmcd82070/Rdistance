@@ -2,7 +2,7 @@ Package: Rdistance
 Type: Package
 Title: Distance Sampling Analyses for Abundance Estimation
 Version: 2.0.0
-Date: 2017-09-14
+Date: 2017-09-21
 Authors@R: c(
   person("Trent", "McDonald", email="tmcdonald@west-inc.com", role=c("cre","aut")), 
   person("Ryan", "Nielson", email="rnielson@west-inc.com", role=c("aut")), 
@@ -15,7 +15,8 @@ Authors@R: c(
   person("Earl", "Becker", email="", role=c("ctb")), 
   person("Aaron", "Christ", email="", role=c("ctb")), 
   person("Brook", "Russelland", email="", role=c("ctb")), 
-  person("Patrick", "McKann", email="", role=c("ctb"))
+  person("Patrick", "McKann", email="", role=c("ctb")),
+  person("Lacey", "Jeroue", email="", role=c("ctb"))
   )
 Description: Distance-sampling is a popular method for abundance estimation in
   ecology. This package contains functions and associated routines to analyze
