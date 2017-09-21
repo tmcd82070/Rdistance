@@ -114,12 +114,14 @@ rug(sparrowDetectionData$dist)
 summary(sparrowDetectionData$dist)
 
 
+sparrowSiteData$zBare <- with(sparrowSiteData, (bare - (mean(bare)))/sd(bare))
+hist(sparrowSiteData$zBare)
 
 
 # Fit detection function
 
 trunc <- 100
-sparrow.dfunc <- dfuncEstim(formula=dist~bare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+sparrow.dfunc <- dfuncEstim(formula=dist~zBare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                             likelihood="halfnorm", w.hi=trunc)
 
 sparrow.dfunc
@@ -213,9 +215,10 @@ fit$n.hat
 # documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
-auto <- autoDistSamp(formula=dist~bare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+auto <- autoDistSamp(formula=dist~zBare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                      w.hi=trunc, plot=FALSE, area=10000, R=10, ci=0.95, plot.bs=TRUE,
-                     likelihoods=c("halfnorm", "hazrate"), expansions=0)
+                     # likelihoods=c("halfnorm", "hazrate"),
+                     expansions=0)
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
