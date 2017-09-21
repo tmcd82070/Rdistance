@@ -113,6 +113,7 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
     tot.trans.len <- sum(siteData$length)  # total transect length
   }
   
+  
   # Estimate abundance ----
 
   # If dfunc has covariates, esw is a vector of length n. No covars, esw is scalar
@@ -134,14 +135,14 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
   if (bySite) {
     # ---- sum statistics by siteID
 
-    nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat)
-    nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum)
-    nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df)
+    (nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat))
+    (nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum))
+    (nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df))
 
-    observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
-    observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount)
+    (observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum))
+    (observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount))
 
-    nhat.df <- merge(observedCount, nhat.df)  # should match perfectly
+    (nhat.df <- merge(observedCount, nhat.df))  # should match perfectly
 
     # If detectionData$siteID is a factor and has all levels, even zero
     # sites, don't need to do this.  But, to be safe merge back to 
@@ -149,8 +150,15 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
 
     # Must do this to get pDetection on 0-sites.  Site must have 
     # non-missing covars if dfunc has covars
-    esw <- effectiveDistance(dfunc, siteData) 
-    siteData <- data.frame(siteData, esw=esw, pDetection=esw/w)
+    (esw <- effectiveDistance(dfunc, siteData))
+    siteData <- data.frame(siteData, esw=esw)
+    
+    if (dfunc$pointSurvey) {
+      siteData$pDetection <- (siteData$esw / w)^2  # for points
+    } else {
+      siteData$pDetection <- siteData$esw / w  # for lines
+    }
+    
     
     nhat.df <- merge(siteData, nhat.df, by="siteID", all.x=TRUE)
     nhat.df$observedCount[is.na(nhat.df$observedCount)] <- 0
@@ -158,9 +166,9 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
     
     # Calculate density
     if (dfunc$pointSurvey) {
-      sampledArea <- pi * w^2 # area samled for single point  
+      sampledArea <- pi * w^2  # area samled for single point  
     } else {
-      sampledArea <- 2 * w * nhat.df$length  # area sampled for line transects
+      sampledArea <- 2 * w * nhat.df$length  # area sampled for single line
     }
     nhat.df$density <- (nhat.df$abundance * area) / sampledArea
     
@@ -171,6 +179,14 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
       nhat.df$effArea <- (pi * nhat.df$esw^2) / area  # for points
     } else {
       nhat.df$effArea <- (nhat.df$length * nhat.df$esw * 2) / area  # for lines
+    }
+    
+    
+    # Replace the column name for "esw", which is edr for points
+    if (dfunc$pointSurvey) {
+      names(nhat.df)[names(nhat.df)=="esw"] <- "EDR"  # for points
+    } else {
+      names(nhat.df)[names(nhat.df)=="esw"] <- "ESW"  # for lines
     }
     
     
