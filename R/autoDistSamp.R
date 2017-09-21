@@ -195,7 +195,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
       dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
                           siteData = siteData, likelihood = like, w.lo = w.lo,
                           w.hi = w.hi, pointSurvey=pointSurvey, ...)
-      ser <- ""
+      ser <- "none"  # (jdc) was ""
       expan <- 0
       fit.table <- f.save.result(fit.table, dfunc, like, 
                                  ser, expan, plot)
@@ -204,7 +204,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
     } else {
       for (expan in expansions) {
         if (expan == 0) {
-          ser <- "None"  # (jdc) there is no expansion here, right?  Was returning "cosine" for series
+          ser <- "none"  # (jdc) there is no expansion here, right?  Was returning "cosine" for series
 
           dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
                               siteData = siteData, likelihood = like, 
