@@ -6,7 +6,7 @@
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 9/20/2017
+# Last updated 9/21/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -43,8 +43,20 @@ head(thrasherSiteData)
 
 
 
+
+
+
+
 # CV of each predictor
-# apply(thrasherSiteData[3:6], 2, function(x) sd(x)/mean(x))
+apply(thrasherSiteData[3:6], 2, function(x) sd(x)/mean(x))
+
+
+
+# Add a dummy covariate
+# The ones in the dataset either won't fit in Rdistance or in Distance
+# Just need to compare output between packages
+thrasherSiteData$dummy <- as.numeric(thrasherSiteData$observer)
+
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -83,27 +95,52 @@ trunc <- 175
 
 
 
-thrasher.dfunc <- dfuncEstim(formula=dist~shrub, detectionData=thrasherDetectionData,
+thrasher.dfunc <- dfuncEstim(formula=dist~dummy, detectionData=thrasherDetectionData,
                              siteData=thrasherSiteData, likelihood="halfnorm", w.hi=trunc, pointSurvey=TRUE)
 plot(thrasher.dfunc)
 thrasher.dfunc
 
 
 
-mean(thrasherSiteData$height)
-plot(thrasher.dfunc)
-thrasher.dfunc
+mean(thrasherSiteData$bare)
+
 
 # Plot for different covar values
-plot(thrasher.dfunc, newdata=data.frame(height=seq(min(thrasherSiteData$height), max(thrasherSiteData$height), length.out=4)))
+
+(newdata <- data.frame(dummy=1:6))
+plot(thrasher.dfunc, newdata=newdata)
+
+
+
+# # Observer as covariate
+# thrasher.dfunc <- dfuncEstim(formula=dist~observer, detectionData=thrasherDetectionData,
+#                              siteData=thrasherSiteData, likelihood="halfnorm", w.hi=trunc, pointSurvey=TRUE)
+# plot(thrasher.dfunc)
+# thrasher.dfunc
+# 
+# 
+# 
+# mean(thrasherSiteData$bare)
+# plot(thrasher.dfunc)
+# thrasher.dfunc
+# 
+# # Plot for different covar values
+# 
+# (newdata <- data.frame(x0=c(0, 1, 0, 0, 0, 0),
+#                        x1=c(0, 0, 1, 0, 0, 0),
+#                        x2=c(0, 0, 0, 1, 0, 0),
+#                        x3=c(0, 0, 0, 0, 1, 0),
+#                        x4=c(0, 0, 0, 0, 0, 1)))
+# 
+# 
+# plot(thrasher.dfunc, newdata=newdata)
 
 
 
 
-
-
-EDR(thrasher.dfunc)
+# EDR(thrasher.dfunc)
 effectiveDistance(thrasher.dfunc)
+mean(effectiveDistance(thrasher.dfunc))
 
 # The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
 # abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
@@ -131,7 +168,7 @@ effectiveDistance(thrasher.dfunc)
 
 # (jdc) the plotting of the bootstrap isn't right...
 fit <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-                     area=10000, R=10, ci=0.95, plot.bs=TRUE)
+                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
 fit
 
 
@@ -142,10 +179,14 @@ fit$n.hat
 fit$ci
 
 
-# 
-# fitby <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-#                      area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
-# fitby
+
+fitBy <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+                     area=10000, ci=NULL, bySite=TRUE)
+head(fitBy)
+
+mean(fitBy$density)
+fit$n.hat
+
 
 
 
@@ -163,11 +204,28 @@ fit$ci
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-auto <- autoDistSamp(formula=dist~shrub, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-                        w.hi=trunc, plot=FALSE, area=10000, R=10, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE,
-                     likelihoods=c("halfnorm", "hazrate"))
+auto <- autoDistSamp(formula=dist~dummy, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+                     w.hi=trunc, plot=FALSE, area=10000, R=5, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE,
+                     likelihoods=c("halfnorm", "hazrate", "uniform"))
 
 
+
+
+
+# # Observer as covariate
+# auto <- autoDistSamp(formula=dist~observer, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+#                      w.hi=trunc, plot=FALSE, area=10000, R=5, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE,
+#                      likelihoods=c("halfnorm", "hazrate"))
+# 
+# # Plot for different covar values
+# 
+# (newdata <- data.frame(x0=c(0, 1, 0, 0, 0, 0),
+#                        x1=c(0, 0, 1, 0, 0, 0),
+#                        x2=c(0, 0, 0, 1, 0, 0),
+#                        x3=c(0, 0, 0, 0, 1, 0),
+#                        x4=c(0, 0, 0, 0, 0, 1)))
+# 
+# plot(auto, newdata=newdata)
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -176,16 +234,18 @@ auto <- autoDistSamp(formula=dist~shrub, detectionData=thrasherDetectionData, si
 
 
 # Compare to Distance
+require(Distance)
 
 # I'VE TRIED WITH EITHER SHRUB OR BARE AS COVARIATES, AND THE DETECTION PROB IS FLAT FOR BOTH...
 # THE MODEL DOES WORK FOR HEIGHT, BUT I SUSPECT THE ISSUE IS THAT THERE'S LITTLE VARIATION IN THE COVARIATE
 # VALUES ACROSS SITES.
 
-# [tlm] Need thrasher.merge here.  Not sure what that is, but it's also late. 
+ 
 
 # Format detection data
-d.data <- thrasher.merge[c("dist", "groupsize", "height")]
-names(d.data) <- c("distance", "size", "height")  # meet naming conventions
+thrasher.merge <- merge(thrasherDetectionData, thrasherSiteData, by="siteID")
+d.data <- thrasher.merge[c("dist", "groupsize", "dummy")]
+names(d.data) <- c("distance", "size", "dummy")  # meet naming conventions
 d.data$object <- 1:nrow(d.data)  # add object ID
 
 # Produce and format 3 other required data.frames
@@ -197,7 +257,7 @@ d.sample$Region.Label <- "main"
 d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=thrasherDetectionData$siteID)
 
 # Fit model and estimate abundance
-(ds.fit <- ds(data=d.data, formula= ~height, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
+(ds.fit <- ds(data=d.data, formula= ~dummy, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
               truncation=trunc, transect="point", key="hn", adjustment=NULL, dht.group=FALSE))
 
 plot(ds.fit)
@@ -205,21 +265,22 @@ print(ds.fit)
 summary(ds.fit)  
 
 
+# With dummy as covariate
 # Results similar, but don't match exactly
 # AIC
-AIC(fit)  # Rdistance
-AIC(ds.fit)  # Distance
+AIC(fit)  # Rdistance = 1754.642
+AIC(ds.fit)  # Distance = 1754.579
 
 # Abund
-fit$n.hat
-fit$ci
-ds.fit$dht$individuals$N
+fit$n.hat  # 0.491037
+fit$ci  # depends on bootstrap, but around 0.39 - 0.58
+ds.fit$dht$individuals$N  # 0.4910311 (0.3917012 - 0.6155497)
 # ds.fit$dht$individuals$N$Estimate
 # ds.fit$dht$individuals$N$lcl
 # ds.fit$dht$individuals$N$ucl
 
 # Sigma
-coef(fit)
-ds.fit$ddf$ds$aux$ddfobj$scale$parameters
+coef(fit)  # Intercept = 4.63149158, dummy = -0.09736296
+ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept = 4.63150603, dummy = -0.09736732
 
 

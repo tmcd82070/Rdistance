@@ -6,7 +6,7 @@
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 9/5/2017
+# Last updated 9/21/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -77,7 +77,6 @@ thrasher.dfunc <- dfuncEstim(formula=dist~1, detectionData=thrasherDetectionData
 plot(thrasher.dfunc)
 thrasher.dfunc
 
-ESW(thrasher.dfunc)
 EDR(thrasher.dfunc)
 effectiveDistance(thrasher.dfunc)
 
@@ -107,7 +106,7 @@ effectiveDistance(thrasher.dfunc)
 
 # (jdc) the plotting of the bootstrap isn't right...
 fit <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
+                     area=10000, R=500, ci=0.95, plot.bs=TRUE)
 fit
 
 
@@ -119,10 +118,12 @@ fit$ci
 
 
 # Toggle on bySite option, to estimate abundance for each transect
+
 # (jdc) runs with warning that row names were found from a short variable and have been discarded
+
 fitSite <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
                       area=10000, ci=NULL, bySite=TRUE)
-fitSite
+head(fitSite)
 
 # plot(fitSite)
 
@@ -145,7 +146,8 @@ fit$n.hat
 
 
 auto <- autoDistSamp(formula=dist~1, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-                     likelihoods=c("halfnorm", "hazrate", "negexp", "uniform"), expansions=0,
+                     likelihoods=c("halfnorm", "hazrate", "negexp", "uniform"),
+                     expansions=0,
                      w.hi=trunc, plot=FALSE, area=10000, R=50, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE)
 
 
@@ -190,7 +192,7 @@ AIC(ds.fit)  # Distance = 1761.898
 
 # Abund
 fit$n.hat  # 0.4687061
-fit$ci  # depends on the bootstrap, about 0.37 - 0.57
+fit$ci  # depends on the bootstrap, about 0.38 - 0.57
 ds.fit$dht$individuals$N  # 0.4686923 (0.3792886 - 0.5791696)
 # ds.fit$dht$individuals$N$Estimate
 # ds.fit$dht$individuals$N$lcl

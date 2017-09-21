@@ -6,7 +6,7 @@
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 9/6/2017
+# Last updated 9/21/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -119,8 +119,8 @@ summary(sparrowDetectionData$dist)
 # Fit detection function
 
 trunc <- 100
-sparrow.dfunc <- dfuncEstim(formula=dist~shrub, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                            likelihood="Gamma", w.hi=trunc)
+sparrow.dfunc <- dfuncEstim(formula=dist~bare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                            likelihood="halfnorm", w.hi=trunc)
 
 sparrow.dfunc
 
@@ -128,14 +128,29 @@ sparrow.dfunc
 
 plot(sparrow.dfunc)
 # Plot for different covar values
-plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max(sparrowSiteData$shrub), length.out=4)))
+plot(sparrow.dfunc, newdata=data.frame(bare=seq(min(sparrowSiteData$bare), max(sparrowSiteData$bare), length.out=4)))
 
 
 
-
-
-
-
+# # Two covariates
+# sparrow.dfunc <- dfuncEstim(formula=dist~bare+observer, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+#                             likelihood="halfnorm", w.hi=trunc)
+# 
+# (newdata <- data.frame(bare=rep(seq(min(sparrowSiteData$bare), max(sparrowSiteData$bare), length.out=3), 5),
+#                       x0=rep(c(0, 1, 0, 0, 0), each=3),
+#                       x1=rep(c(0, 0, 1, 0, 0), each=3),
+#                       x2=rep(c(0, 0, 0, 1, 0), each=3),
+#                       x3=rep(c(0, 0, 0, 0, 1), each=3)))
+# plot(sparrow.dfunc, newdata=newdata)
+# 
+# 
+# (newdata <- data.frame(bare=mean(sparrowSiteData$bare),
+#                        x0=c(0, 1, 0, 0, 0),
+#                        x1=c(0, 0, 1, 0, 0),
+#                        x2=c(0, 0, 0, 1, 0),
+#                        x3=c(0, 0, 0, 0, 1)))
+# 
+# plot(sparrow.dfunc, newdata=newdata)
 
 
 
@@ -163,7 +178,7 @@ plot(sparrow.dfunc, newdata=data.frame(shrub=seq(min(sparrowSiteData$shrub), max
 # (jdc) the bootstrap-replicate detection lines (plot.bs=TRUE) aren't in the right place, but the bootstrap-generated CIs appear plausible
 # 
 fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     area=10000, R=25, ci=0.95, plot.bs=TRUE)
+                  area=10000, R=5, ci=0.95, plot.bs=TRUE)
 fit
 
 
@@ -176,10 +191,13 @@ fit
 fit$n.hat
 fit$ci
 
-# 
-# fitby <- abundEstim(dfunc=sparrow.dfunc, detection.data=sparrowDetectionData, site.data=sparrowSiteData,
-#                        area=10000, R=100, ci=0.95, plot.bs=TRUE, by.id=TRUE)
-# fitby
+
+fitBy <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                       area=10000, ci=NULL, bySite=TRUE)
+head(fitBy)
+
+mean(fitby$density)
+fit$n.hat
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -195,10 +213,9 @@ fit$ci
 # documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
-# (jdc) We don't allow expansions if covariates, but this will run them (after setting expansions to 0)  Need to update autoDistSamp
-auto <- autoDistSamp(formula=dist~shrub, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     w.hi=trunc, plot=FALSE, area=10000, R=25, ci=0.95, plot.bs=TRUE,
-                     likelihoods=c("halfnorm", "hazrate"), expansions=0:2)
+auto <- autoDistSamp(formula=dist~bare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                     w.hi=trunc, plot=FALSE, area=10000, R=10, ci=0.95, plot.bs=TRUE,
+                     likelihoods=c("halfnorm", "hazrate"), expansions=0)
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
@@ -208,11 +225,12 @@ auto <- autoDistSamp(formula=dist~shrub, detectionData=sparrowDetectionData, sit
 
 
 # Compare to Distance
+require(Distance)
 
 # Format detection data
 sparrow.merge <- merge(sparrowDetectionData, sparrowSiteData, by="siteID")
-d.data <- sparrow.merge[c("dist", "groupsize", "shrub")]
-names(d.data) <- c("distance", "size", "shrub")  # meet naming conventions
+d.data <- sparrow.merge[c("dist", "groupsize", "bare")]
+names(d.data) <- c("distance", "size", "bare")  # meet naming conventions
 d.data$object <- 1:nrow(d.data)  # add object ID
 
 # Produce and format 3 other required data.frames
@@ -225,7 +243,7 @@ d.sample$Region.Label <- "main"
 d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrowDetectionData$siteID)
 
 # Fit model and estimate abundance
-(ds.fit <- ds(data=d.data, formula= ~shrub, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
+(ds.fit <- ds(data=d.data, formula= ~bare, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
               truncation=trunc, transect="line", key="hn", adjustment=NULL, dht.group=FALSE))
 
 plot(ds.fit)
@@ -234,27 +252,28 @@ summary(ds.fit)
 
 
 # # Trent's RDistance fitting
-# fit <- dfuncEstim(formula = dist ~ shrub, detectionData = sparrowDetectionData,
+# fit <- dfuncEstim(formula = dist ~ bare, detectionData = sparrowDetectionData,
 #                   siteData = sparrowSiteData, likelihood = "halfnorm")
 # fit <- abundEstim(fit, sparrowDetectionData, sparrowSiteData, ci=.95, 
 #                    R=100, area=10000)
 
 
+# With bare as covariate
 # Very very similar results, but don't match exactly
 # AIC
-AIC(fit)  # Rdistance = 2968.479
-AIC(ds.fit)  # Distance = 2968.442
+AIC(fit)  # Rdistance = 2965.801
+AIC(ds.fit)  # Distance = 2965.751
 
 # Abund
-fit$n.hat  # 0.8712842
-fit$ci  # depends on the boostrap, usually ~ 0.73 - 0.96
-ds.fit$dht$individuals$N  # 0.8712386 (0.6911681 - 1.098223)
+fit$n.hat  # 0.8752929
+fit$ci  # depends on the boostrap, not getting enough iterations to converge
+ds.fit$dht$individuals$N  # 0.8753112 (0.6918501 - 1.107422)
 # ds.fit$dht$individuals$N$Estimate
 # ds.fit$dht$individuals$N$lcl
 # ds.fit$dht$individuals$N$ucl
 
 # Sigma
-coef(fit)  # Intercept = 4.09779108, shrub = -0.01951001
-ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept = 4.09907755, shrub = -0.01959484
+coef(fit)  # Intercept = 3.302735523, bare = 0.009470657
+ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept = 3.324041301, bare = 0.009069446
 
 

@@ -6,7 +6,7 @@
 # Jason D. Carlisle
 # WEST, Inc.
 # jcarlisle@west-inc.com
-# Last updated 9/18/2017
+# Last updated 9/21/2017
 
 # This demo was tested using the following:
 # Rdistance version 2.0.0
@@ -155,7 +155,7 @@ effectiveDistance(sparrow.dfunc)
 # necessary to stabilize CI estimates.
 
 fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     area=10000, R=50, ci=0.95, plot.bs=TRUE)
+                     area=10000, R=500, ci=0.95, plot.bs=TRUE)
 fit
 
 
@@ -179,7 +179,7 @@ fit$ci
 
 fitSite <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                       area=10000, ci=NULL, bySite=TRUE)
-fitSite
+head(fitSite)
 
 # plot(fitSite)
 
@@ -261,7 +261,7 @@ AIC(ds.fit)  # Distance = 2970.594
 
 # Abund
 fit$n.hat  # 0.863415
-fit$ci  # depends on the bootstrap, about 0.67 - 1.10
+fit$ci  # depends on the bootstrap, about 0.680 - 1.09
 ds.fit$dht$individuals$N  # 0.8634164 (0.6943432 - 1.073659)
 # ds.fit$dht$individuals$N$Estimate
 # ds.fit$dht$individuals$N$lcl
