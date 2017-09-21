@@ -2,33 +2,42 @@
 % Please edit documentation in R/EDR.R
 \name{EDR}
 \alias{EDR}
-\title{Effective Detection Radius (EDR) for estimated detection functions with point transects}
+\title{Effective Detection Radius (EDR) for estimated detection functions
+  with point transects}
 \usage{
-EDR(obj)
+EDR(obj, newdata)
 }
 \arguments{
-\item{obj}{An estimated detection function object.  An estimated detection
+\item{obj}{An estimated detection function object.  An estimated detection 
 function object has class 'dfunc', and is usually produced by a call to 
 \code{dfuncEstim}. The estimated detection function may optionally contain 
-a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} = 1
-is assumed.}
+a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
+1 is assumed.}
+
+\item{newdata}{A data frame containing new values of the covariates at which
+EDR's are sought. If NULL or missing, the covariates stored in \code{obj}
+are used. If covariates are present, this produces one EDR for each
+detection.  If covariates are not present, this produces one EDR that is
+constant across all detections.}
 }
 \value{
-A scalar equal to the area under the detection function from \code{obj$w.lo} to \code{obj$w.hi}.
+A scalar equal to the area under the detection function from
+  \code{obj$w.lo} to \code{obj$w.hi}.
 }
 \description{
-Computes Effective Detection Radius (EDR) for estimated
-detection functions with point transects.  The point-transect equivalent to
-Effective Strip Width (ESW).
+Computes Effective Detection Radius (EDR) for estimated 
+  detection functions with point transects.  The point-transect equivalent to
+  Effective Strip Width (ESW).
 }
 \details{
-The point-transect equivalent to
-Effective Strip Width (ESW).
+The point-transect equivalent to Effective Strip Width (ESW).
 }
 \seealso{
-\code{\link{dfuncEstim}} \code{\link{ESW}}
+\code{\link{dfuncEstim}}, \code{\link{ESW}}, 
+\code{\link{effective.distance}}
 }
 \author{
-Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
+Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}\cr Trent
+  McDonald, WEST Inc., \email{tmcdonald@west-inc.com}
 }
 \keyword{modeling}
