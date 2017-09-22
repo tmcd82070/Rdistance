@@ -298,7 +298,7 @@
 #' @export
 
 dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm", 
-                  pointSurvey = FALSE, w.lo=0, w.hi=max(dist), 
+                  pointSurvey = FALSE, w.lo=0, w.hi=NULL, 
                   expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
                   observer="both", warn=TRUE, transectID=NULL, pointID="point", 
                   length="length"){
@@ -327,7 +327,7 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   
   # (jdc) I don't think there was anywhere in this function that was truncating these distances,
   # (jdc) so dists < w.lo and > w.hi were being included in the MLE
-  data <- data[data$dist >= w.lo & data$dist <= w.hi, ]
+  #data <- data[data$dist >= w.lo & data$dist <= w.hi, ]
   
   
   
@@ -336,6 +336,10 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   dist <- model.response(mf,"any")
   covars <- if (!is.empty.model(mt)){
     model.matrix(mt, mf, contrasts)
+  }
+
+  if(is.null(w.hi)){
+    w.hi <- max(dist, na.rm=TRUE)
   }
   
   # Eventually, I'd like to use a constant

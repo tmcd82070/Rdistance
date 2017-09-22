@@ -205,21 +205,29 @@ abundEstim <- function(dfunc, detectionData, siteData,
   
   # (jdc) (we should split f.plot.bs out as a separate .R file, yes?)
   # Plotting 
-  f.plot.bs <- function(x, xscl, yscl, ...) {
+  f.plot.bs <- function(x,  ...) {
     x.seq <- seq(x$w.lo, x$w.hi, length = 200)
     g.at.x0 <- x$g.x.scl
     x0 <- x$x.scl
     y <- like(x$parameters, x.seq - x$w.lo, series = x$series, 
-              expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi)
-    f.at.x0 <- like(x$parameters, x0 - x$w.lo, series = x$series, 
-                    expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi)
-    yscl <- g.at.x0/f.at.x0
+              expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi,
+              pointSurvey=x$pointSurvey)
+    if(!x$pointSurvey){
+      f.at.x0 <- like(x$parameters, x0 - x$w.lo, series = x$series, 
+                    expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi, 
+                    pointSurvey=x$pointSurvey)
+      yscl <- g.at.x0/f.at.x0
+    } else {
+      f.max <- F.maximize.g(x, covars = NULL) 
+      yscl <- g.at.x0/f.max
+    }
+    
     lines(x.seq, y * yscl, ...)
+    # lines(x.seq, y , ...)
   }
+  
   if (plot.bs) {
     tmp <- plot(dfunc) 
-    x.scl.plot <- tmp$xscl.plot
-    y.scl.plot <- tmp$yscl
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
   }
   
@@ -337,9 +345,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
                                warn = FALSE)
-        
-        
-        
+
         # Store ESW if it converged
         if (dfunc.bs$convergence == 0) {
           
@@ -358,9 +364,9 @@ abundEstim <- function(dfunc, detectionData, siteData,
           n.hat.bs[i] <- abund.bs$abundance
           
           
-          if (plot.bs & !dfunc$pointSurvey) {
+          if (plot.bs ) {
             # (jdc) - this is plotting the prob of detection, doesn't match scaling of dfunc plot for points
-            f.plot.bs(dfunc.bs, x.scl.plot, y.scl.plot, col = "blue", lwd = 0.5)  
+            f.plot.bs(dfunc.bs, col = "blue", lwd = 0.5)  
           }
           
           
@@ -374,7 +380,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
       
       # plot red line of original fit again (over bs lines)
       if (plot.bs) {
-        f.plot.bs(dfunc, x.scl.plot, y.scl.plot, col = "red", lwd = 3)
+        f.plot.bs(dfunc, col = "red", lwd = 3)
       } 
       
       

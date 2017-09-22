@@ -111,7 +111,8 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   
   cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, breaks=nbins )
   xscl <- cnts$mid[2] - cnts$mid[1]
-  
+
+
   #   Gotta add bars on the left if first bar is not at w.lo.  I.e., if first 
   #   bar is zero.  Zero bars at top end are not a problem, but low end are because
   #   barplot just plots bars, not coordinates
@@ -121,7 +122,8 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     brks <- c(brks, brks[length(brks)] + xscl )   # make sure last bin goes outside range of data
     cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, breaks=brks, include.lowest=TRUE )
   }
-  
+
+
   like <- match.fun( paste( x$like.form, ".like", sep=""))
   
   x.seq <- seq( x$w.lo, x$w.hi, length=200)
@@ -142,11 +144,14 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
       for(j in 1:length(x.seq)){
         temp.covars[[i]][j,] <- unname(newdata[[i]])
       }
-      y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
+      y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], 
+                     series=x$series, expansions=x$expansions, w.lo=x$w.lo, 
+                     w.hi=x$w.hi, pointSurvey = x$pointSurvey )
     }
   }
   else{
-    y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
+    y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, 
+               w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
   }
   
   if( include.zero & x$like.form == "hazrate" ){
@@ -162,9 +167,11 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     g.at.x0 <- x$g.x.scl
     x0 <- x$x.scl
   }
+  
   if(!is.null(x$covars)){
     for(i in 1:length(newdata)){
-      f.max <- F.maximize.g(x, t(temp.covars[[i]][1,]))  #like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
+      f.max <- F.maximize.g(x, t(temp.covars[[i]][1,]))  
+      #like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
       if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
         yscl <- 1.0
@@ -211,7 +218,8 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   }
   
   
-  bar.mids <- barplot( ybarhgts, width=xscl, space=0, density=0, ylim=y.lims, xlim=x.limits, border="blue", ... )   # real x coords are 1, 2, ..., nbars
+  bar.mids <- barplot( ybarhgts, width=xscl, space=0, density=0, ylim=y.lims, 
+                       xlim=x.limits, border="blue", ... )   # real x coords are 1, 2, ..., nbars
   xticks <- axTicks(1)
   axis( 1, at=xticks,  labels=xticks, line=.5 )
   title( xlab="Distance", ylab="Probability of detection" )
