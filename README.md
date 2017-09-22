@@ -26,6 +26,7 @@ The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We
 
 `devtools::install_github("tmcd82070/Rdistance")`
 
+
 ___
 
 **Upcoming Workshops:**
