@@ -342,6 +342,15 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
     w.hi <- max(dist, na.rm=TRUE)
   }
   
+  ncovars <- ncol(covars)
+  assgn <- attr(covars,"assign")
+  
+
+  # Truncate for w.lo and w.hi
+  ind <- (w.lo <= dist) & (dist <= w.hi)
+  dist <- dist[ind]
+  covars <- covars[ind,,drop=FALSE]
+  
   # Eventually, I'd like to use a constant
   # column for covars to allow intercept only 
   # models.  That is, report a beta coefficient 
@@ -349,10 +358,10 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   # For now, however, we'll just do the "old" method
   # of estimating the distance function parameter directly.
   
-  ncovars <- ncol(covars)
+  
   factor.names <- NULL 
   if(ncovars==1){
-    if( attr(covars,"assign")==0 ){
+    if( assgn==0 ){
       # constant; intercept only model
       covars <- NULL
     }
