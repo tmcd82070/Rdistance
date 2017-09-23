@@ -280,10 +280,15 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   
   # Add legend to plot if covars are present
   if(legend & !is.null(x$covars)){
+    for(j in 1:ncol(newdata)){
+      if(is.numeric(newdata[,j])){
+        newdata[,j]<-signif(newdata[,j], 3)
+      }
+    }
     nr <- nrow(newdata)
     v.names <- names(newdata)
     v.names <- rep(v.names, each=nr)
-    v.vals <- signif(c(as.matrix(newdata)), 3)
+    v.vals <- c(as.matrix(newdata))
     leg <- matrix( paste(v.names, v.vals,sep="="), nr)
     Leg <- leg[,1]
     if( ncol(leg) >= 2){
