@@ -209,20 +209,48 @@ abundEstim <- function(dfunc, detectionData, siteData,
     x.seq <- seq(x$w.lo, x$w.hi, length = 200)
     g.at.x0 <- x$g.x.scl
     x0 <- x$x.scl
-    y <- like(x$parameters, x.seq - x$w.lo, series = x$series, 
-              expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi,
-              pointSurvey=x$pointSurvey)
-    if(!x$pointSurvey){
-      f.at.x0 <- like(x$parameters, x0 - x$w.lo, series = x$series, 
-                    expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi, 
-                    pointSurvey=x$pointSurvey)
-      yscl <- g.at.x0/f.at.x0
+    
+    if(!is.null(x$covars)){
+      covMeanMat <-  colMeans(x$covars)
+      covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
+
+      BETA <- coef(x)
+      p <- ncol(x$covars)
+      beta <- BETA[1:p]   # could be extra parameters tacked on. e.g., knee for uniform
+      params <- covMeanMat %*% beta
+      params <- exp(params)  # All link functions are exp...thus far
+      if(p<length(BETA)){
+        extraParams <- matrix(BETA[(p+1):length(BETA)], nrow(covMeanMat), length(BETA)-p, byrow=TRUE)
+        params <- cbind(params, extraParams)
+      }
+      #params <- predict.dfunc(x, newdata=covMeans, type="parameters")
     } else {
-      f.max <- F.maximize.g(x, covars = NULL) 
-      yscl <- g.at.x0/f.max
+      params <- matrix(x$parameters,1)
+    }
+      
+    y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
+               series=x$series, covars = NULL, 
+               expansions=x$expansions, 
+               w.lo = x$w.lo, w.hi=x$w.hi, 
+               pointSurvey = FALSE )  
+    y <- t(y)  # now, each row of y is a dfunc
+    
+    f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
+                     series=x$series, covars = NULL, 
+                     expansions=x$expansions, 
+                     w.lo=x$w.lo, w.hi=x$w.hi, 
+                     pointSurvey = FALSE )
+    scaler <- g.at.x0 / f.at.x0 # a length n vector 
+    
+    y <- y * scaler  # length(scalar) == nrow(y), so this works right
+    
+    y <- t(y)
+    
+    if( x$pointSurvey ){
+      y <- y * (x.seq - x$w.lo)
     }
     
-    lines(x.seq, y * yscl, ...)
+    lines(x.seq, y , ...)
     # lines(x.seq, y , ...)
   }
   

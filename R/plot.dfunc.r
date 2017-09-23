@@ -80,35 +80,7 @@
 plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", 
                         newdata = NULL, legend = TRUE, ... ){
 
-  #   changed the number of plotting points to 200 - jg
-  if(!is.null(x$covars)){
-    if(!is.null(newdata)){
-      temp <- list()
-      #newdata <- as.list(newdata)
-      
-      for(i in 1:nrow(newdata)){
-        temp[[i]] <- unname(unlist(cbind(1, newdata)[i,]))
-      }
-      newdata <- temp
-    }
-    else{
-      # Default covar values to plot
-      temp <- NULL
-      newdata <- list()
-      for(i in 1:ncol(x$covars)){
-        temp <- c(temp, mean(x$covars[,i]))
-        if(!is.null(x$factor.names)){
-          for(j in 1:length(x$factor.names)){
-            if(startsWith(names(x$parameters)[i], x$factor.names[j])){
-              temp[i] <- 0
-            }
-          }
-        }
-      }
-      newdata[[1]] <- temp
-    }
-  }
-  
+
   cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, breaks=nbins )
   xscl <- cnts$mid[2] - cnts$mid[1]
 
@@ -123,41 +95,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, breaks=brks, include.lowest=TRUE )
   }
 
-
-  like <- match.fun( paste( x$like.form, ".like", sep=""))
-  
-  x.seq <- seq( x$w.lo, x$w.hi, length=200)
-  if(!is.null(x$covars)){
-    temp.covars <- list()
-    for(i in 1:length(newdata)){
-      temp.covars[[i]] <- matrix(nrow = length(x.seq), ncol = ncol(x$covars))
-    }
-  }
-  if(is.list(newdata) & length(newdata) == 0)
-    ncol = 1
-  else
-    ncol = length(newdata)
-  y <- matrix(nrow = length(x.seq), ncol = ncol)
-  
-  if(!is.null(x$covars)){
-    for(i in 1:length(newdata)){
-      for(j in 1:length(x.seq)){
-        temp.covars[[i]][j,] <- unname(newdata[[i]])
-      }
-      y[,i] <- like( x$parameters, x.seq - x$w.lo, covars = temp.covars[[i]], 
-                     series=x$series, expansions=x$expansions, w.lo=x$w.lo, 
-                     w.hi=x$w.hi, pointSurvey = x$pointSurvey )
-    }
-  }
-  else{
-    y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, 
-               w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
-  }
-  
-  if( include.zero & x$like.form == "hazrate" ){
-    x.seq[1] <- x$w.lo
-  }
-  
+  # Figure out scaling
   if( is.null( x$g.x.scl ) ){
     #   Assume g0 = 1
     g.at.x0 <- 1
@@ -168,10 +106,89 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     x0 <- x$x.scl
   }
   
+  like <- match.fun( paste( x$like.form, ".like", sep=""))
+  
+  x.seq <- seq( x$w.lo, x$w.hi, length=200)
+  
   if(!is.null(x$covars)){
-    for(i in 1:length(newdata)){
-      f.max <- F.maximize.g(x, t(temp.covars[[i]][1,]))  
-      #like( x$parameters, x0 - x$w.lo, covars = temp.covars[[i]], series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
+    
+    # compute column means of covariantes because need them later to scale bars
+    covMeanMat <- col.m <- colMeans(x$covars)
+    if("(Intercept)" %in% dimnames(x$covars)[[2]]){
+      col.m <- col.m[-grep("(Intercept)",dimnames(x$covars)[[2]])]
+    } 
+    covMeans <- as.data.frame(matrix(col.m,1,length(col.m)))
+    names(covMeans) <- names(col.m)
+    covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
+    
+    if(missing(newdata) || is.null(newdata)){
+      # do something fancy here with factors and panels.
+      newdata <- covMeans
+    }
+    
+    params <- predict.dfunc(x, newdata, type="parameters")
+    
+    # Use covars= NULL here because we evaluated covariates to get params above
+    # after apply, y is length(x) x nrow(newdata).  each column is a unscaled distance 
+    # function (f(x))
+    y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
+               series=x$series, covars = NULL, 
+               expansions=x$expansions, 
+               w.lo = x$w.lo, w.hi=x$w.hi, 
+               pointSurvey = FALSE )  
+    y <- t(y)  # now, each row of y is a dfunc
+    
+    f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
+                     series=x$series, covars = NULL, 
+                     expansions=x$expansions, 
+                     w.lo=x$w.lo, w.hi=x$w.hi, 
+                     pointSurvey = FALSE )
+    scaler <- g.at.x0 / f.at.x0 # a length n vector 
+    
+    y <- y * scaler  # length(scalar) == nrow(y), so this works right
+
+    y <- t(y)
+        
+    if(x$pointSurvey){
+      y <- y * (x.seq - x$w.lo)
+    }
+  }  else {
+    y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, 
+               w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE )
+    
+    if(x$pointSurvey){
+      f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, 
+                       w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE )
+      scaler <- g.at.x0 / f.at.x0 # a length n vector 
+      
+      y <- y * scaler  # length(scalar) == nrow(y), so this works right
+      y <- y * (x.seq - x$w.lo)
+    }
+  }
+  
+  if( include.zero & x$like.form == "hazrate" ){
+    x.seq[1] <- x$w.lo
+  }
+  
+
+  if(!is.null(x$covars)){
+    if( !x$pointSurvey ){
+      f.max <- F.maximize.g(x, covMeanMat)
+      yscl <- g.at.x0 / f.max
+      #yscl <- 1
+      if(length(yscl > 1)){
+        yscl <- yscl[1]
+      }
+      ybarhgts <- cnts$density * yscl
+      plotBars <- TRUE
+    } else {
+      ybarhgts <- NULL
+      yscl <- NULL
+      plotBars <- FALSE
+    }
+  } else {
+    if( !x$pointSurvey ){
+      f.max <- F.maximize.g(x, covars = NULL) #like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
       if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
         yscl <- 1.0
@@ -180,32 +197,14 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
         yscl <- g.at.x0 / f.max
       }
       if(length(yscl > 1)){yscl <- yscl[1]}
-      y[,i] <- y[,i] * yscl
-    }
-    temp <- NULL
-    mean.covars <- matrix(nrow = length(x.seq), ncol = ncol(x$covars))
-    for(i in 1:ncol(x$covars))
-      temp <- c(temp, mean(x$covars[,i]))
-    for(j in 1:length(x.seq)){
-      mean.covars[j,] <- temp
-    }
-    f.max <- F.maximize.g(x, t(mean.covars[1,]))#like( x$parameters, x0 - x$w.lo, covars = mean.covars, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
-    yscl <- g.at.x0 / f.max
-    if(length(yscl > 1)){yscl <- yscl[1]}
-    ybarhgts <- cnts$density * yscl
-  }
-  else{
-    f.max <- F.maximize.g(x, covars = NULL) #like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
-    if(any(is.na(f.max) | (f.max <= 0))){
-      #   can happen when parameters at the border of parameter space
-      yscl <- 1.0
-      warning("Y intercept missing or zero. One or more parameters likely at their boundaries. Caution.")
+      y <- y * yscl
+      ybarhgts <- cnts$density * yscl
+      plotBars <- TRUE
     } else {
-      yscl <- g.at.x0 / f.max
+      ybarhgts <- NULL
+      yscl <- NULL
+      plotBars <- FALSE      
     }
-    if(length(yscl > 1)){yscl <- yscl[1]}
-    y <- y * yscl
-    ybarhgts <- cnts$density * yscl
   }
   
   y.finite <- y[ y < Inf ]
@@ -217,11 +216,14 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     x.limits <- range(x.seq) 
   }
   
-  
-  bar.mids <- barplot( ybarhgts, width=xscl, space=0, density=0, ylim=y.lims, 
-                       xlim=x.limits, border="blue", ... )   # real x coords are 1, 2, ..., nbars
-  xticks <- axTicks(1)
-  axis( 1, at=xticks,  labels=xticks, line=.5 )
+  if(plotBars){
+    bar.mids <- barplot( ybarhgts, width=xscl, space=0, density=0, ylim=y.lims, 
+                       xlim=x.limits, border="blue", ... )  
+    xticks <- axTicks(1)
+    axis( 1, at=xticks,  labels=xticks, line=.5 )
+  } else {
+    plot(1,1,type="n",ylim=y.lims, xlim=x.limits, xlab="",ylab="",bty="n")
+  }
   title( xlab="Distance", ylab="Probability of detection" )
   if( !("main" %in% names(c(...))) ){
     # Put up a default title containing liklihood description
@@ -246,6 +248,8 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   else{
     lines( x.seq, y, col="red", lwd=2 )
   }
+
+  #assign("tmpxy",cbind(x.seq,y),envir = .GlobalEnv)
   
   #   These two add vertical lines at 0 and w
   lines( rep(x.seq[1], 2), c(0,y[1]), col="red", lwd=2 )
@@ -253,7 +257,6 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   
   #   print area under the curve
   area <- effectiveDistance(x)
-
   #area2 <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
   #print(c(area,area2))
   #text( max(x.seq), max(y.lims)-0.025*diff(y.lims), paste("ESW =", round(area,3)), adj=1)
@@ -277,36 +280,22 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   
   # Add legend to plot if covars are present
   if(legend & !is.null(x$covars)){
-    legend.names <- vector(mode = "character", length = length(newdata))
-    for(i in 1:length(newdata)){
-      legend.factors <- vector(length = length(x$legend.names))
-      for(j in 2:ncol(x$covars)){
-        if(any(startsWith(colnames(x$covars)[j], as.character(x$factor.names)))){
-          for(k in 1:length(x$factor.names)){
-            if(startsWith(colnames(x$covars)[j], x$factor.names[k])){
-              if(is.na(legend.factors[k])){
-                legend.factors[k] <- paste0(newdata[[i]][j], ",")
-              }
-              else{
-                legend.factors[k] <- paste0(legend.factors[k], signif(newdata[[i]][j],3), ",")
-              }
-            }
-          }
-        }
-        
-        else{
-          legend.names[i] <- paste0(legend.names[i], " ", colnames(x$covars)[j], " = ", signif(newdata[[i]][j],3), ",")
-        }
-        
+    nr <- nrow(newdata)
+    v.names <- names(newdata)
+    v.names <- rep(v.names, each=nr)
+    v.vals <- signif(c(as.matrix(newdata)), 3)
+    leg <- matrix( paste(v.names, v.vals,sep="="), nr)
+    Leg <- leg[,1]
+    if( ncol(leg) >= 2){
+      for(j in 2:ncol(leg)){
+        Leg <- paste(Leg, leg[,j], sep=",") 
       }
-      if(!is.null(x$factor.names)){
-        for(k in 1:length(x$factor.names)){
-          legend.names[i] <- paste0(legend.names[i], " ", x$factor.names[k], " = ", legend.factors[k])
-        }
-      }
-      legend.names[i] <- substr(legend.names[i], 2, nchar(legend.names[i])-1)
     }
-    legend('topright', legend = legend.names, lty = 1:ncol(y), lwd = 2, col = 2:(ncol(y)+1), cex = 0.7)
+    
+    
+    #legend.factors <- vector(length = length(x$legend.names))
+
+    legend('topright', legend = Leg, lty = 1:nr, lwd = 2, col = 2:(nr+1), cex = 0.7)
   }
   
   #x$xscl.plot <- xscl   # gonna need this to plot something on the graph.
