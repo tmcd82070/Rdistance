@@ -189,7 +189,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
   options(warn = -1)
   fit.table <- NULL
   
-  cat("Likelihood\tSeries\tExpans\tConverged?\tScale?\tAIC\n")
+  cat("Likelihood\tSeries\tExpans\tConverged?\tScale?\tAICc\n")
   for (like in likelihoods) {
     if (like == "Gamma") {
       dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
