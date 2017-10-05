@@ -298,7 +298,7 @@
 #' @export
 
 dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm", 
-                  pointSurvey = FALSE, w.lo=0, w.hi=max(dist), 
+                  pointSurvey = FALSE, w.lo=0, w.hi=NULL, 
                   expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
                   observer="both", warn=TRUE, transectID=NULL, pointID="point", 
                   length="length"){
@@ -327,7 +327,7 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   
   # (jdc) I don't think there was anywhere in this function that was truncating these distances,
   # (jdc) so dists < w.lo and > w.hi were being included in the MLE
-  data <- data[data$dist >= w.lo & data$dist <= w.hi, ]
+  #data <- data[data$dist >= w.lo & data$dist <= w.hi, ]
   
   
   
@@ -337,6 +337,19 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   covars <- if (!is.empty.model(mt)){
     model.matrix(mt, mf, contrasts)
   }
+
+  if(is.null(w.hi)){
+    w.hi <- max(dist, na.rm=TRUE)
+  }
+  
+  ncovars <- ncol(covars)
+  assgn <- attr(covars,"assign")
+  
+
+  # Truncate for w.lo and w.hi
+  ind <- (w.lo <= dist) & (dist <= w.hi)
+  dist <- dist[ind]
+  covars <- covars[ind,,drop=FALSE]
   
   # Eventually, I'd like to use a constant
   # column for covars to allow intercept only 
@@ -345,10 +358,10 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   # For now, however, we'll just do the "old" method
   # of estimating the distance function parameter directly.
   
-  ncovars <- ncol(covars)
+  
   factor.names <- NULL 
   if(ncovars==1){
-    if( attr(covars,"assign")==0 ){
+    if( assgn==0 ){
       # constant; intercept only model
       covars <- NULL
     }
@@ -362,7 +375,7 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   
   
   # The Gamma doesn't work with covariates
-  if (!is.null(covars)) {
+  if (!is.null(covars) & likelihood=="Gamma") {
     stop("The Gamma likelihood does not allow covariates in the detection function.")
   }
   

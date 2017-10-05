@@ -31,15 +31,27 @@ g.neg <-  function(x, params, covars = NULL, like, w.lo=0, w.hi=max(dist), serie
 
     f.like <- match.fun(paste( like, ".like", sep=""))
 
-    g.x <- f.like( a = params, dist = x, covars = covars, w.lo=w.lo, w.hi=w.hi, series = series, expansions = expansions, pointSurvey = pointSurvey )
+    if( x < w.lo ){
+      x <- w.lo # somehow, optim occasionally passes in -4.1e-15, essentially zero, but 
+             # likelihood returns NA and optim bombs.  I'm not happy with optim. Lower
+             # argument to optim is clearly 0
+    } else if( x > w.hi ){
+      x <- w.hi
+    }
+    
+    g.x <- f.like( a = params, dist = x, covars = covars, w.lo=w.lo, w.hi=w.hi, 
+                   series = series, expansions = expansions, pointSurvey = pointSurvey )
 
+    #print(c(x=x, params=params,gneg=-g.x*10000000000))
     -g.x * 10000000000
 }
 
 x.start <- (fit$w.lo + fit$w.hi) / 10 + fit$w.lo
 
-x.max <- optim(par = x.start, fn = g.neg,  params = fit$parameters, method = "L-BFGS-B", w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
-    expansions=fit$expansions, series=fit$series, lower=fit$w.lo, upper=fit$w.hi, covars = covars, pointSurvey = fit$pointSurvey)
+x.max <- optim(par = x.start, fn = g.neg,  params = fit$parameters, 
+               method = "L-BFGS-B", w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
+               expansions=fit$expansions, series=fit$series, lower=fit$w.lo, 
+               upper=fit$w.hi, covars = covars, pointSurvey = fit$pointSurvey)
 
 if( x.max$convergence != 0 ){
     warning(paste("Maximum of g() could not be found. Message=", x.max$message))
@@ -48,7 +60,8 @@ if( x.max$convergence != 0 ){
     x.max <- x.max$par
 }
 
--g.neg(x = x.max, params = fit$parameters, covars = covars, w.lo = fit$w.lo, w.hi = fit$w.hi, like = fit$like.form,
-       expansions = fit$expansions, series = fit$series, pointSurvey = fit$pointSurvey)/10000000000
+-g.neg(x = x.max, params = fit$parameters, covars = covars, w.lo = fit$w.lo, 
+       w.hi = fit$w.hi, like = fit$like.form, expansions = fit$expansions, 
+       series = fit$series, pointSurvey = fit$pointSurvey)/10000000000
 
 }

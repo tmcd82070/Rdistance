@@ -205,21 +205,57 @@ abundEstim <- function(dfunc, detectionData, siteData,
   
   # (jdc) (we should split f.plot.bs out as a separate .R file, yes?)
   # Plotting 
-  f.plot.bs <- function(x, xscl, yscl, ...) {
+  f.plot.bs <- function(x,  ...) {
     x.seq <- seq(x$w.lo, x$w.hi, length = 200)
     g.at.x0 <- x$g.x.scl
     x0 <- x$x.scl
-    y <- like(x$parameters, x.seq - x$w.lo, series = x$series, 
-              expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi)
-    f.at.x0 <- like(x$parameters, x0 - x$w.lo, series = x$series, 
-                    expansions = x$expansions, w.lo = x$w.lo, w.hi = x$w.hi)
-    yscl <- g.at.x0/f.at.x0
-    lines(x.seq, y * yscl, ...)
+    
+    if(!is.null(x$covars)){
+      covMeanMat <-  colMeans(x$covars)
+      covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
+
+      BETA <- coef(x)
+      p <- ncol(x$covars)
+      beta <- BETA[1:p]   # could be extra parameters tacked on. e.g., knee for uniform
+      params <- covMeanMat %*% beta
+      params <- exp(params)  # All link functions are exp...thus far
+      if(p<length(BETA)){
+        extraParams <- matrix(BETA[(p+1):length(BETA)], nrow(covMeanMat), length(BETA)-p, byrow=TRUE)
+        params <- cbind(params, extraParams)
+      }
+      #params <- predict.dfunc(x, newdata=covMeans, type="parameters")
+    } else {
+      params <- matrix(x$parameters,1)
+    }
+      
+    y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
+               series=x$series, covars = NULL, 
+               expansions=x$expansions, 
+               w.lo = x$w.lo, w.hi=x$w.hi, 
+               pointSurvey = FALSE )  
+    y <- t(y)  # now, each row of y is a dfunc
+    
+    f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
+                     series=x$series, covars = NULL, 
+                     expansions=x$expansions, 
+                     w.lo=x$w.lo, w.hi=x$w.hi, 
+                     pointSurvey = FALSE )
+    scaler <- g.at.x0 / f.at.x0 # a length n vector 
+    
+    y <- y * scaler  # length(scalar) == nrow(y), so this works right
+    
+    y <- t(y)
+    
+    if( x$pointSurvey ){
+      y <- y * (x.seq - x$w.lo)
+    }
+    
+    lines(x.seq, y , ...)
+    # lines(x.seq, y , ...)
   }
+  
   if (plot.bs) {
     tmp <- plot(dfunc) 
-    x.scl.plot <- tmp$xscl.plot
-    y.scl.plot <- tmp$yscl
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
   }
   
@@ -337,9 +373,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
                                warn = FALSE)
-        
-        
-        
+
         # Store ESW if it converged
         if (dfunc.bs$convergence == 0) {
           
@@ -358,9 +392,9 @@ abundEstim <- function(dfunc, detectionData, siteData,
           n.hat.bs[i] <- abund.bs$abundance
           
           
-          if (plot.bs & !dfunc$pointSurvey) {
+          if (plot.bs ) {
             # (jdc) - this is plotting the prob of detection, doesn't match scaling of dfunc plot for points
-            f.plot.bs(dfunc.bs, x.scl.plot, y.scl.plot, col = "blue", lwd = 0.5)  
+            f.plot.bs(dfunc.bs, col = "blue", lwd = 0.5)  
           }
           
           
@@ -374,7 +408,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
       
       # plot red line of original fit again (over bs lines)
       if (plot.bs) {
-        f.plot.bs(dfunc, x.scl.plot, y.scl.plot, col = "red", lwd = 3)
+        f.plot.bs(dfunc, col = "red", lwd = 3)
       } 
       
       
