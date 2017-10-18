@@ -1,7 +1,7 @@
 #' @title Predict method for dfunc objects
 #' 
 #' @description Predict likelihood parameters or inflation 
-#' factors for distance function objects.
+#' factors for distance function objects
 #' 
 #' @param object An estimated dfunc object.  See \code{\link{dfuncEstim}}. 
 #' 
@@ -22,7 +22,7 @@
 #' is either 1 or 2 depending on the liklihood (e.g., \code{halfnorm} has 
 #' one parameter, \code{hazrate} has two). 
 #' 
-#' @author Trent McDonald
+#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #' 
 #' @export
 #' 

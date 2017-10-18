@@ -53,23 +53,22 @@ This function utilizes the built-in R function \code{dgamma} to evaluate the gam
 \examples{
 \dontrun{
 set.seed(238642)
-x <- seq( 0, 100, length=100)
+x <- seq(0, 100, length=100)
 
-#   Plots showing effects of changes in shape
+# Plots showing effects of changes in shape
 plot(x, Gamma.like(c(20,20), x), type="l", col="red")
-lines(x, Gamma.like(c(40,20), x), type="l", col="blue")
+plot(x, Gamma.like(c(40,20), x), type="l", col="blue")
 
-#   Plots showing effects of changes in scale
+# Plots showing effects of changes in scale
 plot(x, Gamma.like(c(20,20), x), type="l", col="red")
-lines(x, Gamma.like(c(20,40), x), type="l", col="blue")
+plot(x, Gamma.like(c(20,40), x), type="l", col="blue")
 
-
-#   Estimate 'Gamma' distance function
+# Estimate 'Gamma' distance function
 r <- 5
 lam <- 10
 b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
 x <- rgamma(1000, shape=r, scale=b*lam)
-dfunc <- dfuncEstim( x, likelihood="Gamma" )
+dfunc <- dfuncEstim(x~1, likelihood="Gamma", x.scl="max")
 plot(dfunc)
 }
 }

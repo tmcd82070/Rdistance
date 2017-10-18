@@ -1,5 +1,5 @@
 #' @name nexexp.like
-#' @title Negative exponential likelihood function for distance analyses.
+#' @title Negative exponential likelihood function for distance analyses
 #' @description This function computes likelihood contributions for off-transect sighting distances, scaled appropriately, for use as a distance likelihood.
 #' @usage negexp.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, pointSurvey = F, ...)
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
@@ -39,6 +39,22 @@
 #'          \code{\link{uniform.like}},
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{Gamma.like}}
+#'          
+#' @examples \dontrun{
+#' set.seed(238642)
+#' x <- seq(0, 100, length=100)
+#' 
+#' # Plots showing effects of changes in parameter Beta
+#' plot(x, negexp.like(0.01, x), type="l", col="red")
+#' plot(x, negexp.like(0.05, x), type="l", col="blue")
+#' 
+#' # Estimate 'negexp' distance function
+#' Beta <- 0.01
+#' x <- rexp(1000, rate=Beta)
+#' dfunc <- dfuncEstim(x~1, likelihood="negexp")
+#' plot(dfunc)
+#' }
+#'          
 #' @keywords models
 #' @export
 

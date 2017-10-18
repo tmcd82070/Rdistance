@@ -1,4 +1,4 @@
-#' @title Uniform likelihood function for distance analyses.
+#' @title Uniform likelihood function for distance analyses
 #' 
 #' @description This function computes likelihood contributions for 
 #' sighting distances, scaled appropriately, for use as a distance likelihood.
@@ -125,6 +125,20 @@
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{negexp.like}},
 #'          \code{\link{Gamma.like}}
+#'          
+#' @examples \dontrun{
+#' set.seed(238642)
+#' x <- seq(0, 100, length=100)
+#' 
+#' # Plots showing effects of changes in Threshold
+#' plot(x, uniform.like(c(20, 20), x), type="l", col="red")
+#' plot(x, uniform.like(c(40, 20), x), type="l", col="blue")
+#' 
+#' # Plots showing effects of changes in Knee
+#' plot(x, uniform.like(c(50, 100), x), type="l", col="red")
+#' plot(x, uniform.like(c(50, 1), x), type="l", col="blue")
+#' }
+#'          
 #' @keywords models
 #' @export
 

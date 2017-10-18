@@ -3,7 +3,7 @@
 \docType{data}
 \name{thrasherSiteData}
 \alias{thrasherSiteData}
-\title{Sage Thrasher Site Data (point-transect survey)}
+\title{Sage Thrasher site data (point-transect survey)}
 \format{A data.frame containing 120 rows and 6 columns.  Each row represents
 a site (point) surveyed.  Column descriptions: \enumerate{ \item
 \code{siteID}: Factor (120 levels), the site or point surveyed.  \item

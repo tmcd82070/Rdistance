@@ -1,4 +1,4 @@
-#' @title Hazard rate likelihood function for distance analyses.
+#' @title Hazard rate likelihood function for distance analyses
 #' 
 #' @description This function computes likelihood contributions for 
 #' off-transect sighting distances, scaled appropriately, for use as 
@@ -100,6 +100,18 @@
 #'          \code{\link{uniform.like}},
 #'          \code{\link{negexp.like}},
 #'          \code{\link{Gamma.like}}
+#'          
+#' @examples \dontrun{
+#' x <- seq(0, 100, length=100)
+#' 
+#' # Plots showing effects of changes in sigma
+#' plot(x, hazrate.like(c(20, 5), x), type="l", col="red")
+#' plot(x, hazrate.like(c(40, 5), x), type="l", col="blue")
+#' 
+#' # Plots showing effects of changes in beta
+#' plot(x, hazrate.like(c(50, 20), x), type="l", col="red")
+#' plot(x, hazrate.like(c(50, 2), x), type="l", col="blue")
+#' }
 #'          
 #' @keywords models
 #' @export

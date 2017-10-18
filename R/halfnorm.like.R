@@ -1,6 +1,6 @@
 #' @name halfnorm.like
 #' 
-#' @title Half-normal likelihood function for distance analyses.
+#' @title Half-normal likelihood function for distance analyses
 #' 
 #' @description This function computes the likelihood contributions for 
 #' sighting distances, scaled appropriately, for use as a 
@@ -90,6 +90,22 @@
 #'          \code{\link{uniform.like}},
 #'          \code{\link{negexp.like}},
 #'          \code{\link{Gamma.like}}
+#'          
+#' @examples  \dontrun{
+#' set.seed(238642)
+#' x <- seq(0, 100, length=100)
+#' 
+#' # Plots showing effects of changes in parameter Sigma
+#' plot(x, halfnorm.like(20, x), type="l", col="red")
+#' plot(x, halfnorm.like(40, x), type="l", col="blue")
+#' 
+#' # Estimate 'halfnorm' distance function
+#' a <- 5
+#' x <- rnorm(1000, mean=0, sd=a)
+#' x <- x[x >= 0]
+#' dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
+#' plot(dfunc)
+#' }
 #' @keywords models
 #' @export
 

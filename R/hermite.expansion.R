@@ -1,6 +1,6 @@
 #' @name hermite.expansion
 #' @aliases hermite.expansion
-#' @title Calculation of Hermite expansion for detection function likelihoods.
+#' @title Calculation of Hermite expansion for detection function likelihoods
 #' @description Computes the Hermite expansion terms used in the likelihood of a distance analysis. 
 #'   More generally, will compute a Hermite expansion of any numeric vector.
 #' @usage hermite.expansion(x, expansions)
@@ -26,8 +26,8 @@
 #'   of user defined likelihoods in \code{\link{dfuncEstim}}.
 #' @examples set.seed(83828233)
 #'   x <- rnorm(1000) * 100
-#'   x <- x[ 0 < x & x < 100 ]
-#'   herm.expn <- hermite.expansion( x, 5 )
+#'   x <- x[0 < x & x < 100]
+#'   herm.expn <- hermite.expansion(x, 3)
 #' @keywords model
 #' @export
 

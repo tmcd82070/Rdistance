@@ -65,7 +65,8 @@ If \code{bySite} is FALSE, a list containing the following components:
 \description{
 Estimate abundance given a distance function, 
 detection data, site data, and area.  This is called internally 
-by \code{abundEstim}.
+by \code{abundEstim}.  Users should use \code{abundEstim} to estimate
+abundance.
 }
 \details{
 If \code{x} is the data frame returned when \code{bySite} = TRUE, 
@@ -79,18 +80,6 @@ the following is true:
   on the study area or the abundance estimate when \code{bySite} = FALSE.
 
 }
-}
-\examples{
-# Load the example datasets of sparrow detections and transects from package
-  data(sparrow.detections)
-  data(sparrow.transects)
-  
-  # Fit detection function to perpendicular, off-transect distances
-  dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
-  
-  # Estimate abundance given a detection function
-  n.hat <- estimate.nhat(dfunc, sparrow.detections, sparrow.sites)
-  
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}

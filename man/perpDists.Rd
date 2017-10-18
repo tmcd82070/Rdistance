@@ -26,11 +26,10 @@ If observers recorded sighting distance and sighting angle (as is often common i
 }
 \examples{
 # Load the example dataset of sparrow detections from package
-data(sparrow.detections)
+data(sparrowDetectionData)
 # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-sparrow.detections$dist <- perpDists(sightDist="sightdist", sightAngle="sightangle",
-                                      data=sparrow.detections)
-# Proceed to fitting the detection function with F.dfunc.estim
+sparrowDetectionData$perpDist <- perpDists(sightDist="sightdist", sightAngle="sightangle",
+                                           data=sparrowDetectionData)
 }
 \references{
 Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. 

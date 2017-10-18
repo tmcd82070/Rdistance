@@ -1,6 +1,6 @@
 #' @name simple.expansion
 #' @aliases simple.expansion
-#' @title Calculate simply polynomial expansion for detection function likelihoods.
+#' @title Calculate simple polynomial expansion for detection function likelihoods
 #' @description Computes simple polynomial expansion terms used in the likelihood of a distance analysis. More generally, will compute
 #'   polynomial expansions of any numeric vector.
 #' @usage simple.expansion(x, expansions)

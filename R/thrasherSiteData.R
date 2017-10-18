@@ -1,4 +1,4 @@
-#' Sage Thrasher Site Data (point-transect survey)
+#' Sage Thrasher site data (point-transect survey)
 #' 
 #' \code{Rdistance} contains four example datasets: two collected using a
 #' line-transect survey (i.e., \code{\link{sparrowDetectionData}} and

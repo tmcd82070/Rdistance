@@ -3,7 +3,7 @@
 \docType{data}
 \name{sparrowDetectionData}
 \alias{sparrowDetectionData}
-\title{Brewer's Sparrow Detection Data (line-transect survey)}
+\title{Brewer's Sparrow detection data (line-transect survey)}
 \format{A data.frame containing 356 rows and 5 columns.  Each row represents
 a detected group of sparrows.  Column descriptions: \enumerate{ \item
 \code{siteID}: Factor (72 levels), the site or transect where the detection

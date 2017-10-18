@@ -2,7 +2,7 @@
 % Please edit documentation in R/abundEstim.R
 \name{abundEstim}
 \alias{abundEstim}
-\title{Estimate abundance from distance-sampling data.}
+\title{Estimate abundance from distance-sampling data}
 \usage{
 abundEstim(dfunc, detectionData, siteData, area = 1, ci = 0.95, R = 500,
   plot.bs = FALSE, bySite = FALSE)
@@ -123,15 +123,17 @@ Estimate abundance (or density) given an estimated detection
   abundance (or density) using the bias corrected bootstrap method.
 }
 \details{
-The abundance estimate is \deqn{N =
+The abundance estimate for line transect surveys (if no covariates
+   are included in the detection function) is \deqn{N =
   \frac{n.indiv(area)}{2(ESW)(tot.trans.len)}}{N = n.indiv*area /
   (2*ESW*tot.trans.len)} where n.indiv is either \code{avg.group.size * n} or
   \code{sum(group.sizes)}, and \code{ESW} is the effective strip width
   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
   
   The confidence interval for abundance assumes that the fundamental units of
-  replication (transects) are independent. The bias corrected bootstrap
-  method used here resamples the units of replication (transects) and
+  replication (lines or points, hereafter "sites") are independent.
+  The bias corrected bootstrap
+  method used here resamples the units of replication (sites) and
   recalculates the model's parameter estimates.  If a double-observer data
   frame is included in \code{dfunc}, rows of the double-observer data frame
   are re-sampled each bootstrap iteration. No model selection is performed.
@@ -164,7 +166,7 @@ Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and monte
    abundance of biological populations}. Oxford University Press, Oxford, UK.
 }
 \seealso{
-\code{\link{dfuncEstim}}
+\code{\link{dfuncEstim}}, \code{\link{autoDistSamp}}.
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr 

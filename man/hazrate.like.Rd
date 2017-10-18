@@ -2,7 +2,7 @@
 % Please edit documentation in R/hazrate.like.R
 \name{hazrate.like}
 \alias{hazrate.like}
-\title{Hazard rate likelihood function for distance analyses.}
+\title{Hazard rate likelihood function for distance analyses}
 \usage{
 hazrate.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
   series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE,
@@ -103,6 +103,20 @@ and \eqn{\beta}{Beta}
   \sum_{j=1}^{k} c_j h_{ij}(x)).}{%
   f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + 
   c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+}
+\examples{
+\dontrun{
+x <- seq(0, 100, length=100)
+
+# Plots showing effects of changes in sigma
+plot(x, hazrate.like(c(20, 5), x), type="l", col="red")
+plot(x, hazrate.like(c(40, 5), x), type="l", col="blue")
+
+# Plots showing effects of changes in beta
+plot(x, hazrate.like(c(50, 20), x), type="l", col="red")
+plot(x, hazrate.like(c(50, 2), x), type="l", col="blue")
+}
+         
 }
 \seealso{
 \code{\link{dfuncEstim}},

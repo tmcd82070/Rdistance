@@ -1,6 +1,6 @@
 #' @name cosine.expansion
 #' @aliases cosine.expansions
-#' @title Calcululation of cosine expansion for detection function likelihoods.
+#' @title Calcululation of cosine expansion for detection function likelihoods
 #' @description Computes the cosine expansion terms used in the likelihood of a distance analysis. 
 #'   More generally, will compute a cosine expansion of any numeric vector.
 #' @usage cosine.expansion(x, expansions)

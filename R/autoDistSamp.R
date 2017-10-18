@@ -1,6 +1,6 @@
 #' @name autoDistSamp
 #' @aliases autoDistSamp
-#' @title Automated classical distance analysis.
+#' @title Automated classical distance analysis
 #' @description Perform automated classical detection function selection and 
 #' estimation of abundance.
 #' 
@@ -79,20 +79,22 @@
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
 #'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
-#' @examples # Load the example datasets of sparrow detections and transects from package
-#'   data(sparrow.detections)
-#'   data(sparrow.transects)
-#'   
-#'   # Automate fitting multiple detection functions
-#'   # And estimate abundance (density per ha in this case) given the 'best' detection function
-#'   # Note, area=10000 converts to density per hectare (for distances measured in meters)
-#'   # Note, a person should do more than R=20 iterations 
-#'   autoDistSamp(detectionData=sparrow.detections, siteData=sparrow.sites,
-#'                   likelihood=c("halfnorm", "hazrate", "negexp"),
-#'                   series=c("cosine", "simple"),
-#'                   expansions=c(0, 1), area=10000, R=20, ci=0.95, bySite=FALSE,
-#'                   plot.bs=FALSE, w.hi=150, plot=TRUE)
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
+#' @examples 
+#' # Load example sparrow data (line transect survey type)
+#' data(sparrowDetectionData)
+#' data(sparrowSiteData)
+#' 
+#' # Automate fitting multiple detection functions, and estimate abundance
+#' # (density per ha in this case), given the 'best' detection function
+#' # Note, area=10000 converts to density per ha (for distances measured in m)
+#' # Note, users should do more than R=20 iterations of the bootstrap
+#' autoDistSamp(formula=dist ~ 1,
+#'              detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+#'              likelihood=c("halfnorm", "hazrate"), w.hi=100,
+#'              series=c("cosine", "simple"), expansions=c(0, 1),
+#'              area=10000, R=20, ci=0.95, bySite=FALSE,
+#'              plot.bs=TRUE, plot=FALSE, pointSurvey=FALSE)
 #' @keywords model
 #' @export
 
@@ -276,8 +278,8 @@ autoDistSamp <- function (formula, detectionData, siteData,
                          area=area, ci=ci, R=R, plot.bs=plot.bs, bySite=bySite)
 
 #   }
-  cat("\n\n------------ Abundance Estimate Based on Top-Ranked Detection Function ------------\n")
-  print(abund)
+  cat("\n\n---------- Abundance Estimate Based on Top-Ranked Detection Function ----------\n")
+  # print(abund)
   options(warn = wwarn)
   abund
 }

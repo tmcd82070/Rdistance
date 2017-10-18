@@ -1,8 +1,8 @@
 #' @name F.nLL
 #' @aliases F.nLL
 #' 
-#' @title F.nLL - Return the negative log likelihood for 
-#' a set of distance values.
+#' @title Return the negative log likelihood for 
+#' a set of distance values
 #' 
 #' @description Return value of the negative log likelihood for 
 #' a vector of observed distances given a specified likelihood, 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.dfunc.r
 \name{print.dfunc}
 \alias{print.dfunc}
-\title{Print a distance function object.}
+\title{Print a distance function object}
 \usage{
 \method{print}{dfunc}(x, ...)
 }
@@ -32,15 +32,17 @@ of the output, the following quantities are printed,
 The number of digits printed is controled by \code{options()$digits}.
 }
 \examples{
-# Load the example datasets of sparrow detections and transects from package
-data(sparrow.detections)
-data(sparrow.transects)
+#' # Load example sparrow data (line transect survey type)
+data(sparrowDetectionData)
 
-# Fit detection function to perpendicular, off-transect distances
-dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
+# Fit half-normal detection function
+dfunc <- dfuncEstim(formula=dist~1,
+                    detectionData=sparrowDetectionData,
+                    likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
 
-# Print the output                 
+# Print results
 print(dfunc)
+dfunc
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}

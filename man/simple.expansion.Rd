@@ -2,7 +2,7 @@
 % Please edit documentation in R/simple.expansion.r
 \name{simple.expansion}
 \alias{simple.expansion}
-\title{Calculate simply polynomial expansion for detection function likelihoods.}
+\title{Calculate simple polynomial expansion for detection function likelihoods}
 \usage{
 simple.expansion(x, expansions)
 }

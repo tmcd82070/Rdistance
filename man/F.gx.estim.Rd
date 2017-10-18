@@ -2,7 +2,7 @@
 % Please edit documentation in R/F.gx.estim.r
 \name{F.gx.estim}
 \alias{F.gx.estim}
-\title{F.gx.estim - Estimate g(0) or g(x).}
+\title{Estimate g(0) or g(x)}
 \usage{
 F.gx.estim(fit, x.scl=NULL, g.x.scl=NULL, observer=NULL)
 }
@@ -70,6 +70,7 @@ There are several estimation cases covered by the inputs \code{x.scl} and \code{
 }
 \examples{
 \dontrun{
+  # NOTE, this example is out of date as of version 2.0.x
   # Non-double observer example
   set.seed(555574)
   x <- rnorm(1000) * 100

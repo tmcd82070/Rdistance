@@ -3,7 +3,7 @@
 \name{nexexp.like}
 \alias{nexexp.like}
 \alias{negexp.like}
-\title{Negative exponential likelihood function for distance analyses.}
+\title{Negative exponential likelihood function for distance analyses}
 \usage{
 negexp.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, pointSurvey = F, ...)
 }
@@ -53,6 +53,23 @@ The negative exponential likelihood is \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -
   \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}are (estimated) coefficients for the expansion terms, the likelihood contribution for the \eqn{i^{th}}{i-th} 
   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}
   {f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+}
+\examples{
+\dontrun{
+set.seed(238642)
+x <- seq(0, 100, length=100)
+
+# Plots showing effects of changes in parameter Beta
+plot(x, negexp.like(0.01, x), type="l", col="red")
+plot(x, negexp.like(0.05, x), type="l", col="blue")
+
+# Estimate 'negexp' distance function
+Beta <- 0.01
+x <- rexp(1000, rate=Beta)
+dfunc <- dfuncEstim(x~1, likelihood="negexp")
+plot(dfunc)
+}
+         
 }
 \seealso{
 \code{\link{dfuncEstim}},

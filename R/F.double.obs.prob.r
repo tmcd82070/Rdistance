@@ -1,6 +1,6 @@
 #' @name F.double.obs.prob
 #' @aliases F.double.obs.prob
-#' @title F.double.obs.prob - Compute double observer probability of detection. No external covariates allowed.
+#' @title Compute double observer probability of detection (No external covariates allowed)
 #' @description Estimates the probability of detection in a two-observer system when observations are independent.
 #' @usage F.double.obs.prob( df, observer = "both" )
 #' @param df A data frame containing the components \code{$obsby.1} and \code{$obsby.2}.

@@ -29,8 +29,8 @@ one parameter, \code{hazrate} has two).
 }
 \description{
 Predict likelihood parameters or inflation 
-factors for distance function objects.
+factors for distance function objects
 }
 \author{
-Trent McDonald
+Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 }

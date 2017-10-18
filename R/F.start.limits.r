@@ -1,6 +1,6 @@
 #' @name F.start.limits
 #' @aliases F.start.limits
-#' @title F.start.limits - Set starting values and limits for parameters of Rdistance functions.
+#' @title Set starting values and limits for parameters of Rdistance functions
 #' @description Return reasonable starting values and limits (boundaries) for the parameters of 
 #'   distance functions.  Starting values and limits are specified for 
 #'   all likelihoods and expansion terms.  This function is called by 
@@ -29,27 +29,27 @@
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
 #' @seealso \code{\link{dfuncEstim}}
-#' @examples F.start.limits( "uniform", 0, 0, 1000 )
-#'   F.start.limits( "uniform", 1, 0, 1000 )
-#'   F.start.limits( "uniform", 2, 0, 1000 )
-#'   F.start.limits( "uniform", 3, 0, 1000 )
+#' @examples F.start.limits("uniform", 0, 0, 1000)
+#'   F.start.limits("uniform", 1, 0, 1000)
+#'   F.start.limits("uniform", 2, 0, 1000)
+#'   F.start.limits("uniform", 3, 0, 1000)
 #'   
-#'   F.start.limits( "halfnorm", 0, 0, 1000, 500*runif(100) )
-#'   F.start.limits( "halfnorm", 1, 0, 1000, 500*runif(100) )
-#'   F.start.limits( "halfnorm", 2, 0, 1000, 500*runif(100) )
-#'   F.start.limits( "halfnorm", 3, 0, 1000, 500*runif(100) )
+#'   F.start.limits("halfnorm", 0, 0, 1000, 500*runif(100))
+#'   F.start.limits("halfnorm", 1, 0, 1000, 500*runif(100))
+#'   F.start.limits("halfnorm", 2, 0, 1000, 500*runif(100))
+#'   F.start.limits("halfnorm", 3, 0, 1000, 500*runif(100))
 #'   
-#'   F.start.limits( "hazrate", 0, 0, 1000 )
-#'   F.start.limits( "hazrate", 1, 0, 1000 )
-#'   F.start.limits( "hazrate", 2, 0, 1000 )
-#'   F.start.limits( "hazrate", 3, 0, 1000 )
+#'   F.start.limits("hazrate", 0, 0, 1000)
+#'   F.start.limits("hazrate", 1, 0, 1000)
+#'   F.start.limits("hazrate", 2, 0, 1000)
+#'   F.start.limits("hazrate", 3, 0, 1000)
 #'   
-#'   F.start.limits( "negexp", 0, 0, 1000 )
-#'   F.start.limits( "negexp", 1, 0, 1000 )
-#'   F.start.limits( "negexp", 2, 0, 1000 )
-#'   F.start.limits( "negexp", 3, 0, 1000 )
+#'   F.start.limits("negexp", 0, 0, 1000)
+#'   F.start.limits("negexp", 1, 0, 1000)
+#'   F.start.limits("negexp", 2, 0, 1000)
+#'   F.start.limits("negexp", 3, 0, 1000)
 #'   
-#'   F.start.limits( "Gamma", 0, 0, 1000, 1000*runif(100) )
+#'   F.start.limits("Gamma", 0, 0, 1000, 1000*runif(100))
 #' @keywords models
 #' @export
 

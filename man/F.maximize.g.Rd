@@ -2,7 +2,7 @@
 % Please edit documentation in R/F.maximize.g.r
 \name{F.maximize.g}
 \alias{F.maximize.g}
-\title{F.maximize.g - Fincds the coordinate of the maximum of a distance function.}
+\title{Find the coordinate of the maximum of a distance function}
 \usage{
 F.maximize.g(fit, covars = NULL)
 }

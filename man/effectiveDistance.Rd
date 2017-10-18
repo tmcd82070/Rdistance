@@ -3,7 +3,7 @@
 \name{effectiveDistance}
 \alias{effectiveDistance}
 \title{Calculates the effective sampling distance for 
-estimated detection functions.}
+estimated detection functions}
 \usage{
 effectiveDistance(obj, newdata = NULL)
 }

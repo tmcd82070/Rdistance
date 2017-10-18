@@ -2,7 +2,7 @@
 % Please edit documentation in R/hermite.expansion.R
 \name{hermite.expansion}
 \alias{hermite.expansion}
-\title{Calculation of Hermite expansion for detection function likelihoods.}
+\title{Calculation of Hermite expansion for detection function likelihoods}
 \usage{
 hermite.expansion(x, expansions)
 }
@@ -36,8 +36,8 @@ There are, in general, several expansions that can be called Hermite. The Hermit
 \examples{
 set.seed(83828233)
   x <- rnorm(1000) * 100
-  x <- x[ 0 < x & x < 100 ]
-  herm.expn <- hermite.expansion( x, 5 )
+  x <- x[0 < x & x < 100]
+  herm.expn <- hermite.expansion(x, 3)
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{simple.expansion}}, and the discussion 

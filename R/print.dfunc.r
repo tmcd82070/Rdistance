@@ -1,6 +1,6 @@
 #' @name print.dfunc
 #' 
-#' @title Print a distance function object.
+#' @title Print a distance function object
 #' 
 #' @description Print method for distance functions produced by dfuncEstim, that are of class \code{dfunc}.
 #' 
@@ -24,15 +24,17 @@
 #' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
-#' @examples # Load the example datasets of sparrow detections and transects from package
-#' data(sparrow.detections)
-#' data(sparrow.transects)
+#' @examples #' # Load example sparrow data (line transect survey type)
+#' data(sparrowDetectionData)
 #' 
-#' # Fit detection function to perpendicular, off-transect distances
-#' dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
+#' # Fit half-normal detection function
+#' dfunc <- dfuncEstim(formula=dist~1,
+#'                     detectionData=sparrowDetectionData,
+#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
 #' 
-#' # Print the output                 
+#' # Print results
 #' print(dfunc)
+#' dfunc
 #' @keywords models
 #' @export
 

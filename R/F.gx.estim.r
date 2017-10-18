@@ -1,6 +1,6 @@
 #' @name F.gx.estim
 #' @aliases F.gx.estim
-#' @title F.gx.estim - Estimate g(0) or g(x).
+#' @title Estimate g(0) or g(x)
 #' @description Estimate g(0) or g(x) for a specified distance function.
 #' @usage F.gx.estim(fit, x.scl=NULL, g.x.scl=NULL, observer=NULL)
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
@@ -56,6 +56,7 @@
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #' @seealso \code{\link{dfuncEstim}}
 #' @examples \dontrun{
+#'   # NOTE, this example is out of date as of version 2.0.x
 #'   # Non-double observer example
 #'   set.seed(555574)
 #'   x <- rnorm(1000) * 100

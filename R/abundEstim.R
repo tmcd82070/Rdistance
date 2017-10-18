@@ -1,4 +1,4 @@
-#' @title Estimate abundance from distance-sampling data.
+#' @title Estimate abundance from distance-sampling data
 #'   
 #' @description Estimate abundance (or density) given an estimated detection
 #'   function and supplemental information on observed group sizes, transect
@@ -61,15 +61,17 @@
 #'   intervals for these site-level abundance estimates, so \code{ci} is set to
 #'   \code{NULL} if \code{bySite = TRUE}. See \code{\link{estimateN}}.
 #'   
-#' @details The abundance estimate is \deqn{N =
+#' @details The abundance estimate for line transect surveys (if no covariates
+#'    are included in the detection function) is \deqn{N =
 #'   \frac{n.indiv(area)}{2(ESW)(tot.trans.len)}}{N = n.indiv*area /
 #'   (2*ESW*tot.trans.len)} where n.indiv is either \code{avg.group.size * n} or
 #'   \code{sum(group.sizes)}, and \code{ESW} is the effective strip width
 #'   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
 #'   
 #'   The confidence interval for abundance assumes that the fundamental units of
-#'   replication (transects) are independent. The bias corrected bootstrap
-#'   method used here resamples the units of replication (transects) and
+#'   replication (lines or points, hereafter "sites") are independent.
+#'   The bias corrected bootstrap
+#'   method used here resamples the units of replication (sites) and
 #'   recalculates the model's parameter estimates.  If a double-observer data
 #'   frame is included in \code{dfunc}, rows of the double-observer data frame
 #'   are re-sampled each bootstrap iteration. No model selection is performed.
@@ -142,7 +144,7 @@
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
 #'    abundance of biological populations}. Oxford University Press, Oxford, UK.
 #'   
-#' @seealso \code{\link{dfuncEstim}}
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{autoDistSamp}}.
 #' 
 #' @examples # Load the example datasets of sparrow detections and transects from package
 #'   data(sparrowDetectionData)

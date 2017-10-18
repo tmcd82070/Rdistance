@@ -2,7 +2,7 @@
 % Please edit documentation in R/integration.constant.R
 \name{integration.constant}
 \alias{integration.constant}
-\title{Compute the integration constant for distance density functions.}
+\title{Compute the integration constant for distance density functions}
 \usage{
 integration.constant(dist, density, w.lo, w.hi, covars, a, expansions,
   pointSurvey, ...)
@@ -62,6 +62,7 @@ of trapazoids to use is fixed and cannot be changed without
 re-writing this routine.
 }
 \examples{
+ \dontrun{
 #   The following result should be approximately 75
 scl <- integration.constant(uniform.like, w.lo=0, w.hi=100, a=c(75,25))
 print(scl)
@@ -71,7 +72,7 @@ x <- seq(0,100,length=200)
 y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
 int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapazoid rule, should be 1.0
 print(int.y)
-
+}
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}

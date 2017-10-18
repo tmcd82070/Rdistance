@@ -63,14 +63,23 @@
 #'   
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{EDR}}
-#' @examples # Load the example dataset of sparrow detections from package
+#' @examples
+#' # Load example sparrow data (line transect survey type)
 #' data(sparrowDetectionData)
 #' 
-#' # Fit detection function to perpendicular, off-transect distances
-#' dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
+#' # Fit half-normal detection function
+#' dfunc <- dfuncEstim(formula=dist~1,
+#'                     detectionData=sparrowDetectionData,
+#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
 #' 
 #' # Compute effective strip width (ESW)
 #' ESW(dfunc)
+#' 
+#' # ESW only applies to line transect surveys
+#' # EDR is the point transect equivalent
+#' # The effectiveDistance function tests whether the dfunc was
+#' # fit to line or point data, and returns either ESW or EDR accordingly
+#' effectiveDistance(dfunc)
 #' @keywords modeling
 #' @export
 

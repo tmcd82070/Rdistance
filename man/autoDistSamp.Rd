@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoDistSamp.R
 \name{autoDistSamp}
 \alias{autoDistSamp}
-\title{Automated classical distance analysis.}
+\title{Automated classical distance analysis}
 \usage{
 autoDistSamp(formula, detectionData, siteData, w.lo = 0, w.hi = max(dist),
   likelihoods = c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
@@ -90,22 +90,23 @@ allowed in models with covariates.  The model with lowest AIC is selected
 as 'best', and estimation of abundance proceeds using that model.
 }
 \examples{
-# Load the example datasets of sparrow detections and transects from package
-  data(sparrow.detections)
-  data(sparrow.transects)
-  
-  # Automate fitting multiple detection functions
-  # And estimate abundance (density per ha in this case) given the 'best' detection function
-  # Note, area=10000 converts to density per hectare (for distances measured in meters)
-  # Note, a person should do more than R=20 iterations 
-  autoDistSamp(detectionData=sparrow.detections, siteData=sparrow.sites,
-                  likelihood=c("halfnorm", "hazrate", "negexp"),
-                  series=c("cosine", "simple"),
-                  expansions=c(0, 1), area=10000, R=20, ci=0.95, bySite=FALSE,
-                  plot.bs=FALSE, w.hi=150, plot=TRUE)
+# Load example sparrow data (line transect survey type)
+data(sparrowDetectionData)
+data(sparrowSiteData)
+
+# Automate fitting multiple detection functions, and estimate abundance
+# (density per ha in this case), given the 'best' detection function
+# Note, area=10000 converts to density per ha (for distances measured in m)
+# Note, users should do more than R=20 iterations of the bootstrap
+autoDistSamp(formula=dist ~ 1,
+             detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+             likelihood=c("halfnorm", "hazrate"), w.hi=100,
+             series=c("cosine", "simple"), expansions=c(0, 1),
+             area=10000, R=20, ci=0.95, bySite=FALSE,
+             plot.bs=TRUE, plot=FALSE, pointSurvey=FALSE)
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{abundEstim}}
+\code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

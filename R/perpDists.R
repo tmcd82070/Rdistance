@@ -14,12 +14,12 @@
 #'   \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 #' @author Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 #' @seealso \code{\link{dfuncEstim}}
-#' @examples # Load the example dataset of sparrow detections from package
-#' data(sparrow.detections)
+#' @examples
+#' # Load the example dataset of sparrow detections from package
+#' data(sparrowDetectionData)
 #' # Compute perpendicular, off-transect distances from the observer's sight distance and angle
-#' sparrow.detections$dist <- perpDists(sightDist="sightdist", sightAngle="sightangle",
-#'                                       data=sparrow.detections)
-#' # Proceed to fitting the detection function with F.dfunc.estim
+#' sparrowDetectionData$perpDist <- perpDists(sightDist="sightdist", sightAngle="sightangle",
+#'                                            data=sparrowDetectionData)
 #' @export
 
 perpDists <- function(sightDist, sightAngle, data){

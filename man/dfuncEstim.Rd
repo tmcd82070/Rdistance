@@ -2,10 +2,10 @@
 % Please edit documentation in R/dfuncEstim.R
 \name{dfuncEstim}
 \alias{dfuncEstim}
-\title{Estimate a detection function from distance-sampling data.}
+\title{Estimate a detection function from distance-sampling data}
 \usage{
 dfuncEstim(formula, detectionData, siteData, likelihood = "halfnorm",
-  pointSurvey = FALSE, w.lo = 0, w.hi = max(dist), expansions = 0,
+  pointSurvey = FALSE, w.lo = 0, w.hi = NULL, expansions = 0,
   series = "cosine", x.scl = 0, g.x.scl = 1, observer = "both",
   warn = TRUE, transectID = NULL, pointID = "point", length = "length")
 }
@@ -78,13 +78,13 @@ something other than \code{1}).}
 specifies the type of expansion to use. Valid values at 
 present are 'simple', 'hermite', and 'cosine'.}
 
-\item{x.scl}{This parameter is passed to \code{F.g.estim}. 
+\item{x.scl}{This parameter is passed to \code{F.gx.estim}. 
 See \code{F.gx.estim} documentation for definition.}
 
-\item{g.x.scl}{This parameter is passed to \code{F.g.estim}. 
+\item{g.x.scl}{This parameter is passed to \code{F.gx.estim}. 
 See \code{F.gx.estim} documentation for definition.}
 
-\item{observer}{This parameter is passed to \code{F.g.estim}. 
+\item{observer}{This parameter is passed to \code{F.gx.estim}. 
 See \code{F.gx.estim} documentation for definition.}
 
 \item{warn}{A logical scaler specifying whether to issue 
@@ -255,39 +255,47 @@ the actual data, not to the bins.
 }
 
 \examples{
-# Prep example sparrow and thrasher detections. 
-# Merge in transect-level detection covariates.
-data(sparrow.detections)
-data(sparrow.sites)
-sparrow <- merge(sparrow.detections, sparrow.sites, by="siteID")
-data(thrasher.detections)
-data(thrasher.sites)
-thrasher <- merge(thrasher.detections, thrasher.sites, by="siteID")
-  
-# Fit multiple detection functions to perpendicular, off-transect distances
-un.dfunc <- dfuncEstim(dist ~ 1, sparrow, likelihood="uniform", 
-           w.hi = 150)
-           
-hn.dfunc <- dfuncEstim(dist ~ 1, thrasher, likelihood="halfnorm", 
-           w.hi = 150, pointSurvey = T)
-           
-hn2.dfunc <- dfuncEstim(dist ~ sagemean, sparrow, 
-           likelihood="halfnorm", w.hi = 150, expansions = 1, 
-           series = "simple")
-           
-hz.dfunc <- dfuncEstim(dist ~ observer + bare, thrasher, 
-           likelihood="hazrate", w.hi = 150, pointSurvey = T, 
-           expansions = 5, series = "cosine")
-           
-ga.dfunc <- dfuncEstim(dist ~ 1, sparrow, likelihood="Gamma", 
-           w.hi = 150, x.scl="max") 
-  
-# Plot the first four detection functions
-par(mfrow=c(2,2))
-plot(un.dfunc)
-plot(hn.dfunc)
-plot(hn2.dfunc)
-plot(hz.dfunc)
+# Load example sparrow data (line transect survey type)
+data(sparrowDetectionData)
+data(sparrowSiteData)
+
+
+# Fit half-normal detection function
+dfunc <- dfuncEstim(formula=dist~1,
+                    detectionData=sparrowDetectionData,
+                    likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+
+# Print and plot results
+dfunc
+plot(dfunc)
+
+
+# Fit a second half-normal detection function, now including
+# a categorical covariate for observer who surveyed the site (factor, 5 levels)
+dfuncObs <- dfuncEstim(formula=dist~observer,
+                       detectionData=sparrowDetectionData,
+                       siteData=sparrowSiteData,
+                       likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+
+# Print results
+# And plot the detection function for each observer
+dfuncObs
+plot(dfuncObs,
+     newdata=data.frame(observer=levels(sparrowSiteData$observer)))
+
+
+# Fit a third half-normal detection function, now including
+# a continuous covariate for the bare ground cover at the site
+dfuncBare <- dfuncEstim(formula=dist~bare,
+                        detectionData=sparrowDetectionData,
+                        siteData=sparrowSiteData,
+                        likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+
+# Print results
+# And plot the detection function for specified values of bare ground cover
+dfuncBare
+plot(dfuncBare,
+     newdata=data.frame(bare=c(40, 60, 80)))
 
 }
 \references{
@@ -297,11 +305,9 @@ Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 }
 \seealso{
 \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
-See \code{\link{uniform.like}} for details on the "uniform", 
-"halfnorm", "hazrate", and "negexp" likelihoods.  
-See \code{\link{Gamma.like}} for details on "Gamma". 
-See package vignettes for information on custom, user-defined 
-likelihoods.
+See likelihood-specific help files (e.g., \code{\link{halfnorm.like}}) for
+details on each built-in likelihood.  See package vignettes for information on custom,
+user-defined likelihoods.
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr

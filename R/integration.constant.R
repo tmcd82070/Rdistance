@@ -1,7 +1,7 @@
 #' @name integration.constant
 #' @aliases integration.constant
 #' 
-#' @title Compute the integration constant for distance density functions.
+#' @title Compute the integration constant for distance density functions
 #' 
 #' @description Using numerical integration, this function computes 
 #' the area under a distance function between two limits (\code{w.lo} 
@@ -58,7 +58,7 @@
 #'         
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
 #' 
-#' @examples 
+#' @examples  \dontrun{
 #' #   The following result should be approximately 75
 #' scl <- integration.constant(uniform.like, w.lo=0, w.hi=100, a=c(75,25))
 #' print(scl)
@@ -68,7 +68,7 @@
 #' y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
 #' int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapazoid rule, should be 1.0
 #' print(int.y)
-#' 
+#' }
 #' @keywords models
 #' @importFrom pracma erf
 #' @export

@@ -1,7 +1,7 @@
 #' @name dfuncEstim
 #' @aliases dfuncEstim
 #' 
-#' @title Estimate a detection function from distance-sampling data.
+#' @title Estimate a detection function from distance-sampling data
 #' 
 #' @description Fit a specific detection function to a set of 
 #' observed off-transect distances.
@@ -75,13 +75,13 @@
 #' specifies the type of expansion to use. Valid values at 
 #' present are 'simple', 'hermite', and 'cosine'. 
 #' 
-#' @param x.scl This parameter is passed to \code{F.g.estim}. 
+#' @param x.scl This parameter is passed to \code{F.gx.estim}. 
 #' See \code{F.gx.estim} documentation for definition.
 #' 
-#' @param g.x.scl This parameter is passed to \code{F.g.estim}. 
+#' @param g.x.scl This parameter is passed to \code{F.gx.estim}. 
 #' See \code{F.gx.estim} documentation for definition.
 #' 
-#' @param observer This parameter is passed to \code{F.g.estim}. 
+#' @param observer This parameter is passed to \code{F.gx.estim}. 
 #' See \code{F.gx.estim} documentation for definition.
 #' 
 #' @param warn A logical scaler specifying whether to issue 
@@ -253,46 +253,52 @@
 #'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
 #'         
 #' @seealso \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
-#' See \code{\link{uniform.like}} for details on the "uniform", 
-#' "halfnorm", "hazrate", and "negexp" likelihoods.  
-#' See \code{\link{Gamma.like}} for details on "Gamma". 
-#' See package vignettes for information on custom, user-defined 
-#' likelihoods. 
+#' See likelihood-specific help files (e.g., \code{\link{halfnorm.like}}) for
+#' details on each built-in likelihood.  See package vignettes for information on custom,
+#' user-defined likelihoods. 
 #' 
 #' @examples 
-#'# Prep example sparrow and thrasher detections. 
-#'# Merge in transect-level detection covariates.
-#'data(sparrow.detections)
-#'data(sparrow.sites)
-#'sparrow <- merge(sparrow.detections, sparrow.sites, by="siteID")
-#'data(thrasher.detections)
-#'data(thrasher.sites)
-#'thrasher <- merge(thrasher.detections, thrasher.sites, by="siteID")
-#'   
-#'# Fit multiple detection functions to perpendicular, off-transect distances
-#'un.dfunc <- dfuncEstim(dist ~ 1, sparrow, likelihood="uniform", 
-#'            w.hi = 150)
-#'            
-#'hn.dfunc <- dfuncEstim(dist ~ 1, thrasher, likelihood="halfnorm", 
-#'            w.hi = 150, pointSurvey = T)
-#'            
-#'hn2.dfunc <- dfuncEstim(dist ~ sagemean, sparrow, 
-#'            likelihood="halfnorm", w.hi = 150, expansions = 1, 
-#'            series = "simple")
-#'            
-#'hz.dfunc <- dfuncEstim(dist ~ observer + bare, thrasher, 
-#'            likelihood="hazrate", w.hi = 150, pointSurvey = T, 
-#'            expansions = 5, series = "cosine")
-#'            
-#'ga.dfunc <- dfuncEstim(dist ~ 1, sparrow, likelihood="Gamma", 
-#'            w.hi = 150, x.scl="max") 
-#'   
-#'# Plot the first four detection functions
-#'par(mfrow=c(2,2))
-#'plot(un.dfunc)
-#'plot(hn.dfunc)
-#'plot(hn2.dfunc)
-#'plot(hz.dfunc)
+#' # Load example sparrow data (line transect survey type)
+#' data(sparrowDetectionData)
+#' data(sparrowSiteData)
+#' 
+#' 
+#' # Fit half-normal detection function
+#' dfunc <- dfuncEstim(formula=dist~1,
+#'                     detectionData=sparrowDetectionData,
+#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#' 
+#' # Print and plot results
+#' dfunc
+#' plot(dfunc)
+#' 
+#' 
+#' # Fit a second half-normal detection function, now including
+#' # a categorical covariate for observer who surveyed the site (factor, 5 levels)
+#' dfuncObs <- dfuncEstim(formula=dist~observer,
+#'                        detectionData=sparrowDetectionData,
+#'                        siteData=sparrowSiteData,
+#'                        likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#' 
+#' # Print results
+#' # And plot the detection function for each observer
+#' dfuncObs
+#' plot(dfuncObs,
+#'      newdata=data.frame(observer=levels(sparrowSiteData$observer)))
+#' 
+#' 
+#' # Fit a third half-normal detection function, now including
+#' # a continuous covariate for the bare ground cover at the site
+#' dfuncBare <- dfuncEstim(formula=dist~bare,
+#'                         detectionData=sparrowDetectionData,
+#'                         siteData=sparrowSiteData,
+#'                         likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#' 
+#' # Print results
+#' # And plot the detection function for specified values of bare ground cover
+#' dfuncBare
+#' plot(dfuncBare,
+#'      newdata=data.frame(bare=c(40, 60, 80)))
 #'
 #' @keywords model
 #' @export
@@ -329,6 +335,15 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   # (jdc) so dists < w.lo and > w.hi were being included in the MLE
   #data <- data[data$dist >= w.lo & data$dist <= w.hi, ]
   
+  
+  
+  # (jdc) The double-observer method hasn't been checked since updating to version 2.x
+  # It's likely that an error would be raised if a user did try the double-observer option,
+  # but I'm adding a warning here, just in case
+  if(observer != "both") {
+    stop("The double-observer routines were not been tested when updating to
+          version 2.x, so they have been disables for the time being.")
+  }
   
   
   mf <- getDfuncModelFrame(formula, data)

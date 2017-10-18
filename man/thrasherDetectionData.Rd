@@ -3,7 +3,7 @@
 \docType{data}
 \name{thrasherDetectionData}
 \alias{thrasherDetectionData}
-\title{Sage Thrasher Detection Data (point-transect survey)}
+\title{Sage Thrasher detection data (point-transect survey)}
 \format{A data.frame containing 193 rows and 3 columns.  Each row represents
 a detected group of thrashers.  Column descriptions: \enumerate{ \item
 \code{siteID}: Factor (120 levels), the site or point where the detection

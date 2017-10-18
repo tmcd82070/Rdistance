@@ -3,7 +3,7 @@
 \docType{data}
 \name{sparrowSiteData}
 \alias{sparrowSiteData}
-\title{Brewer's Sparrow Site Data (line-transect survey)}
+\title{Brewer's Sparrow site data (line-transect survey)}
 \format{A data.frame containing 72 rows and 8 columns.  Each row represents
 a site (transect) surveyed.  Column descriptions: \enumerate{ \item
 \code{siteID}: Factor (72 levels), the site or transect surveyed.  \item

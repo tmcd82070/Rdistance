@@ -1,9 +1,9 @@
 #' @aliases plot.dfunc
 #'   
-#' @title Plot a distance function.
+#' @title Plot a distance (detection) function
 #'   
 #' @description Plot method for an estimated distance function. Estimated
-#'   distance fnctions are of class 'dfunc'
+#'   distance functions are of class 'dfunc'
 #'   
 #' @param x An estimated distance function resulting from a call to
 #'   \code{dfuncEstim}.
@@ -69,11 +69,13 @@
 #'   \code{\link{print.abund}}
 #'   
 #' @examples \dontrun{
-#'   set.seed(87654)
-#'   x <- rgamma(1000, 2, 2) 
-#'   fit <- dfuncEstim(x, likelihood="Gamma")
-#'   plot(fit)  
-#'   }
+#' set.seed(87654)
+#' x <- rnorm(1000, mean=0, sd=20)
+#' x <- x[x >= 0]
+#' dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
+#' plot(dfunc)
+#' plot(dfunc, nbins=25)
+#' }
 #' @keywords models
 #' @export
 

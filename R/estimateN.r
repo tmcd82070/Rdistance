@@ -2,7 +2,8 @@
 #' 
 #' @description Estimate abundance given a distance function, 
 #' detection data, site data, and area.  This is called internally 
-#' by \code{abundEstim}. 
+#' by \code{abundEstim}.  Users should use \code{abundEstim} to estimate
+#' abundance. 
 #' 
 #' @param dfunc An estimate distance function (see \code{dfuncEstim}).
 #' 
@@ -79,16 +80,6 @@
 #'     
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 #' 
-#' @examples # Load the example datasets of sparrow detections and transects from package
-#'   data(sparrow.detections)
-#'   data(sparrow.transects)
-#'   
-#'   # Fit detection function to perpendicular, off-transect distances
-#'   dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
-#'   
-#'   # Estimate abundance given a detection function
-#'   n.hat <- estimate.nhat(dfunc, sparrow.detections, sparrow.sites)
-#'   
 #' @keywords model
 #'
 #' @export 

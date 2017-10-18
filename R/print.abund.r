@@ -1,6 +1,6 @@
 #' @name print.abund
 #' @aliases print.abund
-#' @title Print abundance estimates.
+#' @title Print abundance estimates
 #' @description Print an object of class c("abund","dfunc") that is output by \code{abundEstim}.
 #' @usage \method{print}{abund}(x, ...)
 #' @param x An object output by \code{abundEstim}.  This is a distance function object that 
@@ -12,18 +12,22 @@
 #' @author Trent McDonald, WEST Inc., \email{tmcdonald@west-inc.com}
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 #' @examples # Load the example datasets of sparrow detections and transects from package
-#'   data(sparrow.detections)
-#'   data(sparrow.transects)
+#'   data(sparrowDetectionData)
+#'   data(sparrowSiteData)
 #'   
 #'   # Fit detection function to perpendicular, off-transect distances
-#'   dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
+#'   dfunc <- dfuncEstim(sparrowDetectionData, w.hi=150)
 #'   
 #'   # Estimate abundance given a detection function
-#'   fit <- abundEstim(dfunc, detectionData=sparrow.detections, transectData=sparrow.transects,
-#'                        area=10000, R=10, ci=0.95, plot.bs=TRUE, by.id=FALSE)
-#'   
-#'   # Print the output                 
-#'   print(fit)
+#'   # Note, area=10000 converts to density per hectare (for distances measured in meters)
+#'   # Note, a person should do more than R=20 iterations 
+#'   fit <- abundEstim(dfunc, detectionData=sparrowDetectionData, 
+#'          siteData=sparrowSiteData, area=10000, R=20, ci=0.95, 
+#'          plot.bs=TRUE, by.id=FALSE)
+#'          
+#'  # Print results
+#'  print(fit)
+#'  fit
 #' @keywords models
 #' @export
 

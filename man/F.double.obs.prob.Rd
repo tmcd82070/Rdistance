@@ -2,7 +2,7 @@
 % Please edit documentation in R/F.double.obs.prob.r
 \name{F.double.obs.prob}
 \alias{F.double.obs.prob}
-\title{F.double.obs.prob - Compute double observer probability of detection. No external covariates allowed.}
+\title{Compute double observer probability of detection (No external covariates allowed)}
 \usage{
 F.double.obs.prob( df, observer = "both" )
 }

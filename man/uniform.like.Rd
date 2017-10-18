@@ -2,7 +2,7 @@
 % Please edit documentation in R/uniform.like.R
 \name{uniform.like}
 \alias{uniform.like}
-\title{Uniform likelihood function for distance analyses.}
+\title{Uniform likelihood function for distance analyses}
 \usage{
 uniform.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
   series = "cosine", expansions = 0, scale = TRUE, pointSurvey = F, ...)
@@ -127,6 +127,21 @@ for the \eqn{i^{th}}{i-th} distance is,
 \sum_{j=1}^{k} c_j h_{ij}(x)).}{%
 f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + 
 c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+}
+\examples{
+\dontrun{
+set.seed(238642)
+x <- seq(0, 100, length=100)
+
+# Plots showing effects of changes in Threshold
+plot(x, uniform.like(c(20, 20), x), type="l", col="red")
+plot(x, uniform.like(c(40, 20), x), type="l", col="blue")
+
+# Plots showing effects of changes in Knee
+plot(x, uniform.like(c(50, 100), x), type="l", col="red")
+plot(x, uniform.like(c(50, 1), x), type="l", col="blue")
+}
+         
 }
 \seealso{
 \code{\link{dfuncEstim}},

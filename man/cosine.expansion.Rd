@@ -3,7 +3,7 @@
 \name{cosine.expansion}
 \alias{cosine.expansion}
 \alias{cosine.expansions}
-\title{Calcululation of cosine expansion for detection function likelihoods.}
+\title{Calcululation of cosine expansion for detection function likelihoods}
 \usage{
 cosine.expansion(x, expansions)
 }

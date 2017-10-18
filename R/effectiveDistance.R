@@ -1,5 +1,5 @@
 #' @title Calculates the effective sampling distance for 
-#' estimated detection functions.
+#' estimated detection functions
 #' 
 #' @description Computes Effective Strip Width (ESW) for line-transect detection
 #'   functions, or the analagous Effective Detection Radius (EDR) for point-transect

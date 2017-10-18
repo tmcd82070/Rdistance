@@ -32,6 +32,25 @@ Computes Effective Detection Radius (EDR) for estimated
 \details{
 The point-transect equivalent to Effective Strip Width (ESW).
 }
+\examples{
+# Load example thrasher data (point transect survey type)
+data(thrasherDetectionData)
+
+# Fit half-normal detection function
+dfunc <- dfuncEstim(formula=dist~1,
+                    detectionData=thrasherDetectionData,
+                    likelihood="halfnorm", w.hi=175, pointSurvey=TRUE)
+
+# Compute effective detection radius (EDR)
+EDR(dfunc)
+
+# EDR only applies to point transect surveys
+# ESW is the line transect equivalent
+# The effectiveDistance function tests whether the dfunc was
+# fit to line or point data, and returns either ESW or EDR accordingly
+effectiveDistance(dfunc)
+  
+}
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
 \code{\link{effective.distance}}

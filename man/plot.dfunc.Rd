@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.dfunc.r
 \name{plot.dfunc}
 \alias{plot.dfunc}
-\title{Plot a distance function.}
+\title{Plot a distance (detection) function}
 \usage{
 \method{plot}{dfunc}(x, include.zero = FALSE, nbins = "Sturges",
   newdata = NULL, legend = TRUE, ...)
@@ -59,7 +59,7 @@ The input distance function is returned, with two additional
 }
 \description{
 Plot method for an estimated distance function. Estimated
-  distance fnctions are of class 'dfunc'
+  distance functions are of class 'dfunc'
 }
 \details{
 A scaled histogram is plotted, and the estimated distance function
@@ -73,11 +73,13 @@ A scaled histogram is plotted, and the estimated distance function
 }
 \examples{
 \dontrun{
-  set.seed(87654)
-  x <- rgamma(1000, 2, 2) 
-  fit <- dfuncEstim(x, likelihood="Gamma")
-  plot(fit)  
-  }
+set.seed(87654)
+x <- rnorm(1000, mean=0, sd=20)
+x <- x[x >= 0]
+dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
+plot(dfunc)
+plot(dfunc, nbins=25)
+}
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
