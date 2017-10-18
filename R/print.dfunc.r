@@ -37,6 +37,7 @@
 #' dfunc
 #' @keywords models
 #' @export
+#' @importFrom stats pnorm
 
 print.dfunc <- function( x, ... ){
 #
@@ -44,11 +45,11 @@ print.dfunc <- function( x, ... ){
 #
 
     cat("Call: ", deparse(x$call), "\n\n", sep = "")
-    if (length(coef(x))) {
+    if (length(coef.dfunc(x))) {
         seCoef <- sqrt(diag(x$varcovar))
-        waldZ <- coef(x) / seCoef
+        waldZ <- coef.dfunc(x) / seCoef
         pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
-        coefMat <- cbind(format(coef(x)), format(seCoef), format(waldZ), format(pWaldZ))
+        coefMat <- cbind(format(coef.dfunc(x)), format(seCoef), format(waldZ), format(pWaldZ))
         dimnames(coefMat)[[2]] <- c("Estimate", "SE", "z", "p(>|z|)")
         cat("Coefficients:\n")
         print.default(coefMat, print.gap = 2,
@@ -96,7 +97,7 @@ print.dfunc <- function( x, ... ){
     
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
     cat(paste("Log likelihood:", format(x$loglik), "\n"))
-    cat(paste("AIC:", format(AIC(x)), "\n"))
+    cat(paste("AIC:", format(AIC.dfunc(x)), "\n"))
 
 
     cat("\n")

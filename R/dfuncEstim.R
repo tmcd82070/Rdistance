@@ -302,6 +302,7 @@
 #'
 #' @keywords model
 #' @export
+#' @importFrom stats model.response is.empty.model model.matrix contrasts optim
 
 dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm", 
                   pointSurvey = FALSE, w.lo=0, w.hi=NULL, 

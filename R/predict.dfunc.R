@@ -26,6 +26,7 @@
 #' 
 #' @export
 #' 
+#' @importFrom stats terms as.formula delete.response model.frame model.matrix coef
 #' 
 
 # Extra Roxygen comments when we get around implmenting other types of

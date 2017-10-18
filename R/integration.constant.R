@@ -71,6 +71,7 @@
 #' }
 #' @keywords models
 #' @importFrom pracma erf
+#' @importFrom stats integrate
 #' @export
 
 integration.constant <- function(dist, density, w.lo, w.hi, covars, a, 

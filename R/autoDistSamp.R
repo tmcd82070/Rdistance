@@ -97,6 +97,8 @@
 #'              plot.bs=TRUE, plot=FALSE, pointSurvey=FALSE)
 #' @keywords model
 #' @export
+#' @importFrom stats terms
+#' @importFrom graphics mtext
 
 autoDistSamp <- function (formula, detectionData, siteData, 
                              w.lo=0, w.hi=max(dist),
@@ -143,7 +145,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
     else {
       scl.ok <- "Ok"
       scl.ok.flag <- 1
-      aic = AIC(dfunc)
+      aic = AIC.dfunc(dfunc)
     }
     conv <- dfunc$convergence
     if (conv != 0) {

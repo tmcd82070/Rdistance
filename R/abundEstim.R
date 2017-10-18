@@ -162,6 +162,9 @@
 #'          
 #' @keywords model
 #' @export
+#' @importFrom stats coef qnorm pnorm quantile
+#' @importFrom graphics lines
+#' @importFrom utils txtProgressBar setTxtProgressBar
 
 abundEstim <- function(dfunc, detectionData, siteData,
                           area=1, ci=0.95, R=500, 
@@ -216,7 +219,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
       covMeanMat <-  colMeans(x$covars)
       covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
 
-      BETA <- coef(x)
+      BETA <- stats::coef(x)
       p <- ncol(x$covars)
       beta <- BETA[1:p]   # could be extra parameters tacked on. e.g., knee for uniform
       params <- covMeanMat %*% beta
@@ -307,13 +310,14 @@ abundEstim <- function(dfunc, detectionData, siteData,
       
       n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
       
-      # Turn on progress bar (if utils is installed)
-      if ("utils" %in% installed.packages()[, "Package"]) {
+      # (jdc) now including utils as import, so no need to test if installed
+      # # Turn on progress bar (if utils is installed)  
+      # if ("utils" %in% installed.packages()[, "Package"]) {
         pb <- txtProgressBar(1, R, style=3)
         show.progress = TRUE
-      } else {
-        show.progress = FALSE
-      } 
+      # } else {
+      #   show.progress = FALSE
+      # } 
       
       # Bootstrap
       cat("Computing bootstrap confidence interval on N...\n")

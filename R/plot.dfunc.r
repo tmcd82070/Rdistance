@@ -78,6 +78,7 @@
 #' }
 #' @keywords models
 #' @export
+#' @importFrom graphics hist barplot axTicks axis plot title lines text
 
 plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", 
                         newdata = NULL, legend = TRUE, ... ){

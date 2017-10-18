@@ -20,6 +20,7 @@
 #' }
 #' @keywords model
 #' @export
+#' @importFrom stats optim
 
 F.maximize.g <- function( fit, covars = NULL ){
 #
