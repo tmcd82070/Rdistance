@@ -27,7 +27,7 @@
 #'   McDonald, WEST Inc., \email{tmcdonald@west-inc.com}
 #'   
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
-#' \code{\link{effective.distance}}
+#' \code{\link{effectiveDistance}}
 #'   
 #' @examples
 #' # Load example thrasher data (point transect survey type)

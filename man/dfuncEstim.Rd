@@ -21,7 +21,7 @@ be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
 \item{detectionData}{A data frame containing detection distances 
 (either perpendicular for line-transect or radial for point-transect
 designs), \code{transectID}, and 
-potentially group size (see example data set \code{\link{sparrow.detections}}).
+potentially group size (see example data set \code{\link{sparrowDetectionData}}).
 \code{detectionData} contains one row per detected group. The column
 containing detection
 distances must be specified on the left-hand side of \code{formula}.

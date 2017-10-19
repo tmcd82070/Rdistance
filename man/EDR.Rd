@@ -53,7 +53,7 @@ effectiveDistance(dfunc)
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
-\code{\link{effective.distance}}
+\code{\link{effectiveDistance}}
 }
 \author{
 Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}\cr Trent
