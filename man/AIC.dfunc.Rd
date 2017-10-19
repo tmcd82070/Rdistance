@@ -49,15 +49,16 @@ Regular Akaike's information criterion
 }
 \examples{
 # Load the example dataset of sparrow detections from package
-  data(sparrow.detections)
-  
-  # Fit detection function to perpendicular, off-transect distances
-  dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
-  
-  # Compute fit statistics
-  AIC(dfunc)  # AICc
-  AIC(dfunc, k=2, n=Inf)  # AIC
-  AIC(dfunc, k=log(length(dfunc$dist)), n=Inf)  # BIC
+data(sparrowDetectionData)
+
+# Fit detection function to perpendicular, off-transect distances
+dfunc <- dfuncEstim(dist~1, sparrowDetectionData, likelihood="halfnorm")
+
+# Compute fit statistics
+AIC(dfunc)  # AICc by default
+AIC(dfunc, k=2, n=Inf)  # AIC
+AIC(dfunc, k=log(length(dfunc$dist)), n=Inf)  # BIC
+
 }
 \references{
 Burnham, K. P., and D. R. Anderson, 2002. \emph{Model Selection and Multimodel Inference: 
