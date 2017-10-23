@@ -32,7 +32,7 @@ of the output, the following quantities are printed,
 The number of digits printed is controled by \code{options()$digits}.
 }
 \examples{
-#' # Load example sparrow data (line transect survey type)
+# Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)
 
 # Fit half-normal detection function

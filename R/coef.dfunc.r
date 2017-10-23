@@ -15,14 +15,20 @@
 #'   in this vector vary depending on the form of the detection function and expansion terms.
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #' @seealso \code{\link{AIC}}, \code{\link{dfuncEstim}}
-#' @examples # Load the example dataset of sparrow detections from package
-#'   data(sparrow.detections)
+#' @examples
+#' # Load example sparrow data (line transect survey type)
+#' data(sparrowDetectionData)
+#' 
+#' # Fit half-normal detection function
+#' dfunc <- dfuncEstim(formula=dist~1,
+#'                     detectionData=sparrowDetectionData,
+#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#' 
+#' # Print results
+#' dfunc
 #'   
-#'   # Fit detection function to perpendicular, off-transect distances
-#'   dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
-#'   
-#'   # Extract the coefficient(s)
-#'   coef(dfunc)
+#' # Extract the coefficient(s)
+#' coef(dfunc)
 #' @keywords model
 #' @export
 

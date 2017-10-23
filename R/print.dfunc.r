@@ -24,7 +24,8 @@
 #' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
-#' @examples #' # Load example sparrow data (line transect survey type)
+#' @examples
+#' # Load example sparrow data (line transect survey type)
 #' data(sparrowDetectionData)
 #' 
 #' # Fit half-normal detection function
