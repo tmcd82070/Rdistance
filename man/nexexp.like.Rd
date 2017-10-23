@@ -15,10 +15,10 @@ for the expansion terms are \code{a[(p+1):length(a)]}.}
 
 \item{dist}{A numeric vector containing the observed distances.}
 
+\item{covars}{Data frame containing values of covariates at each observation in \code{dist}.}
+
 \item{w.lo}{Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.
 Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.}
-
-\item{covars}{Data frame containing values of covariates at each observation in \code{dist}.}
 
 \item{w.hi}{Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
 Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.}

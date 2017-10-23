@@ -58,7 +58,7 @@
 #' @keywords models
 #' @export
 
-negexp.like <- function (a, dist, w.lo = 0, covars = NULL, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, pointSurvey = F, ...){
+negexp.like <- function (a, dist, covars = NULL, w.lo = 0, w.hi = max(dist), series = "cosine", expansions = 0, scale = TRUE, pointSurvey = F, ...){
 #
 #   Compute negative exponential likelihood
 #
