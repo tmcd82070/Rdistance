@@ -8,7 +8,7 @@ autoDistSamp(formula, detectionData, siteData, w.lo = 0, w.hi = max(dist),
   likelihoods = c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
   series = c("cosine", "hermite", "simple"), expansions = 0:3,
   pointSurvey = FALSE, warn = TRUE, area = 1, ci = 0.95, R = 500,
-  bySite = FALSE, plot.bs = FALSE, plot = TRUE, ...)
+  bySite = FALSE, plot.bs = FALSE, plot = TRUE, criterion = "AICc", ...)
 }
 \arguments{
 \item{formula}{This parameter is passed to \code{dfuncEstim}.
@@ -65,6 +65,11 @@ See \code{abundEstim} documentation for definition.}
 If \code{TRUE}, a histogram with fitted distance function is plotted for every fitted model. 
 The function pauses between each plot and prompts the user for whether they want to continue or not. 
 For completely automated estimation, set \code{plot} = \code{FALSE}.}
+
+\item{criterion}{A string specifying the criterion to use when assessing model fit.
+The best fitting model from this routine is the one with lowest value 
+of this fit criterion.  This must be one of "AICc" (the default), 
+"AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
 
 \item{...}{Additional parameters passed to \code{dfuncEstim}, which in turn are passed to \code{F.gx.estim}. 
 These include \code{x.scl}, \code{g.x.scl}, and \code{observer} for estimating double observer probabilities.}

@@ -4,10 +4,14 @@
 \alias{print.dfunc}
 \title{Print a distance function object}
 \usage{
-\method{print}{dfunc}(x, ...)
+\method{print}{dfunc}(x, criterion = "AICc", ...)
 }
 \arguments{
 \item{x}{An estimated distance function resulting from a call to \code{dfuncEstim}.}
+
+\item{criterion}{A string specifying the criterion to print.
+Must be one of "AICc" (the default), 
+"AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
 
 \item{\dots}{Included for compatability with other print methods.  Ignored here.}
 }
@@ -27,7 +31,7 @@ of the output, the following quantities are printed,
   \item \samp{Scaling} : The horizontal and vertical coordinates used to scale the distance function. 
   Usually, the horizontal coordinate is 0 and the vertical coordinate is 1 (i.e., g(0) = 1).
   \item \samp{Log likelihood} : Value of the maximized log likelihood.
-  \item \samp{AIC} : Value of AIC for the distance function.
+  \item \samp{Criterion} : Value of the specified fit criterion (AIC, AICc, or BIC).
 }
 The number of digits printed is controled by \code{options()$digits}.
 }
@@ -41,8 +45,9 @@ dfunc <- dfuncEstim(formula=dist~1,
                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
 
 # Print results
-print(dfunc)
 dfunc
+print(dfunc, criterion="BIC")
+
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}

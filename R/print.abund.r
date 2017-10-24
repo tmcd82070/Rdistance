@@ -5,6 +5,11 @@
 #' @usage \method{print}{abund}(x, ...)
 #' @param x An object output by \code{abundEstim}.  This is a distance function object that 
 #'   also contains abundance estimates, and has class c("abund", "dfunc").
+#'   
+#' @param criterion A string specifying the criterion to print.
+#' Must be one of "AICc" (the default), 
+#' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
+#' 
 #' @param \dots Included for compatibility to other print methods.  Ignored here.
 #' @details The default print method for class 'dfunc' is called, then the abundance estimates 
 #'   contained in \code{obj} are printed.
@@ -34,13 +39,13 @@
 #' @keywords models
 #' @export
 
-print.abund <- function( x, ... ){
+print.abund <- function( x, criterion="AICc", ... ){
 #
 #   Print an object of class 'abund', which is class 'dfunc' with
 #   an abundance estimate stored in it.
 #
 
-print.dfunc( x )
+print.dfunc( x, criterion=criterion )
 
 cat( paste( "Abundance estimate: ", format(x$n.hat), "; ",
         paste(x$alpha*100, "% CI=(", sep=""), format(x$ci[1]), 

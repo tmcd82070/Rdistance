@@ -8,6 +8,10 @@
 #' 
 #' @param \dots Included for compatability with other print methods.  Ignored here.
 #' 
+#' @param criterion A string specifying the criterion to print.
+#' Must be one of "AICc" (the default), 
+#' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
+#' 
 #' @details The call, coefficients of the distanced function, whether the estimation converged, 
 #' the likelihood and expansion function, and other statistics are printed.  At the bottom
 #' of the output, the following quantities are printed,
@@ -17,7 +21,7 @@
 #'   \item \samp{Scaling} : The horizontal and vertical coordinates used to scale the distance function. 
 #'   Usually, the horizontal coordinate is 0 and the vertical coordinate is 1 (i.e., g(0) = 1).
 #'   \item \samp{Log likelihood} : Value of the maximized log likelihood.
-#'   \item \samp{AIC} : Value of AIC for the distance function.
+#'   \item \samp{Criterion} : Value of the specified fit criterion (AIC, AICc, or BIC).
 #' }
 #' The number of digits printed is controled by \code{options()$digits}.
 #' @return The input value of \code{obj} is invisibly returned.
@@ -34,13 +38,14 @@
 #'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
 #' 
 #' # Print results
-#' print(dfunc)
 #' dfunc
+#' print(dfunc, criterion="BIC")
+#' 
 #' @keywords models
 #' @export
 #' @importFrom stats pnorm
 
-print.dfunc <- function( x, ... ){
+print.dfunc <- function( x, criterion="AICc", ... ){
 #
 #   Print a distance function
 #
@@ -98,7 +103,8 @@ print.dfunc <- function( x, ... ){
     
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
     cat(paste("Log likelihood:", format(x$loglik), "\n"))
-    cat(paste("AIC:", format(AIC.dfunc(x)), "\n"))
+    aic <- AIC(x,criterion=criterion) 
+    cat(paste0(attr(aic,"criterion"),": ", format(aic), "\n"))
 
 
     cat("\n")

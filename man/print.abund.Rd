@@ -10,6 +10,10 @@
 \item{x}{An object output by \code{abundEstim}.  This is a distance function object that 
 also contains abundance estimates, and has class c("abund", "dfunc").}
 
+\item{criterion}{A string specifying the criterion to print.
+Must be one of "AICc" (the default), 
+"AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
+
 \item{\dots}{Included for compatibility to other print methods.  Ignored here.}
 }
 \value{
