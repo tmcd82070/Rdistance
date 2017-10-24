@@ -227,7 +227,11 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   } else {
     plot(1,1,type="n",ylim=y.lims, xlim=x.limits, xlab="",ylab="",bty="n")
   }
-  title( xlab="Distance", ylab="Probability of detection" )
+  if( x$pointSurvey ){
+    title( xlab="Distance", ylab="Observation density" )
+  } else {
+    title( xlab="Distance", ylab="Probability of detection" )
+  }
   if( !("main" %in% names(c(...))) ){
     # Put up a default title containing liklihood description
     if( x$expansions == 0 ){
