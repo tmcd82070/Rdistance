@@ -5,7 +5,7 @@
 \title{Estimate a detection function from distance-sampling data.}
 \usage{
 dfuncEstim(formula, detectionData, siteData, likelihood = "halfnorm",
-  pointSurvey = FALSE, w.lo = 0, w.hi = max(dist), expansions = 0,
+  pointSurvey = FALSE, w.lo = 0, w.hi = NULL, expansions = 0,
   series = "cosine", x.scl = 0, g.x.scl = 1, observer = "both",
   warn = TRUE, transectID = NULL, pointID = "point", length = "length")
 }

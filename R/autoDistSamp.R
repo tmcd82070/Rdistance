@@ -59,6 +59,11 @@
 #'   The function pauses between each plot and prompts the user for whether they want to continue or not. 
 #'   For completely automated estimation, set \code{plot} = \code{FALSE}.
 #'   
+#' @param criterion A string specifying the criterion to use when assessing model fit.   
+#' The best fitting model from this routine is the one with lowest value 
+#' of this fit criterion.  This must be one of "AICc" (the default), 
+#' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
+#'   
 #' @param ... Additional parameters passed to \code{dfuncEstim}, which in turn are passed to \code{F.gx.estim}. 
 #'   These include \code{x.scl}, \code{g.x.scl}, and \code{observer} for estimating double observer probabilities.
 #'   
@@ -102,7 +107,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
                              series=c("cosine", "hermite", "simple"), expansions=0:3,
                              pointSurvey=FALSE, warn=TRUE,
                              area=1, ci=0.95, R=500, bySite=FALSE, plot.bs=FALSE,                          
-                             plot=TRUE, ...){
+                             plot=TRUE, criterion="AICc", ...){
   
   
   
@@ -121,6 +126,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
   if(any(is.na(siteData$siteID))) stop("Please remove NA's from siteData$siteID.")
   # if(any(is.na(siteData$length))) stop("Please remove NA's from siteData$length.")
   
+  if(any(!(criterion %in% c("AIC","AICc","BIC")))) stop(paste0(criterion, " criterion not supported."))
   
   # extract distance vector from detectionData
   # dist <- detectionData$dist
@@ -128,7 +134,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
   
   # function to save results
   f.save.result <- function(results, dfunc, like, ser, expan, 
-                            plot) {
+                            plot, CRIT) {
     
     esw <- effectiveDistance(dfunc)
     
@@ -141,7 +147,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
     else {
       scl.ok <- "Ok"
       scl.ok.flag <- 1
-      aic = AIC(dfunc)
+      aic = AIC(dfunc, criterion=CRIT) 
     }
     conv <- dfunc$convergence
     if (conv != 0) {
@@ -152,6 +158,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
         conv.str <- "No"
       }
       aic <- NA
+      attr(aic,"criterion")<-CRIT
       scl.ok <- "NA"
       scl.ok.flag <- NA
     }
@@ -189,7 +196,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
   options(warn = -1)
   fit.table <- NULL
   
-  cat("Likelihood\tSeries\tExpans\tConverged?\tScale?\tAICc\n")
+  cat(paste0("Likelihood\tSeries\tExpans\tConverged?\tScale?\t",criterion,"\n"))
   for (like in likelihoods) {
     if (like == "Gamma") {
       dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
@@ -198,7 +205,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
       ser <- "none"  # (jdc) was ""
       expan <- 0
       fit.table <- f.save.result(fit.table, dfunc, like, 
-                                 ser, expan, plot)
+                                 ser, expan, plot, criterion)
       cont <- fit.table$k
       fit.table <- fit.table$results
     } else {
@@ -211,7 +218,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                  series = ser, pointSurvey=pointSurvey, ...)
           fit.table <- f.save.result(fit.table, dfunc, 
-                                     like, ser, expan, plot)
+                                     like, ser, expan, plot, criterion)
           cont <- fit.table$k
           fit.table <- fit.table$results
         } else {
@@ -233,7 +240,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                    series = ser, pointSurvey=pointSurvey, ...)
             fit.table <- f.save.result(fit.table, dfunc, 
-                                       like, ser, expan, plot)
+                                       like, ser, expan, plot, criterion)
             cont <- fit.table$k
             fit.table <- fit.table$results
             if (cont == "n") 
@@ -255,7 +262,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
   }
     
   
-  # Sort by AIC
+  # Sort by criterion
   fit.table$aic <- ifelse(fit.table$converge == 0, fit.table$aic, 
                           Inf)
   fit.table <- fit.table[order(fit.table$aic), ]
@@ -277,7 +284,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
 
 #   }
   cat("\n\n------------ Abundance Estimate Based on Top-Ranked Detection Function ------------\n")
-  print(abund)
+  print(abund, criterion=criterion)
   options(warn = wwarn)
   abund
 }
