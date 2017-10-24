@@ -213,10 +213,9 @@ abundEstim <- function(dfunc, detectionData, siteData,
   }
   
   
-  
-  # (jdc) (we should split f.plot.bs out as a separate .R file, yes?)
+  # =============================================
   # Plotting 
-  f.plot.bs <- function(x,  ...) {
+  f.plot.bs <- function(x,plot.axes=FALSE,  ...) {
     x.seq <- seq(x$w.lo, x$w.hi, length = 200)
     g.at.x0 <- x$g.x.scl
     x0 <- x$x.scl
@@ -245,12 +244,13 @@ abundEstim <- function(dfunc, detectionData, siteData,
                w.lo = x$w.lo, w.hi=x$w.hi, 
                pointSurvey = FALSE )  
     y <- t(y)  # now, each row of y is a dfunc
-    
+
     f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
                      series=x$series, covars = NULL, 
                      expansions=x$expansions, 
                      w.lo=x$w.lo, w.hi=x$w.hi, 
                      pointSurvey = FALSE )
+    
     scaler <- g.at.x0 / f.at.x0 # a length n vector 
     
     y <- y * scaler  # length(scalar) == nrow(y), so this works right
@@ -261,13 +261,24 @@ abundEstim <- function(dfunc, detectionData, siteData,
       y <- y * (x.seq - x$w.lo)
     }
     
+    if(plot.axes){
+      yMax <- max(y*1.2)
+      plot(1,1,type="n",ylim=c(0,yMax), xlim=range(x.seq), xlab="",ylab="",bty="n")
+      title( xlab="Distance", ylab="Observation density" )
+    } 
     lines(x.seq, y , ...)
-    # lines(x.seq, y , ...)
+    
   }
+  # =============================================
   
   if (plot.bs) {
-    tmp <- plot(dfunc) 
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
+    if( dfunc$pointSurvey ){
+      par(xpd=TRUE)
+      f.plot.bs(dfunc,plot.axes=TRUE, col="red", lwd=3)
+    } else {
+      plot(dfunc) 
+    }
   }
   
 
@@ -316,15 +327,10 @@ abundEstim <- function(dfunc, detectionData, siteData,
       
       n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
       
-      # (jdc) now including utils as import, so no need to test if installed
-      # # Turn on progress bar (if utils is installed)  
-      # if ("utils" %in% installed.packages()[, "Package"]) {
-        pb <- txtProgressBar(1, R, style=3)
-        show.progress = TRUE
-      # } else {
-      #   show.progress = FALSE
-      # } 
-      
+      # now including utils as import,
+      pb <- txtProgressBar(1, R, style=3)
+      show.progress = TRUE
+
       # Bootstrap
       cat("Computing bootstrap confidence interval on N...\n")
       for (i in 1:R) {
