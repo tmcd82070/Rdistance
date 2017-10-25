@@ -105,13 +105,20 @@
 #' x <- x[x >= 0]
 #' dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
 #' plot(dfunc)
+#' 
+#' # evaluate the log Likelihood
+#' L <- halfnorm.like(dfunc$parameters, dfunc$dist, covars=dfunc$covars, 
+#'     w.lo=dfunc$w.lo, w.hi=dfunc$w.hi, 
+#'     series=dfunc$series, expansions=dfunc$expansions, 
+#'     scale=TRUE)
+#' -sum(log(L), na.rm=TRUE)  # the negative log likelihood
 #' }
 #' @keywords models
 #' @export
 
 halfnorm.like <- function(a, dist, covars = NULL, w.lo = 0, 
-     w.hi = max(dist), series = "cosine", expansions = 0, 
-     scale = TRUE, pointSurvey = FALSE, ...){
+                          w.hi = max(dist), series = "cosine", expansions = 0, 
+                          scale = TRUE, pointSurvey = FALSE, ...){
 
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
@@ -156,10 +163,10 @@ halfnorm.like <- function(a, dist, covars = NULL, w.lo = 0,
   #}
   
   if( scale ){
-      dfunc = dfunc / integration.constant(dist, halfnorm.like, 
-              covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,
-              series=series, expansions=expansions, 
-              pointSurvey = pointSurvey, ...)   # scales underlying density to integrate to 1.0
+    dfunc = dfunc / integration.constant(dist, halfnorm.like, 
+                                         covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,
+                                         series=series, expansions=expansions, 
+                                         pointSurvey = pointSurvey, ...)   # scales underlying density to integrate to 1.0
     
     
     #df2 <- dfunc[ order(dist) ]
