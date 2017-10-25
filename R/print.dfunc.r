@@ -87,18 +87,22 @@ print.dfunc <- function( x, criterion="AICc", ... ){
 
     cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
     
+    effDist <- effectiveDistance(x)
+    pDetect <- effDist / (x$w.hi - x$w.lo)
     if( is.null(x$covars) ){
       if(x$pointSurvey){
-        cat(paste("Effective detection radius (EDR):", format(effectiveDistance(x)), "\n"))
+        cat(paste("Effective detection radius (EDR):", format(effDist), "\n"))
       } else {
-        cat(paste("Effective strip width (ESW):", format(effectiveDistance(x)), "\n"))
+        cat(paste("Effective strip width (ESW):", format(effDist), "\n"))
       }
+      cat(paste("Probability of detection:", format(pDetect), "\n"))
     } else {
       if(x$pointSurvey){
-        cat(paste("Mean effective detection radius (EDR):", format(mean(effectiveDistance(x))), "\n"))
+        cat(paste("Average effective detection radius (EDR):", format(mean(effDist)), "\n"))
       } else {
-        cat(paste("Mean effective strip width (ESW):", format(mean(effectiveDistance(x))), "\n"))
+        cat(paste("Average effective strip width (ESW):", format(mean(effDist)), "\n"))
       }
+      cat(paste("Average Probability of detection:", format(mean(pDetect)), "\n"))
     }
     
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))

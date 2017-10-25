@@ -12,18 +12,26 @@
 #'   1 is assumed.
 #'   
 #' @param newdata A data frame containing new values of the covariates at which
-#'   ESW's or EDR's are sought. If NULL or missing, the covariates stored in
-#'   \code{obj} are used. If covariates are present, one effective distance is
-#'   returned for each detection. If covariates are not present, one effective
-#'   distance is produced.
+#'   ESW's or EDR's are sought. If NULL or missing and 
+#'   \code{obj} contains covariates, the  
+#'   covariates stored in
+#'   \code{obj} are used. See \bold{Value} section. 
 #'  
 #' @details Serves as a wrapper for \code{\link{ESW}} and \code{\link{EDR}}.
 #' 
-#' @return If covariates are present in \code{obj}, a vector of 
-#' length equal to the number of detections in \code{obj$dist} containing
-#' separate effective distances for each detection. If 
-#' \code{obj} does not contain covariates, a scalar 
-#' equal to the (constant) effective sampling distance for all detections.  
+#' @return If \code{newdata} is not missing or NULL and 
+#' covariates are present in \code{obj}, returned value is 
+#' a vector with length equal to the number of rows in \code{newdata}. 
+#' If \code{newdata} is missing or NULL and covariates are present
+#' in \code{obj}, returned value is a vector with length equal to 
+#' the number of detections in \code{obj$dist}. In either of the 
+#' above cases, elements in the returned vector are 
+#' the effective sampling distances for the corresponding set of 
+#' covariates.  
+#' 
+#' If \code{obj} does not contain covariates, \code{newdata} is ignored and 
+#' a scalar equal to the (constant) effective sampling distance for all 
+#' detections is returned.  
 #'      
 #' @seealso \code{\link{dfuncEstim}} \code{\link{ESW}} \code{\link{EDR}}
 #' @keywords modeling

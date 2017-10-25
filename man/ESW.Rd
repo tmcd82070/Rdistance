@@ -14,26 +14,31 @@ a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
 1 is assumed.}
 
 \item{newdata}{A data frame containing new values of 
-the covariates at which ESW's are sought. If NULL or missing, the 
-covariates stored in \code{obj} are used. If covariates are present, 
-this produces one ESW for each detection.  If covariates are not present, 
-this produces one ESW that is constant across all detections.}
+the covariates at which ESW's are sought. If NULL or missing and 
+\code{obj} contains covariates, the  
+covariates stored in \code{obj} are used. See \bold{Value} section.}
 }
 \value{
-If covariates are present in \code{obj}, a vector of 
-length equal to the number of detections in \code{obj$dist} containing
-separate ESW's for each detection. If 
-\code{obj} does not contain covariates, a scalar 
-equal to the (constant) ESW for all detections.  In all cases, ESW
-is the area under the detection function from
-  \code{obj$w.lo} to \code{obj$w.hi}.
+If \code{newdata} is not missing and not NULL and 
+covariates are present in \code{obj}, returned value is 
+a vector with length equal to the number of rows in \code{newdata}. 
+If \code{newdata} is missing or NULL and covariates are present
+in \code{obj}, returned value is a vector with length equal to 
+the number of detections in \code{obj$dist}. In either of the 
+above cases, elements in the returned vector are 
+the effective strip widths for the corresponding set of 
+covariates.  
+
+If \code{obj} does not contain covariates, \code{newdata} is ignored and 
+a scalar equal to the (constant) effective strip width for all 
+detections is returned.
 }
 \description{
 Computes effective strip width (ESW) for estimated detection
   functions from line transect data
 }
 \details{
-The effective strip width (ESW) of a distance function is its
+Effective strip width (ESW) of a distance function is its
   integral. That is, ESW is the area under the distance function from its
   left-truncation limit (\code{obj$w.lo}) to its right-truncation limit
   (\code{obj$w.hi}). \if{latex}{In mathematical notation, \deqn{ESW =
@@ -41,8 +46,7 @@ The effective strip width (ESW) of a distance function is its
   function at distance \eqn{x}, and \eqn{w.lo} and \eqn{w.hi} are the lower
   and upper truncation limits used during the survey.  }
   
-  The name, \emph{effective strip width}, comes from the fact that under
-  perfect detection, area under the detection function is the entire 
+  Under perfect detection, area under the detection function is the entire 
   half-width of 
   the strip transect (from \code{obj$w.lo} to \code{obj$w.hi}).  
   Under perfect detection, density is the number sighted targets 
@@ -53,9 +57,9 @@ The effective strip width (ESW) of a distance function is its
   When detection is not perfect, less than the total half-width is
   \emph{effectively} covered. Buckland et al. (1993) show that the
   denominator of the density estimator in this case involves total length of 
-  transects surveyed times area under the detection function (i.e., this
+  surveyed transects times area under the detection function (i.e., this
   integral). By analogy with the perfect detection case, this integral can
-  then be viewed as the transect half-width that observers \emph{effectively}
+  be viewed as the transect half-width that observers \emph{effectively}
   cover. In other words, a survey with imperfect detection and ESW equal to X
   effectively covers the same area as a study with perfect detection out to a
   distance of X.

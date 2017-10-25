@@ -12,16 +12,25 @@
 #'   1 is assumed.
 #'   
 #' @param newdata A data frame containing new values of the covariates at which
-#'   EDR's are sought. If NULL or missing, the covariates stored in \code{obj}
-#'   are used. If covariates are present, this produces one EDR for each
-#'   detection.  If covariates are not present, this produces one EDR that is
-#'   constant across all detections.
-#'   
+#'   EDR's are sought. If NULL or missing and 
+#'   \code{obj} contains covariates, the covariates stored in \code{obj}
+#'   are used.  See \bold{Value} section. 
 #'   
 #' @details The point-transect equivalent to Effective Strip Width (ESW).
 #'   
-#' @return A scalar equal to the area under the detection function from
-#'   \code{obj$w.lo} to \code{obj$w.hi}.
+#' @return If \code{newdata} is not missing and not NULL and 
+#' covariates are present in \code{obj}, returned value is 
+#' a vector with length equal to the number of rows in \code{newdata}. 
+#' If \code{newdata} is missing or NULL and covariates are present
+#' in \code{obj}, returned value is a vector with length equal to 
+#' the number of detections in \code{obj$dist}. In either of the 
+#' above cases, elements in the returned vector are 
+#' the effective detection radii for the corresponding set of 
+#' covariates.  
+#' 
+#' If \code{obj} does not contain covariates, \code{newdata} is ignored and 
+#' a scalar equal to the (constant) effective detection radius for all 
+#' detections is returned.  
 #'   
 #' @author Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}\cr Trent
 #'   McDonald, WEST Inc., \email{tmcdonald@west-inc.com}
