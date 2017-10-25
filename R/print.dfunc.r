@@ -92,17 +92,19 @@ print.dfunc <- function( x, criterion="AICc", ... ){
     if( is.null(x$covars) ){
       if(x$pointSurvey){
         cat(paste("Effective detection radius (EDR):", format(effDist), "\n"))
+        cat(paste("Probability of detection:", format(pDetect^2), "\n"))
       } else {
         cat(paste("Effective strip width (ESW):", format(effDist), "\n"))
+        cat(paste("Probability of detection:", format(pDetect), "\n"))
       }
-      cat(paste("Probability of detection:", format(pDetect), "\n"))
     } else {
       if(x$pointSurvey){
         cat(paste("Average effective detection radius (EDR):", format(mean(effDist)), "\n"))
+        cat(paste("Average probability of detection:", format(mean(pDetect^2)), "\n"))
       } else {
         cat(paste("Average effective strip width (ESW):", format(mean(effDist)), "\n"))
+        cat(paste("Average probability of detection:", format(mean(pDetect)), "\n"))
       }
-      cat(paste("Average Probability of detection:", format(mean(pDetect)), "\n"))
     }
     
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
