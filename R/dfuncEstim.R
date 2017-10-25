@@ -3,8 +3,8 @@
 #' 
 #' @title Estimate a detection function from distance-sampling data
 #' 
-#' @description Fit a specific detection function to a set of 
-#' observed off-transect distances.
+#' @description Fit a specific detection function off-transect 
+#' or off-point (radial) distances.
 #' 
 #' @param formula A standard formula object (eg dist ~ 1, 
 #' dist ~ covar1 + covar2). The left-hand side (before ~)

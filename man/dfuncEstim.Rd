@@ -159,8 +159,8 @@ are lists containing the following components:
   \item{formula}{The formula specified for the detection function.}
 }
 \description{
-Fit a specific detection function to a set of 
-observed off-transect distances.
+Fit a specific detection function off-transect 
+or off-point (radial) distances.
 }
 \section{Input data frames}{
 
