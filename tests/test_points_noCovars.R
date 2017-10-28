@@ -80,10 +80,8 @@ thrasher.dfunc
 EDR(thrasher.dfunc)
 effectiveDistance(thrasher.dfunc)
 
-# The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
-# abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
-# detection and ESW equal to *X* effectively covers the same area as a study with perfect detection out to a distance
-# of *X*.  See the help documentation for `ESW` for details.
+# The effective detection radius (EDR) is the key information from the detection function that will be used to next estimate
+# abundance (or density).  The EDR is calculated by integrating under the detection function.  
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -118,8 +116,6 @@ fit$ci
 
 
 # Toggle on bySite option, to estimate abundance for each transect
-
-# (jdc) runs with warning that row names were found from a short variable and have been discarded
 
 fitSite <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
                       area=10000, ci=NULL, bySite=TRUE)

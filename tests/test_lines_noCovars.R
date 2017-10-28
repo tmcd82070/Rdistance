@@ -256,7 +256,7 @@ summary(ds.fit)
 
 # Results very, very similar
 # AIC
-AIC(fit)  # Rdistance = 2970.605
+AIC(fit, criterion="AIC")  # Rdistance = 2970.593
 AIC(ds.fit)  # Distance = 2970.594
 
 # Abund

@@ -130,29 +130,27 @@ sparrow.dfunc
 
 plot(sparrow.dfunc)
 # Plot for different covar values
-plot(sparrow.dfunc, newdata=data.frame(bare=seq(min(sparrowSiteData$bare), max(sparrowSiteData$bare), length.out=4)))
+plot(sparrow.dfunc, newdata=data.frame(zBare=seq(min(sparrowSiteData$zBare), max(sparrowSiteData$zBare), length=4)))
 
 
 
-# # Two covariates
-# sparrow.dfunc <- dfuncEstim(formula=dist~bare+observer, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-#                             likelihood="halfnorm", w.hi=trunc)
-# 
-# (newdata <- data.frame(bare=rep(seq(min(sparrowSiteData$bare), max(sparrowSiteData$bare), length.out=3), 5),
-#                       x0=rep(c(0, 1, 0, 0, 0), each=3),
-#                       x1=rep(c(0, 0, 1, 0, 0), each=3),
-#                       x2=rep(c(0, 0, 0, 1, 0), each=3),
-#                       x3=rep(c(0, 0, 0, 0, 1), each=3)))
-# plot(sparrow.dfunc, newdata=newdata)
-# 
-# 
-# (newdata <- data.frame(bare=mean(sparrowSiteData$bare),
-#                        x0=c(0, 1, 0, 0, 0),
-#                        x1=c(0, 0, 1, 0, 0),
-#                        x2=c(0, 0, 0, 1, 0),
-#                        x3=c(0, 0, 0, 0, 1)))
-# 
-# plot(sparrow.dfunc, newdata=newdata)
+## Two covariates
+sparrow2.dfunc <- dfuncEstim(formula=dist~zBare+observer, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                            likelihood="halfnorm", w.hi=trunc)
+
+(newdata <- data.frame(zBare=rep(0, 5),
+                       observer=paste0("obs",1:5)))
+
+plot(sparrow2.dfunc, newdata=newdata)
+
+# Turn the legend off with "legend = FALSE" in the plot function
+
+
+
+(newdata <- data.frame(zBare=c(-1,0,1),
+                       observer=factor("obs1", levels=paste0("obs",1:5))))
+
+plot(sparrow2.dfunc, newdata=newdata)
 
 
 
@@ -177,8 +175,6 @@ plot(sparrow.dfunc, newdata=data.frame(bare=seq(min(sparrowSiteData$bare), max(s
 # necessary to stabilize CI estimates.
 
 
-# (jdc) the bootstrap-replicate detection lines (plot.bs=TRUE) aren't in the right place, but the bootstrap-generated CIs appear plausible
-# 
 fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                   area=10000, R=5, ci=0.95, plot.bs=TRUE)
 fit
@@ -198,7 +194,7 @@ fitBy <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, sit
                        area=10000, ci=NULL, bySite=TRUE)
 head(fitBy)
 
-mean(fitby$density)
+mean(fitBy$density)
 fit$n.hat
 
 
@@ -216,8 +212,8 @@ fit$n.hat
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 auto <- autoDistSamp(formula=dist~zBare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     w.hi=trunc, plot=FALSE, area=10000, R=10, ci=0.95, plot.bs=TRUE,
-                     # likelihoods=c("halfnorm", "hazrate"),
+                     w.hi=trunc, plot=FALSE, area=10000, R=10, ci=0.95, plot.bs=FALSE,
+                     likelihoods=c("halfnorm", "hazrate","uniform","negexp"),
                      expansions=0)
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#

@@ -52,13 +52,6 @@ apply(thrasherSiteData[3:6], 2, function(x) sd(x)/mean(x))
 
 
 
-# Add a dummy covariate
-# The ones in the dataset either won't fit in Rdistance or in Distance
-# Just need to compare output between packages
-thrasherSiteData$dummy <- as.numeric(thrasherSiteData$observer)
-
-
-
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 
@@ -95,45 +88,16 @@ trunc <- 175
 
 
 
-thrasher.dfunc <- dfuncEstim(formula=dist~dummy, detectionData=thrasherDetectionData,
+thrasher.dfunc <- dfuncEstim(formula=dist~observer, detectionData=thrasherDetectionData,
                              siteData=thrasherSiteData, likelihood="halfnorm", w.hi=trunc, pointSurvey=TRUE)
-plot(thrasher.dfunc)
 thrasher.dfunc
-
-
-
-mean(thrasherSiteData$bare)
 
 
 # Plot for different covar values
 
-(newdata <- data.frame(dummy=1:6))
+(newdata <- data.frame(observer=factor(c("obs1","obs2"),levels=paste0("obs",1:6))))
 plot(thrasher.dfunc, newdata=newdata)
 
-
-
-# # Observer as covariate
-# thrasher.dfunc <- dfuncEstim(formula=dist~observer, detectionData=thrasherDetectionData,
-#                              siteData=thrasherSiteData, likelihood="halfnorm", w.hi=trunc, pointSurvey=TRUE)
-# plot(thrasher.dfunc)
-# thrasher.dfunc
-# 
-# 
-# 
-# mean(thrasherSiteData$bare)
-# plot(thrasher.dfunc)
-# thrasher.dfunc
-# 
-# # Plot for different covar values
-# 
-# (newdata <- data.frame(x0=c(0, 1, 0, 0, 0, 0),
-#                        x1=c(0, 0, 1, 0, 0, 0),
-#                        x2=c(0, 0, 0, 1, 0, 0),
-#                        x3=c(0, 0, 0, 0, 1, 0),
-#                        x4=c(0, 0, 0, 0, 0, 1)))
-# 
-# 
-# plot(thrasher.dfunc, newdata=newdata)
 
 
 
@@ -142,10 +106,6 @@ plot(thrasher.dfunc, newdata=newdata)
 effectiveDistance(thrasher.dfunc)
 mean(effectiveDistance(thrasher.dfunc))
 
-# The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
-# abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
-# detection and ESW equal to *X* effectively covers the same area as a study with perfect detection out to a distance
-# of *X*.  See the help documentation for `ESW` for details.
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
@@ -168,7 +128,7 @@ mean(effectiveDistance(thrasher.dfunc))
 
 # (jdc) the plotting of the bootstrap isn't right...
 fit <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
+                     area=10000, R=5, ci=0.95, plot.bs=TRUE)
 fit
 
 
@@ -204,28 +164,13 @@ fit$n.hat
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
 
-auto <- autoDistSamp(formula=dist~dummy, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
+auto <- autoDistSamp(formula=dist~height, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
                      w.hi=trunc, plot=FALSE, area=10000, R=5, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE,
-                     likelihoods=c("halfnorm", "hazrate", "uniform"))
+                     likelihoods=c("halfnorm",  "uniform"))
 
 
 
 
-
-# # Observer as covariate
-# auto <- autoDistSamp(formula=dist~observer, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-#                      w.hi=trunc, plot=FALSE, area=10000, R=5, ci=0.95, plot.bs=TRUE, pointSurvey=TRUE,
-#                      likelihoods=c("halfnorm", "hazrate"))
-# 
-# # Plot for different covar values
-# 
-# (newdata <- data.frame(x0=c(0, 1, 0, 0, 0, 0),
-#                        x1=c(0, 0, 1, 0, 0, 0),
-#                        x2=c(0, 0, 0, 1, 0, 0),
-#                        x3=c(0, 0, 0, 0, 1, 0),
-#                        x4=c(0, 0, 0, 0, 0, 1)))
-# 
-# plot(auto, newdata=newdata)
 
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
