@@ -33,5 +33,11 @@
 #' @export
 
 coef.dfunc <- function(object, ...){
-object$parameters
+  if( class(object$fit) == "density"){
+    # smoothed distance function
+    COEF <- NULL
+  } else {
+    COEF <- object$parameters
+  }
+  COEF
 }

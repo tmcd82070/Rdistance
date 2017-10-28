@@ -219,37 +219,44 @@ abundEstim <- function(dfunc, detectionData, siteData,
     x.seq <- seq(x$w.lo, x$w.hi, length = 200)
     g.at.x0 <- x$g.x.scl
     x0 <- x$x.scl
-    
-    if(!is.null(x$covars)){
-      covMeanMat <-  colMeans(x$covars)
-      covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
 
-      BETA <- stats::coef(x)
-      p <- ncol(x$covars)
-      beta <- BETA[1:p]   # could be extra parameters tacked on. e.g., knee for uniform
-      params <- covMeanMat %*% beta
-      params <- exp(params)  # All link functions are exp...thus far
-      if(p<length(BETA)){
-        extraParams <- matrix(BETA[(p+1):length(BETA)], nrow(covMeanMat), length(BETA)-p, byrow=TRUE)
-        params <- cbind(params, extraParams)
-      }
-      #params <- predict.dfunc(x, newdata=covMeans, type="parameters")
+    if( x$like.form == "smu"){
+      y <- smu.like(x$parameters, x.seq - x$w.lo, x$w.hi, 
+                    scale = FALSE, pointSurvey = FALSE)
+      f.at.x0 <- smu.like(x$parameters, x0 - x$w.lo, x$w.hi, 
+                          scale = FALSE, pointSurvey = FALSE)
     } else {
-      params <- matrix(x$parameters,1)
-    }
+      if(!is.null(x$covars)){
+        covMeanMat <-  colMeans(x$covars)
+        covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
+  
+        BETA <- stats::coef(x)
+        p <- ncol(x$covars)
+        beta <- BETA[1:p]   # could be extra parameters tacked on. e.g., knee for uniform
+        params <- covMeanMat %*% beta
+        params <- exp(params)  # All link functions are exp...thus far
+        if(p<length(BETA)){
+          extraParams <- matrix(BETA[(p+1):length(BETA)], nrow(covMeanMat), length(BETA)-p, byrow=TRUE)
+          params <- cbind(params, extraParams)
+        }
+        #params <- predict.dfunc(x, newdata=covMeans, type="parameters")
+      } else {
+        params <- matrix(x$parameters,1)
+      }
       
-    y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
-               series=x$series, covars = NULL, 
-               expansions=x$expansions, 
-               w.lo = x$w.lo, w.hi=x$w.hi, 
-               pointSurvey = FALSE )  
-    y <- t(y)  # now, each row of y is a dfunc
-
-    f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
-                     series=x$series, covars = NULL, 
-                     expansions=x$expansions, 
-                     w.lo=x$w.lo, w.hi=x$w.hi, 
-                     pointSurvey = FALSE )
+      y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
+                 series=x$series, covars = NULL, 
+                 expansions=x$expansions, 
+                 w.lo = x$w.lo, w.hi=x$w.hi, 
+                 pointSurvey = FALSE )  
+      y <- t(y)  # now, each row of y is a dfunc
+  
+      f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
+                       series=x$series, covars = NULL, 
+                       expansions=x$expansions, 
+                       w.lo=x$w.lo, w.hi=x$w.hi, 
+                       pointSurvey = FALSE )
+    }
     
     scaler <- g.at.x0 / f.at.x0 # a length n vector 
     
@@ -273,8 +280,8 @@ abundEstim <- function(dfunc, detectionData, siteData,
   
   if (plot.bs) {
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
+    par(xpd=TRUE)
     if( dfunc$pointSurvey ){
-      par(xpd=TRUE)
       f.plot.bs(dfunc,plot.axes=TRUE, col="red", lwd=3)
     } else {
       plot(dfunc) 
@@ -379,7 +386,25 @@ abundEstim <- function(dfunc, detectionData, siteData,
         # Re-fit detection function -- same function, new data
         # fmla <- as.formula(dfunc$call[["formula"]])  # (jdc) when called from autoDistSamp, dfunc$call[["formula"]] is "formula"
         
-        dfunc.bs <- dfuncEstim(formula = dfunc$formula,  # (jdc) updated dfuncEstim to store formula separate from call
+        # Eventually, get smoothed function into dfuncEstim or one function
+        # this if statement is kluncky
+        if( dfunc$like.form == "smu" ){
+          dfunc.bs <- dfuncSmu(dfunc$formula, 
+                               detectionData=new.mergeData,
+                               w.lo = dfunc$w.lo,
+                               w.hi = dfunc$w.hi,
+                               bw = dfunc$fit$call[["bw"]],
+                               adjust = dfunc$fit$call[["adjust"]], 
+                               kernel = dfunc$fit$call[["kernel"]],
+                               x.scl = dfunc$call.x.scl, 
+                               g.x.scl = g.x.scl.bs,
+                               observer = dfunc$call.observer,
+                               pointSurvey = dfunc$pointSurvey, 
+                               warn = FALSE )
+          
+          
+        } else {
+          dfunc.bs <- dfuncEstim(formula = dfunc$formula,  
                                detectionData = new.mergeData,
                                likelihood = dfunc$like.form, 
                                w.lo = dfunc$w.lo,
@@ -391,9 +416,10 @@ abundEstim <- function(dfunc, detectionData, siteData,
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
                                warn = FALSE)
-
+        }
+        
         # Store ESW if it converged
-        if (dfunc.bs$convergence == 0) {
+        if (dfunc$like.form == "smu" || dfunc.bs$convergence == 0) {
           
           # Note: there are duplicate siteID's in newSiteData.  This is okay
           # because number of unique siteIDs is never computed in estimateN. 
@@ -416,8 +442,10 @@ abundEstim <- function(dfunc, detectionData, siteData,
           }
           
           
-          if (show.progress) setTxtProgressBar(pb, i)
-        }  # end if dfunc.bs converged
+        }  # end if smu or dfunc.bs converged
+
+        if (show.progress) setTxtProgressBar(pb, i)
+        
       }  # end bootstrap
       
       
@@ -438,7 +466,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
       p.H <- pnorm(2 * z.0 + z.alpha)
       ans$ci <- quantile(n.hat.bs[!is.na(n.hat.bs)], p = c(p.L, p.H))
       ans$B <- n.hat.bs
-      if (any(is.na(n.hat.bs))){
+      if (!(dfunc$like.form=="smu") && any(is.na(n.hat.bs))){
         cat(paste(sum(is.na(n.hat.bs)), "of", R, "iterations did not converge.\n"))
       }
       

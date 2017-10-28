@@ -107,6 +107,13 @@ x <- rnorm(1000, mean=0, sd=a)
 x <- x[x >= 0]
 dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
 plot(dfunc)
+
+# evaluate the log Likelihood
+L <- halfnorm.like(dfunc$parameters, dfunc$dist, covars=dfunc$covars, 
+    w.lo=dfunc$w.lo, w.hi=dfunc$w.hi, 
+    series=dfunc$series, expansions=dfunc$expansions, 
+    scale=TRUE)
+-sum(log(L), na.rm=TRUE)  # the negative log likelihood
 }
 }
 \seealso{

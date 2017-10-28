@@ -157,11 +157,12 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     }
   }  else {
     y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, 
-               w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE )
+               w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE, covars=NULL )
     
     if(x$pointSurvey){
       f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, 
-                       w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE )
+                       w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE, covars=NULL, 
+                       scale=F)
       scaler <- g.at.x0 / f.at.x0 # a length n vector 
       
       y <- y * scaler  # length(scalar) == nrow(y), so this works right
@@ -191,7 +192,14 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     }
   } else {
     if( !x$pointSurvey ){
-      f.max <- F.maximize.g(x, covars = NULL) #like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = x$pointSurvey )
+      # (tlm) someone stuck in the following line, which works when xmax = 0, 
+      # but I don't think works for other cases, like Gamma.
+      #f.max <- F.maximize.g(x, covars = NULL) 
+      
+      f.max <- like( x$parameters, x0 - x$w.lo, series=x$series, covars=NULL,
+                     expansions=x$expansions, w.lo=x$w.lo, 
+                     w.hi=x$w.hi, pointSurvey = x$pointSurvey )
+
       if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
         yscl <- 1.0
@@ -199,6 +207,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
       } else {
         yscl <- g.at.x0 / f.max
       }
+
       if(length(yscl > 1)){yscl <- yscl[1]}
       y <- y * yscl
       ybarhgts <- cnts$density * yscl
@@ -227,14 +236,21 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   } else {
     plot(1,1,type="n",ylim=y.lims, xlim=x.limits, xlab="",ylab="",bty="n")
   }
+  
   if( x$pointSurvey ){
     title( xlab="Distance", ylab="Observation density" )
   } else {
     title( xlab="Distance", ylab="Probability of detection" )
   }
+  
   if( !("main" %in% names(c(...))) ){
     # Put up a default title containing liklihood description
-    if( x$expansions == 0 ){
+    if( x$like.form == "smu" ){
+      title(main=paste( x$fit$call[["kernel"]], "kernel smooth"))
+      mtext(paste0("Bandwidth ", x$fit$call[["bw"]], 
+                       "; Adjust ", format(x$fit$call[["adjust"]])), 
+            side=3, cex=.75, line=0.8)
+    } else if( x$expansions == 0 ){
       title(main=paste( x$like.form, ", ", x$expansions, " expansions", sep=""))
     } else {
       title(main=paste( x$like.form, ", ", x$series, " expansion, ", x$expansions, " expansions", sep=""))
@@ -246,7 +262,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   #y.poly <- c(0, y, 0)
   #polygon( x.poly, y.poly, density=15, border="red", lwd=2 )
   
-  #   This places a single line over the histogram
+  #   This places lines over the histogram
   if(is.matrix(y)){
     for(i in 1:ncol(y)){
       lines( x.seq, y[,i], col=i+1, lwd=2, lty = i )
@@ -269,7 +285,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   #text( max(x.seq), max(y.lims)-0.025*diff(y.lims), paste("ESW =", round(area,3)), adj=1)
   
   #   If model did not converge, print a message on the graph.
-  if( x$convergence != 0 ){
+  if( (x$like.form != "smu") && x$convergence != 0 ){
     if( x$convergence == -1 ){
       mess <- "Solution failure"
     } else {

@@ -50,6 +50,8 @@ print.dfunc <- function( x, criterion="AICc", ... ){
 #   Print a distance function
 #
 
+    is.smoothed <- class(x$fit) == "density"
+    
     cat("Call: ", deparse(x$call), "\n\n", sep = "")
     if (length(coef.dfunc(x))) {
         seCoef <- sqrt(diag(x$varcovar))
@@ -60,31 +62,37 @@ print.dfunc <- function( x, criterion="AICc", ... ){
         cat("Coefficients:\n")
         print.default(coefMat, print.gap = 2,
             quote = FALSE)
+    } else if( is.smoothed ){
+        cat(paste(x$fit$call[["kernel"]], "kernel smooth\n"))
+        cat(paste(" Bandwidth method:", x$fit$call[["bw"]], "with adjustment factor", 
+                    format(x$fit$call[["adjust"]]),"\n"))
+        cat(paste(" Actual bandwidth =", format(x$fit$bw), "\n"))
     } else {
       cat("No coefficients\n")
     }
 
     cat("\n")
 
-    if( x$convergence == 0 ) {
-      if(any(is.na(diag(x$varcov)))) {
-        mess <- "FAILURE (singular variance-covariance matrix)"
+    if( !is.smoothed ){
+      if( x$convergence == 0 ) {
+        if(any(is.na(diag(x$varcov)))) {
+          mess <- "FAILURE (singular variance-covariance matrix)"
+        } else {
+          mess <- "Success"
+        }
       } else {
-        mess <- "Success"
+          mess <- paste( "FAILURE (Exit code=", x$convergence, ", ", x$fit$message, ")")
       }
-    } else {
-        mess <- paste( "FAILURE (Exit code=", x$convergence, ", ", x$fit$message, ")")
-    }
-    cat(paste("Convergence: ", mess,  "\n", sep=""))
+      cat(paste("Convergence: ", mess,  "\n", sep=""))
 
-
-    if( x$expansions==0 ){
-        mess <- ""
-    } else {
-        mess <- paste( "with", x$expansions, "expansion(s) of", casefold( x$series, upper=TRUE ), "series")
-    }
-    cat(paste("Function:", casefold(x$like.form, upper=TRUE), mess, "\n") )
-
+      if( x$expansions==0 ){
+          mess <- ""
+      } else {
+          mess <- paste( "with", x$expansions, "expansion(s) of", casefold( x$series, upper=TRUE ), "series")
+      }
+      cat(paste("Function:", casefold(x$like.form, upper=TRUE), mess, "\n") )
+    } 
+    
     cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
     
     effDist <- effectiveDistance(x)
@@ -109,8 +117,10 @@ print.dfunc <- function( x, criterion="AICc", ... ){
     
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
     cat(paste("Log likelihood:", format(x$loglik), "\n"))
-    aic <- AIC(x,criterion=criterion) 
-    cat(paste0(attr(aic,"criterion"),": ", format(aic), "\n"))
+    if( !is.smoothed ){
+      aic <- AIC(x,criterion=criterion) 
+      cat(paste0(attr(aic,"criterion"),": ", format(aic), "\n"))
+    }
 
 
     cat("\n")

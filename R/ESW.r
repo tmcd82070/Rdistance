@@ -120,13 +120,13 @@ ESW <- function( obj, newdata ){
     # no covariates case; return scalar
     y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = NULL, 
                expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi, 
-               pointSurvey = obj$pointSurvey )
+               pointSurvey = obj$pointSurvey, scale=FALSE )
 
 
     f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, 
                      covars = NULL, expansions=obj$expansions, 
                      w.lo=obj$w.lo, w.hi=obj$w.hi, 
-                     pointSurvey = obj$pointSurvey )
+                     pointSurvey = obj$pointSurvey, scale=FALSE )
     
     y <- y * g.at.x0 / f.at.x0
     

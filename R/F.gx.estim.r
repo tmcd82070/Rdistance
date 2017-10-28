@@ -111,13 +111,15 @@ if( !is.character(x.scl) ){
         warning(paste("x greater than upper limit specified. Reset x.scl to upper limit (i.e.,", fit$w.hi, ")"))
     } 
 } else if( x.scl == "max" ){
-    #   the x that maximizes g() must be estimated
+  #   the x that maximizes g() must be estimated
 
     if( fit$like.form == "Gamma" ){
         r <- fit$par[1]
         lam <- fit$par[2]
         b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
         x.scl <- lam * b * (r - 1)   # this is x that maximizes g() when g is Gamma
+    } else if( fit$like.form == "smu"){
+        x.scl <- fit$fit$x[which.max(fit$fit$y)]
     } else {
         #   Must compute maximum numerically
         x.scl <- F.maximize.g( fit )
