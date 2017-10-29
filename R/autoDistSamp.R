@@ -147,8 +147,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
       scl.ok <- "Not ok"
       scl.ok.flag <- 0
       aic <- NA
-    }
-    else {
+    } else {
       scl.ok <- "Ok"
       scl.ok.flag <- 1
       aic = AIC.dfunc(dfunc, criterion=CRIT) 
@@ -157,33 +156,32 @@ autoDistSamp <- function (formula, detectionData, siteData,
     if (conv != 0) {
       if (conv == -1) {
         conv.str <- "Bad"
-      }
-      else {
+      } else {
         conv.str <- "No"
       }
       aic <- NA
       attr(aic,"criterion")<-CRIT
       scl.ok <- "NA"
       scl.ok.flag <- NA
-    }
-    else {
+    } else {
       conv.str <- "Yes"
     }
     results <- rbind(results, data.frame(like = like, series = ser, 
                                          expansions = expan, converge = conv, scale = scl.ok.flag, 
                                          aic = aic))
-    if (nchar(like) < 8) 
+    if (nchar(like) < 8) {
       sep1 <- "\t\t"
-    else sep1 <- "\t"
+    } else {
+      sep1 <- "\t"
+    } 
     cat(paste(like, sep1, ser, "\t", expan, "\t", conv.str, 
               "\t\t", scl.ok, "\t", round(aic, 4), sep = ""))
     if (plot) {
-      plot(dfunc)
+      plot(dfunc)  # (jdc) This is the source of "Error: object of type 'symbol' is not subsettable
       k <- readline(" Next?[entr=y,n]")
       if (length(k) == 0) 
         k <- "y"
-    }
-    else {
+    } else {
       cat("\n")
       k <- "y"
     }

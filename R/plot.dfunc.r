@@ -162,7 +162,7 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     if(x$pointSurvey){
       f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, 
                        w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE, covars=NULL, 
-                       scale=F)
+                       scale=FALSE)
       scaler <- g.at.x0 / f.at.x0 # a length n vector 
       
       y <- y * scaler  # length(scalar) == nrow(y), so this works right
