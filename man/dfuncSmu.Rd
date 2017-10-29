@@ -260,7 +260,7 @@ dfuncHn
 plot(dfuncSmu,main="",nbins=50)
 
 x <- seq(0,150,length=200)
-y <- dnorm(x, 0, predict(fit)[1])
+y <- dnorm(x, 0, predict(dfuncHn)[1])
 y <- y/y[1]
 lines(x,y, col="orange", lwd=2)
 legend("topright", legend=c("Smooth","Halfnorm"), 
