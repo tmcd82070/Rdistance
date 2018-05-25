@@ -10,10 +10,10 @@ integration.constant(dist, density, w.lo, w.hi, covars, a, expansions,
 \arguments{
 \item{dist}{Vector of detection distance values.}
 
-\item{density}{A likelihood function for which the 
-integration constant is sought. This function 
-must be capable of evaluating values between \code{w.lo} 
-and \code{w.hi} and have the following parameters: 
+\item{density}{A likelihood function for which the
+integration constant is sought. This function
+must be capable of evaluating values between \code{w.lo}
+and \code{w.hi} and have the following parameters:
     \itemize{
       \item \samp{a} = Parameter vector.
       \item \samp{dist} = Vector of distances.
@@ -24,10 +24,10 @@ and \code{w.hi} and have the following parameters:
       \item \samp{scale} = Whether to scale function to integrate to 1.
     }}
 
-\item{w.lo}{The lower limit of integration, or the left truncation 
+\item{w.lo}{The lower limit of integration, or the left truncation
 value for perpendicular distances.}
 
-\item{w.hi}{The upper limit of integration, or the right truncation 
+\item{w.hi}{The upper limit of integration, or the right truncation
 value for perpendicular distances.}
 
 \item{covars}{Matrix of covariate values.}
@@ -36,43 +36,43 @@ value for perpendicular distances.}
 
 \item{expansions}{Number of expansions in \code{density}.}
 
-\item{pointSurvey}{Boolean. TRUE if point transect data, 
+\item{pointSurvey}{Boolean. TRUE if point transect data,
 FALSE if line transect data.}
 
-\item{\dots}{Additional parameters to the likelihood 
+\item{\dots}{Additional parameters to the likelihood
 function \code{density}.}
 }
 \value{
-A scalar (or vector of scalars if covariates are present) 
-that is the area under \code{density} between \code{w.lo} and \code{w.hi}. 
-This scalar can be used as a divisor to scale density such that 
-it integrates to 1.0. If x = density(\ldots), then 
+A scalar (or vector of scalars if covariates are present)
+that is the area under \code{density} between \code{w.lo} and \code{w.hi}.
+This scalar can be used as a divisor to scale density such that
+it integrates to 1.0. If x = density(\ldots), then
 x / \code{integration.constant(density, \ldots)} will integrate to 1.0.
 }
 \description{
-Using numerical integration, this function computes 
-the area under a distance function between two limits (\code{w.lo} 
+Using numerical integration, this function computes
+the area under a distance function between two limits (\code{w.lo}
 and \code{w.hi}).
 }
 \details{
 The trapazoid rule is used to numerically integrate
-\code{density} from \code{w.lo} to \code{w.hi}. Two-hundred 
-(200) equal-sized trapazoids are used in the integration.  The number 
-of trapazoids to use is fixed and cannot be changed without 
+\code{density} from \code{w.lo} to \code{w.hi}. Two-hundred
+(200) equal-sized trapazoids are used in the integration.  The number
+of trapazoids to use is fixed and cannot be changed without
 re-writing this routine.
 }
 \examples{
- \dontrun{
-#   The following result should be approximately 75
-scl <- integration.constant(uniform.like, w.lo=0, w.hi=100, a=c(75,25))
-print(scl)
-  
-#   Check that likelihood / scl integrates to 1.0
+# Can put any number for first argument (1 used here)
+scl <- integration.constant(1, uniform.like, covars = NULL,
+                            pointSurvey = FALSE, w.lo=0, w.hi = 100,
+                            expansions = 0, a=c(75,25))
+print(scl) # Should be 75
+
 x <- seq(0,100,length=200)
 y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
 int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapazoid rule, should be 1.0
-print(int.y)
-}
+print(int.y) # Should be 1
+
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
@@ -80,5 +80,6 @@ print(int.y)
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
+        Michael Kleinsasser, WEST Inc.,  \email{mkleinsa@uwyo.edu}
 }
 \keyword{models}
