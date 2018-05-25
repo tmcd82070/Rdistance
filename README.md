@@ -17,41 +17,28 @@ Distance-sampling is a popular method for abundance estimation in
   included, and the package can accommodate user-defined detection functions. 
   
 **Rdistance Resources:**
-The best place to start learning about `Rdistance` is at one of the upcoming workshops (see below) or the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
+The best place to start learning about `Rdistance` is at a workshop (see below) or the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
 
 ___
 
 **MAJOR UPDATE IN PROGRESS:**
-The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We are undertaking a major update during summer/fall 2017 in preparation for two workshops that depend on `Rdistance`.  Primary new features include the ability to analyze data from point transects (1.3.2 only allowed line transects) and the ability to include covariates in the detection function (1.3.2 did not allow covariates).  
+The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We undertook a major update during summer/fall 2017 in preparation for two workshops that depend on `Rdistance`, and we are currently making final preparations before re-submitting to CRAN.  Primary new features include the ability to analyze data from point transects (1.3.2 only allowed line transects) and the ability to include covariates in the detection function (1.3.2 did not allow covariates).  
 
-The development version (2.x.x) is not yet on CRAN, but can be installed from GitHub using the `devtools` package:
+The development version (2.x.x) is not yet on CRAN, but you can install it directly from GitHub using the `devtools` package:
 
 `devtools::install_github("tmcd82070/Rdistance")`
 
-The binary version of package (.zip) can be installed with the following command:
-
-`install.packages("<pathto>//Rdistance_2.0.2.zip", repos = NULL, type = "win.binary")`
-
-The source version (.tar.gz) can be installed with the following command: 
-
-`install.packages("<pathto>//Rdistance_2.0.2.tar.gz", repos = NULL, type = "source")`
-
-The R helper function `file.choose()` can be used inconjuction with `install.packages`, i.e.,
-
-`install.packages(file.choose(), repos = NULL, type = "win.binary")`
-
-and selecting the Rdistance .zip binary file.
-
 ___
 
-**Upcoming Workshops:**
+**Workshops:**
 
-* *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
-    * Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque, NM
-    * Contact:  Trent McDonald, WEST, Inc. (tmcdonald@west-inc.com)
-    * More info:  http://twsconference.org/workshops/
+***Recent***
 
 * *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
     * Full-day workshop, 10/29/2017, The Society for Marine Mammalogy, Halifax, Nova Scotia
-    * Contact:  Trent McDonald, WEST, Inc. (tmcdonald@west-inc.com)
-    * More info:  http://www.smmconference.org/WorkshopDescriptions
+* *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
+    * Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque, NM
+    
+***Upcoming***
+
+Contact Trent McDonald (tmcdonald@west-inc.com) for more info.
