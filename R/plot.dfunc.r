@@ -109,24 +109,40 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     x0 <- x$x.scl
   }
   
+  # Create the function that calculates mode of a vector. 
+  getmode <- function(v) {
+    uniqv <- unique(v)
+    uniqv[which.max(tabulate(match(v, uniqv)))]
+  }
+  
   like <- match.fun( paste( x$like.form, ".like", sep=""))
   
   x.seq <- seq( x$w.lo, x$w.hi, length=200)
   
   if(!is.null(x$covars)){
+    if(!is.null(x$factor.names)) {
+      fac <- x$model.frame[,x$factor.names]
+    } 
+
+    covMeans <- matrix(NA, nrow = 1, ncol = length(colnames(x$model.frame[-c(1)])))
+    colnames(covMeans) <- colnames(x$model.frame[-c(1)])
+    for(n in colnames(x$model.frame[-c(1)])) {
+      if(n %in% x$factor.names) {
+        modeFac <- getmode(x$model.frame[[n]])# Calculate mode
+        covMeans[,n] <- modeFac # store
+      } else {
+        meanFac <- mean(x$model.frame[[n]])# Calculate mean
+        covMeans[,n] <- meanFac # store
+      }
+    }
     
     # compute column means of covariantes because need them later to scale bars
     covMeanMat <- col.m <- colMeans(x$covars)
-    if("(Intercept)" %in% dimnames(x$covars)[[2]]){
-      col.m <- col.m[-grep("(Intercept)",dimnames(x$covars)[[2]])]
-    } 
-    covMeans <- as.data.frame(matrix(col.m,1,length(col.m)))
-    names(covMeans) <- names(col.m)
+    
     covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
     
     if(missing(newdata) || is.null(newdata)){
-      # do something fancy here with factors and panels.
-      newdata <- covMeans
+      newdata <- as.data.frame(covMeans)
     }
     
     params <- predict.dfunc(x, newdata, type="parameters")
