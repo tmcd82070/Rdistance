@@ -49,4 +49,5 @@ Rdistance.Rproj
 .Rhistory
 inst/doc
 R/prep.R
-
+data-raw
+tests/

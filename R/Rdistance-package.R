@@ -63,7 +63,7 @@
 #' 
 #' @name Rdistance-package
 #' 
-#' @aliases Rdistance-package distance Rdistance
+#' @aliases Rdistance-package distance Rdistance point-transect
 #' 
 #' @docType package
 #' 
@@ -73,7 +73,10 @@
 #' Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 #' 
 #' Contributors: Ben Augustine, James Griswold, Joel Reynolds, Pham Quang, Earl
-#' Becker, Aaron Christ, Brook Russelland, Patrick McKann, and Lacey Jeroue
+#' Becker, Aaron Christ, Brook Russelland, Patrick McKann, Lacey Jeroue, 
+#' Abigail Hoffman, and Michael Kleinsausser.
 #' 
 #' @keywords package
+#' 
+#' 
 NULL

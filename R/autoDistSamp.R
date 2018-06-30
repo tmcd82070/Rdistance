@@ -106,7 +106,7 @@
 #' @importFrom graphics mtext
 
 autoDistSamp <- function (formula, detectionData, siteData, 
-                             w.lo=0, w.hi=max(dist),
+                             w.lo=0, w.hi=NULL,
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
                              series=c("cosine", "hermite", "simple"), expansions=0:3,
                              pointSurvey=FALSE, warn=TRUE,

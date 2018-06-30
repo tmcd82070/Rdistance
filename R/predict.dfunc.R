@@ -12,6 +12,8 @@
 #' type = "parameters" is implemented and returns 
 #' parameters of the likelihood function.  
 #' 
+#' @param \dots Included for compatibility with generic \code{predict} methods.
+#' 
 #' @return A matrix of predicted parameter for the distance function
 #' estimated in \code{dfunc}. The returned matrix has first dimension
 #' (nrow) equal to either the number of detection distanced 

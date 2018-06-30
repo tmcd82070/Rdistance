@@ -6,8 +6,10 @@ output:
   pdf_document: default
   html_document:
     df_print: paged
-vignette: |
-  %\VignetteIndexEntry{Rdistance_BeginnerPointTransects} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
+vignette: >
+  %\VignetteIndexEntry{Rdistance: Beginner Point Transect Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 
@@ -24,30 +26,34 @@ require(Rdistance)
 
 # 2: Read in the input data
 
-To complete this tutorial, we use the datasets `thrasherDetectionData.rda` and `thrasherSiteData.rda` (point transect surveys of brown thrashers) from the package `Rdistance`.
+For this tutorial, we use two datasets collected by 
+J. Carlisle on brown thrashers in central Wyoming that are 
+included with `Rdistance`. 
 
-The first required dataset is a detection data.frame, with a row for each transect surveyed and columns named:
+The first dataset, `thrasherDetectionData`, is a detection data.frame
+with one row for each detected object. Columns in the data frame are:
 
-* `siteID` = Factor, the site or transect surveyed
+* `siteID` = Factor, the site (point) and transect surveyed. Levels are 
+five character codes like 'TTXPP' where TT is transect number and PP is 
+the point within the transect.
 * `groupsize` = Numeric, the number of individuals within the detected group.
-* `dist` = Numeric, the perpendicular distance (also known as off-transect distance) from the point transect to the detected group. 
-
-Load the example dataset of thrasher detections and observed distances (`thrasherDetectionData`) using the following commands:
+* `dist` = Numeric, the radial distance from the point to the detected group. 
+Obtain access to the example dataset of thrasher detections and observed distances (`thrasherDetectionData`) using the following commands:
 
 ```{r}
-load("thrasherDetectionData.rda")
+data("thrasherDetectionData")
 head(thrasherDetectionData)
 ```
 
-The second required dataset is a transect data.frame, with a row for each transect surveyed, and the following required columns, named as follows:
+The second required dataset, `thrasherSiteData`, is a transect data.frame, with one row for each transect surveyed, and the following required columns:
 
-* `siteID` = Factor, the site or transect surveyed.
-* `...` = Any additional transect-level covariate columns (these will be ignored).
+* `siteID` = Factor, the site (point) and transect surveyed.
+* `...` = Any additional transect-level covariate columns (these will not be used in this tutorial).
 
-Load the example dataset of thrasher transects surveyed (`thrasherSiteData`) using the following commands:
+Load the example dataset of thrasher transects (`thrasherSiteData`) using the following commands:
 
 ```{r}
-load("thrasherSiteData.rda")
+data("thrasherSiteData")
 head(thrasherSiteData)
 ```
 
@@ -56,40 +62,33 @@ head(thrasherSiteData)
 Once the data are imported, the first step is to fit a detection function. Before we do so, explore the distribution of the distances:
 
 ```{r, fig.width=6, fig.height=4}
-hist(thrasherDetectionData$dist, col="grey", main="", xlab="distance (m)")
+hist(thrasherDetectionData$dist, n=40, col="grey", main="", xlab="distance (m)")
 summary(thrasherDetectionData$dist)
 ```
 
-Next, fit a detection function (plotted as a red line) using `dfuncEstim`. Point transect is an option in `dfuncEstim` by selecting `PointSurvey = TRUE`. Our illustration uses the half-normal likelihood as the detection function. In section 5, we demonstrate an automated process that fits multiple detection functions and compares them using AICc. 
+Next, we fit a detection function (plotted as a red line) using `dfuncEstim`
+with point transects specified as an option (i.e., `PointSurvey` = `TRUE`). Our illustration uses the half-normal likelihood as the detection function. In section 5, we demonstrate an automated process that fits multiple detection functions and compares them using AICc. 
 
 ```{r, fig.width=6, fig.height=4}
 
-dfunc <- dfuncEstim(formula = thrasherDetectionData$dist ~ 1,
+dfunc <- dfuncEstim(formula = dist ~ 1,
                     detectionData = thrasherDetectionData, 
-                    siteData = thrasherSiteData, 
                     pointSurvey = TRUE, 
-                    pointID = thrasherDetectionData$siteID, 
                     likelihood = "halfnorm")
 
 plot(dfunc)
 dfunc
-
 ```
 
-The effective detection radius (EDR) is the essential information from the detection function that will be used to estimate abundance in section 4. The EDR is calculated by integrating over the detection function, resulting in the area under the curve of the detection function. See the help documentation for `EDR` for details.
+The effective detection radius (EDR) is the essential information from the detection function that will be used to estimate abundance in section 4. The EDR is calculated by integrating the detection function to compute area under the detection function. See the help documentation for `EDR` for details.
 
 # 4: Estimate abundance given the detection function
 
 Estimating abundance requires the additional information contained in the the thrasher site dataset, described in section 2, where each row represents one transect. Load the example dataset of surveyed thrasher transects from the package. 
 
-```{r}
-data("thrasherSiteData")
-head(thrasherSiteData)
-```
+We estimate abundance (or density in this case) using `abundEstim`.  If `area` = 1, density is given in the squared units of the distance measurements --- in this case, thrashers per square meter.  If we set `area` = 10000, we convert to thrashers per hectare (1 ha == 10,000 m^2^). The equation used to calculate the abundance estimate is detailed in the help documentation for `abundEstim`.
 
-Next, estimate abundance (or density in this case) using `abundEstim`.  If `area` = 1, then density is given in the squared units of the distance measurements --- in this case, thrashers per square meter.  Instead, we set `area` = 10000 in order to convert to thrasher per hectare (1 ha == 10,000 m^2^). The equation used to calculate the abundance estimate is detailed in the help documentation for `abundEstim`.
-
-Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `abundEstim`), and the detection function fit in each iteration of the bootstrap is calculated.  Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be necessary to stabilize CI estimates.
+Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `abundEstim`).  Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between runs.  Increasing the number of bootstrap iterations (`R` = 100 used here for brevity) may be necessary to stabilize CI estimates.
 
 
 ```{r, fig.width=6, fig.height=4, results='hide'}
@@ -98,7 +97,7 @@ Confidence intervals for abundance are calculated using a bias-corrected bootstr
 fit <- abundEstim(dfunc          = dfunc,
                    detectionData = thrasherDetectionData,
                    siteData      = thrasherSiteData,
-                   area           = 10000,       # For density
+                   area           = 10000,       # density per hectare
                    R              = 100, 
                    ci             = 0.95)
 ```
@@ -121,27 +120,47 @@ fit$ci
 
 # 5: Use AICc to select a detection function and estimate abundance
 
-Fitting of a detection function and estimating abundance (sections 3 and 4) can be automated using the function `autoDistSamp`. The function attempts to fit multiple detection functions, uses AICc (by default, but see help documentation for `autoDistSamp` under `criterion` for other options) to find the 'best' detection function, then proceeds by estimating abundance using the best fit detection function (the estimated function with lowest AICc). By default, `autoDistSamp` tries a large subset of `Rdistance`'s built-in detection functions, but you can control exactly which detection functions are attempted (see help documentation for `autoDistSamp`). Specifying `plot=TRUE` returns a plot of each detection function.  In this example, we attempt to fit the likelihoods half-normal, hazard rate, exponential, and "uniform" with no expansion terms, and we don't plot each function (`plot=FALSE`).
+Fitting several detection functions, choosing the best fitting, and
+estimating abundance (sections 3 and 4) can be automated using the 
+function `autoDistSamp`. The function attempts to fit multiple 
+detection functions, uses AICc (by default, but see help 
+documentation for `autoDistSamp` under `criterion` for other options) 
+to find the 'best' detection function, then proceeds to estimate 
+abundance using the best fit detection function (the distance 
+function with lowest AICc). By default, `autoDistSamp` tries a 
+large subset of `Rdistance`'s built-in detection functions, but 
+you can control exactly which detection functions are attempted 
+(see help documentation for `autoDistSamp`). Specifying `plot=TRUE` 
+produces a plot of each detection function as it is estimated. 
+Specifying, `plot.bs=TRUE` plots the selected distance function
+each iteration of the bootstrap procedure.  In this example, we 
+fit the half-normal, hazard rate, exponential, and uniform likelihoods 
+with no expansion terms, we do not plot all fitted functions 
+(`plot=FALSE`), but we plot the best distance function 
+fitted during each bootstrap iteration. 
 
-```{r, fig.width=6, fig.height=4, results='hide'}
+```{r, fig.width=6, fig.height=4, results='hide', eval=FALSE}
 
-# Automated Fit - Conduct the fit automated but also choose the best model based on AIC
+# Automated Fit - fit several models, choose the best model based on AIC
 auto <- autoDistSamp(formula       = thrasherDetectionData$dist ~ 1,
                      detectionData = thrasherDetectionData,
                      siteData      = thrasherSiteData,
                      pointSurvey   = TRUE,
                      expansions    = c(0),
                      likelihoods   = c("halfnorm", "hazrate", "negexp", "uniform"),
-                     plot          = FALSE,    # Would plot ALL models if TRUE
+                     plot          = FALSE,
                      area          = 10000,
-                     R             = 100, 
-                     ci            = 0.95, 
-                     plot.bs       = TRUE,
-                     w.hi          = 265) 
+                     R             = 100,
+                     ci            = 0.95,
+                     plot.bs       = TRUE)
 
 ```
 
 ```{r}
+# delete the following lines down to --- when get autoAbund to work
+auto<-list(n.hat=NA, ci=c(NA,NA))
+# ---
+
 auto
 ```
 
@@ -149,9 +168,10 @@ The detection function with the lowest AICc value (and thus selected as the 'bes
 
 # Conclusion
 
-In sections 3 and 4, we fitted a half-normal detection function and used that function to estimate thrasher density.  Our estimate was `r round(fit$n.hat, 2)` thrashers per ha (95% CI = `r round(fit$ci[[1]], 2)` - `r round(fit$ci[[2]], 2)`). In section 5, we used AICc to determine the best-fitting detection function and used the function with the lowest AICc to estimate thrasher density.  The thrasher density estimate was `r round(auto$n.hat, 2)` thrashers per ha (95% CI = `r round(auto$ci[[1]], 2)` - `r round(auto$ci[[2]], 2)`). (Note, estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).
+In sections 3 and 4, we fitted a half-normal detection function and used that function to estimate thrasher density.  Our estimate was `r round(fit$n.hat, 2)` thrashers per ha (95% CI = `r round(fit$ci[[1]], 2)` to `r round(fit$ci[[2]], 2)`). In section 5, we used AICc to estimate a
+better fitting detection function and used it to estimate thrasher density.  The thrasher density estimated by the better-fitting model
+was `r round(auto$n.hat, 2)` thrashers per ha (95% CI = `r round(auto$ci[[1]], 2)` to `r round(auto$ci[[2]], 2)`). (Note, CI estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).
 
-That concludes this `Rdistance` tutorial.  You are now ready to read in your own data, fit a detection function, and estimate abundance for point transects.
 
 
 

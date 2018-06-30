@@ -118,7 +118,7 @@ print.dfunc <- function( x, criterion="AICc", ... ){
     cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
     cat(paste("Log likelihood:", format(x$loglik), "\n"))
     if( !is.smoothed ){
-      aic <- AIC(x,criterion=criterion) 
+      aic <- AIC.dfunc(x,criterion=criterion) 
       cat(paste0(attr(aic,"criterion"),": ", format(aic), "\n"))
     }
 

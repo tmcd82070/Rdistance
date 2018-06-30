@@ -1,18 +1,26 @@
 #' @name Gamma.like
-#' @aliases Gamma.like
-#' @title Gamma likelihood for distance analyses
+#' 
+#' @title Gamma distance function for distance analyses
+#' 
 #' @description Computes the gamma likelihood, scaled appropriately, for use as a likelihood in estimating a distance function.
-#' @usage Gamma.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE, pointSurvey = F, ...)
+#' 
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
 #'   (i.e., \code{expansions = 0}), the distance likelihoods contain one or two canonical parameters (see Details). If one or more expansions are called for,
 #'   coefficients for the expansion terms follow coefficients for the canonical parameters.  If \code{p} is the number of canonical parameters, coefficients
 #'   for the expansion terms are \code{a[(p+1):length(a)]}.
+#'   
 #' @param dist A numeric vector containing the observed distances.
+#' 
 #' @param covars Data frame containing values of covariates at each observation in \code{dist}.
+#' 
 #' @param w.lo Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.
 #'   Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
-#' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
-#'   Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
+#'   
+#' @param w.hi Scalar value of the largest observable distance.  
+#' This is the \emph{right truncation} of sighting distances in 
+#' \code{dist}.  Same units as \code{dist}.
+#' Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
+#'   
 #' @param series A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
 #'   \code{\link{dfuncEstim}} about defining other series.
 #' @param expansions A scalar specifying the number of terms in \code{series}. Depending on the series, this could be 0 through 5.
@@ -30,10 +38,13 @@
 #'   \code{L=gamma.like(c(r,lam),dist)}, the full log likelihood of all the data is \code{-sum(log(L), na.rm=T)}. Note that the returned likelihood value for 
 #'   distances less than \code{w.lo} or greater than \code{w.hi} is \code{NA}, and thus it is prudent to use \code{na.rm=TRUE} in the sum. If \code{scale} = TRUE, 
 #'   the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, the integral of the likelihood is an arbitrary constant.
+#'   
 #' @references Becker, E. F., and P. X. Quang, 2009. \emph{A Gamma-Shaped Detection Function for Line-Transect Surveys with Mark-Recapture and Covariate Data.}
 #'   Journal of Agricultural, Biological, and Environmental Statistics 14(2):207-223.
+#'   
 #' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
+#'         
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, \code{\link{uniform.like}}, \code{\link{negexp.like}}
 #' @examples \dontrun{
 #' set.seed(238642)
@@ -59,22 +70,15 @@
 #' @export
 #' @importFrom stats dgamma
 
-Gamma.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
-                       series = "cosine", expansions = 0, scale = TRUE,
-                       pointSurvey = FALSE, ...){
-#
-#   Compute gamma likelihood.
-#
-#   Input:
-#       a = vector of model coefficient and r gamma shape parameter
-#       dist = vector of distance observations
-#       w = strip half width
-#       series = type of expansion to apply, does not apply to gamma yet
-#       expansions = number of expansion terms, does not apply to gamma yet
-#       scale = whether to scale the likelihood.
-#
-#   See comments in uniform.like.r
-#
+Gamma.like <- function(a, 
+                       dist, 
+                       covars = NULL, 
+                       w.lo = 0, 
+                       w.hi = max(dist),
+                       series = "cosine", 
+                       expansions = 0, 
+                       scale = TRUE,
+                       pointSurvey = FALSE){
     if(!is.null(covars)){
       s <- 0
       for (i in 1:(ncol(as.matrix(covars))))
@@ -132,7 +136,15 @@ Gamma.like <- function(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
     like <- dgamma( dist, shape=r, scale=lam*b )
 
     if( scale ){
-         like = like / integration.constant(dist, Gamma.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a, series=series, expansions=expansions, pointSurvey = pointSurvey, ...)
+         like = like / integration.constant(dist, 
+                                            Gamma.like, 
+                                            covars = covars, 
+                                            w.lo=w.lo, 
+                                            w.hi=w.hi, 
+                                            a=a, 
+                                            series=series, 
+                                            expansions=expansions, 
+                                            pointSurvey = pointSurvey)
     }
 
     like

@@ -2,9 +2,10 @@
 % Please edit documentation in R/Gamma.like.r
 \name{Gamma.like}
 \alias{Gamma.like}
-\title{Gamma likelihood for distance analyses}
+\title{Gamma distance function for distance analyses}
 \usage{
-Gamma.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale = TRUE, pointSurvey = F, ...)
+Gamma.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
+  series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
@@ -19,7 +20,9 @@ for the expansion terms are \code{a[(p+1):length(a)]}.}
 \item{w.lo}{Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.
 Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.}
 
-\item{w.hi}{Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
+\item{w.hi}{Scalar value of the largest observable distance.
+This is the \emph{right truncation} of sighting distances in 
+\code{dist}.  Same units as \code{dist}.
 Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.}
 
 \item{series}{A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 

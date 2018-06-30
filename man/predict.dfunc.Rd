@@ -15,6 +15,8 @@ the covariates at which predictions are to be computed.}
 \item{type}{The type of predictions desired. Currently, only 
 type = "parameters" is implemented and returns 
 parameters of the likelihood function.}
+
+\item{\dots}{Included for compatibility with generic \code{predict} methods.}
 }
 \value{
 A matrix of predicted parameter for the distance function

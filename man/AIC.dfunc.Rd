@@ -47,10 +47,12 @@ Regular Akaike's information criterion
 }
 \examples{
 # Load the example dataset of sparrow detections from package
-  data(sparrow.detections)
+  data(sparrowDetectionData)
   
   # Fit detection function to perpendicular, off-transect distances
-  dfunc <- dfuncEstim(sparrow.detections, w.hi=150)
+  dfunc <- dfuncEstim(dist~1,
+                      detectionData=sparrowDetectionData, 
+                      w.hi=150)
   
   # Compute fit statistics
   AIC(dfunc)  # AICc

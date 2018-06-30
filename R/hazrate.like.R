@@ -116,10 +116,15 @@
 #' @keywords models
 #' @export
 
-hazrate.like <- function(a, dist, covars = NULL, w.lo = 0, 
-                         w.hi = max(dist), series = "cosine", 
-                         expansions = 0, scale = TRUE, 
-                         pointSurvey = FALSE, ...){
+hazrate.like <- function(a, 
+                         dist, 
+                         covars = NULL, 
+                         w.lo = 0, 
+                         w.hi = max(dist), 
+                         series = "cosine", 
+                         expansions = 0, 
+                         scale = TRUE, 
+                         pointSurvey = FALSE){
 	
 
     dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
@@ -171,7 +176,15 @@ hazrate.like <- function(a, dist, covars = NULL, w.lo = 0,
     #}
 
     if( scale ){
-        dfunc = dfunc / integration.constant(dist, hazrate.like, w.lo=w.lo, w.hi=w.hi, a=a, covars = covars, series=series,expansions=expansions, pointSurvey = pointSurvey, ...)
+        dfunc = dfunc / integration.constant(dist, 
+                                             hazrate.like, 
+                                             a=a, 
+                                             covars = covars, 
+                                             w.lo=w.lo, 
+                                             w.hi=w.hi, 
+                                             series=series,
+                                             expansions=expansions, 
+                                             pointSurvey = pointSurvey)
     }
     
     c(dfunc)

@@ -11,25 +11,48 @@ dfuncSmu(formula, detectionData, siteData, bw = "SJ-dpi", adjust = 1,
   transectID = NULL, pointID = "point", length = "length")
 }
 \arguments{
-\item{formula}{A standard formula object (eg dist ~ 1, 
-dist ~ covar1 + covar2). The left-hand side (before ~)
-is the name of the vector containing distances (off-transect or 
-from points).  The right-hand side (after ~)
-contains the names of covariate vectors to fit in the detection
-function. If covariates do not appear in \code{data}, they must 
-be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
+\item{formula}{A formula object (e.g., dist ~ 1). 
+The left-hand side (before ~)
+is the name of the vector containing distances (perpendicular or 
+radial).  The right-hand side (after ~)
+must be the intercept-only model as \code{Rdistance} does not 
+currently allow covariates in smoothed distance functions. 
+If names in \code{formula} do not appear in \code{detectionData}, 
+the normal scoping rules for model fitting routines (e.g., 
+\code{lm} and \code{glm}) apply.}
 
 \item{detectionData}{A data frame containing detection distances 
 (either perpendicular for line-transect or radial for point-transect
-designs), \code{transectID}, and 
-potentially group size (see example data set \code{\link{sparrowDetectionData}}).
-\code{detectionData} contains one row per detected group. The column
-containing detection
-distances must be specified on the left-hand side of \code{formula}.
-The site ID  column(s) (see argument \code{siteID}) must specify the site
-(transect or point) associated with the detection so that this 
-data frame can be merged with \code{siteData}. See \bold{Input data frames} 
-for when \code{detectionData} and \code{siteData} are required inputs.}
+designs), with one row per detected object or group.   
+This data frame must contain at least the following 
+information: 
+\itemize{
+  \item Detection Distances: A single column containing 
+  detection distances must be specified on the left-hand 
+  side of \code{formula}.
+  \item Site IDs: The ID of the transect or point 
+  (i.e., the 'site') where each object or group was detected.
+  The site ID  column(s) (see argument \code{siteID}) must 
+  specify the site (transect or point) so that this 
+  data frame can be merged with \code{siteData}.    
+} 
+Optionally, this data frame can contain the following 
+variables: 
+\itemize{
+  \item Group Sizes: The number of individuals in the group
+  associated with each detection.  If unspecified, \code{Rdistance}
+  assumes all detections are of single individuals (i.e., 
+  all group sizes are 1). 
+  
+  \item When \code{Rdistance} allows detection-level 
+  covariates in some version after 2.1.1, detection-level 
+  covariates will appear in this data frame. 
+   
+}
+See example data set \code{\link{sparrowDetectionData}}).
+See also \bold{Input data frames} below 
+for information on when \code{detectionData} and 
+\code{siteData} are required inputs.}
 
 \item{siteData}{A data.frame containing site (transect or point)
  IDs and any 
@@ -51,7 +74,7 @@ See \bold{Input data frames}
 for when \code{detectionData} and \code{siteData} are required inputs.}
 
 \item{bw}{Bandwidth of the smooth, which controls
-smoothness.  Smoothing is done by \code{stats::denstiy}, and 
+smoothness.  Smoothing is done by \code{stats::density}, and 
 \code{bw} is 
 passed straight to it's \code{bw} argument.  \code{bw} can be 
 numeric, in which case it is the standard deviation of the 
@@ -63,17 +86,43 @@ of \code{bw} are the following:
   \item "nrd0" : Silverman's 'rule-of-thumb' equal to 
       \eqn{\frac{0.9s}{1.34n^{-0.2}}}{0.9(s)/(1.34n^(-1/5))}, where 
       \eqn{s} is the minimum of standard deviation of the distances 
-      and the interquartile range.  See \code{\link{stats::bw.nrd0}}.
+      and the interquartile range.  See \code{\link[stats]{bw.nrd0}}.
   \item "nrd" : The more common 'rule-of-thumb' variation given by 
       Scott (1992). This rule uses 1.06 in the denominator of the 
-      "nrd0" bandwidth. See \code{\link{stats::bw.nrd}}
-  \item "bcv" : The biased cross-validation method. See \code{\link{MASS::bcv}}. 
-  \item "ucv" : The unbiased cross-validation method. See \code{\link{MASS::ucv}}.
+      "nrd0" bandwidth. See \code{\link[stats]{bw.nrd}}
+  \item "bcv" : The biased cross-validation method. See \code{\link[MASS]{bcv}}. 
+  \item "ucv" : The unbiased cross-validation method. See \code{\link[MASS]{ucv}}.
   \item "SJ" or "SJ-ste" : The 'solve-the-equation' bandwidth of Sheather & 
-      Jones (1991).  See \code{\link{stats::bw.SJ}} or \code{\link{MASS::width.SJ}}.
+      Jones (1991).  See \code{\link[stats]{bw.SJ}} or \code{\link[MASS]{width.SJ}}.
   \item "SJ-dpi" (default) : The 'direct-plug-in' bandwidth of Sheather & 
-      Jones (1991). See \code{\link{stats::bw.SJ}} or \code{\link{MASS::width.SJ}}.
+      Jones (1991). See \code{\link[stats]{bw.SJ}} or \code{\link[MASS]{width.SJ}}.
 }}
+
+\item{adjust}{Bandwidth adjustment for the amount of smooth. 
+Smoothing is done by \code{\link[stats]{density}}, and 
+this parameter is 
+passed straight to it's \code{adjust} argument.  
+In \code{stats::density}, the bandwidth used is 
+actually \code{adjust*bw}, and inclusion of this parameters makes 
+it easier to specify values like 'half the default' bandwidth.}
+
+\item{kernel}{Character string specifying the smoothing kernel function. 
+This parameters is passed unmodified to \code{stats::density}.  Valid 
+values are:
+\itemize{
+  \item "gaussian" : Gaussian (normal) kernel, the default
+  \item "rectangular" : Uniform or flat kernel
+  \item "triangular" : Equalateral triangular kernel
+  \item "epanechnikov" : the Epanechnikov kernel
+  \item "biweight" : the biweight kernel
+  \item "cosine" : the S versoin of the cosine kernel
+  \item "optcosine" : the optimal cosine kernel which is the usual 
+  one reported in the literature 
+}
+Values of \code{kernel} may be abbreviated to the first letter of 
+each string. The numeric value of \code{bw} used in the smooth 
+is stored in the \code{$fit} component of the returned object 
+(i.e., in \code{returned$fit$bw}).}
 
 \item{pointSurvey}{A logical scalar specifying whether input data come
 from point-transect surveys (TRUE),
@@ -85,7 +134,9 @@ This is the minimum possible off-transect distance. Default is 0.}
 
 \item{w.hi}{Upper or right-truncation limit of the distances 
 in \code{dist}. This is the maximum off-transect distance that 
-could be observed. Default is the maximum of \code{dist}.}
+could be observed. If left unspecified (i.e., at the default of 
+NULL), right-truncation is set to the maximum of the 
+observed distances.}
 
 \item{x.scl}{This parameter is passed to \code{F.gx.estim}. 
 See \code{F.gx.estim} documentation for definition.}
@@ -119,6 +170,17 @@ For point-transects, the amalgomation of \code{transectID} and
 \code{pointID} specify unique sampling sites.  
 See \bold{Input data frames}.}
 
+\item{pointID}{When point-transects are used, this is the 
+ID of points on a transect.  When \code{pointSurvey}=TRUE, 
+the amalgomation of \code{transectID} and 
+\code{pointID} specify unique sampling sites.  
+See \bold{Input data frames}.  
+
+If single points are surveyed, 
+meaning surveyed points were not grouped into transects, each 'transect' consists
+of one point. In this case, set \code{transectID} equal to 
+the point's ID and set \code{pointID} equal to 1 for all points.}
+
 \item{length}{Character string specifying the (single) column in 
 \code{siteData} that contains transect length. This is ignored if 
 \code{pointSurvey} = TRUE.}
@@ -146,7 +208,10 @@ are lists containing the following components:
   \item{call.g.x.scl}{The value of the distance function at distance
     \code{call.x.scl}.  Normally, \code{call.g.x.scl} = 1.}
   \item{call.observer}{The value of input parameter \code{observer}.}
-  \item{fit}{The smoothed object returned by \code{density}.}
+  \item{fit}{The smoothed object returned by \code{stats::density}. All
+    information returned by \code{stats::density} is preserved, and 
+    in particular the numeric value of the bandwidth used during the 
+    smooth is returned in \code{fit$bw}}
   \item{pointSurvey}{The input value of \code{pointSurvey}. 
     This is TRUE if distances are radial from a point. FALSE 
     if distances are perpendicular off-transect. }
@@ -154,15 +219,15 @@ are lists containing the following components:
 }
 \description{
 Estimates a smooth detection function for 
-a set of either  
-observed off-transect or off-point distances.
+line-transect perpendicular distances or point-transect 
+radial distances.
 }
 \details{
 Distances are reflected about \code{w.lo} before being passed 
-to \code{density}, and distances exactly equal to \code{w.lo} are not
-reflected.  This method of density funciton smoothing greatly improves
+to \code{density}.  Distances exactly equal to \code{w.lo} are not
+reflected.  Reflection around \code{w.lo} greatly improves
 performance of the kernel methods near the \code{w.lo} boundary 
-where substantial probability of sighting typically exists.
+where substantial non-zero probability of sighting typically exists.
 }
 \section{Input data frames}{
 
@@ -277,7 +342,7 @@ Practice, and Visualization.} Wiley.
 
 Sheather, S. J. and Jones, M. C. (1991) A reliable data-based 
 bandwidth selection method for kernel density estimation. \emph{Journal of 
-the Royal Statistical Society series B}, 53, 683–690.
+the Royal Statistical Society series B}, 53, 683-690.
 
 Silverman, B. W. (1986) \emph{Density Estimation}. London: Chapman and Hall.
 }

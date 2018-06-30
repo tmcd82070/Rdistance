@@ -7,9 +7,9 @@
 F.maximize.g(fit, covars = NULL)
 }
 \arguments{
-\item{covars}{Covariate values to calculate maximum for.}
+\item{fit}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
 
-\item{x}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
+\item{covars}{Covariate values to calculate maximum for.}
 }
 \value{
 The value of x that maximizes g(x) in \code{fit}.

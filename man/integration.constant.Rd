@@ -4,8 +4,8 @@
 \alias{integration.constant}
 \title{Compute the integration constant for distance density functions}
 \usage{
-integration.constant(dist, density, w.lo, w.hi, covars, a, expansions,
-  pointSurvey, ...)
+integration.constant(dist, density, a, covars, w.lo, w.hi, series, expansions,
+  pointSurvey)
 }
 \arguments{
 \item{dist}{Vector of detection distance values.}
@@ -17,6 +17,8 @@ and \code{w.hi} and have the following parameters:
     \itemize{
       \item \samp{a} = Parameter vector.
       \item \samp{dist} = Vector of distances.
+      \item \samp{covars} = If the density allows covariates, 
+      the covariate matrix.
       \item \samp{w.lo} = Lower limit or left truncation value.
       \item \samp{w.hi} = Upper limit or right truncation value.
       \item \samp{series} = Form of the series expansions, if any.
@@ -24,23 +26,25 @@ and \code{w.hi} and have the following parameters:
       \item \samp{scale} = Whether to scale function to integrate to 1.
     }}
 
+\item{a}{Vector of parameters to pass to \code{density}.}
+
+\item{covars}{Matrix of covariate values.}
+
 \item{w.lo}{The lower limit of integration, or the left truncation
 value for perpendicular distances.}
 
 \item{w.hi}{The upper limit of integration, or the right truncation
 value for perpendicular distances.}
 
-\item{covars}{Matrix of covariate values.}
-
-\item{a}{Vector of parameters to pass to \code{density}.}
+\item{series}{The series to use for expansions. 
+If \code{expansions} > 0, this string 
+specifies the type of expansion. Valid values at 
+present are 'simple', 'hermite', and 'cosine'.}
 
 \item{expansions}{Number of expansions in \code{density}.}
 
 \item{pointSurvey}{Boolean. TRUE if point transect data,
 FALSE if line transect data.}
-
-\item{\dots}{Additional parameters to the likelihood
-function \code{density}.}
 }
 \value{
 A scalar (or vector of scalars if covariates are present)

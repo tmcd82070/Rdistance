@@ -169,7 +169,7 @@
 #' @keywords model
 #' @export
 #' @importFrom stats coef qnorm pnorm quantile
-#' @importFrom graphics lines
+#' @importFrom graphics lines par
 #' @importFrom utils txtProgressBar setTxtProgressBar
 
 abundEstim <- function(dfunc, detectionData, siteData,

@@ -2,7 +2,7 @@
 #' @aliases print.abund
 #' @title Print abundance estimates
 #' @description Print an object of class c("abund","dfunc") that is output by \code{abundEstim}.
-#' @usage \method{print}{abund}(x, ...)
+#' 
 #' @param x An object output by \code{abundEstim}.  This is a distance function object that 
 #'   also contains abundance estimates, and has class c("abund", "dfunc").
 #'   

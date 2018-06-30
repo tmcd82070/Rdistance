@@ -7,8 +7,10 @@ output:
   word_document: default
   html_document:
     df_print: paged
-vignette: |
-  %\VignetteIndexEntry{Rdistance_BeginnerTutorial} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
+vignette: >
+  %\VignetteIndexEntry{Rdistance: Beginner Line Transect Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 # Introduction
@@ -58,15 +60,18 @@ Distance-sampling analysis is done on perpendicular distances (i.e., the distanc
 
 
 ```{r}
-sparrowDetectionData$dist<- perpDists(sightDist="sightdist", sightAngle="sightangle", data = sparrowDetectionData)
-sparrowDetectionData <- sparrowDetectionData[, -which(names(sparrowDetectionData) %in% c("sightdist", "sightangle"))]    
-
-
+sparrowDetectionData$dist<- perpDists(sightDist="sightdist",
+                    sightAngle="sightangle", 
+                    data = sparrowDetectionData)
+sparrowDetectionData <- sparrowDetectionData[,
+                    -which(names(sparrowDetectionData) 
+                    %in% c("sightdist", "sightangle"))]
 ```
 
 Explore the distribution of distances.
 ```{r, fig.width=6, fig.height=4}
-hist(sparrowDetectionData$dist, col="grey", main="", xlab="distance (m)")
+hist(sparrowDetectionData$dist, col="grey", main="", 
+     xlab="distance (m)")
 rug(sparrowDetectionData$dist)
 summary(sparrowDetectionData$dist)
 ```
@@ -81,11 +86,8 @@ dfuncSparrow<- dfuncEstim(formula = dist~1,
                           siteData = sparrowSiteData, 
                           likelihood = "halfnorm", w.hi = 150)
 
-
 plot(dfuncSparrow)
 dfuncSparrow
-
-
 
 ```
 
@@ -103,11 +105,17 @@ Next, estimate abundance (or density in this case) using `abundEstim`.  If `area
 
 Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `abundEstim`), and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).  Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be necessary to stabilize CI estimates.
 
-```{r, fig.width=6, fig.height=4}
-fit <- abundEstim(dfuncSparrow, detectionData=sparrowDetectionData,
-                     siteData=sparrowSiteData,
-                     area=10000, R=100, ci=0.95, plot.bs=TRUE)
+```{r, fig.width=6, fig.height=4,results='hide'}
+fit <- abundEstim(dfuncSparrow, 
+                  detectionData=sparrowDetectionData,
+                  siteData=sparrowSiteData,
+                  area=10000, 
+                  R=100, 
+                  ci=0.95, 
+                  plot.bs=TRUE)
+```
 
+```{r}
 fit
 ```
 
@@ -123,10 +131,12 @@ fit$ci
 For some data, the probability of detection may be dependent upon covariates due to site characteristics such as vegetation type or object characteristics such as animal size. Explore the distribution of distances for sparrows detected in different sagebrush shrub classes. 
 
 ```{r, fig.width = 6, fig.height = 4, warning = FALSE}
-hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "High"],  col="grey", main="High Sage",  xlab="distance (m)", 
+hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "High"], 
+     col="grey", main="High Sage",  xlab="distance (m)", 
      breaks = 15, xlim = c(0,150))
 rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "High"])
-hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "Low"],  col="grey", main="Low Sage",  xlab="distance (m)", 
+hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "Low"],
+     col="grey", main="Low Sage",  xlab="distance (m)", 
      breaks = 14, xlim = c(0,150))
 rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "Low"])
 
@@ -141,16 +151,20 @@ dfuncShrubClass<- dfuncEstim(formula = dist~shrubclass,
                           likelihood = "halfnorm", w.hi = 150)
 
 
-plot(dfuncShrubClass, newdata=data.frame(shrubclass=levels(sparrowSiteData$shrubclass)), nbins = 15)
-
-
-covarFit <- abundEstim(dfuncShrubClass, detectionData=sparrowDetectionData,
-                     siteData=sparrowSiteData,
-                     area=10000, R=100, ci=0.95, plot.bs=FALSE)
-
+plot(dfuncShrubClass, newdata = data.frame(shrubclass=
+                levels(sparrowSiteData$shrubclass)), nbins = 15)
+```
+```{r, fig.width=6, fig.height=4, results='hide'}
+covarFit <- abundEstim(dfuncShrubClass, 
+                       detectionData=sparrowDetectionData,
+                       siteData=sparrowSiteData,
+                       area=10000, 
+                       R=100, 
+                       ci=0.95, 
+                       plot.bs=FALSE)
+```
+```{r}
 covarFit
-
-
 ```
 
 In this example including the covariate of shrub class changes our estimate from `r round(fit$n.hat, 2) ` sparrows per ha (95% CI = `r round(fit$ci[[1]], 2)` - `r round(fit$ci[[2]], 2)`) to `r round(covarFit$n.hat, 2) ` sparrows per ha (95% CI = `r round(covarFit$ci[[1]], 2)` - `r round(covarFit$ci[[2]], 2)`). However, in some cases covariates can have a large influence on abundance estimates. 
@@ -196,6 +210,6 @@ auto <- autoDistSamp(formula        = dist~shrubclass,
 
 
 # Conclusion
-Note that the detection function that you select can have a large influence on the resulting abundance estimate.  In sections 3 and 4, we fit a half-normal detection function and used that function to estimate sparrow density.  Our estimate was `r round(fit$n.hat, 2)` sparrows per ha (95% CI = `r round(fit$ci[[1]], 2)` - `r round(fit$ci[[2]], 2)`).  In section 5, we used AICc to determine the best-fitting detection function and used that function to estimate sparrow density again.  AICc determined that the best-fitting detection function was the uniform and the estimate was `r round(auto$n.hat, 2)` sparrows per ha (95% CI = `r round(auto$ci[[1]], 2)` - `r round(auto$ci[[2]], 2)`). (Note, recall that your estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).  Thus, choosing an appropriate detection function is critical to accurately estimating abundance.  The `autoDistSamp` function can help you select a detection function that fits your data well.
+Note that the detection function that you select can have a large influence on the resulting abundance estimate.  In sections 3 and 4, we fit a half-normal detection function and used that function to estimate sparrow density.  Our estimate was `r round(fit$n.hat, 2)` sparrows per ha (95% CI = `r round(fit$ci[[1]], 2)` - `r round(fit$ci[[2]], 2)`).  In section 5, we used AICc to determine the best-fitting detection function amoung
+several we chose to fit and used that function to estimate sparrow density again.  AICc determined that the best-fitting detection function was the uniform and the estimate was `r round(auto$n.hat, 2)` sparrows per ha (95% CI = `r round(auto$ci[[1]], 2)` - `r round(auto$ci[[2]], 2)`). (Note, recall that your estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).  Thus, choosing an appropriate detection function is critical to accurately estimating abundance.  The `autoDistSamp` function can help you select a detection function that fits your data well.
 
-That concludes this `Rdistance` tutorial.  You are now ready to read in your own data, fit a detection function, and estimate abundance.

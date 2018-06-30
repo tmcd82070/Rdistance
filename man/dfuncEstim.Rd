@@ -20,15 +20,37 @@ be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
 
 \item{detectionData}{A data frame containing detection distances 
 (either perpendicular for line-transect or radial for point-transect
-designs), \code{transectID}, and 
-potentially group size (see example data set \code{\link{sparrowDetectionData}}).
-\code{detectionData} contains one row per detected group. The column
-containing detection
-distances must be specified on the left-hand side of \code{formula}.
-The site ID  column(s) (see argument \code{siteID}) must specify the site
-(transect or point) associated with the detection so that this 
-data frame can be merged with \code{siteData}. See \bold{Input data frames} 
-for when \code{detectionData} and \code{siteData} are required inputs.}
+designs), with one row per detected object or group.   
+This data frame must contain at least the following 
+information: 
+\itemize{
+  \item Detection Distances: A single column containing 
+  detection distances must be specified on the left-hand 
+  side of \code{formula}.
+  \item Site IDs: The ID of the transect or point 
+  (i.e., the 'site') where each object or group was detected.
+  The site ID  column(s) (see arguments \code{transectID} and
+  \code{pointID}) must 
+  specify the site (transect or point) so that this 
+  data frame can be merged with \code{siteData}.    
+} 
+Optionally, this data frame can contain the following 
+variables: 
+\itemize{
+  \item Group Sizes: The number of individuals in the group
+  associated with each detection.  If unspecified, \code{Rdistance}
+  assumes all detections are of single individuals (i.e., 
+  all group sizes are 1). 
+  
+  \item When \code{Rdistance} allows detection-level 
+  covariates in some verson after  2.1.1, detection-level 
+  covariates will appear in this data frame. 
+   
+}
+See example data set \code{\link{sparrowDetectionData}}).
+See also \bold{Input data frames} below 
+for information on when \code{detectionData} and 
+\code{siteData} are required inputs.}
 
 \item{siteData}{A data.frame containing site (transect or point)
  IDs and any 
@@ -63,7 +85,9 @@ This is the minimum possible off-transect distance. Default is 0.}
 
 \item{w.hi}{Upper or right-truncation limit of the distances 
 in \code{dist}. This is the maximum off-transect distance that 
-could be observed. Default is the maximum of \code{dist}.}
+could be observed. If left unspecified (i.e., at the default of 
+NULL), right-truncation is set to the maximum of the observed 
+distances.}
 
 \item{expansions}{A scalar specifying the number of terms 
 in \code{series} to compute. Depending on the series, 
@@ -101,14 +125,34 @@ by \code{print.dfunc}, \code{print.abund}, and
 setting \code{warn = FALSE}.}
 
 \item{transectID}{A character vector naming the transect ID column(s) in
-\code{detectionData} and \code{siteData}.  Transects can be the 
-basic sampling unit (when \code{pointSurvey}=FALSE) or 
-contain multiple sampling units (e.g., when \code{pointSurvey}=TRUE). 
+\code{detectionData} and \code{siteData}.  \code{Rdistance} 
+accomodates two kinds of transects: continuous and point.  
+When continuous transects are used, detections can occur at
+any point along the route and these are generally called 
+line-transects. When point transects are used, 
+detections can only occur at a series of stops (points) 
+along the route and are generally called point-transects.  
+Transects themselves are the 
+basic sampling unit when \code{pointSurvey}=FALSE and 
+are synomous with sites in this case. Transects
+may contain multiple sampling 
+units (i.e., points) when \code{pointSurvey}=TRUE). 
 For line-transects, the \code{transectID} column(s) alone is 
 sufficient to specify unique sample sites. 
 For point-transects, the amalgomation of \code{transectID} and 
 \code{pointID} specify unique sampling sites.  
 See \bold{Input data frames}.}
+
+\item{pointID}{When point-transects are used, this is the 
+ID of points on a transect.  When \code{pointSurvey}=TRUE, 
+the amalgomation of \code{transectID} and 
+\code{pointID} specify unique sampling sites.  
+See \bold{Input data frames}.  
+
+If single points are surveyed, 
+meaning surveyed points were not grouped into transects, each 'transect' consists
+of one point. In this case, set \code{transectID} equal to 
+the point's ID and set \code{pointID} equal to 1 for all points.}
 
 \item{length}{Character string specifying the (single) column in 
 \code{siteData} that contains transect length. This is ignored if 
@@ -166,7 +210,7 @@ or off-point (radial) distances.
 
 To save space and to easily specify 
 sites without detections, 
-all site ID's, regardless whether a detection occured there,
+all site ID's, regardless of whether a detection occured there,
 and \emph{site level} covariates are stored in 
 the \code{siteData} data frame.  Detection distances and group
 sizes are measured at the \emph{detection level} and 
@@ -208,12 +252,13 @@ are required.
 \subsection{Relationship between data frames (transect and point ID's)}{
 The input data frames, \code{detectionData} and \code{siteData},
 must be merge-able on unique sites.  For line-transects, 
-site ID's (i.e., transect ID's) are unique values of 
+site ID's specify transects or routes and are unique values of 
 the \code{transectID} column in \code{siteData}.  In this case,
 the following merge must work:  
 \code{merge(detectionData,siteData,by=transectID)}.
+
 For point-transects, 
-site ID's (i.e., point ID's) are unique values 
+site ID's specify individual points are unique values 
 of the combination \code{paste(transectID,pointID)}.
 In this case, the following merge must work:    
 \code{merge(detectionData,siteData,by=c(transectID, pointID)}.
@@ -233,8 +278,8 @@ multiple years, specify another transect ID column (e.g., \code{transectID =
 c("year","transectID")}).  Duplicate site ID's are allowed in 
 \code{detectionData}.  
 
-To help explain the relationship between data frames, bear in 
-mind that  during bootstrap estimation of variance
+To help envision the relationship between data frames, bear in 
+mind that during bootstrap estimation of variance
 in \code{\link{abundEstim}}, 
 unique \emph{transects} (i.e., unique values of 
 the transect ID column(s)), not \emph{detections} or 
@@ -265,11 +310,6 @@ dfunc <- dfuncEstim(formula=dist~1,
                     detectionData=sparrowDetectionData,
                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
 
-# Print and plot results
-dfunc
-plot(dfunc)
-
-
 # Fit a second half-normal detection function, now including
 # a categorical covariate for observer who surveyed the site (factor, 5 levels)
 dfuncObs <- dfuncEstim(formula=dist~observer,
@@ -283,19 +323,6 @@ dfuncObs
 plot(dfuncObs,
      newdata=data.frame(observer=levels(sparrowSiteData$observer)))
 
-
-# Fit a third half-normal detection function, now including
-# a continuous covariate for the bare ground cover at the site
-dfuncBare <- dfuncEstim(formula=dist~bare,
-                        detectionData=sparrowDetectionData,
-                        siteData=sparrowSiteData,
-                        likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
-
-# Print results
-# And plot the detection function for specified values of bare ground cover
-dfuncBare
-plot(dfuncBare,
-     newdata=data.frame(bare=c(40, 60, 80)))
 
 }
 \references{

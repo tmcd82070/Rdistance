@@ -16,6 +16,8 @@
 #'     \itemize{
 #'       \item \samp{a} = Parameter vector.
 #'       \item \samp{dist} = Vector of distances.
+#'       \item \samp{covars} = If the density allows covariates, 
+#'       the covariate matrix.
 #'       \item \samp{w.lo} = Lower limit or left truncation value.
 #'       \item \samp{w.hi} = Upper limit or right truncation value.
 #'       \item \samp{series} = Form of the series expansions, if any.
@@ -33,13 +35,16 @@
 #'
 #' @param a Vector of parameters to pass to \code{density}.
 #'
+#' @param series The series to use for expansions. 
+#' If \code{expansions} > 0, this string 
+#' specifies the type of expansion. Valid values at 
+#' present are 'simple', 'hermite', and 'cosine'.
+#' 
 #' @param expansions Number of expansions in \code{density}.
 #'
 #' @param pointSurvey Boolean. TRUE if point transect data,
 #' FALSE if line transect data.
 #'
-#' @param \dots Additional parameters to the likelihood
-#' function \code{density}.
 #'
 #' @details The trapazoid rule is used to numerically integrate
 #' \code{density} from \code{w.lo} to \code{w.hi}. Two-hundred
@@ -76,8 +81,15 @@
 #' @importFrom stats integrate
 #' @export
 
-integration.constant <- function(dist, density, w.lo, w.hi, covars, a,
-                                 expansions, pointSurvey, ...){
+integration.constant <- function(dist, 
+                                 density, 
+                                 a,
+                                 covars, 
+                                 w.lo, 
+                                 w.hi, 
+                                 series,
+                                 expansions, 
+                                 pointSurvey){
 
   density = match.fun(density)
   seqx = seq(w.lo, w.hi, length=200)
@@ -96,7 +108,7 @@ integration.constant <- function(dist, density, w.lo, w.hi, covars, a,
         }
         seqy[[i]] <- seqx * density(dist = seqx, covars = temp.covars,
                     scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a,
-                    expansions = expansions, ...)
+                    expansions = expansions, series=series)
         temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
     }
@@ -138,7 +150,10 @@ integration.constant <- function(dist, density, w.lo, w.hi, covars, a,
         for(j in 1:length(seqx)){
           temp.covars[j,] <- unique.covars[i,]
         }
-        seqy[[i]] <- density(dist = seqx, covars = temp.covars, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
+        seqy[[i]] <- density(dist = seqx, covars = temp.covars, 
+                             scale = FALSE, w.lo = w.lo, w.hi = w.hi, 
+                             a = a, expansions = expansions, 
+                             series=series)
         temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
     }
@@ -151,13 +166,17 @@ integration.constant <- function(dist, density, w.lo, w.hi, covars, a,
     }
   }
   else if(pointSurvey){
-    seqy <- seqx * density( dist = seqx, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
+    seqy <- seqx * density( dist = seqx, scale = FALSE, 
+                            w.lo = w.lo, w.hi = w.hi, a = a, 
+                            expansions = expansions, series=series)
 
     #   Trapazoid rule
     scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*dist)
   }
   else{
-    seqy <- density( dist = seqx, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
+    seqy <- density( dist = seqx, scale = FALSE, w.lo = w.lo, 
+                     w.hi = w.hi, a = a, expansions = expansions, 
+                     series=series)
 
     #   Trapazoid rule
     scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2

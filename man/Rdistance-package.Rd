@@ -5,6 +5,7 @@
 \alias{Rdistance-package}
 \alias{distance}
 \alias{Rdistance}
+\alias{point-transect}
 \title{Rdistance - Distance Sampling Analyses for Abundance Estimation}
 \description{
 Distance-sampling is a popular method for abundance estimation in
@@ -75,6 +76,7 @@ Main author and maintainer: Trent McDonald
 Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 
 Contributors: Ben Augustine, James Griswold, Joel Reynolds, Pham Quang, Earl
-Becker, Aaron Christ, Brook Russelland, Patrick McKann, and Lacey Jeroue
+Becker, Aaron Christ, Brook Russelland, Patrick McKann, Lacey Jeroue, 
+Abigail Hoffman, and Michael Kleinsausser.
 }
 \keyword{package}

@@ -10,3 +10,4 @@ distance_old
 .zip$
 ^data-raw$
 ^tests$
+^\.git$

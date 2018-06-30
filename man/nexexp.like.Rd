@@ -3,9 +3,10 @@
 \name{nexexp.like}
 \alias{nexexp.like}
 \alias{negexp.like}
-\title{Negative exponential likelihood function for distance analyses}
+\title{Negative exponential distance function for distance analyses}
 \usage{
-negexp.like(a, dist, covars = NULL, w.lo=0, w.hi=max(dist), series="cosine", expansions=0, scale=TRUE, pointSurvey = F, ...)
+negexp.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
+  series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
@@ -44,7 +45,8 @@ A numeric vector the same length and order as \code{dist} containing the likelih
   arbitrary.
 }
 \description{
-This function computes likelihood contributions for off-transect sighting distances, scaled appropriately, for use as a distance likelihood.
+Computes likelihood contributions for off-transect sighting distances, 
+scaled appropriately, for use as a distance likelihood.
 }
 \details{
 The negative exponential likelihood is \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is a slope parameter to be estimated. 

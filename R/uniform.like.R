@@ -142,10 +142,15 @@
 #' @keywords models
 #' @export
 
-uniform.like <- function(a, dist, covars = NULL, w.lo = 0, 
-                         w.hi = max(dist), series = "cosine", 
-                         expansions = 0, scale = TRUE, 
-                         pointSurvey = F, ...){
+uniform.like <- function(a, 
+                         dist, 
+                         covars = NULL, 
+                         w.lo = 0, 
+                         w.hi = max(dist), 
+                         series = "cosine", 
+                         expansions = 0, 
+                         scale = TRUE, 
+                         pointSurvey = FALSE){
 
     #   A couple internal functions first.
     #   This is the heavy-side function.  Basically, a steep logistic. f is just heavi flipped over
@@ -201,7 +206,15 @@ uniform.like <- function(a, dist, covars = NULL, w.lo = 0,
     }
 
     if( scale ){
-            dfunc = dfunc / integration.constant(dist, uniform.like, covars = covars, w.lo=w.lo, w.hi=w.hi, a=a,series=series, expansions=expansions, pointSurvey = pointSurvey, ...)   # scales density so integrate from w.lo to w.hi is 1.0
+            dfunc = dfunc / integration.constant(dist, 
+                                                 uniform.like, 
+                                                 a=a,
+                                                 covars = covars, 
+                                                 w.lo=w.lo, 
+                                                 w.hi=w.hi, 
+                                                 series=series, 
+                                                 expansions=expansions, 
+                                                 pointSurvey = pointSurvey)
     }
 
 #   df2 <- dfunc[ order(dist) ]

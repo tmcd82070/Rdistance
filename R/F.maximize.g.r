@@ -2,8 +2,8 @@
 #' @aliases F.maximize.g
 #' @title Find the coordinate of the maximum of a distance function
 #' @description Find the x coordinate that maximizes g(x).
-#' @usage F.maximize.g(fit, covars = NULL)
-#' @param x An estimated 'dfunc' object produced by \code{dfuncEstim}.
+#' 
+#' @param fit An estimated 'dfunc' object produced by \code{dfuncEstim}.
 #' @param covars Covariate values to calculate maximum for.
 #' @return The value of x that maximizes g(x) in \code{fit}.
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
@@ -20,15 +20,11 @@
 #' }
 #' @keywords model
 #' @export
-#' @importFrom stats optim
+#' @importFrom stats optim 
 
 F.maximize.g <- function( fit, covars = NULL ){
-#
-#   Maximize the distance function in fit.  That is, find x such that g(x) is at its
-#   maximum.  G is smooth, so this is easy for nlminb.
-#
 
-g.neg <-  function(x, params, covars = NULL, like, w.lo=0, w.hi=max(dist), series, expansions=0, pointSurvey = F){
+g.neg <-  function(x, params, covars = NULL, like, w.lo, w.hi, series, expansions=0, pointSurvey = F){
 
     f.like <- match.fun(paste( like, ".like", sep=""))
 

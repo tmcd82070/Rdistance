@@ -5,8 +5,7 @@
 \title{Half-normal likelihood function for distance analyses}
 \usage{
 halfnorm.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
-  series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE,
-  ...)
+  series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and 
@@ -79,10 +78,13 @@ distance likelihood.
 \details{
 The half-normal likelihood is 
 \deqn{f(x|a) = \exp(-x^2 / (2*a^2))}{f(x|a) = exp(-x^2 / (2*a^2))}
-where \eqn{a} is the standard error parameter to be estimated.
-Some half-normal distance functions do not use a "2" in the 
-denominator.  Here, the "2" in the denominator makes quantiles agree with 
-the standard normal and \emph{a} has the same interpretation as a 
+where \eqn{a} is the parameter to be estimated.
+Some half-normal distance functions in the literature 
+do not use a "2" in the 
+denominator of the exponent.  \code{Rdistance} uses a 
+"2" in the denominator of the exponenet to make quantiles of this 
+function agree with 
+the standard normal which means \emph{a} can be interpretated as a 
 normal standard error.  e.g., approximately 95\% of all observations 
 will occur between 0 and 2\emph{a}.
 

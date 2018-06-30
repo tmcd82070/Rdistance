@@ -4,7 +4,7 @@
 \alias{print.abund}
 \title{Print abundance estimates}
 \usage{
-\method{print}{abund}(x, ...)
+\method{print}{abund}(x, criterion = "AICc", ...)
 }
 \arguments{
 \item{x}{An object output by \code{abundEstim}.  This is a distance function object that 
