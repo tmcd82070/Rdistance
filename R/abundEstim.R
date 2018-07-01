@@ -55,6 +55,12 @@
 #' @param plot.bs A logical scalar indicating whether to plot individual
 #'   bootstrap iterations.
 #'   
+#' @param showProgress A logical indicating whether to show a text-based
+#'   progress bar during bootstrapping. Default is \code{TRUE}. 
+#'   It is handy to shut off the 
+#'   progress bar if running this within another function. Otherwise, 
+#'   it is handy to see progress of the bootstrap iterations.
+#'   
 #' @param bySite A logical scalar indicating whether to compute site-level
 #'   estimates of abundance. The default (\code{bySite=FALSE}) returns only one
 #'   overall abundance estimate. This routine does not calculate confidence
@@ -174,7 +180,8 @@
 
 abundEstim <- function(dfunc, detectionData, siteData,
                           area=1, ci=0.95, R=500, 
-                          plot.bs=FALSE, bySite=FALSE){
+                          plot.bs=FALSE, bySite=FALSE,
+                          showProgress=TRUE){
   
   # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
   if(!("dist" %in% names(detectionData))) stop("There is no column named 'dist' in your detectionData.")
@@ -335,11 +342,12 @@ abundEstim <- function(dfunc, detectionData, siteData,
       n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
       
       # now including utils as import,
-      pb <- txtProgressBar(1, R, style=3)
-      show.progress = TRUE
+      if(showProgress){
+        pb <- txtProgressBar(1, R, style=3)
+        cat("Computing bootstrap confidence interval on N...\n")
+      }
 
       # Bootstrap
-      cat("Computing bootstrap confidence interval on N...\n")
       for (i in 1:R) {
         # sample rows, with replacement, from transect data
         new.siteData <- siteData[sample(nrow(siteData), nrow(siteData), replace=TRUE), ]
@@ -444,13 +452,17 @@ abundEstim <- function(dfunc, detectionData, siteData,
           
         }  # end if smu or dfunc.bs converged
 
-        if (show.progress) setTxtProgressBar(pb, i)
+        if (showProgress){
+          setTxtProgressBar(pb, i)
+        } 
         
       }  # end bootstrap
       
       
       # close progress bar  
-      if (show.progress) close(pb)
+      if (show.progress) {
+        close(pb)
+      }
       
       # plot red line of original fit again (over bs lines)
       if (plot.bs) {
@@ -466,7 +478,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
       p.H <- pnorm(2 * z.0 + z.alpha)
       ans$ci <- quantile(n.hat.bs[!is.na(n.hat.bs)], p = c(p.L, p.H))
       ans$B <- n.hat.bs
-      if (!(dfunc$like.form=="smu") && any(is.na(n.hat.bs))){
+      if (!(dfunc$like.form=="smu") && any(is.na(n.hat.bs)) && showProgress){
         cat(paste(sum(is.na(n.hat.bs)), "of", R, "iterations did not converge.\n"))
       }
       

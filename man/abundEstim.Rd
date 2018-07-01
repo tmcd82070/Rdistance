@@ -5,7 +5,7 @@
 \title{Estimate abundance from distance-sampling data}
 \usage{
 abundEstim(dfunc, detectionData, siteData, area = 1, ci = 0.95, R = 500,
-  plot.bs = FALSE, bySite = FALSE)
+  plot.bs = FALSE, bySite = FALSE, showProgress = TRUE)
 }
 \arguments{
 \item{dfunc}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
@@ -62,6 +62,12 @@ estimates of abundance. The default (\code{bySite=FALSE}) returns only one
 overall abundance estimate. This routine does not calculate confidence
 intervals for these site-level abundance estimates, so \code{ci} is set to
 \code{NULL} if \code{bySite = TRUE}. See \code{\link{estimateN}}.}
+
+\item{showProgress}{A logical indicating whether to show a text-based
+progress bar during bootstrapping. Default is \code{TRUE}. 
+It is handy to shut off the 
+progress bar if running this within another function. Otherwise, 
+it is handy to see progress of the bootstrap iterations.}
 }
 \value{
 If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
