@@ -60,7 +60,7 @@ head(thrasherSiteData)
 
 
 # Explore the distribution of distances.
-hist(thrasherDetectionData$dist, col="grey", main="", xlab="Distance (m)")
+hist(thrasherDetectionData$dist, col="grey", main="", xlab="Distance (m)", n=40)
 rug(thrasherDetectionData$dist)
 summary(thrasherDetectionData$dist)
 

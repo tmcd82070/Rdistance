@@ -127,8 +127,8 @@ plot(sparrow.dfunc)
 sparrow.dfunc
 
 
-ESW(sparrow.dfunc)
-effectiveDistance(sparrow.dfunc)
+ESW(sparrow.dfunc)  # 56.30098
+effectiveDistance(sparrow.dfunc)     # 56.30098
 
 # The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
 # abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
@@ -156,7 +156,10 @@ effectiveDistance(sparrow.dfunc)
 
 fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                      area=10000, R=500, ci=0.95, plot.bs=TRUE)
+
 fit
+
+# Abundance estimate:  0.863415 ;  95% CI=( 0.6673237 to 1.091665 )
 
 
 

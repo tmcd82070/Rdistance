@@ -126,6 +126,11 @@ sparrow.dfunc <- dfuncEstim(formula=dist~zBare, detectionData=sparrowDetectionDa
 
 sparrow.dfunc
 
+# Coefficients:
+#   Estimate  SE          z          p(>|z|)    
+# (Intercept)  3.880301  0.06298025  61.611392  0.000000000
+# zBare        0.109066  0.04173286   2.613432  0.008963801
+
 
 
 plot(sparrow.dfunc)
@@ -179,7 +184,7 @@ fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteD
                   area=10000, R=5, ci=0.95, plot.bs=TRUE)
 fit
 
-
+# Abundance estimate:  0.8753123 ;  95% CI=( 0.8558303 to 0.9078753 )
 
 
 
@@ -216,6 +221,26 @@ auto <- autoDistSamp(formula=dist~zBare, detectionData=sparrowDetectionData, sit
                      likelihoods=c("halfnorm", "hazrate","uniform","negexp"),
                      expansions=0)
 
+# Call: dfuncEstim(formula = formula, detectionData = detectionData,     siteData = siteData, likelihood = fit.table$like[1], pointSurvey = pointSurvey,     w.lo = w.lo, w.hi = w.hi, expansions = fit.table$expansions[1],     series = fit.table$series[1])
+# 
+# Coefficients:
+#   Estimate    SE           z           p(>|z|)     
+# (Intercept)  0.92822452  3.503407115   0.2649491  7.910487e-01
+# zBare        3.49451884  3.488491936   1.0017277  3.164751e-01
+# Knee         0.03291271  0.003075251  10.7024472  9.912513e-27
+# 
+# Convergence: Success
+# Function: UNIFORM  
+# Strip: 0 to 100 
+# Average effective strip width (ESW): 49.14188 
+# Average probability of detection: 0.4914188 
+# Scaling: g(0) = 1
+# Log likelihood: 1475.271 
+# AICc: 2956.615
+# 
+# Abundance estimate:  1.080316 ;  95% CI=( 0.8651121 to 1.251669 )
+# CI based on 6 of 10 successful bootstrap iterations
+
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
 
 
@@ -228,8 +253,8 @@ require(Distance)
 
 # Format detection data
 sparrow.merge <- merge(sparrowDetectionData, sparrowSiteData, by="siteID")
-d.data <- sparrow.merge[c("dist", "groupsize", "bare")]
-names(d.data) <- c("distance", "size", "bare")  # meet naming conventions
+d.data <- sparrow.merge[c("dist", "groupsize", "bare", "zBare")]
+names(d.data) <- c("distance", "size", "bare", "zBare")  # meet naming conventions
 d.data$object <- 1:nrow(d.data)  # add object ID
 
 # Produce and format 3 other required data.frames
@@ -242,7 +267,7 @@ d.sample$Region.Label <- "main"
 d.obs <- data.frame(object=1:nrow(d.data), Region.Label="main", Sample.Label=sparrowDetectionData$siteID)
 
 # Fit model and estimate abundance
-(ds.fit <- ds(data=d.data, formula= ~bare, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
+(ds.fit <- ds(data=d.data, formula= ~zBare, region.table=d.region, sample.table=d.sample, obs.table=d.obs,
               truncation=trunc, transect="line", key="hn", adjustment=NULL, dht.group=FALSE))
 
 plot(ds.fit)
@@ -259,20 +284,22 @@ summary(ds.fit)
 
 # With bare as covariate
 # Very very similar results, but don't match exactly
+# with Standardized zBare, results match to 5 decimals.
 # AIC
-AIC(fit)  # Rdistance = 2965.801
+AIC(fit)  # Rdistance = 2965.787
 AIC(ds.fit)  # Distance = 2965.751
 
 # Abund
-fit$n.hat  # 0.8752929
+fit$n.hat  # 0.8753123
 fit$ci  # depends on the boostrap, not getting enough iterations to converge
-ds.fit$dht$individuals$N  # 0.8753112 (0.6918501 - 1.107422)
+ds.fit$dht$individuals$N  # 0.8753126 (0.6918557 - 1.107416)
 # ds.fit$dht$individuals$N$Estimate
 # ds.fit$dht$individuals$N$lcl
 # ds.fit$dht$individuals$N$ucl
 
 # Sigma
-coef(fit)  # Intercept = 3.302735523, bare = 0.009470657
-ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept = 3.324041301, bare = 0.009069446
+coef(fit)  # (Intercept)=3.880301; zBare=0.109066 
+     
+ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept =  3.8802998 , zBare = 0.1090674
 
 
