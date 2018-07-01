@@ -146,6 +146,10 @@ The abundance estimate for line transect surveys (if no covariates
   By default, \code{R} = 500 iterations are performed, afterwhich the bias
   corrected confidence intervals are computed using the method given in Manly
   (1997, section 3.4).
+  
+Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
+    suppresses all intermediate output.  This is good when calling 
+    \code{abundEstim} from within other functions or during simulations.
 }
 \examples{
 # Load example sparrow data (line transect survey type)

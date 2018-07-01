@@ -37,9 +37,20 @@
 #' @param bySite This parameter is passed to \code{abundEstim}.
 #'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param plot.bs This parameter is passed to \code{abundEstim}.
-#'   See \code{abundEstim} documentation for definition.
+#' @param plot.bs Logical for whether to plot bootstrap 
+#' iterations after the top model has been selected and 
+#' during final estimation of confidence intervals.  
+#' This parameter is passed unchanged to \code{abundEstim}.
+#' See \code{abundEstim} help for additional information.
 #'   
+#' @param showProgress Logical for whether to 
+#' suppress intermediate output.  If \code{showProgress=TRUE}, 
+#' a table of model fitting results appears in the console as they 
+#' are estimated, and a progress bar shows progress through 
+#' the bootstrap iterations at the end.  If \code{showProgress=FALSE}, 
+#' all intermediate output is suppressed which is handy for programming
+#' and simulations.
+#' 
 #' @param likelihoods Vector of strings specifying the 
 #' likelihoods to consider during model selection. Valid values 
 #' at present are "uniform", "halfnorm", "hazrate", "negexp", 
@@ -78,11 +89,22 @@
 #' allowed in models with covariates.  The model with lowest AIC is selected 
 #' as 'best', and estimation of abundance proceeds using that model.
 #' 
-#' @return An 'abundance estimate' object (see \code{abundEstim} and \code{dfuncEstim}). 
-#'   Returned abundance estimates are based on the best fitting distance function among those fitted.
+#' Suppress all intermediate output using \code{plot.bs=FALSE}, 
+#' \code{showProgress=FALSE}, and \code{plot=FALSE}. 
+#' 
+#' @return An 'abundance estimate' object.  See \code{abundEstim} 
+#' and \code{dfuncEstim} for an explanation of components. 
+#' Returned abundance estimates are based 
+#' on the best fitting distance function among those fitted.
+#' A fit table, sorted by the criterion, is returned as component
+#' \code{$fitTable}.  The fit table component contains columns
+#' \code{like} (likelihood), \code{series}, \code{expansions},
+#' \code{converge} (0=converged,1=not), \code{scale} (1=passed scale
+#' check,0=did not pass), and 
+#' \code{aic} (the criterion used). 
 #'   
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
+#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
+#'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}\cr
 #'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
 #' @examples 
@@ -110,7 +132,8 @@ autoDistSamp <- function (formula, detectionData, siteData,
                              likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
                              series=c("cosine", "hermite", "simple"), expansions=0:3,
                              pointSurvey=FALSE, warn=TRUE,
-                             area=1, ci=0.95, R=500, bySite=FALSE, plot.bs=FALSE,                          
+                             area=1, ci=0.95, R=500, bySite=FALSE, 
+                             plot.bs=FALSE, showProgress=TRUE,
                              plot=TRUE, criterion="AICc", ...){
   
   
@@ -138,7 +161,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
   
   # function to save results
   f.save.result <- function(results, dfunc, like, ser, expan, 
-                            plot, CRIT) {
+                            plot, CRIT, showProgress) {
     
     esw <- effectiveDistance(dfunc)
     
@@ -169,22 +192,29 @@ autoDistSamp <- function (formula, detectionData, siteData,
     results <- rbind(results, data.frame(like = like, series = ser, 
                                          expansions = expan, converge = conv, scale = scl.ok.flag, 
                                          aic = aic))
-    if (nchar(like) < 8) {
-      sep1 <- "\t\t"
-    } else {
-      sep1 <- "\t"
-    } 
-    cat(paste(like, sep1, ser, "\t", expan, "\t", conv.str, 
+    
+    if(showProgress){
+      if (nchar(like) < 8) {
+        sep1 <- "\t\t"
+      } else {
+        sep1 <- "\t"
+      } 
+      cat(paste(like, sep1, ser, "\t", expan, "\t", conv.str, 
               "\t\t", scl.ok, "\t", round(aic, 4), sep = ""))
+    }
+    
     if (plot) {
       plot(dfunc)  # (jdc) This is the source of "Error: object of type 'symbol' is not subsettable
       k <- readline(" Next?[entr=y,n]")
       if (length(k) == 0) 
         k <- "y"
-    } else {
+    } else if(showProgress) {
       cat("\n")
       k <- "y"
+    } else {
+      k <- "y"
     }
+    
     list(results = results, k = k)
   }
   
@@ -198,7 +228,10 @@ autoDistSamp <- function (formula, detectionData, siteData,
   options(warn = -1)
   fit.table <- NULL
   
-  cat(paste0("Likelihood\tSeries\tExpans\tConverged?\tScale?\t",criterion,"\n"))
+  if(showProgress){  
+    cat(paste0("Likelihood\tSeries\tExpans\tConverged?\tScale?\t",criterion,"\n"))
+  }
+  
   for (like in likelihoods) {
     if (like == "Gamma") {
       dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
@@ -207,7 +240,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
       ser <- ""  # (jdc) was ""
       expan <- 0
       fit.table <- f.save.result(fit.table, dfunc, like, 
-                                 ser, expan, plot, criterion)
+                                 ser, expan, plot, criterion, showProgress)
       cont <- fit.table$k
       fit.table <- fit.table$results
     } else {
@@ -220,7 +253,8 @@ autoDistSamp <- function (formula, detectionData, siteData,
                                  w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                  series = ser, pointSurvey=pointSurvey, ...)
           fit.table <- f.save.result(fit.table, dfunc, 
-                                     like, ser, expan, plot, criterion)
+                                     like, ser, expan, plot, criterion, 
+                                     showProgress)
           cont <- fit.table$k
           fit.table <- fit.table$results
         } else {
@@ -242,24 +276,28 @@ autoDistSamp <- function (formula, detectionData, siteData,
                                    w.lo = w.lo, w.hi = w.hi, expansions = expan, 
                                    series = ser, pointSurvey=pointSurvey, ...)
             fit.table <- f.save.result(fit.table, dfunc, 
-                                       like, ser, expan, plot, criterion)
+                                       like, ser, expan, plot, 
+                                       criterion, showProgress)
             cont <- fit.table$k
             fit.table <- fit.table$results
-            if (cont == "n") 
+            if (cont == "n"){
               break
+            }
           }
         }
-        if (cont == "n") 
+        if (cont == "n"){ 
           break
+        }
       }
-      if (cont == "n") 
+      if (cont == "n"){
         break
+      } 
     }
   }
   
   
   
-  if (sum(fit.table$converge != 0) > 0) {
+  if (sum(fit.table$converge != 0) > 0 & showProgress) {
     cat("Note: Some models did not converge or had parameters at their boundaries.\n")
   }
     
@@ -282,11 +320,17 @@ autoDistSamp <- function (formula, detectionData, siteData,
 
   
   abund <- abundEstim(dfunc, detectionData=detectionData, siteData=siteData,
-                         area=area, ci=ci, R=R, plot.bs=plot.bs, bySite=bySite)
+                      area=area, ci=ci, R=R, plot.bs=plot.bs, 
+                      bySite=bySite, showProgress = showProgress)
+  
+  # Store the fitting table, just in case user wants it.
+  abund$fitTable <- fit.table
 
-#   }
-  cat("\n\n------------ Abundance Estimate Based on Top-Ranked Detection Function ------------\n")
-  print(abund, criterion=criterion)
+  if(showProgress){
+    cat("\n\n------------ Abundance Estimate Based on Top-Ranked Detection Function ------------\n")
+    print(abund, criterion=criterion)
+  }
+  
   options(warn = wwarn)
   abund
 }

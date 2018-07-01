@@ -85,6 +85,10 @@
 #'   corrected confidence intervals are computed using the method given in Manly
 #'   (1997, section 3.4).
 #'   
+#' Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
+#'     suppresses all intermediate output.  This is good when calling 
+#'     \code{abundEstim} from within other functions or during simulations.
+#'   
 #' @return If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
 #'   class c("abund", "dfunc"), containing all the components of a "dfunc"
 #'   object (see \code{dfuncEstim}), plus the following: 
@@ -460,7 +464,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
       
       
       # close progress bar  
-      if (show.progress) {
+      if (showProgress) {
         close(pb)
       }
       

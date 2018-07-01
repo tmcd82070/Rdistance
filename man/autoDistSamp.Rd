@@ -8,7 +8,8 @@ autoDistSamp(formula, detectionData, siteData, w.lo = 0, w.hi = NULL,
   likelihoods = c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
   series = c("cosine", "hermite", "simple"), expansions = 0:3,
   pointSurvey = FALSE, warn = TRUE, area = 1, ci = 0.95, R = 500,
-  bySite = FALSE, plot.bs = FALSE, plot = TRUE, criterion = "AICc", ...)
+  bySite = FALSE, plot.bs = FALSE, showProgress = TRUE, plot = TRUE,
+  criterion = "AICc", ...)
 }
 \arguments{
 \item{formula}{This parameter is passed to \code{dfuncEstim}.
@@ -58,8 +59,19 @@ See \code{abundEstim} documentation for definition.}
 \item{bySite}{This parameter is passed to \code{abundEstim}.
 See \code{abundEstim} documentation for definition.}
 
-\item{plot.bs}{This parameter is passed to \code{abundEstim}.
-See \code{abundEstim} documentation for definition.}
+\item{plot.bs}{Logical for whether to plot bootstrap 
+iterations after the top model has been selected and 
+during final estimation of confidence intervals.  
+This parameter is passed unchanged to \code{abundEstim}.
+See \code{abundEstim} help for additional information.}
+
+\item{showProgress}{Logical for whether to 
+suppress intermediate output.  If \code{showProgress=TRUE}, 
+a table of model fitting results appears in the console as they 
+are estimated, and a progress bar shows progress through 
+the bootstrap iterations at the end.  If \code{showProgress=FALSE}, 
+all intermediate output is suppressed which is handy for programming
+and simulations.}
 
 \item{plot}{Logical scalar specifying whether to plot models during model selection. 
 If \code{TRUE}, a histogram with fitted distance function is plotted for every fitted model. 
@@ -75,8 +87,16 @@ of this fit criterion.  This must be one of "AICc" (the default),
 These include \code{x.scl}, \code{g.x.scl}, and \code{observer} for estimating double observer probabilities.}
 }
 \value{
-An 'abundance estimate' object (see \code{abundEstim} and \code{dfuncEstim}). 
-  Returned abundance estimates are based on the best fitting distance function among those fitted.
+An 'abundance estimate' object.  See \code{abundEstim} 
+and \code{dfuncEstim} for an explanation of components. 
+Returned abundance estimates are based 
+on the best fitting distance function among those fitted.
+A fit table, sorted by the criterion, is returned as component
+\code{$fitTable}.  The fit table component contains columns
+\code{like} (likelihood), \code{series}, \code{expansions},
+\code{converge} (0=converged,1=not), \code{scale} (1=passed scale
+check,0=did not pass), and 
+\code{aic} (the criterion used).
 }
 \description{
 Perform automated classical detection function selection and 
@@ -93,6 +113,9 @@ from the "halfnorm", "hazrate", "uniform", "negexp", and "Gamma" likelihoods
 \code{\link{Gamma.like}}). Note, expansion terms are not currently
 allowed in models with covariates.  The model with lowest AIC is selected 
 as 'best', and estimation of abundance proceeds using that model.
+
+Suppress all intermediate output using \code{plot.bs=FALSE}, 
+\code{showProgress=FALSE}, and \code{plot=FALSE}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
@@ -114,8 +137,8 @@ autoDistSamp(formula=dist ~ 1,
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
 }
 \author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
+Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
+        Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}\cr
         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
 }
 \keyword{model}

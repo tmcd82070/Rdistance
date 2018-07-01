@@ -143,6 +143,26 @@ plot(sparrow.dfunc, newdata=data.frame(zBare=seq(min(sparrowSiteData$zBare), max
 sparrow2.dfunc <- dfuncEstim(formula=dist~zBare+observer, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                             likelihood="halfnorm", w.hi=trunc)
 
+# Call: dfuncEstim(formula = dist ~ zBare + observer, detectionData = sparrowDetectionData,     siteData = sparrowSiteData, likelihood = "halfnorm", w.hi = trunc)
+# 
+# Coefficients:
+#   Estimate      SE         z            p(>|z|)      
+# (Intercept)    3.925780615  0.1277937  30.71967079  3.108922e-207
+# zBare          0.092367294  0.0456892   2.02164389   4.321315e-02
+# observerobs2  -0.007432956  0.2041106  -0.03641631   9.709504e-01
+# observerobs3  -0.022169883  0.1699543  -0.13044616   8.962135e-01
+# observerobs4  -0.168769696  0.1784444  -0.94578287   3.442593e-01
+# observerobs5  -0.087602596  0.1729181  -0.50661318   6.124263e-01
+# 
+# Convergence: Success
+# Function: HALFNORM  
+# Strip: 0 to 100 
+# Average effective strip width (ESW): 56.18571 
+# Average probability of detection: 0.5618571 
+# Scaling: g(0) = 1
+# Log likelihood: 1480.274 
+# AICc: 2972.806
+
 (newdata <- data.frame(zBare=rep(0, 5),
                        observer=paste0("obs",1:5)))
 
@@ -216,8 +236,16 @@ fit$n.hat
 # documentation for `F.automated.CDA`).  Specifying `plot=TRUE` would return a plot of each detection function.  In
 # this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
 
-auto <- autoDistSamp(formula=dist~zBare, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     w.hi=trunc, plot=FALSE, area=10000, R=10, ci=0.95, plot.bs=FALSE,
+auto <- autoDistSamp(formula=dist~zBare, 
+                     detectionData=sparrowDetectionData, 
+                     siteData=sparrowSiteData,
+                     w.hi=trunc, 
+                     plot=FALSE, 
+                     area=10000, 
+                     R=10, 
+                     ci=0.95, 
+                     plot.bs=FALSE, 
+                     showProgress = TRUE,
                      likelihoods=c("halfnorm", "hazrate","uniform","negexp"),
                      expansions=0)
 
