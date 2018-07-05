@@ -41,7 +41,7 @@
 # if("Rdistance" %in% rownames(installed.packages()) == FALSE){
 #   install.packages("Rdistance")
 # }
-# require(Rdistance)
+require(Rdistance)
 # 
 # 
 # # View help documentation for the Rdistance package

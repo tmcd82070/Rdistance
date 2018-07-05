@@ -155,6 +155,13 @@
 #' \code{siteData} that contains transect length. This is ignored if 
 #' \code{pointSurvey} = TRUE.
 #' 
+#' @param control A list containing optimization control parameters such 
+#' as the maximum number of iterations, tolerance, the optimizer to use, 
+#' etc.  See the 
+#' \code{\link{RdistanceControls}} function for explanation of each value,
+#' the defaults, and the requirements for this list. 
+#' See examples below for how to change controls.
+#' 
 #' @section Input data frames:
 #' To save space and to easily specify 
 #' sites without detections, 
@@ -311,14 +318,16 @@
 #' # Fit half-normal detection function
 #' dfunc <- dfuncEstim(formula=dist~1,
 #'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#'                     likelihood="halfnorm", w.hi=100)
 #' 
 #' # Fit a second half-normal detection function, now including
 #' # a categorical covariate for observer who surveyed the site (factor, 5 levels)
+#' # Increase maximum iterations
 #' dfuncObs <- dfuncEstim(formula=dist~observer,
 #'                        detectionData=sparrowDetectionData,
 #'                        siteData=sparrowSiteData,
-#'                        likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#'                        likelihood="halfnorm", w.hi=100, pointSurvey=FALSE,
+#'                        control=RdistanceControls(maxIter=1000))
 #' 
 #' # Print results
 #' # And plot the detection function for each observer
@@ -336,7 +345,8 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
                   expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
                   observer="both", warn=TRUE, transectID=NULL, 
                   pointID="point", 
-                  length="length"){
+                  length="length",
+                  control=RdistanceControls()){
   
   cl <- match.call()
   
@@ -439,13 +449,62 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
                               dist, covars, pointSurvey)
   
   # Perform optimization
-  fit <- optim(strt.lims$start, F.nLL, lower = strt.lims$lowlimit, 
-          upper = strt.lims$uplimit, method = c("L-BFGS-B"),
-          control = list(trace = 0, maxit = 1000), dist = dist, 
-          like = likelihood, covars = covars,
-          w.lo = w.lo, w.hi = w.hi, expansions = expansions, 
-          series = series, pointSurvey = pointSurvey, 
-          for.optim = T, hessian = TRUE)
+  if(control$optimizer == "optim"){
+    fit <- optim(strt.lims$start, F.nLL, 
+                 lower = strt.lims$lowlimit, 
+                 upper = strt.lims$uplimit, 
+                 hessian = TRUE,
+                 control = list(trace = 0, 
+                                maxit = control$maxIters,
+                                factr = control$likeTol,
+                                pgtol = control$likeTol), 
+                 method = c("L-BFGS-B"),
+                 dist = dist, 
+                 like = likelihood, 
+                 covars = covars,
+                 w.lo = w.lo, 
+                 w.hi = w.hi, 
+                 expansions = expansions, 
+                 series = series, 
+                 pointSurvey = pointSurvey, 
+                 for.optim = T)
+  } else if(control$optimizer == "nlminb"){
+    fit <- nlminb(strt.lims$start, F.nLL, 
+                 lower = strt.lims$lowlimit, 
+                 upper = strt.lims$uplimit, 
+                 control = list(trace = 0,
+                                eval.max = control$evalMax,
+                                iter.max = control$maxIters,
+                                rel.tol = control$likeTol,
+                                x.tol = control$coefTol
+                                ), 
+                 dist = dist, 
+                 like = likelihood, 
+                 covars = covars,
+                 w.lo = w.lo, 
+                 w.hi = w.hi, 
+                 expansions = expansions, 
+                 series = series, 
+                 pointSurvey = pointSurvey, 
+                 for.optim = T 
+                 )
+    names(fit)[names(fit)=="evaluations"]<-"counts"
+    fit$hessian <- secondDeriv(fit$par, 
+                               F.nLL, 
+                               eps=control$hessEps,
+                               dist = dist, 
+                               like = likelihood, 
+                               covars = covars,
+                               w.lo = w.lo, 
+                               w.hi = w.hi, 
+                               expansions = expansions, 
+                               series = series, 
+                               pointSurvey = pointSurvey, 
+                               for.optim = T
+                               )
+  } else {
+    stop("Unknown optimizer function in control object")
+  }
   
   qrh <- qr(fit$hessian)
   if (qrh$rank < nrow(fit$hessian)) {

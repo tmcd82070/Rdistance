@@ -7,7 +7,8 @@
 dfuncEstim(formula, detectionData, siteData, likelihood = "halfnorm",
   pointSurvey = FALSE, w.lo = 0, w.hi = NULL, expansions = 0,
   series = "cosine", x.scl = 0, g.x.scl = 1, observer = "both",
-  warn = TRUE, transectID = NULL, pointID = "point", length = "length")
+  warn = TRUE, transectID = NULL, pointID = "point", length = "length",
+  control = RdistanceControls())
 }
 \arguments{
 \item{formula}{A standard formula object (eg dist ~ 1, 
@@ -157,6 +158,13 @@ the point's ID and set \code{pointID} equal to 1 for all points.}
 \item{length}{Character string specifying the (single) column in 
 \code{siteData} that contains transect length. This is ignored if 
 \code{pointSurvey} = TRUE.}
+
+\item{control}{A list containing optimization control parameters such 
+as the maximum number of iterations, tolerance, the optimizer to use, 
+etc.  See the 
+\code{\link{RdistanceControls}} function for explanation of each value,
+the defaults, and the requirements for this list. 
+See examples below for how to change controls.}
 }
 \value{
 An object of class 'dfunc'.  Objects of class 'dfunc' 
@@ -308,14 +316,16 @@ data(sparrowSiteData)
 # Fit half-normal detection function
 dfunc <- dfuncEstim(formula=dist~1,
                     detectionData=sparrowDetectionData,
-                    likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+                    likelihood="halfnorm", w.hi=100)
 
 # Fit a second half-normal detection function, now including
 # a categorical covariate for observer who surveyed the site (factor, 5 levels)
+# Increase maximum iterations
 dfuncObs <- dfuncEstim(formula=dist~observer,
                        detectionData=sparrowDetectionData,
                        siteData=sparrowSiteData,
-                       likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+                       likelihood="halfnorm", w.hi=100, pointSurvey=FALSE,
+                       control=RdistanceControls(maxIter=1000))
 
 # Print results
 # And plot the detection function for each observer
