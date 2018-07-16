@@ -95,17 +95,36 @@ integration.constant <- function(dist,
   seqx = seq(w.lo, w.hi, length=200)
 
   if(!is.null(covars)){
-    unique.covars <- unique(covars)
-    temp.covars <- matrix(nrow = length(seqx), ncol = ncol(unique.covars))
+    # Not sure following is best to do. 
+    # It is much faster to de-dup and compute values on just 
+    # unique combinations of covariates IF there are large number
+    # of duplicated covariates.  This is common when using 
+    # factors.  But, if using continuous covariates, this is 
+    # inefficient.  Regardless, this code only computes valuse 
+    # of the scaling constant for unique combinations of X, 
+    # then merges them into the covar array.  The non-de-dupped
+    # way to do these calculations is something like 
+    # x <- covars %*% matrix(a,ncol=1), which might be just as fast.
+    
+    Pkey <- tapply(1:nrow(covars), as.data.frame(covars)) # groups of duplicates
+    covars <- data.frame(covars, zzzPkey=Pkey)
+    dupCovars <- duplicated(covars$zzzPkey)
+    unique.covars <- covars[!dupCovars,] 
+    PkeyCol <- ncol(unique.covars)
+    
+    # Remember that unique.covars now has extra column, zzzPkey hanging off the end
+    # don't include this colum in calculations below (or set a[last]=0)
+    # covars and unique.covars now have Pkey, which we will use to 
+    # merge later
+
+    #unique.covars <- unique(covars)
     seqy <- list()
     temp.scaler <- vector(length = nrow(unique.covars))
     scaler <- vector(length = nrow(covars), "numeric")
 
     if(pointSurvey){
       for(i in 1:nrow(unique.covars)){
-        for(j in 1:length(seqx)){
-          temp.covars[j,] <- unique.covars[i,]
-        }
+        temp.covars <- matrix(unique.covars[i,-PkeyCol],nrow=length(seqx),ncol=ncol(unique.covars)-1, byrow=TRUE)
         seqy[[i]] <- seqx * density(dist = seqx, covars = temp.covars,
                     scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a,
                     expansions = expansions, series=series)
@@ -113,9 +132,7 @@ integration.constant <- function(dist,
       }
     }
     else if(identical(density, halfnorm.like) & expansions == 0){
-      s <- 0
-      for (j in 1:(ncol(covars)))
-        s <- s + a[j]*unique.covars[,j]
+      s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       sigma <- exp(s)
 
       for(i in 1:nrow(unique.covars)){
@@ -123,33 +140,31 @@ integration.constant <- function(dist,
       }
     }
     else if(identical(density, hazrate.like) & expansions == 0){
-      s <- 0
-      for (i in 1:(ncol(covars)))
-        s <- s + a[i]*unique.covars[,i]
+      s <- as.matrix(unique.covars[,-PkeyCol]) %*% matrix(a[-length(a)],ncol=1)
       sigma <- exp(s)
-      beta = a[length(a) - expansions]
+      beta = a[length(a)]
 
       for(i in 1:nrow(unique.covars)){
-        temp.scaler[i] <- integrate(f = function(x){1 - exp(-(x/sigma[i])^(-beta))},lower =  w.lo,
-                          upper = w.hi, stop.on.error = F)$value
+        seqy <- 1 - exp(-(seqx/sigma[i])^(-beta))
+        temp.scaler[i] <- (seqx[2] - seqx[1])*sum(seqy[-length(seqy)] + seqy[-1]) / 2
+          # integrate(f = function(x){1 - exp(-(x/sigma[i])^(-beta))},lower =  w.lo,
+          #                 upper = w.hi, stop.on.error = F)$value
       }
     }
     else if(identical(density, negexp.like) & expansions == 0){
-      s <- 0
-      for (i in 1:(ncol(covars)))
-        s <- s + a[i]*unique.covars[,i]
+      s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       beta <- exp(s)
 
       for(i in 1:nrow(unique.covars)){
         temp.scaler[i] <- unname((exp(-beta[i]*w.lo) - exp(-beta[i]*w.hi))/beta[i])
       }
+
     }
     else{
       # not sure about this case.  When does it happen?  Is this needed?
       for(i in 1:nrow(unique.covars)){
-        for(j in 1:length(seqx)){
-          temp.covars[j,] <- unique.covars[i,]
-        }
+        temp.covars <- matrix(unique.covars[i,-PkeyCol],nrow=length(seqx),
+                              ncol=ncol(unique.covars)-1, byrow=TRUE)
         seqy[[i]] <- density(dist = seqx, covars = temp.covars, 
                              scale = FALSE, w.lo = w.lo, w.hi = w.hi, 
                              a = a, expansions = expansions, 
@@ -159,7 +174,8 @@ integration.constant <- function(dist,
     }
 
     df <- data.frame(unique.covars,temp.scaler)
-    z <- merge(covars, df, by.x = names(as.data.frame(covars)), by.y = names(df[, names(df) != "temp.scaler"]), sort = F)
+
+    z <- merge(covars, df, by.x="zzzPkey", by.y="zzzPkey", sort=F)
     scaler <- z$temp.scaler
     if(pointSurvey){
       scaler <- scaler/dist

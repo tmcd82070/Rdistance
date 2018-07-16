@@ -506,12 +506,17 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
     stop("Unknown optimizer function in control object")
   }
   
-  qrh <- qr(fit$hessian)
-  if (qrh$rank < nrow(fit$hessian)) {
-    warning("Singular variance-covariance matrix.")
-    varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
+  if(!any(is.na(fit$hessian)) & !any(is.infinite(fit$hessian))){
+    qrh <- qr(fit$hessian)
+    if (qrh$rank < nrow(fit$hessian)) {
+      warning("Singular variance-covariance matrix.")
+      varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
+    } else {
+      varcovar <- solve(fit$hessian)
+    }
   } else {
-    varcovar <- solve(fit$hessian)
+    warning("fit did not converge, or converged to (Inf,-Inf)")
+    varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
   }
   
   names(fit$par) <- strt.lims$names
