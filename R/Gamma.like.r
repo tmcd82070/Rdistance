@@ -136,15 +136,15 @@ Gamma.like <- function(a,
     like <- dgamma( dist, shape=r, scale=lam*b )
 
     if( scale ){
-         like = like / integration.constant(dist, 
-                                            Gamma.like, 
-                                            covars = covars, 
+         like = like / integration.constant(dist=dist,
+                                            density=Gamma.like,
+                                            a=a, 
+                                            covars = covars,
                                             w.lo=w.lo, 
                                             w.hi=w.hi, 
-                                            a=a, 
-                                            series=series, 
-                                            expansions=expansions, 
-                                            pointSurvey = pointSurvey)
+                                            expansions = expansions,
+                                            pointSurvey = pointSurvey,
+                                            series = series)
     }
 
     like

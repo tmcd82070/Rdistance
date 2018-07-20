@@ -107,8 +107,8 @@ smu.like <- function(a,
   dfunc <- stats::approx(a$x, a$y, xout=dist, rule=1)$y
   
   if( scale ){
-    scl <- integration.constant(dist, 
-                                smu.like, 
+    scl <- integration.constant(dist=dist, 
+                                density=smu.like, 
                                 a=a,
                                 covars=NULL,
                                 w.lo=w.lo, 

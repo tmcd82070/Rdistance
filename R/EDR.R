@@ -112,10 +112,13 @@ EDR <- function(obj, newdata){
   
   } else {
     # this returns (Integral xg(x)dx)/dist
-    integral <- integration.constant(obj$dist,
-                                     match.fun(paste( obj$like.form, ".like", sep="")),
-                                     obj$w.lo, obj$w.hi, covars = obj$covars,
-                                     obj$parameters, obj$expansions,
+    integral <- integration.constant(dist=obj$dist,
+                                     density=match.fun(paste( obj$like.form, ".like", sep="")),
+                                     a=obj$parameters, 
+                                     covars = obj$covars,
+                                     w.lo=obj$w.lo, 
+                                     w.hi=obj$w.hi, 
+                                     expansions = obj$expansions,
                                      pointSurvey = obj$pointSurvey,
                                      series = obj$series)
     

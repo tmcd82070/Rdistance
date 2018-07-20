@@ -206,8 +206,8 @@ uniform.like <- function(a,
     }
 
     if( scale ){
-            dfunc = dfunc / integration.constant(dist, 
-                                                 uniform.like, 
+            dfunc = dfunc / integration.constant(dist=dist, 
+                                                 density=uniform.like, 
                                                  a=a,
                                                  covars = covars, 
                                                  w.lo=w.lo, 

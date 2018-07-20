@@ -66,8 +66,13 @@ hist(thrasherDetectionData$dist, n=40, col="grey", main="", xlab="distance (m)")
 summary(thrasherDetectionData$dist)
 ```
 
-Next, we fit a detection function (plotted as a red line) using `dfuncEstim`
-with point transects specified as an option (i.e., `PointSurvey` = `TRUE`). Our illustration uses the half-normal likelihood as the detection function. In section 5, we demonstrate an automated process that fits multiple detection functions and compares them using AICc. 
+Next, we fit a detection function using `dfuncEstim`
+to the radial distances collected from the point transects and 
+plot it.  We specify point transects using option `PointSurvey` = `TRUE`
+in the call to `dfuncEstim` and specify the the half-normal 
+distance function using option `likelihood` = `"halfnorm"`. 
+In section 5, we demonstrate an automated process to fit
+multiple detection functions and compare them using AICc. 
 
 ```{r, fig.width=6, fig.height=4}
 

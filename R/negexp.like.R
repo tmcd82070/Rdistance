@@ -117,8 +117,8 @@ negexp.like <- function (a,
     }
 
     if( scale ){
-        dfunc = dfunc / integration.constant(dist, 
-                                             negexp.like, 
+        dfunc = dfunc / integration.constant(dist=dist, 
+                                             density=negexp.like, 
                                              a=a,
                                              covars = covars, 
                                              w.lo=w.lo,

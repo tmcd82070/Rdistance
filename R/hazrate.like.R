@@ -176,8 +176,8 @@ hazrate.like <- function(a,
     #}
 
     if( scale ){
-        dfunc = dfunc / integration.constant(dist, 
-                                             hazrate.like, 
+        dfunc = dfunc / integration.constant(dist=dist, 
+                                             density=hazrate.like, 
                                              a=a, 
                                              covars = covars, 
                                              w.lo=w.lo, 

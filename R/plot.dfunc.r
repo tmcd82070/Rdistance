@@ -224,14 +224,16 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
         yscl <- g.at.x0 / f.max
       }
 
-      if(length(yscl > 1)){yscl <- yscl[1]}
+      if(length(yscl > 1)){
+        yscl <- yscl[1]
+      }
       y <- y * yscl
       ybarhgts <- cnts$density * yscl
       plotBars <- TRUE
     } else {
-      ybarhgts <- NULL
-      yscl <- NULL
-      plotBars <- FALSE      
+      yscl <- (x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
+      ybarhgts <-  cnts$density * yscl
+      plotBars <- TRUE      
     }
   }
   

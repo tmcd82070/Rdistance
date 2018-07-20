@@ -172,8 +172,8 @@ halfnorm.like <- function(a,
   #}
   
   if( scale ){
-    dfunc = dfunc / integration.constant(dist, 
-                                         halfnorm.like, 
+    dfunc = dfunc / integration.constant(dist=dist, 
+                                         density=halfnorm.like, 
                                          a=a,
                                          covars = covars, 
                                          w.lo=w.lo, 
