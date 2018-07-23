@@ -81,7 +81,8 @@ If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
  abundance.}
   \item{area}{Total area of inference. Study area size}
   \item{esw}{Effective strip width for line-transects, effective
-  radius for point-transects.  Both derived from \code{dfunc}}.
+  radius for point-transects.  Both derived from \code{dfunc}. 
+  See \code{\link{ESW}}} or \code{\link{EDR}} for formulas.
   \item{n.sites}{Total number of transects for line-transects, 
   total number of points for point-transects.}
   \item{tran.len}{Total transect length. NULL for point-transects.}

@@ -100,7 +100,8 @@
 #'  abundance.}
 #'   \item{area}{Total area of inference. Study area size}
 #'   \item{esw}{Effective strip width for line-transects, effective
-#'   radius for point-transects.  Both derived from \code{dfunc}}.
+#'   radius for point-transects.  Both derived from \code{dfunc}. 
+#'   See \code{\link{ESW}}} or \code{\link{EDR}} for formulas.
 #'   \item{n.sites}{Total number of transects for line-transects, 
 #'   total number of points for point-transects.}
 #'   \item{tran.len}{Total transect length. NULL for point-transects.}
@@ -330,9 +331,15 @@ abundEstim <- function(dfunc, detectionData, siteData,
     ans$n.hat <- abund$abundance
     ans$n <- abund$n.groups
     ans$area <- abund$area
-    ans$esw <- abund$pDetection * abund$w
     ans$tran.len <- abund$tran.len
     ans$avg.group.size <- abund$avg.group.size
+    # Note: could call effectiveDistance(dfunc) here, but that does the 
+    # integration over and is slightly less efficient
+    if(dfunc$pointSurvey){
+      ans$esw <- sqrt(abund$w^2 * abund$pDetection)  # for points
+    } else {
+      ans$esw <- abund$pDetection * abund$w  # for lines
+    }
     
     
     

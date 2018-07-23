@@ -67,10 +67,10 @@ re-writing this routine.
 }
 \examples{
 # Can put any number for first argument (1 used here)
-scl <- integration.constant(1, uniform.like, covars = NULL,
+scl <- integration.constant(dist=1, density=uniform.like, covars = NULL,
                             pointSurvey = FALSE, w.lo=0, w.hi = 100,
                             expansions = 0, a=c(75,25))
-print(scl) # Should be 75
+print(scl) # Should be 75.1
 
 x <- seq(0,100,length=200)
 y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
