@@ -334,6 +334,15 @@
 #' dfuncObs
 #' plot(dfuncObs,
 #'      newdata=data.frame(observer=levels(sparrowSiteData$observer)))
+#'      
+#' # Show some plotting options
+#' plot(dfuncObs, 
+#'    newdata=data.frame(observer=levels(sparrowSiteData$observer)), 
+#'    vertLines = F, lty=c(1,1), 
+#'    col.dfunc=heat.colors(length(levels(sparrowSiteData$observer))), 
+#'    col=c("grey","lightgrey"), border=NA, 
+#'    xlab="Distance (m)",
+#'    main="Showing plot options")
 #' 
 #'
 #' @keywords model

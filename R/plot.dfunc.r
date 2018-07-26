@@ -24,24 +24,87 @@
 #'   set of covariate values (i.e. each column contains all values of each
 #'   covariate)
 #'   
-#' @param legend Boolean. If TRUE, a legend will be included on plot detailing
+#' @param legend Logical scaler for whether to include legend. 
+#'   If TRUE, a legend will be included on plot detailing
 #'   covariate values plotted.
 #'   
-#' @param \dots Other arguments to \code{barplot}, such as \code{cex},
-#'   \code{col}, \code{bty}, etc. The following plot parameters cannot be
-#'   included in \dots: \code{space}, \code{density}, \code{ylim}, \code{xlim},
-#'   and \code{border}.  In addition, \code{main}, \code{ylab}, and \code{xlab}
-#'   should not be used because the internal values will overwrite whatever
-#'   values are given.
+#' @param plotBars Logical scaler for whether to plot the histogram 
+#' of distances behind the distance function.  If FALSE, no histogram 
+#' is plotted, only the distance function line(s).
 #'   
-#' @details A scaled histogram is plotted, and the estimated distance function
-#'   is plotted over the top of it.  The form of the likelihood and any series
+#' @param xlab Label for the x-axis
+#' 
+#' @param ylab Label for the y-axis
+#' 
+#' @param density If \code{plotBars=TRUE}, a vector giving the density of 
+#' shading lines, in lines per inch, for the bars underneath 
+#' the distance function. Values of NULL or a number strickly less than 0 
+#' mean solid fill using colors from parameter \code{col}.  If 
+#' \code{density =0 }, bars are not filled with any color or lines. 
+#' 
+#' @param col A vector of bar fill colors or line colors when bars are 
+#' drawn and \code{density != 0}, replicated
+#' to the correct length. A value of 0 is the background color.
+#' 
+#' @param border The color of bar borders when bars are plotted. A 
+#' value of NA means no borders. If there are shading lines 
+#' (i.e., \code{density>0}), \code{border = TRUE} uses the same 
+#' color for the border as for the shading lines.
+#' 
+#' @param vertLines Logical scalar specifying whether to plot vertical 
+#'  lines at \code{w.lo} and \code{w.hi} from 0 to the  
+#'  distance function. 
+#'  
+#' @param col.dfunc Color of the distance function(s), replicated to 
+#' the required length. If covariates or \code{newdata} is present 
+#' and \code{length(col.dfunc)==1}, 
+#' \code{col.dfunc} is expanded to 
+#' to number of plotted distance functions by setting it equal 
+#' to \code{graphics::rainbow(n)}, where \code{n} is the number 
+#' of plotted distance functions.  If you want to plot all 
+#' distance functions in the same color, set \code{col.dfunc} to
+#' a constant vector having length at least 2 (e.g., 
+#' \code{col.dfunc = c(1,1)}) will 
+#' plot all curves in black).
+#'   
+#'  
+#' @param lty.dfunc Line type of the distance function(s), replicated 
+#' to the required length.  If covariates or \code{newdata} is present 
+#' and \code{length(lty.dfunc)==1}, 
+#' \code{lty.dfunc} is expanded to 
+#' to number of plotted distance functions by setting it equal 
+#' to \code{lty.dfunc + 0:(n-1)}, where \code{n} is the number 
+#' of plotted distance functions.  If you want to plot all 
+#' distance functions using the same line type, set \code{lty.dfunc} to
+#' a constant vector having length at least 2 (e.g., 
+#' \code{lty.dfunc = c(1,1)}) will 
+#' plot all solid lines).
+#' 
+#' @param lwd.dfunc Line width of the distance function(s), replicated 
+#' to the required length.  
+#' 
+#' @param \dots When bars are plotted, this routine 
+#'  uses \code{graphics::barplot} for setting up the 
+#'  plotting region and plotting bars. When bars are not plotted,
+#'  this routine sets up the plot with \code{graphics::plot}.
+#'  \dots can be any other 
+#'  argument to \code{barplot} or \code{plot} EXCEPT  
+#'  \code{width}, \code{ylim}, \code{xlim}, and \code{space}.
+#'   
+#' @details If \code{plotBars} is TRUE, a scaled histogram is plotted
+#'  and the estimated distance function
+#'   is plotted over the top of it.  When bars are plotted, 
+#'   this routine uses \code{graphics::barplot} 
+#'  for setting up the initial plotting region and
+#'  most parameters to \code{graphics::barplot} can 
+#'  be specified (exceptions noted above in description of '\dots').The form of the likelihood and any series
 #'   expansions is printed in the main title (overwrite this with 
 #'   \code{main="<my title>"}). Convergence of the distance
 #'   function is checked.  If the distance funtion did not converge, a warning
 #'   is printed over the top of the histogram.  If one or more parameter
 #'   estimates are at their limits (likely indicating non-covergence or poor
 #'   fit), another warning is printed. 
+#'   
 #'   
 #' @return The input distance function is returned, with two additional
 #'   components related to the plot that may be needed if additional lines or
@@ -68,20 +131,50 @@
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
 #'   \code{\link{print.abund}}
 #'   
-#' @examples \dontrun{
+#' @examples 
 #' set.seed(87654)
 #' x <- rnorm(1000, mean=0, sd=20)
 #' x <- x[x >= 0]
 #' dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
 #' plot(dfunc)
 #' plot(dfunc, nbins=25)
-#' }
+#' 
+#' # showing effects of plot params
+#' plot(dfunc, col=c("red","blue","orange"), 
+#'  border="black", xlab="Dist (m)", ylab="Prob", 
+#'  vertLines = F, main="Showing plot params")
+#'  
+#' plot(dfunc, col="wheat", density=30, angle=c(-45,0,45), 
+#' cex.axis=1.5, cex.lab=2, ylab="Probability") 
+#' 
+#' plot(dfunc, col=c("grey","lightgrey"), border=NA) 
+#' 
+#' plot(dfunc, col="grey", border=0, col.dfunc="blue", 
+#' lty.dfunc = 2, lwd.dfunc=4, vertLines=FALSE)
+#' 
+#' plot(dfunc, plotBars=FALSE, cex.axis=1.5, col.axis="blue") 
+#' rug(dfunc$dist)
+#' 
 #' @keywords models
 #' @export
 #' @importFrom graphics hist barplot axTicks axis plot title lines text
 
-plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges", 
-                        newdata = NULL, legend = TRUE, ... ){
+plot.dfunc <- function( x, 
+                        include.zero=FALSE, 
+                        nbins="Sturges", 
+                        newdata = NULL, 
+                        legend = TRUE, 
+                        vertLines=TRUE,
+                        plotBars=TRUE,
+                        density = NULL, 
+                        xlab = "Distance",
+                        ylab = if(x$pointSurvey) "Observation density" else "Probability of detection",
+                        border = "blue",
+                        col=0,
+                        col.dfunc="red",
+                        lty.dfunc=1,
+                        lwd.dfunc=2,
+                        ... ){
 
 
   cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, breaks=nbins )
@@ -200,11 +293,11 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
         yscl <- yscl[1]
       }
       ybarhgts <- cnts$density * yscl
-      plotBars <- TRUE
+      # plotBars <- TRUE
     } else {
-      ybarhgts <- NULL
-      yscl <- NULL
-      plotBars <- FALSE
+      yscl <- (x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
+      ybarhgts <-  cnts$density * yscl
+      # plotBars <- FALSE
     }
   } else {
     if( !x$pointSurvey ){
@@ -229,11 +322,11 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
       }
       y <- y * yscl
       ybarhgts <- cnts$density * yscl
-      plotBars <- TRUE
+      # plotBars <- TRUE
     } else {
       yscl <- (x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
       ybarhgts <-  cnts$density * yscl
-      plotBars <- TRUE      
+      # plotBars <- TRUE      
     }
   }
   
@@ -247,20 +340,30 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   }
   
   if(plotBars){
-    bar.mids <- barplot( ybarhgts, width=xscl, space=0, density=0, ylim=y.lims, 
-                       xlim=x.limits, border="blue", ... )  
+    bar.mids <- barplot( ybarhgts, 
+                         width=xscl, 
+                         ylim=y.lims, 
+                         xlim=x.limits,
+                         space=0, 
+                         density=density,
+                         col=col,
+                         border=border,
+                         xlab=xlab,
+                         ylab=ylab,
+                         ... )  
     xticks <- axTicks(1)
-    axis( 1, at=xticks,  labels=xticks, line=.5 )
+    axis( 1, at=xticks,  labels=xticks, line=.5, ... )
   } else {
-    plot(1,1,type="n",ylim=y.lims, xlim=x.limits, xlab="",ylab="",bty="n")
+    plot(1,1,type="n",
+         ylim=y.lims, 
+         xlim=x.limits, 
+         xlab=xlab,
+         ylab=ylab,
+         bty="n",
+         ...)
   }
   
-  if( x$pointSurvey ){
-    title( xlab="Distance", ylab="Observation density" )
-  } else {
-    title( xlab="Distance", ylab="Probability of detection" )
-  }
-  
+
   if( !("main" %in% names(c(...))) ){
     # Put up a default title containing liklihood description
     if( x$like.form == "smu" ){
@@ -280,21 +383,40 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
   #y.poly <- c(0, y, 0)
   #polygon( x.poly, y.poly, density=15, border="red", lwd=2 )
   
-  #   This places lines over the histogram
+  #   Draw the distance function lines
   if(is.matrix(y)){
+    if(length(col.dfunc) == 1){
+      col.dfunc <- rainbow(ncol(y))
+    } else if(length(col.dfunc) < ncol(y)){
+      col.dfunc <- rep(col.dfunc,ceiling(ncol(y)/length(col.dfunc)))[1:ncol(y)]
+    }
+    if(length(lty.dfunc) == 1){
+      lty.dfunc <- lty.dfunc + 0:(ncol(y)-1)
+    } else if(length(lty.dfunc) < ncol(y)){
+      lty.dfunc <- rep(lty.dfunc,ceiling(ncol(y)/length(lty.dfunc)))[1:ncol(y)]
+    }
+    if(length(lwd.dfunc) == 1){
+      lwd.dfunc <- rep(lwd.dfunc,ncol(y))
+    } else if(length(lwd.dfunc) < ncol(y)){
+      lwd.dfunc <- rep(lwd.dfunc,ceiling(ncol(y)/length(lwd.dfunc)))[1:ncol(y)]
+    }
     for(i in 1:ncol(y)){
-      lines( x.seq, y[,i], col=i+1, lwd=2, lty = i )
+      lines( x.seq, y[,i], col=col.dfunc[i], lwd=lwd.dfunc[i], lty = lty.dfunc[i] )
     }
   }
   else{
-    lines( x.seq, y, col="red", lwd=2 )
+    lines( x.seq, y, col=col.dfunc, lwd=lwd.dfunc, lty=lty.dfunc )
   }
 
-  #assign("tmpxy",cbind(x.seq,y),envir = .GlobalEnv)
-  
-  #   These two add vertical lines at 0 and w
-  lines( rep(x.seq[1], 2), c(0,y[1]), col="red", lwd=2 )
-  lines( rep(x.seq[length(x.seq)], 2), c(0,y[length(x.seq)]), col="red", lwd=2 )
+
+  #   These two add vertical lines at 0 and w if called for
+  if(vertLines){
+    lines( rep(x.seq[1], 2), c(0,y[1]), col=col.dfunc[1], lwd=lwd.dfunc[1],
+           lty=lty.dfunc[1])
+    lines( rep(x.seq[length(x.seq)], 2), c(0,y[length(x.seq)]), 
+           col=col.dfunc[1], lwd=lwd.dfunc[1],
+           lty=lty.dfunc[1] )
+  }
   
   #   print area under the curve
   area <- effectiveDistance(x)
@@ -341,7 +463,8 @@ plot.dfunc <- function( x, include.zero=FALSE, nbins="Sturges",
     
     #legend.factors <- vector(length = length(x$legend.names))
 
-    legend('topright', legend = Leg, lty = 1:nr, lwd = 2, col = 2:(nr+1), cex = 0.7)
+    legend('topright', legend = Leg, lty = lty.dfunc, lwd = lwd.dfunc, 
+           col = col.dfunc, cex = 0.7)
   }
   
   #x$xscl.plot <- xscl   # gonna need this to plot something on the graph.

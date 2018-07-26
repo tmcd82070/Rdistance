@@ -5,7 +5,10 @@
 \title{Plot a distance (detection) function}
 \usage{
 \method{plot}{dfunc}(x, include.zero = FALSE, nbins = "Sturges",
-  newdata = NULL, legend = TRUE, ...)
+  newdata = NULL, legend = TRUE, vertLines = TRUE, plotBars = TRUE,
+  density = NULL, xlab = "Distance", ylab = if (x$pointSurvey)
+  "Observation density" else "Probability of detection", border = "blue",
+  col = 0, col.dfunc = "red", lty.dfunc = 1, lwd.dfunc = 2, ...)
 }
 \arguments{
 \item{x}{An estimated distance function resulting from a call to
@@ -27,15 +30,71 @@ number of bars.  See \code{help(hist)} for all options.}
 set of covariate values (i.e. each column contains all values of each
 covariate)}
 
-\item{legend}{Boolean. If TRUE, a legend will be included on plot detailing
+\item{legend}{Logical scaler for whether to include legend. 
+If TRUE, a legend will be included on plot detailing
 covariate values plotted.}
 
-\item{\dots}{Other arguments to \code{barplot}, such as \code{cex},
-\code{col}, \code{bty}, etc. The following plot parameters cannot be
-included in \dots: \code{space}, \code{density}, \code{ylim}, \code{xlim},
-and \code{border}.  In addition, \code{main}, \code{ylab}, and \code{xlab}
-should not be used because the internal values will overwrite whatever
-values are given.}
+\item{vertLines}{Logical scalar specifying whether to plot vertical 
+lines at \code{w.lo} and \code{w.hi} from 0 to the  
+distance function.}
+
+\item{plotBars}{Logical scaler for whether to plot the histogram 
+of distances behind the distance function.  If FALSE, no histogram 
+is plotted, only the distance function line(s).}
+
+\item{density}{If \code{plotBars=TRUE}, a vector giving the density of 
+shading lines, in lines per inch, for the bars underneath 
+the distance function. Values of NULL or a number strickly less than 0 
+mean solid fill using colors from parameter \code{col}.  If 
+\code{density =0 }, bars are not filled with any color or lines.}
+
+\item{xlab}{Label for the x-axis}
+
+\item{ylab}{Label for the y-axis}
+
+\item{border}{The color of bar borders when bars are plotted. A 
+value of NA means no borders. If there are shading lines 
+(i.e., \code{density>0}), \code{border = TRUE} uses the same 
+color for the border as for the shading lines.}
+
+\item{col}{A vector of bar fill colors or line colors when bars are 
+drawn and \code{density != 0}, replicated
+to the correct length. A value of 0 is the background color.}
+
+\item{col.dfunc}{Color of the distance function(s), replicated to 
+the required length. If covariates or \code{newdata} is present 
+and \code{length(col.dfunc)==1}, 
+\code{col.dfunc} is expanded to 
+to number of plotted distance functions by setting it equal 
+to \code{graphics::rainbow(n)}, where \code{n} is the number 
+of plotted distance functions.  If you want to plot all 
+distance functions in the same color, set \code{col.dfunc} to
+a constant vector having length at least 2 (e.g., 
+\code{col.dfunc = c(1,1)}) will 
+plot all curves in black).}
+
+\item{lty.dfunc}{Line type of the distance function(s), replicated 
+to the required length.  If covariates or \code{newdata} is present 
+and \code{length(lty.dfunc)==1}, 
+\code{lty.dfunc} is expanded to 
+to number of plotted distance functions by setting it equal 
+to \code{lty.dfunc + 0:(n-1)}, where \code{n} is the number 
+of plotted distance functions.  If you want to plot all 
+distance functions using the same line type, set \code{lty.dfunc} to
+a constant vector having length at least 2 (e.g., 
+\code{lty.dfunc = c(1,1)}) will 
+plot all solid lines).}
+
+\item{lwd.dfunc}{Line width of the distance function(s), replicated 
+to the required length.}
+
+\item{\dots}{When bars are plotted, this routine 
+uses \code{graphics::barplot} for setting up the 
+plotting region and plotting bars. When bars are not plotted,
+this routine sets up the plot with \code{graphics::plot}.
+\dots can be any other 
+argument to \code{barplot} or \code{plot} EXCEPT  
+\code{width}, \code{ylim}, \code{xlim}, and \code{space}.}
 }
 \value{
 The input distance function is returned, with two additional
@@ -62,8 +121,13 @@ Plot method for an estimated distance function. Estimated
   distance functions are of class 'dfunc'
 }
 \details{
-A scaled histogram is plotted, and the estimated distance function
-  is plotted over the top of it.  The form of the likelihood and any series
+If \code{plotBars} is TRUE, a scaled histogram is plotted
+ and the estimated distance function
+  is plotted over the top of it.  When bars are plotted, 
+  this routine uses \code{graphics::barplot} 
+ for setting up the initial plotting region and
+ most parameters to \code{graphics::barplot} can 
+ be specified (exceptions noted above in description of '\dots').The form of the likelihood and any series
   expansions is printed in the main title (overwrite this with 
   \code{main="<my title>"}). Convergence of the distance
   function is checked.  If the distance funtion did not converge, a warning
@@ -72,14 +136,29 @@ A scaled histogram is plotted, and the estimated distance function
   fit), another warning is printed.
 }
 \examples{
-\dontrun{
 set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]
 dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
 plot(dfunc)
 plot(dfunc, nbins=25)
-}
+
+# showing effects of plot params
+plot(dfunc, col=c("red","blue","orange"), 
+ border="black", xlab="Dist (m)", ylab="Prob", 
+ vertLines = F, main="Showing plot params")
+ 
+plot(dfunc, col="wheat", density=30, angle=c(-45,0,45), 
+cex.axis=1.5, cex.lab=2, ylab="Probability") 
+
+plot(dfunc, col=c("grey","lightgrey"), border=NA) 
+
+plot(dfunc, col="grey", border=0, col.dfunc="blue", 
+lty.dfunc = 2, lwd.dfunc=4, vertLines=FALSE)
+
+plot(dfunc, plotBars=FALSE, cex.axis=1.5, col.axis="blue") 
+rug(dfunc$dist)
+
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
