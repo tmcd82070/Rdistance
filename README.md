@@ -2,6 +2,7 @@
 
 [![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/Rdistance)](http://cran.rstudio.com/web/packages/Rdistance/index.html)
+[![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance)
 
 **Rdistance - Distance Sampling Analyses for Abundance Estimation**
 
@@ -9,7 +10,7 @@
 Distance-sampling is a popular method for abundance estimation in
   ecology. This package contains functions and associated routines to analyze
   distance-sampling data collected on point or line transects. 
-  Line and point transect analayses are accomodated in one routine 
+  Both types of transects are accomodated in one routine 
   that accepts a regression-like formula object. Abundance routines
   perform automated bootstrapping and automated detection-function 
   selection. Overall (study area) and site-level abundance estimates are
@@ -22,9 +23,15 @@ The best place to start learning about `Rdistance` is at a workshop (see below) 
 ___
 
 **MAJOR UPDATE IN PROGRESS:**
-The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We undertook a major update during summer/fall 2017 in preparation for two workshops that depend on `Rdistance`, and we are currently making final preparations before re-submitting to CRAN.  Primary new features include the ability to analyze data from point transects (1.3.2 only allowed line transects) and the ability to include covariates in the detection function (1.3.2 did not allow covariates).  
+The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We undertook a major update during summer/fall 2017 in preparation for two workshops that depend on `Rdistance`, and we are currently making final preparations before re-submitting to CRAN.  Primary new features include:
+* point transect analysis (1.3.2 only allowed line transects)
+* covariates in the detection function (1.3.2 did not allow covariates).  
+* non-parametric (smoothed) distance functions
+* enhanced plotting abilities
+* enhanced vignettes
 
-The development version (2.x.x) is not yet on CRAN, but you can install it directly from GitHub using the `devtools` package:
+The development version (2.x.x) is coming to CRAN soon.  You can install 
+the latest version directly from GitHub using the `devtools` package:
 
 `devtools::install_github("tmcd82070/Rdistance")`
 

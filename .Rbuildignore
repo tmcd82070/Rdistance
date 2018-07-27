@@ -11,3 +11,4 @@ distance_old
 ^data-raw$
 ^tests$
 ^\.git$
+^\.travis\.yml$
