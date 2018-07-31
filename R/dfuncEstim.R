@@ -521,7 +521,11 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
       warning("Singular variance-covariance matrix.")
       varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
     } else {
-      varcovar <- solve(fit$hessian)
+      varcovar <- tryCatch(solve(fit$hessian), error=function(e){NaN})
+      if(length(varcovar) == 1 && is.nan(varcovar)){
+        warning("Singular variance-covariance matrix.")
+        varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
+      }
     }
   } else {
     warning("fit did not converge, or converged to (Inf,-Inf)")

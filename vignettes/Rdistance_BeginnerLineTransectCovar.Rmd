@@ -160,7 +160,8 @@ covarFit <- abundEstim(dfuncShrubClass,
                        siteData=sparrowSiteData,
                        area=10000, 
                        R=100, 
-                       ci=0.95, 
+                       ci=0.95,
+                       showProgress = FALSE,
                        plot.bs=FALSE)
 ```
 ```{r}
@@ -172,7 +173,9 @@ In this example including the covariate of shrub class changes our estimate from
 
 # 6: Use AICc to select a detection function and estimate abundance
 
-Alternatively, steps 3 (fitting a detection function) and 4 (estimating abundance) can be automated using the function `autoDistSamp`.  This function attempts to fit multiple detection functions, uses AICc (by default, but see help documentation for `AIC.dfunc` for other options) to find the 'best' detection function, then proceeds to estimate abundance using that detection function.  By default, `autoDistSamp` tries a large subset of `Rdistance`'s built-in detection functions, but you can control exactly which detection functions are attempted (see help documentation for `autoDistSamp`).  Specifying `plot=TRUE` would return a plot of each detection function.  In this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).
+Alternatively, steps 3 (fitting a detection function) and 4 (estimating abundance) can be automated using the function `autoDistSamp`.  This function attempts to fit multiple detection functions, uses AICc (by default, but see help documentation for `AIC.dfunc` for other options) to find the 'best' detection function, then proceeds to estimate abundance using that detection function.  By default, `autoDistSamp` tries a large subset of `Rdistance`'s built-in detection functions, but you can control exactly which detection functions are attempted (see help documentation for `autoDistSamp`).  Specifying `plot=TRUE` would return a plot of each detection function.  In this example, we attempt to fit the default detection functions (n = 41), and we don't plot each (`plot=FALSE`).  We suppress computation of confidence intervals 
+using `ci = NULL` to avoid long output generate by the text progress
+bar.  Normally, you would set `ci` to the desired confidence level.
 
 ```{r, fig.width=6, fig.height=4}
 
@@ -181,7 +184,7 @@ auto <- autoDistSamp(formula        = dist~1,
                      siteData       = sparrowSiteData,
                      area           = 10000, 
                      R              = 100, 
-                     ci             = 0.95,
+                     ci             = NULL,
                      plot           = FALSE,
                      plot.bs        = FALSE,
                      w.hi           = 150)  
@@ -200,7 +203,7 @@ auto <- autoDistSamp(formula        = dist~shrubclass,
                      expansions=0,
                      area           = 10000, 
                      R              = 100, 
-                     ci             = 0.95,
+                     ci             = NULL,
                      plot           = FALSE,
                      plot.bs        = FALSE,
                      w.hi           = 150)  
