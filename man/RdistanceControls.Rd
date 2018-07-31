@@ -52,7 +52,7 @@ Returns a list of optimization controls used in
 RdistanceControls(maxIters=2000)
 
 # change optimizer and decrease tolerance
-RdistanceControls(optimizer="optim", tol=1e-8) 
+RdistanceControls(optimizer="optim", likeTol=1e-6) 
 
 }
 \author{

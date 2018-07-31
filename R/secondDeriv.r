@@ -19,7 +19,9 @@
 #' when evaluating derivatives.   This is the 'delta x' or eps of 
 #' the numerical derivatives. Default value 1e-8 for all 
 #' dimensions.  If length of \code{eps} is less than length of \code{x},
-#' \code{eps} is replicated to the length of \code{x}.  
+#' \code{eps} is replicated to the length of \code{x}. 
+#' 
+#' @param \dots Any arguments passed to \code{FUN}. 
 #' 
 #' @details This function uses the "5-point" numeric second derivative 
 #' method advocated in numerous numerical recipie texts.  During computation
@@ -39,15 +41,15 @@
 #' @examples 
 #' 
 #'func <- function(x){-x*x} # second derivative should be -2
-#'F.2nd.deriv(0,func)
-#'F.2nd.deriv(3,func)
+#'secondDeriv(0,func)
+#'secondDeriv(3,func)
 #'
 #'func <- function(x){3 + 5*x^2 + 2*x^3} # second derivative should be 10+12x
-#'F.2nd.deriv(0,func)
-#'F.2nd.deriv(2,func)
+#'secondDeriv(0,func)
+#'secondDeriv(2,func)
 #'
 #'func <- function(x){x[1]^2 + 5*x[2]^2} # should be rbind(c(2,0),c(0,10))
-#'F.2nd.deriv(c(1,1),func)
+#'secondDeriv(c(1,1),func)
 #'
 #' @export
 

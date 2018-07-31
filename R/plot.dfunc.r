@@ -142,7 +142,7 @@
 #' # showing effects of plot params
 #' plot(dfunc, col=c("red","blue","orange"), 
 #'  border="black", xlab="Dist (m)", ylab="Prob", 
-#'  vertLines = F, main="Showing plot params")
+#'  vertLines = FALSE, main="Showing plot params")
 #'  
 #' plot(dfunc, col="wheat", density=30, angle=c(-45,0,45), 
 #' cex.axis=1.5, cex.lab=2, ylab="Probability") 
@@ -157,7 +157,9 @@
 #' 
 #' @keywords models
 #' @export
-#' @importFrom graphics hist barplot axTicks axis plot title lines text
+#' @importFrom graphics hist barplot axTicks 
+#' @importFrom graphics axis plot title lines text
+#' @importFrom grDevices rainbow
 
 plot.dfunc <- function( x, 
                         include.zero=FALSE, 

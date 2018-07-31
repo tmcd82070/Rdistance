@@ -146,7 +146,7 @@ plot(dfunc, nbins=25)
 # showing effects of plot params
 plot(dfunc, col=c("red","blue","orange"), 
  border="black", xlab="Dist (m)", ylab="Prob", 
- vertLines = F, main="Showing plot params")
+ vertLines = FALSE, main="Showing plot params")
  
 plot(dfunc, col="wheat", density=30, angle=c(-45,0,45), 
 cex.axis=1.5, cex.lab=2, ylab="Probability") 

@@ -338,7 +338,7 @@
 #' # Show some plotting options
 #' plot(dfuncObs, 
 #'    newdata=data.frame(observer=levels(sparrowSiteData$observer)), 
-#'    vertLines = F, lty=c(1,1), 
+#'    vertLines = FALSE, lty=c(1,1), 
 #'    col.dfunc=heat.colors(length(levels(sparrowSiteData$observer))), 
 #'    col=c("grey","lightgrey"), border=NA, 
 #'    xlab="Distance (m)",
@@ -347,7 +347,8 @@
 #'
 #' @keywords model
 #' @export
-#' @importFrom stats model.response is.empty.model model.matrix contrasts optim
+#' @importFrom stats nlminb model.response is.empty.model 
+#' @importFrom stats model.matrix contrasts optim
 
 dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm", 
                   pointSurvey = FALSE, w.lo=0, w.hi=NULL, 

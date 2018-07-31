@@ -126,8 +126,7 @@
 #'          \code{\link{negexp.like}},
 #'          \code{\link{Gamma.like}}
 #'          
-#' @examples \dontrun{
-#' set.seed(238642)
+#' @examples 
 #' x <- seq(0, 100, length=100)
 #' 
 #' # Plots showing effects of changes in Threshold
@@ -137,7 +136,7 @@
 #' # Plots showing effects of changes in Knee
 #' plot(x, uniform.like(c(50, 100), x), type="l", col="red")
 #' plot(x, uniform.like(c(50, 1), x), type="l", col="blue")
-#' }
+#' 
 #'          
 #' @keywords models
 #' @export

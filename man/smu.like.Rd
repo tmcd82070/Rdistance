@@ -83,15 +83,18 @@ Distances outside the range \code{w.lo} to \code{w.hi} are
 set to \code{NA} and hence not included.
 }
 \examples{
- \dontrun{
+ 
 set.seed(238642)
 d <- abs(rnorm(100))
 dfunc <- dfuncSmu(d~1)
 
-L <- smu.like(a=dfunc$parameters, dist=dfunc$dist, w.lo=dfunc$w.lo, 
-   w.hi=dfunc$w.hi, scale=TRUE)
+L <- smu.like(a=dfunc$parameters, 
+       dist=dfunc$dist, 
+       w.lo=dfunc$w.lo, 
+       w.hi=dfunc$w.hi, 
+       scale=TRUE)
 -sum(log(L), na.rm=TRUE)  # the negative log likelihood
-}
+
 }
 \seealso{
 \code{\link{dfuncSmu}},
