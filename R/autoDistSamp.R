@@ -1,7 +1,9 @@
 #' @name autoDistSamp
-#' @aliases autoDistSamp
+#' 
 #' @title Automated classical distance analysis
-#' @description Perform automated classical detection function selection and 
+#' 
+#' @description Perform automated classical detection 
+#' function selection and 
 #' estimation of abundance.
 #' 
 #' @param formula This parameter is passed to \code{dfuncEstim}.
@@ -29,6 +31,8 @@
 #'   See \code{abundEstim} documentation for definition.
 #'   
 #' @param ci This parameter is passed to \code{abundEstim}.
+#'   If \code{ci} is NULL, abundance is estimated but no 
+#'   bootstrapping is performed.
 #'   See \code{abundEstim} documentation for definition.
 #'   
 #' @param R This parameter is passed to \code{abundEstim}.
@@ -37,6 +41,29 @@
 #' @param bySite This parameter is passed to \code{abundEstim}.
 #'   See \code{abundEstim} documentation for definition.
 #'   
+#' @param models A vector of strings specifying covarites 
+#' to include in the distance function. Each element in 
+#' \code{models} is a set of covariates to be \emph{added}
+#' to the base model specified in \code{formula}.  For example, if
+#' \code{formula=dist~x} and 
+#' \code{models=c("a", "b", "a+b")}, the set of models fitted 
+#' is
+#' \code{dist~x + a}, \code{dist~x + b}, and \code{dist~x + a + b}. 
+#' To include the \code{formula} model, set one element of 
+#' \code{models} equal to "1". By manipulating both 
+#' \code{formula} and \code{models} over multiple calls, 
+#' it is possible to manually 
+#' conduct forward stepwise selection of variables. 
+#' 
+#' A few caviates: Covariates and expansions are not 
+#' allowed in the Gamma
+#' likelihood.  If 'Gamma' is among the likelihoods requested, 
+#' only the intercept model is fitted and expansions are set to 0.
+#' Expansions are not allowed with covariates. For all models with 
+#' expansions >0, the covariate model is set to 
+#' the intercept only.   
+#'  
+#' 
 #' @param plot.bs Logical for whether to plot bootstrap 
 #' iterations after the top model has been selected and 
 #' during final estimation of confidence intervals.  
@@ -65,6 +92,16 @@
 #' See Details for the models this routine considers. Note, expansion terms are not currently
 #' allowed in models with covariates.
 #' 
+#' @param includeFits Logical scaler.  If TRUE, all fitted distance 
+#' function objects are returned as a list in the output object. 
+#' The fitted dfunc objects are stored in the \code{dfuncFits}
+#' component of the output.  Length of this list is 
+#' \code{nrow(output$fitTable)} and numbers in 
+#' \code{output$fitTable$modNumber} correspond to positions in 
+#' this list.  For example, the model referenced on row 
+#' \code{i} of \code{output$fitTable} is 
+#' \code{output$dfuncFits[[output$fitTable$modNumber[i]]]}.
+#' 
 #' @param plot Logical scalar specifying whether to plot models during model selection. 
 #'   If \code{TRUE}, a histogram with fitted distance function is plotted for every fitted model. 
 #'   The function pauses between each plot and prompts the user for whether they want to continue or not. 
@@ -92,16 +129,45 @@
 #' Suppress all intermediate output using \code{plot.bs=FALSE}, 
 #' \code{showProgress=FALSE}, and \code{plot=FALSE}. 
 #' 
-#' @return An 'abundance estimate' object.  See \code{abundEstim} 
-#' and \code{dfuncEstim} for an explanation of components. 
-#' Returned abundance estimates are based 
-#' on the best fitting distance function among those fitted.
-#' A fit table, sorted by the criterion, is returned as component
-#' \code{$fitTable}.  The fit table component contains columns
-#' \code{like} (likelihood), \code{series}, \code{expansions},
-#' \code{converge} (0=converged,1=not), \code{scale} (1=passed scale
-#' check,0=did not pass), and 
-#' \code{aic} (the criterion used). 
+#' @return An 'abundance estimate' object with one 
+#' or two additional components.  See \code{abundEstim} 
+#' and \code{dfuncEstim} for an explanation of base components. 
+#' Abundance estimates in the output are based 
+#' on the best fitting (according to \code{criterion}) 
+#' distance function among those fitted.
+#' 
+#' In addition to the base components, a 'fit table' 
+#' with one row per fitted model, sorted by 
+#' \code{criterion}, is returned as component
+#' \code{$fitTable}.  The fit table component contains 
+#' the following fields:
+#' \itemize{
+#'   \item \code{model} : covariates in the model 
+#'   \item \code{like} : likelihood used, 
+#'   \item \code{series} : series of the expansions, if any
+#'   \item \code{expansions} : number of expansion terms
+#'   \item \code{converged} : whether the model converged (0=converged,1=not)
+#'   \item \code{scale} : whether the model passed the 
+#'      scale check (1=passed scale check,0=did not pass)
+#'   \item \code{AICc} : the criterion used. 
+#'   \item \code{pHat} : average probability of detection for 
+#'      the model
+#'   \item \code{K} : the number of covariates in the model
+#'   \item \code{modNumber} : the number of the model reference 
+#'   on that row. This can be used to resort the fit table into
+#'   the order that models were fitted or to reference fitted 
+#'   objects if \code{includeFits == TRUE}.    
+#' }
+#' 
+#' If \code{includeFits == TRUE}, an additional component 
+#' named \code{$dfuncFits} is included in the output object.
+#' \code{$dfuncFits} is a list with length equal to the number
+#' of fitted models and containing the actual fitted distance 
+#' function objects.  The order of \code{$dfuncFits} is the 
+#' order in which models were fitted and can be reference 
+#' using the \code{modNumber} column of the fit table. I.e., 
+#' the dfunc object corresponding to row \code{i} of the fit table
+#' is in position \code{modNumber[i]} of \code{dfuncFits}.  
 #'   
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}\cr
@@ -128,13 +194,16 @@
 #' @importFrom graphics mtext
 
 autoDistSamp <- function (formula, detectionData, siteData, 
-                             w.lo=0, w.hi=NULL,
-                             likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
-                             series=c("cosine", "hermite", "simple"), expansions=0:3,
-                             pointSurvey=FALSE, warn=TRUE,
-                             area=1, ci=0.95, R=500, bySite=FALSE, 
-                             plot.bs=FALSE, showProgress=TRUE,
-                             plot=TRUE, criterion="AICc", ...){
+                          models = "1",
+                          likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
+                          series=c("cosine", "hermite", "simple"), 
+                          expansions=0:3,
+                          w.lo=0, w.hi=NULL,
+                          pointSurvey=FALSE, warn=TRUE,
+                          area=1, ci=0.95, R=500, 
+                          bySite=FALSE, includeFits=FALSE,
+                          plot.bs=FALSE, showProgress=TRUE,
+                          plot=TRUE, criterion="AICc", ...){
   
   
   
@@ -154,17 +223,14 @@ autoDistSamp <- function (formula, detectionData, siteData,
   # if(any(is.na(siteData$length))) stop("Please remove NA's from siteData$length.")
   
   if(any(!(criterion %in% c("AIC","AICc","BIC")))) stop(paste0(criterion, " criterion not supported."))
-  
-  # extract distance vector from detectionData
-  # dist <- detectionData$dist
-  
-  
-  # function to save results
-  f.save.result <- function(results, dfunc, like, ser, expan, 
-                            plot, CRIT, showProgress) {
+
+  if(any(expansions < 0 | expansions >3)) stop("Expansions must be between 0 and 3")  
+
+  # =========================================
+  # function to show results
+  f.show.result <- function(i, results, dfunc, plot, CRIT) {
     
     esw <- effectiveDistance(dfunc)
-    
 
     if (!is.na(esw) & (esw > dfunc$w.hi)) {
       scl.ok <- "Not ok"
@@ -189,36 +255,29 @@ autoDistSamp <- function (formula, detectionData, siteData,
     } else {
       conv.str <- "Yes"
     }
-    results <- rbind(results, data.frame(like = like, series = ser, 
-                                         expansions = expan, converge = conv, scale = scl.ok.flag, 
-                                         aic = aic))
-    
-    if(showProgress){
-      if (nchar(like) < 8) {
-        sep1 <- "\t\t"
-      } else {
-        sep1 <- "\t"
-      } 
-      cat(paste(like, sep1, ser, "\t", expan, "\t", conv.str, 
-              "\t\t", scl.ok, "\t", round(aic, 4), sep = ""))
-    }
-    
+
+    if (nchar(like) < 8) {
+      sep1 <- "\t\t"
+    } else {
+      sep1 <- "\t"
+    } 
+    out <- paste(results[i,],collapse="\t")
+    cat(paste(out,"\n"))
+
     if (plot) {
       plot(dfunc)  # (jdc) This is the source of "Error: object of type 'symbol' is not subsettable
       k <- readline(" Next?[entr=y,n]")
       if (length(k) == 0) 
         k <- "y"
-    } else if(showProgress) {
+    } else {
       cat("\n")
       k <- "y"
-    } else {
-      k <- "y"
-    }
+    } 
     
-    list(results = results, k = k)
+    k
   }
   
-  
+  # ===============================
   
   
   
@@ -226,93 +285,98 @@ autoDistSamp <- function (formula, detectionData, siteData,
   
   wwarn <- options()$warn
   options(warn = -1)
-  fit.table <- NULL
+  fits <- vector("list",nrow(aicTable))
   
   if(showProgress){  
     cat(paste0("Likelihood\tSeries\tExpans\tConverged?\tScale?\t",criterion,"\n"))
   }
   
-  for (like in likelihoods) {
-    if (like == "Gamma") {
-      dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
-                          siteData = siteData, likelihood = like, w.lo = w.lo,
-                          w.hi = w.hi, pointSurvey=pointSurvey, ...)
-      ser <- ""  # (jdc) was ""
-      expan <- 0
-      fit.table <- f.save.result(fit.table, dfunc, like, 
-                                 ser, expan, plot, criterion, showProgress)
-      cont <- fit.table$k
-      fit.table <- fit.table$results
-    } else {
-      for (expan in expansions) {
-        if (expan == 0) {
-          ser <- "cosine"  # Inconsequential, but gotta have a valid series here
-          
-          dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
-                              siteData = siteData, likelihood = like, 
-                                 w.lo = w.lo, w.hi = w.hi, expansions = expan, 
-                                 series = ser, pointSurvey=pointSurvey, ...)
-          fit.table <- f.save.result(fit.table, dfunc, 
-                                     like, ser, expan, plot, criterion, 
-                                     showProgress)
-          cont <- fit.table$k
-          fit.table <- fit.table$results
-        } else {
-          for (ser in series) {
-            
-            
-            # (jdc) We are not allowing expansion terms in presence of covariates
-            # If there are covariates, skip this loop through models with expansions
-            if ( length(attr(terms(formula), "term.labels")) > 0 ) {
-              # (jdc) This warning seems to always be supressed, but I added a note in the help doc
-              # that expansions aren't allowed when there are covariates.
-              warning("Expansions not allowed when covariates are present. Models with expansions skipped.")
-              break
-            }
+  aicTable <- expand.grid(model=models,
+                          likelihood=likelihoods,
+                          series=series,
+                          expansion=expansions)
+  
+  # Covars not allowed with Gamma likelihood
+  gammaMod <- grep("Gamma", aicTable$likelihood)
+  if(length(gammaMod)>0){
+    aicTable <- aicTable[-gammaMod[-1],]
+    gammaMod <- gammaMod[1]  
+    aicTable$model[gammaMod[1]] <- "1"
+    aicTable$expansion[gammaMod[1]] <- 0
+  }
 
-            
-            dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
-                                siteData = siteData, likelihood = like, 
-                                   w.lo = w.lo, w.hi = w.hi, expansions = expan, 
-                                   series = ser, pointSurvey=pointSurvey, ...)
-            fit.table <- f.save.result(fit.table, dfunc, 
-                                       like, ser, expan, plot, 
-                                       criterion, showProgress)
-            cont <- fit.table$k
-            fit.table <- fit.table$results
-            if (cont == "n"){
-              break
-            }
-          }
-        }
-        if (cont == "n"){ 
-          break
-        }
-      }
-      if (cont == "n"){
-        break
-      } 
-    }
+  # Expansions not allowed with covars. Do this to kill warning generated during fit
+  expanMod <- which(aicTable$expansion > 0)
+  if(length(expanMod)>0){
+    aicTable$model[expanMod] <- "1"
+    aicTable <- unique(aicTable)
   }
   
+  aicTable$pHat <- NA
+  aicTable$AICc <- NA
+  aicTable$K <- NA
+  aicTable$converged <- NA
+  aicTable$modNumber <- NA
   
+  for(i in 1:nrow(aicTable)) {
+    
+    like <- aicTable$likelihood[i]
+    ser <- aicTable$series[i]
+    expan <- aicTable$expansion[i]
+    if(like=="Gamma" | expan > 0){
+      form <- update(formula, paste("~", aicTable$model[i])) # replace with intercept only
+    } else {
+      form <- update(formula, paste("~.+", aicTable$model[i]))
+    }
+    
+    dfunc <- dfuncEstim(formula = formula, 
+                        detectionData = detectionData,
+                        siteData = siteData, 
+                        likelihood = like, 
+                        w.lo = w.lo, 
+                        w.hi = w.hi, 
+                        expansions = expan, 
+                        series = ser, 
+                        pointSurvey=pointSurvey, 
+                        ...)    
+    
+
+    aicTable$AICc[i] <- AIC(dfunc, criterion=criterion)
+    aicTable$pHat[i] <- mean(ESW(dfunc)/(w.hi - w.lo))
+    aicTable$convergence[i] <- dfunc$convergence
+    aicTable$K[i] <- length(coef(dfunc))
+    aicTable$modNumber[i] <- i
+
+    # Store dfunc so don't have to refit top model
+    fits[[i]] <- dfunc  
+    
+    if(showProgress){
+      continue <- f.show.result(i,aicTablefit.table, 
+                                 dfunc, plot, criterion )
+      if (continue == "n"){
+        break
+      }
+    }
+
+  }
+
   
-  if (sum(fit.table$converge != 0) > 0 & showProgress) {
+  # ------------  
+
+  if (sum(aicTable$converged != 0) > 0 & showProgress) {
     cat("Note: Some models did not converge or had parameters at their boundaries.\n")
   }
     
   
   # Sort by criterion
-  fit.table$aic <- ifelse(fit.table$converge == 0, fit.table$aic, 
+  aicTable$aic <- ifelse(aicTable$converged == 0, aicTable$aic, 
                           Inf)
-  fit.table <- fit.table[order(fit.table$aic), ]
+  aicTable <- aicTable[order(aicTable$aic), ]
 
   
-  # Refit best dfunc
-  dfunc <- dfuncEstim(formula = formula, detectionData = detectionData,
-                      siteData = siteData, likelihood = fit.table$like[1], 
-                         w.lo = w.lo, w.hi = w.hi, expansions = fit.table$expansions[1], 
-                         series = fit.table$series[1], pointSurvey=pointSurvey, ...)
+  # best dfunc is fits[[aicTable$modNumber[1]]]
+  dfunc <- fits[[aicTable$modNumber[1]]]
+  
   if (plot) {
     plot(dfunc)
     mtext("BEST FITTING FUNCTION", side = 3, cex = 1.5, line = 3)
@@ -324,7 +388,12 @@ autoDistSamp <- function (formula, detectionData, siteData,
                       bySite=bySite, showProgress = showProgress)
   
   # Store the fitting table, just in case user wants it.
-  abund$fitTable <- fit.table
+  abund$fitTable <- aicTable
+  
+  # Store all fitted models if requested
+  if(includeFits){
+    abund$dfuncFits <- fits
+  }
 
   if(showProgress){
     cat("\n\n------------ Abundance Estimate Based on Top-Ranked Detection Function ------------\n")

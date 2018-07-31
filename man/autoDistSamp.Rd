@@ -4,12 +4,12 @@
 \alias{autoDistSamp}
 \title{Automated classical distance analysis}
 \usage{
-autoDistSamp(formula, detectionData, siteData, w.lo = 0, w.hi = NULL,
+autoDistSamp(formula, detectionData, siteData, models = "1",
   likelihoods = c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
-  series = c("cosine", "hermite", "simple"), expansions = 0:3,
-  pointSurvey = FALSE, warn = TRUE, area = 1, ci = 0.95, R = 500,
-  bySite = FALSE, plot.bs = FALSE, showProgress = TRUE, plot = TRUE,
-  criterion = "AICc", ...)
+  series = c("cosine", "hermite", "simple"), expansions = 0:3, w.lo = 0,
+  w.hi = NULL, pointSurvey = FALSE, warn = TRUE, area = 1, ci = 0.95,
+  R = 500, bySite = FALSE, includeFits = FALSE, plot.bs = FALSE,
+  showProgress = TRUE, plot = TRUE, criterion = "AICc", ...)
 }
 \arguments{
 \item{formula}{This parameter is passed to \code{dfuncEstim}.
@@ -21,11 +21,27 @@ and \code{abundEstim}. See \code{abundEstim} documentation for definition.}
 \item{siteData}{This parameter is passed to \code{abundEstim}.
 See \code{abundEstim} documentation for definition.}
 
-\item{w.lo}{This parameter is passed to \code{dfuncEstim}.
-See \code{dfuncEstim} documentation for definition.}
+\item{models}{A vector of strings specifying covarites 
+to include in the distance function. Each element in 
+\code{models} is a set of covariates to be \emph{added}
+to the base model specified in \code{formula}.  For example, if
+\code{formula=dist~x} and 
+\code{models=c("a", "b", "a+b")}, the set of models fitted 
+is
+\code{dist~x + a}, \code{dist~x + b}, and \code{dist~x + a + b}. 
+To include the \code{formula} model, set one element of 
+\code{models} equal to "1". By manipulating both 
+\code{formula} and \code{models} over multiple calls, 
+it is possible to manually 
+conduct forward stepwise selection of variables. 
 
-\item{w.hi}{This parameter is passed to \code{dfuncEstim}.
-See \code{dfuncEstim} documentation for definition.}
+A few caviates: Covariates and expansions are not 
+allowed in the Gamma
+likelihood.  If 'Gamma' is among the likelihoods requested, 
+only the intercept model is fitted and expansions are set to 0.
+Expansions are not allowed with covariates. For all models with 
+expansions >0, the covariate model is set to 
+the intercept only.}
 
 \item{likelihoods}{Vector of strings specifying the 
 likelihoods to consider during model selection. Valid values 
@@ -41,6 +57,12 @@ consider during model selection. Valid values are 0 through 3.
 See Details for the models this routine considers. Note, expansion terms are not currently
 allowed in models with covariates.}
 
+\item{w.lo}{This parameter is passed to \code{dfuncEstim}.
+See \code{dfuncEstim} documentation for definition.}
+
+\item{w.hi}{This parameter is passed to \code{dfuncEstim}.
+See \code{dfuncEstim} documentation for definition.}
+
 \item{pointSurvey}{This parameter is passed to \code{dfuncEstim}.
 See \code{dfuncEstim} documentation for definition.}
 
@@ -51,6 +73,8 @@ See \code{dfuncEstim} documentation for definition.}
 See \code{abundEstim} documentation for definition.}
 
 \item{ci}{This parameter is passed to \code{abundEstim}.
+If \code{ci} is NULL, abundance is estimated but no 
+bootstrapping is performed.
 See \code{abundEstim} documentation for definition.}
 
 \item{R}{This parameter is passed to \code{abundEstim}.
@@ -58,6 +82,16 @@ See \code{abundEstim} documentation for definition.}
 
 \item{bySite}{This parameter is passed to \code{abundEstim}.
 See \code{abundEstim} documentation for definition.}
+
+\item{includeFits}{Logical scaler.  If TRUE, all fitted distance 
+function objects are returned as a list in the output object. 
+The fitted dfunc objects are stored in the \code{dfuncFits}
+component of the output.  Length of this list is 
+\code{nrow(output$fitTable)} and numbers in 
+\code{output$fitTable$modNumber} correspond to positions in 
+this list.  For example, the model referenced on row 
+\code{i} of \code{output$fitTable} is 
+\code{output$dfuncFits[[output$fitTable$modNumber[i]]]}.}
 
 \item{plot.bs}{Logical for whether to plot bootstrap 
 iterations after the top model has been selected and 
@@ -87,19 +121,49 @@ of this fit criterion.  This must be one of "AICc" (the default),
 These include \code{x.scl}, \code{g.x.scl}, and \code{observer} for estimating double observer probabilities.}
 }
 \value{
-An 'abundance estimate' object.  See \code{abundEstim} 
-and \code{dfuncEstim} for an explanation of components. 
-Returned abundance estimates are based 
-on the best fitting distance function among those fitted.
-A fit table, sorted by the criterion, is returned as component
-\code{$fitTable}.  The fit table component contains columns
-\code{like} (likelihood), \code{series}, \code{expansions},
-\code{converge} (0=converged,1=not), \code{scale} (1=passed scale
-check,0=did not pass), and 
-\code{aic} (the criterion used).
+An 'abundance estimate' object with one 
+or two additional components.  See \code{abundEstim} 
+and \code{dfuncEstim} for an explanation of base components. 
+Abundance estimates in the output are based 
+on the best fitting (according to \code{criterion}) 
+distance function among those fitted.
+
+In addition to the base components, a 'fit table' 
+with one row per fitted model, sorted by 
+\code{criterion}, is returned as component
+\code{$fitTable}.  The fit table component contains 
+the following fields:
+\itemize{
+  \item \code{model} : covariates in the model 
+  \item \code{like} : likelihood used, 
+  \item \code{series} : series of the expansions, if any
+  \item \code{expansions} : number of expansion terms
+  \item \code{converged} : whether the model converged (0=converged,1=not)
+  \item \code{scale} : whether the model passed the 
+     scale check (1=passed scale check,0=did not pass)
+  \item \code{AICc} : the criterion used. 
+  \item \code{pHat} : average probability of detection for 
+     the model
+  \item \code{K} : the number of covariates in the model
+  \item \code{modNumber} : the number of the model reference 
+  on that row. This can be used to resort the fit table into
+  the order that models were fitted or to reference fitted 
+  objects if \code{includeFits == TRUE}.    
+}
+
+If \code{includeFits == TRUE}, an additional component 
+named \code{$dfuncFits} is included in the output object.
+\code{$dfuncFits} is a list with length equal to the number
+of fitted models and containing the actual fitted distance 
+function objects.  The order of \code{$dfuncFits} is the 
+order in which models were fitted and can be reference 
+using the \code{modNumber} column of the fit table. I.e., 
+the dfunc object corresponding to row \code{i} of the fit table
+is in position \code{modNumber[i]} of \code{dfuncFits}.
 }
 \description{
-Perform automated classical detection function selection and 
+Perform automated classical detection 
+function selection and 
 estimation of abundance.
 }
 \details{
