@@ -12,6 +12,7 @@
 
 ## Test environments
 * local Windows 8.1 Pro, R 3.2.1
+* Unix (via Travis)
 
 ## R CMD check results
 No ERRORs or WARNINGs. 
