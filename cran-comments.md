@@ -12,9 +12,9 @@
 
 ## Test environments
 * local Windows 8.1 Pro, R 3.2.1
-* Unix (via Travis)
+* Unix (via Travis) : build passing
 
-## R CMD check results
+## R CMD check --as-cran results
 No ERRORs or WARNINGs. 
 
 ## Downstream dependencies

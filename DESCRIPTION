@@ -2,7 +2,7 @@ Package: Rdistance
 Type: Package
 Title: Analyses for Distance-Sampling and Abundance Estimation
 Version: 2.1.1
-Date: 2018-06-24
+Date: 2018-08-01
 Maintainer: Trent McDonald <tmcdonald@west-inc.com>
 Author: c(
   person("Trent", "McDonald", email="tmcdonald@west-inc.com", role=c("cre","aut")), 
@@ -33,8 +33,8 @@ Description: Distance-sampling is a popular method for abundance estimation in
   included.  Some uncommon (e.g., Gamma, negative exponential) 
   detection functions are also included and users can define 
   their own custom detection functions if needed. One form of 
-  non-parametric smoothed distance function is also included. 
-  The extensive help files and vignettes have been 
+  non-parametric smoothed distance function is included. 
+  The help files and vignettes have been 
   vetted by multiple authors and tested in multiple workshop 
   settings. 
 License: GNU General Public License
