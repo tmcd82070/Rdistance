@@ -28,9 +28,8 @@ a low limit of 0
 a high limit of 1, and that it returns the parameter names as 
 the \code{$names} component of the result. That is, the 
 code that returns user-defined parameter names is, 
-
-\code{fn <- match.fun( paste0(like.form, ".start.limits"))\cr
-ans <- fn(1, 0, 0, 1)\cr
+\code{fn <- match.fun( paste0(like.form, ".start.limits"));
+ans <- fn(1, 0, 0, 1);
 ans$names}
 }
 \author{
