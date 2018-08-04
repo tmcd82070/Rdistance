@@ -6,76 +6,119 @@
 \alias{distance}
 \alias{Rdistance}
 \alias{point-transect}
+\alias{line-transect}
 \title{Rdistance - Distance Sampling Analyses for Abundance Estimation}
 \description{
-Distance-sampling is a popular method for abundance estimation in
-ecology. This package contains functions and associated routines to analyze
+\code{Rdistance} contains functions and associated routines to analyze
 distance-sampling data collected on point or line transects. 
-Line and point transect analayses are accomodated in one routine
-that accepts a regression-like formula object. Abundance routines
-perform automated bootstrapping and automated detection-function 
-selection. Overall (study area) and site-level abundance estimates are
-available. A large suite of classical, parametric detection functions are 
-included, and the package can accommodate user-defined detection functions.
+Some of \code{Rdistance}'s features include:
+\itemize{
+   \item Accommodation of both point and line transect analyses 
+    in one routine (\code{\link{dfuncEstim}}).
+   \item Regression-like formula for inclusion of covariate in 
+   distance functions (\code{\link{dfuncEstim}}).
+   \item Automatic bootstrap confidence intervals 
+   (\code{\link{abundEstim}}).
+   \item Availability of both study-area and site-level abundance
+   estimates (\code{\link{abundEstim}}).
+   \item Classical, parametric distance functions
+   (\code{\link{halfnorm.like}}, \code{\link{hazrate.like}}), and
+   expansion functions (\code{\link{cosine.expansion}}, 
+   \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}).
+   
+   \item Non-classic distance functions (\code{\link{Gamma.like}}, 
+   \code{\link{negexp.like}}, \code{\link{uniform.like}}) 
+   and a non-parametric smoother 
+   \code{\link{dfuncSmu}}).
+   
+   \item User defined distance functions. 
+    
+   \item Automated distance function fits and selection 
+   \code{\link{autoDistSamp}}.
+   \item Extended vignettes.
+   \item \code{print}, \code{plot}, \code{predict}, \code{coef}, 
+   and \code{summary} 
+   methods for distance function objects and abundance classes.
 }
-\details{
-\bold{Background} - Line transect surveys are conducted by traversing
-\emph{randomly} placed transects in a study area with the objective of
-estimating density or abundance of a particular organism.  Data collected
+}
+\section{Background}{
+
+Distance-sampling is a popular method for abundance estimation in
+ecology. Line transect surveys are conducted by traversing
+randomly placed transects in a study area with the objective of
+sighting animals and estimating density or abundance.  Data collected
 during line transect surveys consists of sighting records for
-\emph{targets}, usually either individuals or groups of some species.  Among
-the collected data, off-transect distances are recorded or computed from
-other information such as sighting distance and angle (see
+\emph{targets}, usually either individuals or groups of individuals.  Among
+the collected data, off-transect distances are 
+recorded or computed from
+other information (see
 \code{\link{perpDists}}).  Off-transect distances are the perpendicular
 distances from the transect to the location of the initial sighting cue.
-The physical locations of sighted targets are often recorded or computed.
+The actual locations of sighted targets are often recorded or computed.
 When groups are the target, the number of individuals in the group is
 recorded.
 
-A fundamental characteristic of distance sampling analyses is that
-sightability (probability of detection) of targets is assumed to decline as
-off-transect distances increase. Targets far from the transect are assumed
-to be harder to detect than targets close to the transect.  In most
+Point transect surveys are similar except that observers stop one 
+or more times along the transect to observe targets.  This is a 
+popular method for avian surveys where detections are often auditory 
+cues, but is also appropriate when automated detectors are placed along
+a route.  Point transect surveys collect distances from the observer to 
+the target and are sometimes called \emph{radial} distances.   
+
+
+A fundamental characteristic of both line and point-based 
+distance sampling analyses is that
+probability of detecting a target declines as
+off-transect or radial distances increase. Targets far from 
+the observer are usually 
+harder to detect than closer targets.  In most
 classical line transect studies, targets on the transect (off-transect
 distance = 0) are assume to be sighted with 100\% probability.  This
 assumption allows estimation of the proportion of targets missed during the
-survey, and thus adjust the actual number of sighted targets by this
-proportion. Some studies utilize two observers searching the same areas to
-estimate the proportion of indivivduals missed and thereby eliminating the
+survey, and thus it is possible to adjust the actual number of 
+sighted targets for the proportion of targets missed. 
+Some studies utilize two observers searching the same areas to
+estimate the proportion of individuals missed and thereby eliminating the
 assumption that all individuals on the line have been observed.
+}
 
-\bold{Relationship to other software} - A detailed comparison of
+\section{Relationship to other software}{
+ 
+A detailed comparison of
 \code{Rdistance} to other options for distance sampling analysis (e.g.,
 Program DISTANCE, R package \code{Distance}, and R package \code{unmarked})
-is forthcoming.  Our intent is for \code{Rdistance} to provide rigorous and
-flexible analysis of distance-sampling data.  We understand that beginning
+is forthcoming.  While some of the functionality in \code{Rdistance} 
+is not unique, our aim is to provide an easy-to-use, rigorous,
+and flexible analysis option for distance-sampling data.  
+We understand that beginning
 users often need software that is both easy to use and easy to understand,
 and that advanced users often require greater flexibility and customization.
 Our aim is to meet the demands of both user groups.  \code{Rdistance} is
 under active development, so please contact us with issues, feature
 requests, etc. through the package's GitHub website
 (\url{https://github.com/tmcd82070/Rdistance}).
+}
 
-\bold{Resources} - The best place to start learning about \code{Rdistance}
+\section{Resources}{
+
+The best place to start learning about \code{Rdistance}
 is at the package's GitHub Wiki, which hosts several tutorial vignettes and
 FAQs (\url{https://github.com/tmcd82070/Rdistance/wiki}).
 Additionally, the examples in the help files for
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}, and
 \code{\link{autoDistSamp}} highlight the package's primary functionality.
 
-\tabular{ll}{ Package: \tab Rdistance\cr Type: \tab Package\cr License: \tab
-GNU General Public License\cr }
-
 A list of routines can be obtained by loading \code{Rdistance} and issuing
-\code{ls(pos="package:Rdistance")}.
+\code{help(package="Rdistance")}.
 }
+
 \author{
 Main author and maintainer: Trent McDonald
 <tmcdonald@west-inc.com>
 
 Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 
-Contributors: Ben Augustine, James Griswold, Joel Reynolds, Pham Quang, Earl
+Contributors: Ben Augustine, James Griswald, Joel Reynolds, Pham Quang, Earl
 Becker, Aaron Christ, Brook Russelland, Patrick McKann, Lacey Jeroue, 
 Abigail Hoffman, and Michael Kleinsausser.
 }

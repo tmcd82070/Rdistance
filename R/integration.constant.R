@@ -46,10 +46,10 @@
 #' FALSE if line transect data.
 #'
 #'
-#' @details The trapazoid rule is used to numerically integrate
+#' @details The trapezoid rule is used to numerically integrate
 #' \code{density} from \code{w.lo} to \code{w.hi}. Two-hundred
-#' (200) equal-sized trapazoids are used in the integration.  The number
-#' of trapazoids to use is fixed and cannot be changed without
+#' (200) equal-sized trapezoids are used in the integration.  The number
+#' of trapezoids to use is fixed and cannot be changed without
 #' re-writing this routine.
 #'
 #' @return A scalar (or vector of scalars if covariates are present)
@@ -73,11 +73,10 @@
 #'
 #' x <- seq(0,100,length=200)
 #' y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
-#' int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapazoid rule, should be 1.0
+#' int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapezoid rule, should be 1.0
 #' print(int.y) # Should be 1
 #'
 #' @keywords models
-#' @importFrom pracma erf
 #' @importFrom stats integrate
 #' @export
 
@@ -92,7 +91,7 @@ integration.constant <- function(dist,
                                  pointSurvey){
 
   density = match.fun(density)
-  seqx = seq(w.lo, w.hi, length=200)
+  seqx = seq(w.lo, w.hi, length=200) # for trapazoid rule when needed
 
   if(!is.null(covars)){
     # Not sure following is best to do. 
@@ -135,9 +134,14 @@ integration.constant <- function(dist,
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       sigma <- exp(s)
 
-      for(i in 1:nrow(unique.covars)){
-        temp.scaler[i] <- sqrt(pi/2) * sigma[i] * (erf(w.hi/(sqrt(2)*sigma[i])) - erf(w.lo/(sqrt(2)*sigma[i])))
-      }
+      # Point is: temp.scaler should be itegral under distance function
+      # We happen to know it for halfnorm (and some others below)
+      temp.scaler <- 2*(pnorm(w.hi,w.lo,sigma)-0.5) * sqrt(pi/2) * sigma
+      
+      # We had these statements when Aidan was requiring the pracma package. 
+      # for(i in 1:nrow(unique.covars)){
+      #   temp.scaler[i] <- sqrt(pi/2) * sigma[i] * (erf(w.hi/(sqrt(2)*sigma[i])) - erf(w.lo/(sqrt(2)*sigma[i])))
+      # }
     }
     else if(identical(density, hazrate.like) & expansions == 0){
       s <- as.matrix(unique.covars[,-PkeyCol]) %*% matrix(a[-length(a)],ncol=1)
@@ -155,9 +159,11 @@ integration.constant <- function(dist,
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       beta <- exp(s)
 
-      for(i in 1:nrow(unique.covars)){
-        temp.scaler[i] <- unname((exp(-beta[i]*w.lo) - exp(-beta[i]*w.hi))/beta[i])
-      }
+      temp.scaler <- unname((exp(-beta*w.lo) - exp(-beta*w.hi))/beta)
+      
+      # for(i in 1:nrow(unique.covars)){
+      #   temp.scaler[i] <- unname((exp(-beta[i]*w.lo) - exp(-beta[i]*w.hi))/beta[i])
+      # }
 
     }
     else{
@@ -186,7 +192,7 @@ integration.constant <- function(dist,
                             w.lo = w.lo, w.hi = w.hi, a = a, 
                             expansions = expansions, series=series)
 
-    #   Trapazoid rule
+    #   trapezoid rule
     scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*dist)
   }
   else{
@@ -194,7 +200,7 @@ integration.constant <- function(dist,
                      w.hi = w.hi, a = a, expansions = expansions, 
                      series=series)
 
-    #   Trapazoid rule
+    #   trapezoid rule
     scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
   }
   #print(scaler)

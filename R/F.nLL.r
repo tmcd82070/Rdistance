@@ -9,7 +9,7 @@
 #'   number of expansion terms, and estimated parameters.
 #'   
 #' @param a A vector of parameter values for  
-#' the liklihood. Length of this vector must be 
+#' the likelihood. Length of this vector must be 
 #'   \code{expansions + 1 + 1*(like \%in\% c("hazrate", "uniform"))}.
 #'   
 #' @param dist A vector of observed distances. All values must be between 
@@ -24,10 +24,10 @@
 #' named \code{paste(like,".like")} (e.g., "uniform.like") must exist
 #' somewhere in this routine's scope.  This routine finds the ".like" 
 #' function and calls it with the appropriate parameters.  
-#' A user-defined likelihood can be used by simply defining a 
+#' A user-defined likelihood can be implmented by simply defining a 
 #' function with the ".like" extension and giving the root name here. 
 #' For example, define a function named "myLike.like" in the 
-#' .GlobalEnv and set \code{like="myLike"} here.
+#' \code{.GlobalEnv} and set \code{like="myLike"} here.
 #' 
 #' @param w.lo Lower or left-truncation limit of the distances.  
 #' This is the minimum possible off-transect distance. Default is 0.
@@ -48,17 +48,17 @@
 #' @param pointSurvey Boolean. TRUE if \code{dist} is point 
 #' transect data, FALSE if line transect data.
 #' 
-#' @param for.optim Boolean. If TRUE, values are multpilied 
-#' by 10^9 to help optim converge more consistently.
+#' @param for.optim Boolean. If TRUE, values are multiplied 
+#' by 10^9 to help \code{optim} converge more consistently.
 #' 
 #' @return A scalar, the negative of the log likelihood evaluated at 
 #' parameters \code{a}, including expansion terms.
 #' 
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
+#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
 #'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #'         
-#' @seealso See \code{\link{uniform.like}} for definitions of 
-#' all the likelihoods; \code{\link{dfuncEstim}}
+#' @seealso See \code{\link{uniform.like}} and links there; 
+#'  \code{\link{dfuncEstim}}
 #' 
 #' @keywords models
 #' @export

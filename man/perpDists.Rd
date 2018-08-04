@@ -2,7 +2,7 @@
 % Please edit documentation in R/perpDists.R
 \name{perpDists}
 \alias{perpDists}
-\title{Compute off-transect ditances from sighting distances and angles}
+\title{Compute off-transect distances from sighting distances and angles}
 \usage{
 perpDists(sightDist, sightAngle, data)
 }

@@ -2,17 +2,22 @@
 % Please edit documentation in R/RdistanceControls.R
 \name{RdistanceControls}
 \alias{RdistanceControls}
-\title{RdistanceControls}
+\title{Control parameters for \code{Rdistance} optimization.}
 \usage{
-RdistanceControls(optimizer = "nlminb", evalMax = 2000, maxIters = 1000,
-  likeTol = 1e-08, coefTol = 1.5e-08, hessEps = 1e-08)
+RdistanceControls(optimizer = "nlminb", evalMax = 2000,
+  maxIters = 1000, likeTol = 1e-08, coefTol = 1.5e-08,
+  hessEps = 1e-08)
 }
 \arguments{
-\item{optimizer}{The optimizer to use for optimization.  Results
+\item{optimizer}{A string specifying the optimizer 
+to use.  Results
 vary between optimizers, so switching algorithms sometimes 
 makes a poorly behaved distance function converge.  The valid 
-values are \code{optim} for the `optim` function of package `optim`, 
-or \code{nlminb} for the `nlminb` routine.}
+values are "optim" which uses \code{optim::optim},
+and "nlminb" which uses \code{stats:nlminb}.  The authors 
+have had better luck with "nlminb" than "optim" and "nlminb" 
+runs noticably faster.  Problems with solutions near parameter 
+boundaries may require use of "optim".}
 
 \item{evalMax}{The maximum number of objective function
 evaluations allowed.}
@@ -23,14 +28,14 @@ iterations allowed.}
 \item{likeTol}{The maximum change in the likelihood 
 (the objective) between
 iterations that is tolerated during optimization.  
-If the likelhood changes by less than this amount, 
+If the likelihood changes by less than this amount, 
 optimization stops and a solution is declared.}
 
 \item{coefTol}{The maximum change in the model coefficients 
 between
 iterations that is tolerated during optimization.  
 If the sum of squared coefficient differences changes 
-by less than this amount between interations, 
+by less than this amount between iterations, 
 optimization stops and a solution is declared.}
 
 \item{hessEps}{A vector of parameter distances used during 

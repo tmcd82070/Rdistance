@@ -1,10 +1,11 @@
 #' @name print.abund
 #' @aliases print.abund
 #' @title Print abundance estimates
-#' @description Print an object of class c("abund","dfunc") that is output by \code{abundEstim}.
+#' @description Print an object of class \code{c("abund","dfunc")} 
+#' that is output by \code{abundEstim}.
 #' 
 #' @param x An object output by \code{abundEstim}.  This is a distance function object that 
-#'   also contains abundance estimates, and has class c("abund", "dfunc").
+#'   also contains abundance estimates, and has class \code{c("abund", "dfunc")}.
 #'   
 #' @param criterion A string specifying the criterion to print.
 #' Must be one of "AICc" (the default), 

@@ -2,7 +2,7 @@
 #' estimated detection functions
 #' 
 #' @description Computes Effective Strip Width (ESW) for line-transect detection
-#'   functions, or the analagous Effective Detection Radius (EDR) for point-transect
+#'   functions, or the analogous Effective Detection Radius (EDR) for point-transect
 #'   detection functions.
 #'   
 #' @param obj An estimated detection function object.  An estimated detection 

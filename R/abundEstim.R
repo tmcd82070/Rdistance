@@ -45,7 +45,7 @@
 #'   of individuals per hectare (ha; 1 ha = 10,000 square meters).
 #'   square meter.
 #'   
-#' @param ci A scaler indicating the confidence level of confidence intervals. 
+#' @param ci A scalar indicating the confidence level of confidence intervals. 
 #'   Confidence intervals are computed using the bias corrected bootstrap
 #'   method. If \code{ci = NULL}, confidence intervals are not computed.
 #'   
@@ -70,7 +70,7 @@
 #' @details The abundance estimate for line transect surveys (if no covariates
 #'    are included in the detection function) is \deqn{N =
 #'   \frac{n.indiv(area)}{2(ESW)(tot.trans.len)}}{N = n.indiv*area /
-#'   (2*ESW*tot.trans.len)} where n.indiv is either \code{avg.group.size * n} or
+#'   (2*ESW*tot.trans.len)} where \code{n.indiv} is either \code{avg.group.size * n} or
 #'   \code{sum(group.sizes)}, and \code{ESW} is the effective strip width
 #'   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
 #'   
@@ -81,7 +81,7 @@
 #'   recalculates the model's parameter estimates.  If a double-observer data
 #'   frame is included in \code{dfunc}, rows of the double-observer data frame
 #'   are re-sampled each bootstrap iteration. No model selection is performed.
-#'   By default, \code{R} = 500 iterations are performed, afterwhich the bias
+#'   By default, \code{R} = 500 iterations are performed, after which the bias
 #'   corrected confidence intervals are computed using the method given in Manly
 #'   (1997, section 3.4).
 #'   
@@ -90,7 +90,7 @@
 #'     \code{abundEstim} from within other functions or during simulations.
 #'   
 #' @return If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
-#'   class c("abund", "dfunc"), containing all the components of a "dfunc"
+#'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
 #'   object (see \code{dfuncEstim}), plus the following: 
 #'   
 #'  \item{abundance}{Estimated abundance in the study area (if \code{area} >
@@ -125,7 +125,7 @@
 #'    
 #'   \item{effDist}{The effective sampling distance at the site.  For line-
 #'   transects, this is ESW at the site.  For points, this is EDR. } 
-#'   \item{pDetection}{Average probability of deteciton at the site. 
+#'   \item{pDetection}{Average probability of detection at the site. 
 #'   If only site-level covariates appear in the distance function, 
 #'   pDetection is constant within a site. When detection-level 
 #'   covariates are present, pDetection is the average at the site.}
@@ -148,8 +148,8 @@
 #'   Jason Carlisle, University of Wyoming and WEST Inc., 
 #'   \email{jcarlisle@west-inc.com}
 #'   
-#' @references Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and monte
-#'   carlo methods in biology}, London: Chapman and Hall.
+#' @references Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
+#'   monte-carlo methods in biology}, London: Chapman and Hall.
 #'   
 #'   Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating

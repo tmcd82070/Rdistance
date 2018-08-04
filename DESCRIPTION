@@ -24,7 +24,7 @@ Author: c(
 Description: Distance-sampling is a popular method for abundance estimation in
   ecology. This package contains functions and associated routines to analyze
   distance-sampling data collected on point or line transects. 
-  Line and point transect analayses are accomodated in one routine 
+  Line and point transect analyses are accomodated in one routine 
   that accepts a regression-like formula object. Abundance routines
   perform automated bootstrapping and automated detection-function 
   selection. Overall (study area) and site-level (transect or point) 
@@ -42,5 +42,5 @@ URL: https://github.com/tmcd82070/Rdistance/wiki
 BugReports: https://github.com/tmcd82070/Rdistance/issues
 Suggests: knitr
 VignetteBuilder: knitr
-Imports: graphics, pracma, stats, utils
-RoxygenNote: 6.0.1
+Imports: graphics, stats, utils
+RoxygenNote: 6.1.0

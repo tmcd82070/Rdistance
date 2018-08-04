@@ -1,5 +1,4 @@
 #' @name F.start.limits
-#' @aliases F.start.limits
 #' @title Set starting values and limits for parameters of Rdistance functions
 #' @description Return reasonable starting values and limits (boundaries) for the parameters of 
 #'   distance functions.  Starting values and limits are specified for 
@@ -26,7 +25,7 @@
 #'   \item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
 #'   \item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
 #'   \item{names}{Vector of names for the likelihood parameters and expansion terms.}
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
 #' @seealso \code{\link{dfuncEstim}}
 #' @examples F.start.limits("uniform", 0, 0, 1000)

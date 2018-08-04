@@ -37,7 +37,7 @@ detections is returned.
 }
 \description{
 Computes Effective Strip Width (ESW) for line-transect detection
-  functions, or the analagous Effective Detection Radius (EDR) for point-transect
+  functions, or the analogous Effective Detection Radius (EDR) for point-transect
   detection functions.
 }
 \details{

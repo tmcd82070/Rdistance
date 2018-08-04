@@ -8,8 +8,10 @@
 #' @param dfunc An estimate distance function (see \code{dfuncEstim}).
 #' 
 #' @param detectionData A data frame containing information on 
-#' detections, such as distance and which transect or point they occured
-#' on (see \code{dfuncEstim}).
+#' detections.  The minimum amount of information is the detection 
+#' distances and transect or point ID where each detection
+#' occurred. (see \emph{Input data frames} in help 
+#' for \code{dfuncEstim}).
 #' 
 #' @param siteData A data frame containing information on the 
 #' transects or points surveyed  (see \code{dfuncEstim}).
@@ -43,7 +45,7 @@
 #'     
 #'    \item{effDist}{The effective sampling distance at the site.  For line-
 #'    transects, this is ESW at the site.  For points, this is EDR. } 
-#'    \item{pDetection}{Average probability of deteciton at the site. 
+#'    \item{pDetection}{Average probability of detection at the site. 
 #'    If only site-level covariates appear in the distance function, 
 #'    pDetection is constant within a site. When detection-level 
 #'    covariates are present, pDetection is the average at the site.}

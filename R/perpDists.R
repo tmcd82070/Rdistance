@@ -1,6 +1,6 @@
 #' @name perpDists
-#' @aliases perpDists
-#' @title Compute off-transect ditances from sighting distances and angles
+#' 
+#' @title Compute off-transect distances from sighting distances and angles
 #' @description Computes off-transect (also called 'perpendicular') distances from measures of sighting distance and sighting angle.
 #' @usage perpDists(sightDist, sightAngle, data)
 #' @param sightDist Character, name of column in \code{data} that contains the observed or sighting distances from the observer to the detected objects.

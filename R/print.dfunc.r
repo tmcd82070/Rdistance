@@ -2,11 +2,12 @@
 #' 
 #' @title Print a distance function object
 #' 
-#' @description Print method for distance functions produced by dfuncEstim, that are of class \code{dfunc}.
+#' @description Print method for distance functions produced by \code{dfuncEstim},
+#' which are of class \code{dfunc}.
 #' 
 #' @param x An estimated distance function resulting from a call to \code{dfuncEstim}.
 #' 
-#' @param \dots Included for compatability with other print methods.  Ignored here.
+#' @param \dots Included for compatibility with other print methods.  Ignored here.
 #' 
 #' @param criterion A string specifying the criterion to print.
 #' Must be one of "AICc" (the default), 
@@ -23,7 +24,7 @@
 #'   \item \samp{Log likelihood} : Value of the maximized log likelihood.
 #'   \item \samp{Criterion} : Value of the specified fit criterion (AIC, AICc, or BIC).
 #' }
-#' The number of digits printed is controled by \code{options()$digits}.
+#' The number of digits printed is controlled by \code{options()$digits}.
 #' @return The input value of \code{obj} is invisibly returned.
 #' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
 #'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}

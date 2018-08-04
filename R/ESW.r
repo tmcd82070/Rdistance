@@ -31,7 +31,7 @@
 #'   total length of transects.
 #'   
 #'   When detection is not perfect, less than the total half-width is
-#'   \emph{effectively} covered. Buckland et al. (1993) show that the
+#'   \emph{effectively} covered. Buckland \emph{et al.} (1993) show that the
 #'   denominator of the density estimator in this case involves total length of 
 #'   surveyed transects times area under the detection function (i.e., this
 #'   integral). By analogy with the perfect detection case, this integral can
@@ -40,12 +40,12 @@
 #'   effectively covers the same area as a study with perfect detection out to a
 #'   distance of X.
 #'   
-#'   The trapazoid rule is used to numerically integrate under the distance
+#'   The trapezoid rule is used to numerically integrate under the distance
 #'   function in \code{obj} from \code{obj$w.lo} to \code{obj$w.hi}. Two-hundred
-#'   trapazoids are used in the approximation to speed calculations.  In some
-#'   rare cases, two hundred trapazoids may not be enough.  In these cases, the
+#'   trapezoids are used in the approximation to speed calculations.  In some
+#'   rare cases, two hundred trapezoids may not be enough.  In these cases, the
 #'   code for this function can be \code{sink}-ed to a file, inspected in a text
-#'   editor, modified to bump the number of trapazoids, and \code{source}-d back
+#'   editor, modified to bump the number of trapezoids, and \code{source}-d back
 #'   in.
 #'   
 #' @return If \code{newdata} is not missing and not NULL and 
@@ -130,7 +130,7 @@ ESW <- function( obj, newdata ){
     
     y <- y * g.at.x0 / f.at.x0
     
-    # Trapazoid rule.  
+    # trapezoid rule.  
     # [tlm] not sure I agree with this old comment: Use x[3] and x[2] because for 
     # hazard rate, x[1] is not evenly spaced with rest.
         
@@ -163,7 +163,7 @@ ESW <- function( obj, newdata ){
     
     y <- y * scaler  # length(scalar) == nrow(y), so this works right
 
-    # Trapazoid rule.  
+    # trapezoid rule.  
     dy <- x[3]-x[2]
     y1 <- y[,-1,drop=FALSE]
     y  <- y[,-ncol(y),drop=FALSE]

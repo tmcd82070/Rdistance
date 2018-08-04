@@ -112,10 +112,10 @@ values are:
 \itemize{
   \item "gaussian" : Gaussian (normal) kernel, the default
   \item "rectangular" : Uniform or flat kernel
-  \item "triangular" : Equalateral triangular kernel
+  \item "triangular" : Equilateral triangular kernel
   \item "epanechnikov" : the Epanechnikov kernel
   \item "biweight" : the biweight kernel
-  \item "cosine" : the S versoin of the cosine kernel
+  \item "cosine" : the S version of the cosine kernel
   \item "optcosine" : the optimal cosine kernel which is the usual 
   one reported in the literature 
 }
@@ -147,7 +147,7 @@ See \code{F.gx.estim} documentation for definition.}
 \item{observer}{This parameter is passed to \code{F.gx.estim}. 
 See \code{F.gx.estim} documentation for definition.}
 
-\item{warn}{A logical scaler specifying whether to issue 
+\item{warn}{A logical scalar specifying whether to issue 
 an R warning if the estimation did not converge or if one 
 or more parameter estimates are at their boundaries.  
 For estimation, \code{warn} should generally be left at
@@ -166,7 +166,7 @@ basic sampling unit (when \code{pointSurvey}=FALSE) or
 contain multiple sampling units (e.g., when \code{pointSurvey}=TRUE). 
 For line-transects, the \code{transectID} column(s) alone is 
 sufficient to specify unique sample sites. 
-For point-transects, the amalgomation of \code{transectID} and 
+For point-transects, the amalgamation of \code{transectID} and 
 \code{pointID} specify unique sampling sites.  
 See \bold{Input data frames}.}
 
@@ -233,7 +233,7 @@ where substantial non-zero probability of sighting typically exists.
 
 To save space and to easily specify 
 sites without detections, 
-all site ID's, regardless whether a detection occured there,
+all site ID's, regardless whether a detection occurred there,
 and \emph{site level} covariates are stored in 
 the \code{siteData} data frame.  Detection distances and group
 sizes are measured at the \emph{detection level} and 

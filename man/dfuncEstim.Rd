@@ -7,14 +7,14 @@
 dfuncEstim(formula, detectionData, siteData, likelihood = "halfnorm",
   pointSurvey = FALSE, w.lo = 0, w.hi = NULL, expansions = 0,
   series = "cosine", x.scl = 0, g.x.scl = 1, observer = "both",
-  warn = TRUE, transectID = NULL, pointID = "point", length = "length",
-  control = RdistanceControls())
+  warn = TRUE, transectID = NULL, pointID = "point",
+  length = "length", control = RdistanceControls())
 }
 \arguments{
-\item{formula}{A standard formula object (eg dist ~ 1, 
-dist ~ covar1 + covar2). The left-hand side (before ~)
+\item{formula}{A standard formula object (e.g., \code{dist ~ 1}, 
+\code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
 is the name of the vector containing distances (off-transect or 
-from points).  The right-hand side (after ~)
+radial).  The right-hand side (after \code{~})
 contains the names of covariate vectors to fit in the detection
 function. If covariates do not appear in \code{data}, they must 
 be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)}
@@ -44,7 +44,7 @@ variables:
   all group sizes are 1). 
   
   \item When \code{Rdistance} allows detection-level 
-  covariates in some verson after  2.1.1, detection-level 
+  covariates, detection-level 
   covariates will appear in this data frame. 
    
 }
@@ -112,7 +112,7 @@ See \code{F.gx.estim} documentation for definition.}
 \item{observer}{This parameter is passed to \code{F.gx.estim}. 
 See \code{F.gx.estim} documentation for definition.}
 
-\item{warn}{A logical scaler specifying whether to issue 
+\item{warn}{A logical scalar specifying whether to issue 
 an R warning if the estimation did not converge or if one 
 or more parameter estimates are at their boundaries.  
 For estimation, \code{warn} should generally be left at
@@ -127,7 +127,7 @@ setting \code{warn = FALSE}.}
 
 \item{transectID}{A character vector naming the transect ID column(s) in
 \code{detectionData} and \code{siteData}.  \code{Rdistance} 
-accomodates two kinds of transects: continuous and point.  
+accommodates two kinds of transects: continuous and point.  
 When continuous transects are used, detections can occur at
 any point along the route and these are generally called 
 line-transects. When point transects are used, 
@@ -135,14 +135,14 @@ detections can only occur at a series of stops (points)
 along the route and are generally called point-transects.  
 Transects themselves are the 
 basic sampling unit when \code{pointSurvey}=FALSE and 
-are synomous with sites in this case. Transects
+are synonymous with sites in this case. Transects
 may contain multiple sampling 
-units (i.e., points) when \code{pointSurvey}=TRUE). 
+units (i.e., points) when \code{pointSurvey}=TRUE. 
 For line-transects, the \code{transectID} column(s) alone is 
 sufficient to specify unique sample sites. 
-For point-transects, the amalgomation of \code{transectID} and 
+For point-transects, the amalgamation of \code{transectID} and 
 \code{pointID} specify unique sampling sites.  
-See \bold{Input data frames}.}
+See \bold{Input data frames} below.}
 
 \item{pointID}{When point-transects are used, this is the 
 ID of points on a transect.  When \code{pointSurvey}=TRUE, 
@@ -177,7 +177,7 @@ are lists containing the following components:
     two parameters). }
   \item{varcovar}{The variance-covariance matrix for coefficients 
     of the distance function, estimated by the inverse of the Hessian
-    of the fit evaluated at the estimates.  There is no guarentee this 
+    of the fit evaluated at the estimates.  There is no guarantee this 
     matrix is positive-definite and should be viewed with caution.  
     Error estimates derived from bootstrapping are generally more reliable.}   
   \item{loglik}{The maximized value of the log likelihood 
@@ -218,7 +218,7 @@ or off-point (radial) distances.
 
 To save space and to easily specify 
 sites without detections, 
-all site ID's, regardless of whether a detection occured there,
+all site ID's, regardless of whether a detection occurred there,
 and \emph{site level} covariates are stored in 
 the \code{siteData} data frame.  Detection distances and group
 sizes are measured at the \emph{detection level} and 

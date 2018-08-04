@@ -5,7 +5,7 @@
 #' @param object An estimated detection function object.  An estimated detection 
 #'   function object has class 'dfunc', and is usually produced by a call to 
 #'   \code{dfuncEstim}.
-#' @param \dots Required for compatability with the general \code{AIC} method.  Any 
+#' @param \dots Required for compatibility with the general \code{AIC} method.  Any 
 #'   extra arguments to this function are ignored.
 #' @param criterion String specifying the criterion to compute. Either 
 #'   "AICc", "AIC", or "BIC".
@@ -30,12 +30,15 @@
 #'   \deqn{BIC = LL + log(n)p,}{BIC = (LL) + log(n)p}. 
 #'   
 #' @return A scalar. By default, the value of AICc for the 
-#' estimated distance funciton \code{obj}.
+#' estimated distance function \code{obj}.
 #' 
-#' @references Burnham, K. P., and D. R. Anderson, 2002. \emph{Model Selection and Multimodel Inference: 
-#'   A Practical Information-Theoretic Approach, 2nd ed.} Springer-Verlag. ISBN 0-387-95364-7.
+#' @references Burnham, K. P., and D. R. Anderson, 2002. 
+#' \emph{Model selection and multi-model inference: 
+#'    A practical information-theoretic approach, Second ed.} 
+#'    Springer-Verlag. ISBN 0-387-95364-7.
 #'   
-#'   McQuarrie, A. D. R., and Tsai, C.-L., 1998. \emph{Regression and Time Series Model Selection.} 
+#'   McQuarrie, A. D. R., and Tsai, C.-L., 1998. \emph{Regression and 
+#'   time series model selection.} 
 #'   World Scientific. ISBN 981023242X
 #'   
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}

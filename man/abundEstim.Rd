@@ -4,8 +4,8 @@
 \alias{abundEstim}
 \title{Estimate abundance from distance-sampling data}
 \usage{
-abundEstim(dfunc, detectionData, siteData, area = 1, ci = 0.95, R = 500,
-  plot.bs = FALSE, bySite = FALSE, showProgress = TRUE)
+abundEstim(dfunc, detectionData, siteData, area = 1, ci = 0.95,
+  R = 500, plot.bs = FALSE, bySite = FALSE, showProgress = TRUE)
 }
 \arguments{
 \item{dfunc}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
@@ -47,7 +47,7 @@ in \code{dfunc} are meters, and area is set to 10,000, density is number
 of individuals per hectare (ha; 1 ha = 10,000 square meters).
 square meter.}
 
-\item{ci}{A scaler indicating the confidence level of confidence intervals. 
+\item{ci}{A scalar indicating the confidence level of confidence intervals. 
 Confidence intervals are computed using the bias corrected bootstrap
 method. If \code{ci = NULL}, confidence intervals are not computed.}
 
@@ -71,7 +71,7 @@ it is handy to see progress of the bootstrap iterations.}
 }
 \value{
 If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
-  class c("abund", "dfunc"), containing all the components of a "dfunc"
+  class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
   object (see \code{dfuncEstim}), plus the following: 
   
  \item{abundance}{Estimated abundance in the study area (if \code{area} >
@@ -106,7 +106,7 @@ If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
    
   \item{effDist}{The effective sampling distance at the site.  For line-
   transects, this is ESW at the site.  For points, this is EDR. } 
-  \item{pDetection}{Average probability of deteciton at the site. 
+  \item{pDetection}{Average probability of detection at the site. 
   If only site-level covariates appear in the distance function, 
   pDetection is constant within a site. When detection-level 
   covariates are present, pDetection is the average at the site.}
@@ -133,7 +133,7 @@ Estimate abundance (or density) given an estimated detection
 The abundance estimate for line transect surveys (if no covariates
    are included in the detection function) is \deqn{N =
   \frac{n.indiv(area)}{2(ESW)(tot.trans.len)}}{N = n.indiv*area /
-  (2*ESW*tot.trans.len)} where n.indiv is either \code{avg.group.size * n} or
+  (2*ESW*tot.trans.len)} where \code{n.indiv} is either \code{avg.group.size * n} or
   \code{sum(group.sizes)}, and \code{ESW} is the effective strip width
   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
   
@@ -144,7 +144,7 @@ The abundance estimate for line transect surveys (if no covariates
   recalculates the model's parameter estimates.  If a double-observer data
   frame is included in \code{dfunc}, rows of the double-observer data frame
   are re-sampled each bootstrap iteration. No model selection is performed.
-  By default, \code{R} = 500 iterations are performed, afterwhich the bias
+  By default, \code{R} = 500 iterations are performed, after which the bias
   corrected confidence intervals are computed using the method given in Manly
   (1997, section 3.4).
   
@@ -174,8 +174,8 @@ fit
          
 }
 \references{
-Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and monte
-  carlo methods in biology}, London: Chapman and Hall.
+Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
+  monte-carlo methods in biology}, London: Chapman and Hall.
   
   Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating

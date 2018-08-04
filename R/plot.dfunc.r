@@ -38,7 +38,7 @@
 #' 
 #' @param density If \code{plotBars=TRUE}, a vector giving the density of 
 #' shading lines, in lines per inch, for the bars underneath 
-#' the distance function. Values of NULL or a number strickly less than 0 
+#' the distance function. Values of NULL or a number strictly less than 0 
 #' mean solid fill using colors from parameter \code{col}.  If 
 #' \code{density =0 }, bars are not filled with any color or lines. 
 #' 
@@ -100,9 +100,9 @@
 #'  be specified (exceptions noted above in description of '\dots').The form of the likelihood and any series
 #'   expansions is printed in the main title (overwrite this with 
 #'   \code{main="<my title>"}). Convergence of the distance
-#'   function is checked.  If the distance funtion did not converge, a warning
+#'   function is checked.  If the distance function did not converge, a warning
 #'   is printed over the top of the histogram.  If one or more parameter
-#'   estimates are at their limits (likely indicating non-covergence or poor
+#'   estimates are at their limits (likely indicating non-convergence or poor
 #'   fit), another warning is printed. 
 #'   
 #'   
@@ -112,7 +112,7 @@
 #'   
 #'   \item{xscl.plot}{Scaling factor for horizontal coordinates.  Due to the way
 #'   \code{barplot} works, the x-axis has been scaled.  The internal coordinates
-#'   of the bars are 1, 2, \ldots, nbars. To plot something at a distance
+#'   of the bars are 1, 2, \ldots, \code{nbars}. To plot something at a distance
 #'   coordinate of x, x must be divided by this value.  For example, to draw a
 #'   vertical line at a value of 10 on the x-axis, the correct call is
 #'   \code{abline(v=10/obj$xscl.plot)}.  }

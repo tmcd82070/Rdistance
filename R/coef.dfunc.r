@@ -7,7 +7,7 @@
 #' @param object An estimated distance function object.  An estimated distance 
 #'   function object has class 'dfunc', and is usually produced by a call to 
 #'   \code{dfuncEstim}.
-#' @param \dots Required for compatability with the general \code{coef} method.  Any 
+#' @param \dots Required for compatibility with the general \code{coef} method.  Any 
 #'   extra arguments to this function are ignored.
 #' @details This is an extractor function for the parameters of an estimated detection function. 
 #'   This function is equivalent to \code{obj$parameters} for classical detection functions.

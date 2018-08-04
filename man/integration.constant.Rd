@@ -4,8 +4,8 @@
 \alias{integration.constant}
 \title{Compute the integration constant for distance density functions}
 \usage{
-integration.constant(dist, density, a, covars, w.lo, w.hi, series, expansions,
-  pointSurvey)
+integration.constant(dist, density, a, covars, w.lo, w.hi, series,
+  expansions, pointSurvey)
 }
 \arguments{
 \item{dist}{Vector of detection distance values.}
@@ -59,10 +59,10 @@ the area under a distance function between two limits (\code{w.lo}
 and \code{w.hi}).
 }
 \details{
-The trapazoid rule is used to numerically integrate
+The trapezoid rule is used to numerically integrate
 \code{density} from \code{w.lo} to \code{w.hi}. Two-hundred
-(200) equal-sized trapazoids are used in the integration.  The number
-of trapazoids to use is fixed and cannot be changed without
+(200) equal-sized trapezoids are used in the integration.  The number
+of trapezoids to use is fixed and cannot be changed without
 re-writing this routine.
 }
 \examples{
@@ -74,7 +74,7 @@ print(scl) # Should be 75.1
 
 x <- seq(0,100,length=200)
 y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
-int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapazoid rule, should be 1.0
+int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapezoid rule, should be 1.0
 print(int.y) # Should be 1
 
 }

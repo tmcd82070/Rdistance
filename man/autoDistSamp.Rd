@@ -8,8 +8,8 @@ autoDistSamp(formula, detectionData, siteData, w.lo = 0, w.hi = NULL,
   likelihoods = c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
   series = c("cosine", "hermite", "simple"), expansions = 0:3,
   pointSurvey = FALSE, warn = TRUE, area = 1, ci = 0.95, R = 500,
-  bySite = FALSE, plot.bs = FALSE, showProgress = TRUE, plot = TRUE,
-  criterion = "AICc", ...)
+  bySite = FALSE, plot.bs = FALSE, showProgress = TRUE,
+  plot = TRUE, criterion = "AICc", ...)
 }
 \arguments{
 \item{formula}{This parameter is passed to \code{dfuncEstim}.

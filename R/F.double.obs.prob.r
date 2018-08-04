@@ -20,7 +20,7 @@
 #' @details When \code{observer} = "both", the observers are assumed to be independent. In this case the estimate 
 #'   of detection is 
 #'   \deqn{p = p_1 + p_2 - p_1p_2}{p = p1 + p2 - p1*p2}  
-#'   where \eqn{p_1}{p1} is the proporation of targets seen by observer 2 that were also seen by observer 1, 
+  #'   where \eqn{p_1}{p1} is the proportion of targets seen by observer 2 that were also seen by observer 1, 
 #'   \eqn{p_2}{p2} is the proportion of targets seen by observer 1 that were also seen by observer 2.
 #'   This estimator is very close to unbiased when observers are actually independent.
 #' @return A single scalar, the probability of detection estimate.

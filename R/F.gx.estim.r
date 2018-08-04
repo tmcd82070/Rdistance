@@ -1,10 +1,10 @@
 #' @name F.gx.estim
-#' @aliases F.gx.estim
+#' 
 #' @title Estimate g(0) or g(x)
 #' @description Estimate g(0) or g(x) for a specified distance function.
 #' @usage F.gx.estim(fit, x.scl=NULL, g.x.scl=NULL, observer=NULL)
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
-#' @param x.scl The x coordinate (a distance) at which to scale the distance funciton to \code{g.x.scl}.  See Details.
+#' @param x.scl The x coordinate (a distance) at which to scale the distance function to \code{g.x.scl}.  See Details.
 #' @param g.x.scl Height of the distance function at coordinate x. i.e., the distance function 
 #'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. See Details.
 #' @param observer A numeric scalar or text string specifying whether observer 1 or observer 2 or both were full-time observers. 
@@ -12,7 +12,7 @@
 #'   of a double observer system.   
 #'   If, for example, observer 2 was a data recorder and part-time observer, or if observer 2 
 #'   was the pilot, set \code{observer} = 1.  If \code{observer} = 1, observations by observer 1 not seen 
-#'   by observer 2 are ignored. The estimate of detecton in this case is the ratio of number of targets seen by both observers 
+#'   by observer 2 are ignored. The estimate of detection in this case is the ratio of number of targets seen by both observers 
 #'   to the number seen by both plus the number seen by just observer 2. If observer = "both", the 
 #'   computation goes both directions.
 #' @details There are several estimation cases covered by the inputs \code{x.scl} and \code{g.x.scl}:

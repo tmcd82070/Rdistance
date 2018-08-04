@@ -62,9 +62,9 @@
 #' Some half-normal distance functions in the literature 
 #' do not use a "2" in the 
 #' denominator of the exponent.  \code{Rdistance} uses a 
-#' "2" in the denominator of the exponenet to make quantiles of this 
+#' "2" in the denominator of the exponent to make quantiles of this 
 #' function agree with 
-#' the standard normal which means \emph{a} can be interpretated as a 
+#' the standard normal which means \emph{a} can be interpreted as a 
 #' normal standard error.  e.g., approximately 95\% of all observations 
 #' will occur between 0 and 2\emph{a}.
 #' 

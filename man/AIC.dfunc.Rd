@@ -11,7 +11,7 @@
 function object has class 'dfunc', and is usually produced by a call to 
 \code{dfuncEstim}.}
 
-\item{\dots}{Required for compatability with the general \code{AIC} method.  Any 
+\item{\dots}{Required for compatibility with the general \code{AIC} method.  Any 
 extra arguments to this function are ignored.}
 
 \item{criterion}{String specifying the criterion to compute. Either 
@@ -19,7 +19,7 @@ extra arguments to this function are ignored.}
 }
 \value{
 A scalar. By default, the value of AICc for the 
-estimated distance funciton \code{obj}.
+estimated distance function \code{obj}.
 }
 \description{
 Computes AICc, AIC, or BIC for estimated distance functions.
@@ -60,10 +60,13 @@ Regular Akaike's information criterion
   AIC(dfunc, criterion="BIC")  # BIC
 }
 \references{
-Burnham, K. P., and D. R. Anderson, 2002. \emph{Model Selection and Multimodel Inference: 
-  A Practical Information-Theoretic Approach, 2nd ed.} Springer-Verlag. ISBN 0-387-95364-7.
+Burnham, K. P., and D. R. Anderson, 2002. 
+\emph{Model selection and multi-model inference: 
+   A practical information-theoretic approach, Second ed.} 
+   Springer-Verlag. ISBN 0-387-95364-7.
   
-  McQuarrie, A. D. R., and Tsai, C.-L., 1998. \emph{Regression and Time Series Model Selection.} 
+  McQuarrie, A. D. R., and Tsai, C.-L., 1998. \emph{Regression and 
+  time series model selection.} 
   World Scientific. ISBN 981023242X
 }
 \seealso{

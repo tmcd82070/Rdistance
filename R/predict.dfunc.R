@@ -15,13 +15,14 @@
 #' @param \dots Included for compatibility with generic \code{predict} methods.
 #' 
 #' @return A matrix of predicted parameter for the distance function
-#' estimated in \code{dfunc}. The returned matrix has first dimension
-#' (nrow) equal to either the number of detection distanced 
+#' estimated in \code{dfunc}. Extent of the first dimension (rows) in 
+#' the returned matrix is equal to either the number of detection distances 
 #' in \code{detectionData} or number of rows in \code{newdata}. 
-#' The returned matrix's second dimension (ncol) is \emph{p} where 
-#' \emph{p} is the number of canonical parameters in the likelihood 
-#' plus the number of expansion terms.  Without expansion terms, \emph{p} 
-#' is either 1 or 2 depending on the liklihood (e.g., \code{halfnorm} has 
+#' The returned matrix's second dimension (columns) is 
+#' the number of canonical parameters in the likelihood 
+#' plus the number of expansion terms.  Without expansion terms, the number 
+#' of columns in the returned matrix 
+#' is either 1 or 2 depending on the likelihood (e.g., \code{halfnorm} has 
 #' one parameter, \code{hazrate} has two). 
 #' 
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
