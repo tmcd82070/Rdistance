@@ -32,7 +32,7 @@ than \code{w.hi} are allowed in \code{dist}, but are ignored
 and their contribution to the likelihood is set to \code{NA} 
 in the output.}
 
-\item{scale}{Logical scaler indicating whether or not to 
+\item{scale}{Logical scalar indicating whether or not to 
 scale the likelihood so it integrates to 1. This parameter is 
 used to stop recursion in other functions. If \code{scale} 
 equals TRUE, a numerical integration routine 

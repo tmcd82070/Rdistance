@@ -25,10 +25,11 @@ Built-in distance functions at present are "uniform", "halfnorm",
 named \code{paste(like,".like")} (e.g., "uniform.like") must exist
 somewhere in this routine's scope.  This routine finds the ".like" 
 function and calls it with the appropriate parameters.  
-A user-defined likelihood can be implmented by simply defining a 
+A user-defined likelihood can be implemented by simply defining a 
 function with the ".like" extension and giving the root name here. 
 For example, define a function named "myLike.like" in the 
-\code{.GlobalEnv} and set \code{like="myLike"} here.}
+\code{.GlobalEnv} and set \code{like="myLike"} here.  See 
+the vignette on this topic.}
 
 \item{w.lo}{Lower or left-truncation limit of the distances.
 This is the minimum possible off-transect distance. Default is 0.}

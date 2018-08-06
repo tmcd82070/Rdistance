@@ -13,7 +13,7 @@ likeParamNames(like.form)
 A vector of parameter names for that likelihood
 }
 \description{
-Returns names of the likelihood paramters. This is 
+Returns names of the likelihood parameters. This is 
 a helper function and is not
 necessary for estimation.  It is a nice to label some 
 outputs in \code{Rdistance} with 

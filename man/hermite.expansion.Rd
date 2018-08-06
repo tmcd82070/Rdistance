@@ -13,7 +13,7 @@ half-width or maximum sighting distance, and \eqn{d} is the perpendicular off-tr
 to a sighted group (\eqn{d\leq w}{d <= w}), \code{x} is usually \eqn{d/w}.  More generally, \code{x} 
 is a vector of numeric values.}
 
-\item{expansions}{A scaler specifying the number of expansion terms to compute. Must be one of the integers 1, 2, 3, or 4.}
+\item{expansions}{A scalar specifying the number of expansion terms to compute. Must be one of the integers 1, 2, 3, or 4.}
 }
 \value{
 A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the Hermite polynomial expansions of \code{x}. 

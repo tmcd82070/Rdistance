@@ -30,7 +30,7 @@ number of bars.  See \code{help(hist)} for all options.}
 set of covariate values (i.e. each column contains all values of each
 covariate)}
 
-\item{legend}{Logical scaler for whether to include legend. 
+\item{legend}{Logical scalar for whether to include legend. 
 If TRUE, a legend will be included on plot detailing
 covariate values plotted.}
 
@@ -38,7 +38,7 @@ covariate values plotted.}
 lines at \code{w.lo} and \code{w.hi} from 0 to the  
 distance function.}
 
-\item{plotBars}{Logical scaler for whether to plot the histogram 
+\item{plotBars}{Logical scalar for whether to plot the histogram 
 of distances behind the distance function.  If FALSE, no histogram 
 is plotted, only the distance function line(s).}
 

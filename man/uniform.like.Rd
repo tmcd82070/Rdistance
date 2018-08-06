@@ -46,7 +46,7 @@ defining other series.}
 in \code{series}. Depending on the series, this could be 0 through 5.
   The default of 0 equates to no expansion terms of any type.}
 
-\item{scale}{Logical scaler indicating whether or not to scale 
+\item{scale}{Logical scalar indicating whether or not to scale 
 the likelihood so it integrates to 1. This parameter is used 
 to stop recursion in other functions.
 If \code{scale} equals TRUE, a numerical integration 
