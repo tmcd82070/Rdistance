@@ -131,14 +131,16 @@ fit$ci
 For some data, the probability of detection may be dependent upon covariates due to site characteristics such as vegetation type or object characteristics such as animal size. Explore the distribution of distances for sparrows detected in different sagebrush shrub classes. 
 
 ```{r, fig.width = 6, fig.height = 4, warning = FALSE}
-hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "High"], 
-     col="grey", main="High Sage",  xlab="distance (m)", 
-     breaks = 15, xlim = c(0,150))
-rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "High"])
-hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "Low"],
-     col="grey", main="Low Sage",  xlab="distance (m)", 
+hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass ==
+     "High"], col="grey", main="High Sage",  
+     xlab="distance (m)", breaks = 15, xlim = c(0,150))
+rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == 
+    "High"])
+hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == 
+    "Low"], col="grey", main="Low Sage",  xlab="distance (m)", 
      breaks = 14, xlim = c(0,150))
-rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == "Low"])
+rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == 
+    "Low"])
 
 ```
 

@@ -24,7 +24,7 @@ Author: c(
 Description: Distance-sampling is a popular method for abundance estimation in
   ecology. This package contains functions and associated routines to analyze
   distance-sampling data collected on point or line transects. 
-  Rdistance accommodates line and point transect analyses 
+  It accommodates line and point transect analyses 
   in one routine 
   that accepts a regression-like formula object. Abundance routines
   perform automated bootstrapping and automated detection-function 
