@@ -22,8 +22,11 @@ The best place to start learning about `Rdistance` is at a workshop (see below) 
 
 ___
 
-**MAJOR UPDATE IN PROGRESS:**
-The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  We undertook a major update during summer/fall 2017 in preparation for two workshops that depend on `Rdistance`, and we are currently making final preparations before re-submitting to CRAN.  Primary new features include:
+**MAJOR UPDATE COMPLETE:**
+The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  
+The version available here is a major update and we are 
+currently making final preparations before re-submitting to CRAN.  
+Primary new features include:
 * point transect analysis (1.3.2 only allowed line transects)
 * covariates in the detection function (1.3.2 did not allow covariates).  
 * non-parametric (smoothed) distance functions
@@ -46,6 +49,4 @@ ___
 * *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
     * Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque, NM
     
-***Upcoming***
-
-Contact Trent McDonald (tmcdonald@west-inc.com) for more info.
+Interest in upcoming workshops? Contact Trent McDonald (tmcdonald@west-inc.com) for more info.
