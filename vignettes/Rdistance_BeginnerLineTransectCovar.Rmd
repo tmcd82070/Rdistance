@@ -72,7 +72,7 @@ Explore the distribution of distances.
 ```{r, fig.width=6, fig.height=4}
 hist(sparrowDetectionData$dist, col="grey", main="", 
      xlab="distance (m)")
-rug(sparrowDetectionData$dist)
+rug(sparrowDetectionData$dist,quiet = TRUE)
 summary(sparrowDetectionData$dist)
 ```
 
@@ -135,12 +135,12 @@ hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass ==
      "High"], col="grey", main="High Sage",  
      xlab="distance (m)", breaks = 15, xlim = c(0,150))
 rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == 
-    "High"])
+    "High"],quiet = TRUE)
 hist(sparrowDetectionData$dist[sparrowSiteData$shrubclass == 
     "Low"], col="grey", main="Low Sage",  xlab="distance (m)", 
      breaks = 14, xlim = c(0,150))
 rug(sparrowDetectionData$dist[sparrowSiteData$shrubclass == 
-    "Low"])
+    "Low"],quiet = TRUE)
 
 ```
 
