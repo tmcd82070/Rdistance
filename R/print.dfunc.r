@@ -53,7 +53,11 @@ print.dfunc <- function( x, criterion="AICc", ... ){
 
     is.smoothed <- class(x$fit) == "density"
     
-    cat("Call: ", deparse(x$call), "\n\n", sep = "")
+    callLine <- deparse(x$call)
+    callLine <- paste(callLine, collapse = " ")
+    callLine <- strwrap(paste0("Call: ",callLine),exdent=2)
+
+    cat(paste0(callLine,"\n"))
     if (length(coef.dfunc(x))) {
         seCoef <- sqrt(diag(x$varcovar))
         waldZ <- coef.dfunc(x) / seCoef
