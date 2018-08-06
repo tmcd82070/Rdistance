@@ -9,7 +9,7 @@
 #'   half-width or maximum sighting distance, and \eqn{d} is the perpendicular off-transect distance 
 #'   to a sighted group (\eqn{d\leq w}{d <= w}), \code{x} is usually \eqn{d/w}.  More generally, \code{x} 
 #'   is a vector of numeric values.
-#' @param expansions A scaler specifying the number of expansion terms to compute. Must be one of the integers 1, 2, 3, or 4.
+#' @param expansions A scalar specifying the number of expansion terms to compute. Must be one of the integers 1, 2, 3, or 4.
 #' @details There are, in general, several expansions that can be called Hermite. The Hermite expansion used here is:
 #'   \itemize{
 #'     \item \bold{First term}: \deqn{h_1(x)=x^4 - 6x^2 + 3,}{h1(x) = x^4 - 6*(x)^2 +3,}

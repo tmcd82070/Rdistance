@@ -141,7 +141,7 @@
 #' 
 #' @param pointID When point-transects are used, this is the 
 #' ID of points on a transect.  When \code{pointSurvey}=TRUE, 
-#' the amalgomation of \code{transectID} and 
+#' the amalgamation of \code{transectID} and 
 #' \code{pointID} specify unique sampling sites.  
 #' See \bold{Input data frames}.  
 #' 

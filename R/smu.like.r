@@ -38,7 +38,7 @@
 #' Included for compatibility with other distance likelihoods
 #' in \code{Rdistance}. 
 #'   
-#' @param scale Logical scaler indicating whether or not to 
+#' @param scale Logical scalar indicating whether or not to 
 #' scale the likelihood so it integrates to 1. This parameter is 
 #' used to stop recursion in other functions. If \code{scale} 
 #' equals TRUE, a numerical integration routine 

@@ -24,11 +24,11 @@
 #'   set of covariate values (i.e. each column contains all values of each
 #'   covariate)
 #'   
-#' @param legend Logical scaler for whether to include legend. 
+#' @param legend Logical scalar for whether to include legend. 
 #'   If TRUE, a legend will be included on plot detailing
 #'   covariate values plotted.
 #'   
-#' @param plotBars Logical scaler for whether to plot the histogram 
+#' @param plotBars Logical scalar for whether to plot the histogram 
 #' of distances behind the distance function.  If FALSE, no histogram 
 #' is plotted, only the distance function line(s).
 #'   

@@ -110,7 +110,7 @@
 #'   \code{n.hat}.  The names of this component give the quantiles of the
 #'   bootstrap distribution used to compute the bias corrected interval.} 
 #'   \item{B}{A vector or length \code{R} containing all bootstrap estimated
-#'   population sizes. If a particular interation did not converge, the
+#'   population sizes. If a particular iteration did not converge, the
 #'   corresponding entry in \code{B} will be \code{NA}. The bootstrap
 #'   distribution of \code{n.hat} can be plotted with \code{hist(x$B)}, where
 #'   \code{x} is an 'abundance estimate' object. The confidence interval in

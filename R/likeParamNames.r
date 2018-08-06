@@ -1,6 +1,6 @@
 #' @title Likelihood parameter names
 #' 
-#' @description Returns names of the likelihood paramters. This is 
+#' @description Returns names of the likelihood parameters. This is 
 #' a helper function and is not
 #' necessary for estimation.  It is a nice to label some 
 #' outputs in \code{Rdistance} with 
