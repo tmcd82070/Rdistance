@@ -120,6 +120,6 @@ Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 
 Contributors: Ben Augustine, James Griswald, Joel Reynolds, Pham Quang, Earl
 Becker, Aaron Christ, Brook Russelland, Patrick McKann, Lacey Jeroue, 
-Abigail Hoffman, and Michael Kleinsausser.
+Abigail Hoffman, and Michael Kleinsasser.
 }
 \keyword{package}
