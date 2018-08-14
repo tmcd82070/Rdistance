@@ -1,7 +1,7 @@
 ---
 title: "Beginner Point Transects Tutorial"
 author: "Michael Kleinsasser, Jason D. Carlisle and Trent L. McDonald"
-date: "May 22, 2018"
+date: "August 6, 2018"
 output:
   pdf_document: default
   html_document:
@@ -11,7 +11,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
-
 
 # Introduction
 
@@ -144,10 +143,10 @@ with no expansion terms, we do not plot all fitted functions
 (`plot=FALSE`), but we plot the best distance function 
 fitted during each bootstrap iteration. 
 
-```{r, fig.width=6, fig.height=4, results='hide', eval=FALSE}
+```{r, fig.width=6, fig.height=4, results='hide' }
 
 # Automated Fit - fit several models, choose the best model based on AIC
-auto <- autoDistSamp(formula       = thrasherDetectionData$dist ~ 1,
+autoDS <- autoDistSamp(formula       = thrasherDetectionData$dist ~ 1,
                      detectionData = thrasherDetectionData,
                      siteData      = thrasherSiteData,
                      pointSurvey   = TRUE,
@@ -157,17 +156,13 @@ auto <- autoDistSamp(formula       = thrasherDetectionData$dist ~ 1,
                      area          = 10000,
                      R             = 100,
                      ci            = 0.95,
-                     plot.bs       = TRUE)
-
+                     plot.bs       = FALSE)
 ```
 
 ```{r}
-# delete the following lines down to --- when get autoAbund to work
-auto<-list(n.hat=NA, ci=c(NA,NA))
-# ---
-
-auto
+autoDS
 ```
+
 
 The detection function with the lowest AICc value (and thus selected as the 'best') is the hazard rate likelihood with 0 cosine expansion terms.
 
@@ -175,7 +170,7 @@ The detection function with the lowest AICc value (and thus selected as the 'bes
 
 In sections 3 and 4, we fitted a half-normal detection function and used that function to estimate thrasher density.  Our estimate was `r round(fit$n.hat, 2)` thrashers per ha (95% CI = `r round(fit$ci[[1]], 2)` to `r round(fit$ci[[2]], 2)`). In section 5, we used AICc to estimate a
 better fitting detection function and used it to estimate thrasher density.  The thrasher density estimated by the better-fitting model
-was `r round(auto$n.hat, 2)` thrashers per ha (95% CI = `r round(auto$ci[[1]], 2)` to `r round(auto$ci[[2]], 2)`). (Note, CI estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).
+was `r round(autoDS$n.hat, 2)` thrashers per ha (95% CI = `r round(autoDS$ci[[1]], 2)` to `r round(autoDS$ci[[2]], 2)`). (Note, CI estimates may vary slightly from these due to minor 'simulation slop' inherent in bootstrapping methods).
 
 
 
