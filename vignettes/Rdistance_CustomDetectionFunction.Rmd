@@ -4,7 +4,7 @@ author: "Trent L. McDonald and Jason D. Carlisle"
 date: "August 6, 2018"
 output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{Rdistance_CustomDetectionFunction}
+  %\VignetteIndexEntry{Rdistance: Custom Detection Function Tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
