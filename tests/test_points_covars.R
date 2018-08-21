@@ -89,8 +89,12 @@ trunc <- 175
 
 
 
-thrasher.dfunc <- dfuncEstim(formula=dist~observer, detectionData=thrasherDetectionData,
-                             siteData=thrasherSiteData, likelihood="halfnorm", w.hi=trunc, pointSurvey=TRUE)
+thrasher.dfunc <- dfuncEstim(formula=dist~observer, 
+                             detectionData=thrasherDetectionData,
+                             siteData=thrasherSiteData, 
+                             likelihood="halfnorm", 
+                             w.hi=trunc, 
+                             pointSurvey=TRUE)
 thrasher.dfunc
 
 

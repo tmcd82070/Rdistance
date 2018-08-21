@@ -123,9 +123,9 @@ integration.constant <- function(dist,
 
     if(pointSurvey){
       for(i in 1:nrow(unique.covars)){
-        temp.covars <- matrix(unique.covars[i,-PkeyCol],nrow=length(seqx),ncol=ncol(unique.covars)-1, byrow=TRUE)
-        seqy[[i]] <- seqx * density(dist = seqx, covars = temp.covars,
-                    scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a,
+        temp.covars <- matrix(as.numeric(unique.covars[i,-PkeyCol]),nrow=length(seqx),ncol=ncol(unique.covars)-1, byrow=TRUE)
+        seqy[[i]] <- seqx * density(a = a, dist = seqx, covars = temp.covars,
+                    scale = FALSE, w.lo = w.lo, w.hi = w.hi, 
                     expansions = expansions, series=series)
         temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
@@ -166,8 +166,8 @@ integration.constant <- function(dist,
       # }
 
     }
-    else{
-      # not sure about this case.  When does it happen?  Is this needed?
+    else {
+      # User defined likelihood case.  
       for(i in 1:nrow(unique.covars)){
         temp.covars <- matrix(unique.covars[i,-PkeyCol],nrow=length(seqx),
                               ncol=ncol(unique.covars)-1, byrow=TRUE)

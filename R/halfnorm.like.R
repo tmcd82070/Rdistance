@@ -132,12 +132,18 @@ halfnorm.like <- function(a,
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
   if(!is.null(covars)){
-    s <- 0
-    for (i in 1:(ncol(covars)))
-      s <- s + a[i]*covars[,i]
+    
+    q <- ncol(covars)
+    # not necessary, in all half norm cases, no extra params hanging off the end 
+    # but, I'll leave it here so it's compatible with other likelihoods and 
+    # just in case we want to allow expansions with covariates later.
+    beta <- a[1:q] 
+    s <- drop( covars %*% matrix(beta,ncol=1) )
     sigma <- exp(s)
-  } else {sigma <- a[1]}
-  
+  } else {
+    sigma <- a[1]
+  }
+
   key <- exp(-dist^2/(2*sigma^2))
   dfunc <- key
   w <- w.hi - w.lo
