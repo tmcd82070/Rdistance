@@ -2,35 +2,31 @@ Package: Rdistance
 Type: Package
 Title: Analyses for Distance-Sampling and Abundance Estimation
 Version: 2.1.2
-Date: 2018-08-21
+Date: 2018-08-22
 Maintainer: Trent McDonald <tmcdonald@west-inc.com>
-Author: c(
-  person("Trent", "McDonald", email="tmcdonald@west-inc.com", role=c("cre","aut")), 
-  person("Ryan", "Nielson", email="rnielson@west-inc.com", role=c("aut")), 
-  person("Jason", "Carlisle", email="jcarlisle@west-inc.com", role=c("aut")),
-  person("Aidan", "McDonald", email="aidan@mcdcentral.org", role=c("aut")), 
-  person("Ben", "Augustine", email="", role=c("ctb")),
-  person("James", "Griswald", email="", role=c("ctb")),
-  person("Joel", "Reynolds", email="", role=c("ctb")), 
-  person("Pham", "Quang", email="", role=c("ctb")), 
-  person("Earl", "Becker", email="", role=c("ctb")), 
-  person("Aaron", "Christ", email="", role=c("ctb")), 
-  person("Brook", "Russelland", email="", role=c("ctb")), 
-  person("Patrick", "McKann", email="", role=c("ctb")),
-  person("Lacey", "Jeroue", email="", role=c("ctb")),
-  person("Hoffman", "Abigail", email="", role=c("ctb")),
-  person("Kleinsausser", "Michael", email="", role=c("ctb"))  
-  )
+Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="tmcdonald@west-inc.com"), 
+  person("Jason", "Carlisle", role="aut", email="jcarlisle@west-inc.com"), 
+  person("Aidan", "McDonald", role="aut", email="aidan@mcdcentral.org", comment="point transect methods"), 
+  person("Ryan", "Nielson", role="ctb", comment="smoothed likelihood"), 
+  person("Ben", "Augustine", role="ctb", comment="maximization method"), 
+  person("James", "Griswald", role="ctb", comment="maximization method"), 
+  person("Patrick", "McKann", role="ctb", comment="maximization method"), 
+  person("Lacey", "Jeroue", role="ctb", comment="vignettes"), 
+  person("Hoffman", "Abigail", role="ctb", comment="vignettes"), 
+  person("Kleinsausser", "Michael", role="ctb", comment="vignettes"),
+  person("Joel", "Reynolds", role="ctb", comment="Gamma likelihood"), 
+  person("Pham", "Quang", role="ctb", comment="Gamma likelihood"), 
+  person("Earl", "Becker", role="ctb", comment="Gamma likelihood"), 
+  person("Aaron", "Christ", role="ctb", comment="Gamma likelihood"), 
+  person("Brook", "Russelland", role="ctb", comment="Gamma likelihood") )
 Description: Distance-sampling is a popular method for abundance estimation in
   ecology. This package contains functions and associated routines to analyze
   distance-sampling data collected on point or line transects. 
   It accommodates line and point transect analyses 
-  in one routine 
-  that accepts a regression-like formula object. Abundance routines
+  in one routine that accepts a regression-like formula object. Abundance routines
   perform automated bootstrapping and automated detection-function 
   selection. Overall (study area) and site-level (transect or point) 
-  abundance estimates are
-  available. A large suite of classical, parametric detection functions are 
+  abundance estimates are available. A large suite of classical, parametric detection functions are 
   included.  Some uncommon (e.g., Gamma, negative exponential) 
   detection functions are also included and users can define 
   their own custom detection functions if needed. One form of 
