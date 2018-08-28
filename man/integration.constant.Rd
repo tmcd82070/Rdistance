@@ -4,8 +4,8 @@
 \alias{integration.constant}
 \title{Compute the integration constant for distance density functions}
 \usage{
-integration.constant(dist, density, a, covars, w.lo, w.hi, series,
-  expansions, pointSurvey)
+integration.constant(dist, density, a, covars, w.lo, w.hi, series, expansions,
+  pointSurvey)
 }
 \arguments{
 \item{dist}{Vector of detection distance values.}

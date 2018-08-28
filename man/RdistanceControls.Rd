@@ -4,9 +4,8 @@
 \alias{RdistanceControls}
 \title{Control parameters for \code{Rdistance} optimization.}
 \usage{
-RdistanceControls(optimizer = "nlminb", evalMax = 2000,
-  maxIters = 1000, likeTol = 1e-08, coefTol = 1.5e-08,
-  hessEps = 1e-08)
+RdistanceControls(optimizer = "nlminb", evalMax = 2000, maxIters = 1000,
+  likeTol = 1e-08, coefTol = 1.5e-08, hessEps = 1e-08)
 }
 \arguments{
 \item{optimizer}{A string specifying the optimizer 

@@ -6,8 +6,7 @@
 \title{Negative exponential distance function for distance analyses}
 \usage{
 negexp.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
-  series = "cosine", expansions = 0, scale = TRUE,
-  pointSurvey = FALSE)
+  series = "cosine", expansions = 0, scale = TRUE, pointSurvey = FALSE)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
