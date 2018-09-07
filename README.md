@@ -1,12 +1,11 @@
-<img src="readmeFiles/RdistanceTopBanner.png" width="4032" />
+<img src="README_files/RdistanceTopBanner.png" width="4032" />
 
-# Rdistance
+# Rdistance - Distance Sampling Analysis Made Easy in R
 
 [![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/Rdistance)](http://cran.rstudio.com/web/packages/Rdistance/index.html)
 [![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance)
 
-**Rdistance - Distance Sampling Analyses for Abundance Estimation**
 
 **Description:**
 Distance-sampling is a popular method for abundance estimation in
