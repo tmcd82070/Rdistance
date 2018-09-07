@@ -1,7 +1,6 @@
-[![Banner](README_files/RdistanceTopBanner.PNG)]
+<img src="README_files/RdistanceTopBanner.PNG" width="4032" />
 
-
-# Rdistance - Distance Sampling Analysis Made Easy in R
+# Distance Sampling Analysis Made Easy in R
 
 [![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/Rdistance)](http://cran.rstudio.com/web/packages/Rdistance/index.html)
@@ -24,24 +23,25 @@ The best place to start learning about `Rdistance` is at a workshop (see below) 
 
 <img src="README_files/RdistanceSeparator.PNG" width="4032" />
 
-___
 
 ## MAJOR UPDATE COMPLETE:
-The stable version of `Rdistance` is [![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance).  
 
-The stable version of `Rdistance` is a major update from the previous version. 
+The stable version of `Rdistance` on CRAN represents a major update 
+from the previous version. 
 New features include:
 * point transect analysis (v1.3.2 only allowed line transects)
 * covariates in the detection function (v1.3.2 did not allow covariates).  
 * non-parametric (smoothed) distance functions
 * enhanced plotting abilities
 * enhanced vignettes
+* many bug fixes
 
-<img src="readmeFiles/RdistanceSeparator.png" width="4032" />
+<img src="readmeFiles/RdistanceSeparator.PNG" width="4032" />
 
 ## Installation
 
-**Stable version:** `install.packages("Rdistance")`
+**Stable version:** 
+`install.packages("Rdistance")`
 
 **Development version:** Directly from GitHub using the `devtools` package:
 
@@ -50,23 +50,22 @@ New features include:
 Or, one can clone the repository and install using regular R 
 package installation methods.  In a command window:
 
-`git clone https://github.com/tmcd82070/Rdistance.git Rdistance
+`git clone https://github.com/tmcd82070/Rdistance.git Rdistance <\br>
 r CMD install Rdistance`
 
+<img src="readmeFiles/RdistanceSeparator.PNG" width="4032" />
 
-___
-
-## Workshops:
-
-***Recent***
+## Recent Workshops:
 
 * *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
     * Full-day workshop, 10/29/2017, The Society for Marine Mammalogy, Halifax, Nova Scotia
 * *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
     * Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque, NM
  
+<img src="readmeFiles/RdistanceSeparator.PNG" width="4032" />
+ 
 ## Contact
 
 Questions of interested in workshops? Contact the maintainer: Trent McDonald (tmcdonald@west-inc.com) 
 
-<img src="readmeFiles/RdistanceBottomBanner.png" width="4032" />
+<img src="readmeFiles/RdistanceBottomBanner.PNG" width="4032" />
