@@ -1,4 +1,4 @@
-<img src="README_files/RdistanceTopBanner.png" width="4032" />
+![](README_files/RdistanceTopBanner.png)
 
 # Rdistance - Distance Sampling Analysis Made Easy in R
 
