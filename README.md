@@ -36,7 +36,7 @@ New features include:
 * enhanced vignettes
 * many bug fixes
 
-<img src="readmeFiles/RdistanceSeparator.PNG" width="4032" />
+<img src="README_files/RdistanceSeparator.PNG" width="4032" />
 
 ## Installation
 
@@ -50,10 +50,10 @@ New features include:
 Or, one can clone the repository and install using regular R 
 package installation methods.  In a command window:
 
-`git clone https://github.com/tmcd82070/Rdistance.git Rdistance <\br>
-r CMD install Rdistance`
+`git clone https://github.com/tmcd82070/Rdistance.git Rdistance`
+`r CMD install Rdistance`
 
-<img src="readmeFiles/RdistanceSeparator.PNG" width="4032" />
+<img src="README_files/RdistanceSeparator.PNG" width="4032" />
 
 ## Recent Workshops:
 
@@ -68,4 +68,4 @@ r CMD install Rdistance`
 
 Questions of interested in workshops? Contact the maintainer: Trent McDonald (tmcdonald@west-inc.com) 
 
-<img src="readmeFiles/RdistanceBottomBanner.PNG" width="4032" />
+<img src="README_files/RdistanceBottomBanner.PNG" width="4032" />
