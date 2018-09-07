@@ -50,7 +50,7 @@ New features include:
 Or, one can clone the repository and install using regular R 
 package installation methods.  In a command window:
 
-`git clone https://github.com/tmcd82070/Rdistance.git Rdistance`
+`git clone https://github.com/tmcd82070/Rdistance.git Rdistance`<br>
 `r CMD install Rdistance`
 
 <img src="README_files/RdistanceSeparator.PNG" width="4032" />
@@ -67,5 +67,3 @@ package installation methods.  In a command window:
 ## Contact
 
 Questions of interested in workshops? Contact the maintainer: Trent McDonald (tmcdonald@west-inc.com) 
-
-<img src="README_files/RdistanceBottomBanner.PNG" width="4032" />
