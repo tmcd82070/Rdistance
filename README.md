@@ -1,4 +1,4 @@
-![](README_files/RdistanceTopBanner.png)
+![Banner](README_files/RdistanceTopBanner.png)
 
 # Rdistance - Distance Sampling Analysis Made Easy in R
 
