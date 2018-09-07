@@ -62,7 +62,7 @@ package installation methods.  In a command window:
 * *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
     * Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque, NM
  
-<img src="readmeFiles/RdistanceSeparator.PNG" width="4032" />
+<img src="README_files/RdistanceSeparator.PNG" width="4032" />
  
 ## Contact
 
