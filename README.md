@@ -1,4 +1,5 @@
-![Banner](README_files/RdistanceTopBanner.png)
+[![Banner](README_files/RdistanceTopBanner.PNG)]
+
 
 # Rdistance - Distance Sampling Analysis Made Easy in R
 
@@ -21,7 +22,7 @@ Distance-sampling is a popular method for abundance estimation in
 **Rdistance Resources:**
 The best place to start learning about `Rdistance` is at a workshop (see below) or the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
 
-<img src="readmeFiles/RdistanceSeparator.png" width="4032" />
+<img src="README_files/RdistanceSeparator.PNG" width="4032" />
 
 ___
 
