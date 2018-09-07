@@ -1,3 +1,5 @@
+<img src="readmeFiles/RdistanceTopBanner.png" width="4032" />
+
 # Rdistance
 
 [![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
@@ -20,27 +22,41 @@ Distance-sampling is a popular method for abundance estimation in
 **Rdistance Resources:**
 The best place to start learning about `Rdistance` is at a workshop (see below) or the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
 
+<img src="readmeFiles/RdistanceSeparator.png" width="4032" />
+
 ___
 
-**MAJOR UPDATE COMPLETE:**
-The stable version of `Rdistance` is on CRAN (v. 1.3.2, released 7/22/2015).  
-The version available here is a major update and we are 
-currently making final preparations before re-submitting to CRAN.  
-Primary new features include:
-* point transect analysis (1.3.2 only allowed line transects)
-* covariates in the detection function (1.3.2 did not allow covariates).  
+## MAJOR UPDATE COMPLETE:
+The stable version of `Rdistance` is [![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance).  
+
+The stable version of `Rdistance` is a major update from the previous version. 
+New features include:
+* point transect analysis (v1.3.2 only allowed line transects)
+* covariates in the detection function (v1.3.2 did not allow covariates).  
 * non-parametric (smoothed) distance functions
 * enhanced plotting abilities
 * enhanced vignettes
 
-The development version (2.x.x) is coming to CRAN soon.  You can install 
-the latest version directly from GitHub using the `devtools` package:
+<img src="readmeFiles/RdistanceSeparator.png" width="4032" />
+
+## Installation
+
+**Stable version:** `install.packages("Rdistance")`
+
+**Development version:** Directly from GitHub using the `devtools` package:
 
 `devtools::install_github("tmcd82070/Rdistance")`
 
+Or, one can clone the repository and install using regular R 
+package installation methods.  In a command window:
+
+`git clone https://github.com/tmcd82070/Rdistance.git Rdistance
+r CMD install Rdistance`
+
+
 ___
 
-**Workshops:**
+## Workshops:
 
 ***Recent***
 
@@ -48,5 +64,9 @@ ___
     * Full-day workshop, 10/29/2017, The Society for Marine Mammalogy, Halifax, Nova Scotia
 * *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
     * Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque, NM
-    
-Interest in upcoming workshops? Contact Trent McDonald (tmcdonald@west-inc.com) for more info.
+ 
+## Contact
+
+Questions of interested in workshops? Contact the maintainer: Trent McDonald (tmcdonald@west-inc.com) 
+
+<img src="readmeFiles/RdistanceBottomBanner.png" width="4032" />
