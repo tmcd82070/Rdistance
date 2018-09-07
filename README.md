@@ -12,7 +12,7 @@ Distance-sampling is a popular method for abundance estimation in
   ecology. This package contains functions and associated routines to analyze
   distance-sampling data collected on point or line transects. 
   Both types of transects are accomodated in one routine 
-  that accepts a regression-like formula object. Abundance routines
+  that accepts a regression-like formula. Abundance routines
   perform automated bootstrapping and automated detection-function 
   selection. Overall (study area) and site-level abundance estimates are
   available. A large suite of classical, parametric detection functions are 
