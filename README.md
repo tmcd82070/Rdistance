@@ -24,7 +24,7 @@ The best place to start learning about `Rdistance` is at a workshop (see below) 
 <img src="README_files/RdistanceSeparator.PNG" width="4032" />
 
 
-## MAJOR UPDATE COMPLETE:
+## MAJOR UPDATE COMPLETE
 
 The stable version of `Rdistance` on CRAN represents a major update 
 from the previous version. 
@@ -55,7 +55,7 @@ package installation methods.  In a command window:
 
 <img src="README_files/RdistanceSeparator.PNG" width="4032" />
 
-## Recent Workshops:
+## Recent Workshops
 
 * *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
     * Full-day workshop, 10/29/2017, The Society for Marine Mammalogy, Halifax, Nova Scotia
