@@ -87,7 +87,8 @@ of this fit criterion.  This must be one of "AICc" (the default),
 These include \code{x.scl}, \code{g.x.scl}, and \code{observer} for estimating double observer probabilities.}
 }
 \value{
-An 'abundance estimate' object.  See \code{abundEstim} 
+If \code{bySite==FALSE}, an 'abundance estimate' object is returned.
+See \code{abundEstim} 
 and \code{dfuncEstim} for an explanation of components. 
 Returned abundance estimates are based 
 on the best fitting distance function among those fitted.
@@ -96,7 +97,14 @@ A fit table, sorted by the criterion, is returned as component
 \code{like} (likelihood), \code{series}, \code{expansions},
 \code{converge} (0=converged,1=not), \code{scale} (1=passed scale
 check,0=did not pass), and 
-\code{aic} (the criterion used).
+\code{aic} (the criterion used). 
+
+If \code{bySite==TRUE}, a data frame containing site-level
+abundance based on the best-fitting detection function is returned.
+See \code{\link{abundEstim}} for description of columns in 
+the data frame.  The best-fitting likelihood form, series, 
+and number of expansions are returned as attributes of the 
+data frame (e.g., best-fitting likelihood is \code{attr(out,"like.form")}).
 }
 \description{
 Perform automated classical detection function selection and 

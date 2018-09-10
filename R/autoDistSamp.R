@@ -92,7 +92,8 @@
 #' Suppress all intermediate output using \code{plot.bs=FALSE}, 
 #' \code{showProgress=FALSE}, and \code{plot=FALSE}. 
 #' 
-#' @return An 'abundance estimate' object.  See \code{abundEstim} 
+#' @return If \code{bySite==FALSE}, an 'abundance estimate' object is returned.
+#' See \code{abundEstim} 
 #' and \code{dfuncEstim} for an explanation of components. 
 #' Returned abundance estimates are based 
 #' on the best fitting distance function among those fitted.
@@ -102,6 +103,14 @@
 #' \code{converge} (0=converged,1=not), \code{scale} (1=passed scale
 #' check,0=did not pass), and 
 #' \code{aic} (the criterion used). 
+#' 
+#' If \code{bySite==TRUE}, a data frame containing site-level
+#' abundance based on the best-fitting detection function is returned.
+#' See \code{\link{abundEstim}} for description of columns in 
+#' the data frame.  The best-fitting likelihood form, series, 
+#' and number of expansions are returned as attributes of the 
+#' data frame (e.g., best-fitting likelihood is \code{attr(out,"like.form")}).
+#'    
 #'   
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
 #'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}\cr
@@ -323,9 +332,15 @@ autoDistSamp <- function (formula, detectionData, siteData,
                       area=area, ci=ci, R=R, plot.bs=plot.bs, 
                       bySite=bySite, showProgress = showProgress)
   
-  # Store the fitting table, just in case user wants it.
-  abund$fitTable <- fit.table
-
+  if( !bySite ){
+    # Store the fitting table, just in case user wants it.
+    abund$fitTable <- fit.table
+  } else {
+    attr(abund,"like.form") <- dfunc$like.form
+    attr(abund,"series") <- dfunc$series
+    attr(abund,"expansions") <- dfunc$expansions
+  }
+  
   if(showProgress){
     cat("\n\n------------ Abundance Estimate Based on Top-Ranked Detection Function ------------\n")
     print(abund, criterion=criterion)
