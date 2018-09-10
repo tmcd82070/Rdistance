@@ -361,7 +361,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
       # Bootstrap
       for (i in 1:R) {
         # sample rows, with replacement, from transect data
-        new.siteData <- siteData[sample(nrow(siteData), nrow(siteData), replace=TRUE), ]
+        new.siteData <- siteData[sample(nrow(siteData), nrow(siteData), replace=TRUE),,drop=FALSE]
         
         new.trans <- as.character(new.siteData$siteID)  # which transects were sampled?
         trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
