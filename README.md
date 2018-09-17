@@ -66,4 +66,4 @@ package installation methods.  In a command window:
  
 ## Contact
 
-Questions of interested in workshops? Contact the maintainer: Trent McDonald (tmcdonald@west-inc.com) 
+Questions or interested in workshops? Contact the maintainer: Trent McDonald (tmcdonald@west-inc.com) 
