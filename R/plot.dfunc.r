@@ -268,15 +268,22 @@ plot.dfunc <- function( x,
     }
   }  else {
     y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, 
-               w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE, covars=NULL )
-    
+               w.lo=0, w.hi=x$w.hi - x$w.lo, pointSurvey = FALSE, covars=NULL )
+
     if(x$pointSurvey){
       f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, 
-                       w.lo=x$w.lo, w.hi=x$w.hi, pointSurvey = FALSE, covars=NULL, 
+                       w.lo=0, w.hi=x$w.hi-x$w.lo, pointSurvey = FALSE, covars=NULL, 
                        scale=FALSE)
-      scaler <- g.at.x0 / f.at.x0 # a length n vector 
       
-      y <- y * scaler  # length(scalar) == nrow(y), so this works right
+      if(any(is.na(f.at.x0) | (f.at.x0 <= 0))){
+        #   can happen when parameters at the border of parameter space
+        scaler <- 1
+        warning("g(x.scale) is missing or <= zero. One or more parameters likely at their boundaries. Caution.")
+      } else {
+        scaler <- g.at.x0 / f.at.x0 
+      }
+      
+      y <- y * scaler  
       y <- y * (x.seq - x$w.lo)
     }
   }
@@ -308,13 +315,13 @@ plot.dfunc <- function( x,
       #f.max <- F.maximize.g(x, covars = NULL) 
       
       f.max <- like( x$parameters, x0 - x$w.lo, series=x$series, covars=NULL,
-                     expansions=x$expansions, w.lo=x$w.lo, 
-                     w.hi=x$w.hi, pointSurvey = x$pointSurvey )
+                     expansions=x$expansions, w.lo=0, 
+                     w.hi=x$w.hi-x$w.lo, pointSurvey = x$pointSurvey )
 
       if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
         yscl <- 1.0
-        warning("Y intercept missing or zero. One or more parameters likely at their boundaries. Caution.")
+        warning("g(x.scale) is missing or <= zero. One or more parameters likely at their boundaries. Caution.")
       } else {
         yscl <- g.at.x0 / f.max
       }
@@ -342,6 +349,10 @@ plot.dfunc <- function( x,
   }
   
   if(plotBars){
+    if(x$w.lo != 0){
+      ybarhgts <- c(NA,ybarhgts)
+      xscl <- c(x$w.lo, rep(xscl,length(ybarhgts)-1))  
+    }
     bar.mids <- barplot( ybarhgts, 
                          width=xscl, 
                          ylim=y.lims, 
@@ -441,8 +452,14 @@ plot.dfunc <- function( x,
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
     mess <- paste("Check g0=", round(g.at.x0,2), "assumption")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
+  } else if( any(is.na(y)) | any(y < 0) ){
+    #   invalid scaling, g0 is wrong
+    mess <- "Probabilities < 0"
+    text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
+    mess <- paste("One or more parameters likely at boundary")
+    text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
   }
-  
+
   # Add legend to plot if covars are present
   if(legend & !is.null(x$covars)){
     for(j in 1:ncol(newdata)){
