@@ -134,9 +134,17 @@ Gamma.like <- function(a,
     #   Note: I think Quan is missing an extra 1/lam in front of his density equation.
     b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
     like <- dgamma( dist, shape=r, scale=lam*b )
-
+    
+    # By default we want g(x.scl) = 1
+    x.scl <- lam * b * (r - 1) # Mode of gamma distribution
+    g.at.x0 <- 1
+    f.at.x0 <- dgamma( x.scl, shape=r, scale=lam*b )
+    scaler <- g.at.x0 / f.at.x0
+    like <- like * scaler
+    
     if( scale ){
-         like = like / integration.constant(dist=dist,
+       # here we want likelihood to integrate to 1.0 - for fitting
+       like = like / integration.constant(dist=dist,
                                             density=Gamma.like,
                                             a=a, 
                                             covars = covars,
@@ -145,7 +153,7 @@ Gamma.like <- function(a,
                                             expansions = expansions,
                                             pointSurvey = pointSurvey,
                                             series = series)
-    }
+    } 
 
     like
 

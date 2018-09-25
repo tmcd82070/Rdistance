@@ -98,7 +98,7 @@ EDR <- function(obj, newdata){
     y <- x * apply(params, 1, like, dist= x, 
                series=obj$series, covars = NULL, 
                expansions=obj$expansions, 
-               w.lo = obj$w.lo, w.hi=obj$w.hi, 
+               w.lo = 0, w.hi=obj$w.hi-obj$w.lo, 
                pointSurvey = obj$pointSurvey, 
                scale=FALSE)    
     y <- t(y)
@@ -113,7 +113,7 @@ EDR <- function(obj, newdata){
   } else {
     # this returns (Integral xg(x)dx)/dist
     integral <- integration.constant(dist=obj$dist,
-                                     density=match.fun(paste( obj$like.form, ".like", sep="")),
+                                     density=like,
                                      a=obj$parameters, 
                                      covars = obj$covars,
                                      w.lo=obj$w.lo, 
@@ -121,7 +121,8 @@ EDR <- function(obj, newdata){
                                      expansions = obj$expansions,
                                      pointSurvey = obj$pointSurvey,
                                      series = obj$series)
-    
+    # obj$dist is in denominator of integration.constant for point surveys. 
+    # multiply here to remove it. vector inside root should be constant.
     rho <- sqrt(2*integral*obj$dist)[1]
   }
   
