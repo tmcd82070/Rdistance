@@ -1,11 +1,8 @@
 ---
-title: "Beginner Point Transects Tutorial"
+title: "Beginner Point-Transect Analysis in Rdistance"
 author: "Michael Kleinsasser, Jason D. Carlisle and Trent L. McDonald"
 date: "August 6, 2018"
-output:
-  pdf_document: default
-  html_document:
-    df_print: paged
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Rdistance: Beginner Point Transect Tutorial}
   %\VignetteEngine{knitr::rmarkdown}

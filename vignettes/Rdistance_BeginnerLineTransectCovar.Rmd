@@ -2,11 +2,7 @@
 title: "Beginner Line-Transect Analysis in Rdistance"
 author: "Jason D. Carlisle, Abigail S. Hoffman, and Trent L. McDonald"
 date: "May 23, 2018"
-output:
-  pdf_document: default
-  word_document: default
-  html_document:
-    df_print: paged
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Rdistance: Beginner Line Transect Tutorial}
   %\VignetteEngine{knitr::rmarkdown}
