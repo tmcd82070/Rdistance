@@ -1,4 +1,6 @@
-#' Rdistance - Distance Sampling Analyses for Abundance Estimation
+#' @name Rdistance-package
+#' 
+#' @title Rdistance - Distance Sampling Analyses for Abundance Estimation
 #' 
 #' 
 #' \code{Rdistance} contains functions and associated routines to analyze
@@ -99,7 +101,6 @@
 #' A list of routines can be obtained by loading \code{Rdistance} and issuing
 #' \code{help(package="Rdistance")}.
 #' 
-#' @name Rdistance-package
 #' 
 #' @aliases Rdistance-package distance Rdistance point-transect line-transect
 #' 

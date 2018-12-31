@@ -1,4 +1,6 @@
-#' Sage Thrasher detection data (point-transect survey)
+#' @name thrasherDetectionData
+#' 
+#' @title Sage Thrasher detection data (point-transect survey)
 #' 
 #' \code{Rdistance} contains four example datasets: two collected using a
 #' line-transect survey (i.e., \code{\link{sparrowDetectionData}} and
@@ -27,20 +29,21 @@
 #' datasets.
 #' 
 #' 
-#' @name thrasherDetectionData
-
 #' @docType data
-
+#' 
 #' @format A data.frame containing 193 rows and 3 columns.  Each row represents
-#' a detected group of thrashers.  Column descriptions: \enumerate{ \item
-#' \code{siteID}: Factor (120 levels), the site or point where the detection
-#' was made.  \item \code{groupsize}: Number, the number of individuals within
-#' the detected group.  \item \code{dist}: Number, the radial distance (m) from
+#' a detected group of thrashers.  Column descriptions: 
+#' \enumerate{ 
+#' \item \code{siteID}: Factor (120 levels), the site or point where the detection
+#' was made.  
+#' \item \code{groupsize}: Number, the number of individuals within
+#' the detected group.  
+#' \item \code{dist}: Number, the radial distance (m) from
 #' the transect to the detected group.  This is the distance used in analysis.
 #' }
-
+#' 
 #' @seealso \code{\link{thrasherSiteData}}
-
+#' 
 #' @source A subset of Jason Carlisle's dissertation data, University of Wyoming.
 #' 
 #' @references Carlisle, J.D. 2017. The effect of sage-grouse conservation on

@@ -1,6 +1,5 @@
-#' @name print.abund
-#' @aliases print.abund
 #' @title Print abundance estimates
+#' 
 #' @description Print an object of class \code{c("abund","dfunc")} 
 #' that is output by \code{abundEstim}.
 #' 

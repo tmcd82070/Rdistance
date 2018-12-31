@@ -1,6 +1,5 @@
-#' @name F.maximize.g
-#' @aliases F.maximize.g
 #' @title Find the coordinate of the maximum of a distance function
+#' 
 #' @description Find the x coordinate that maximizes g(x).
 #' 
 #' @param fit An estimated 'dfunc' object produced by \code{dfuncEstim}.

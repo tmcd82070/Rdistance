@@ -4,7 +4,7 @@
 \alias{F.double.obs.prob}
 \title{Compute double observer probability of detection (No external covariates allowed)}
 \usage{
-F.double.obs.prob( df, observer = "both" )
+F.double.obs.prob(df, observer = "both")
 }
 \arguments{
 \item{df}{A data frame containing the components \code{$obsby.1} and \code{$obsby.2}.

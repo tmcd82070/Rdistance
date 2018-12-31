@@ -1,6 +1,3 @@
-#' @name integration.constant
-#' @aliases integration.constant
-#'
 #' @title Compute the integration constant for distance density functions
 #'
 #' @description Using numerical integration, this function computes

@@ -1,9 +1,8 @@
-#' @name hermite.expansion
-#' @aliases hermite.expansion
 #' @title Calculation of Hermite expansion for detection function likelihoods
+#' 
 #' @description Computes the Hermite expansion terms used in the likelihood of a distance analysis. 
 #'   More generally, will compute a Hermite expansion of any numeric vector.
-#' @usage hermite.expansion(x, expansions)
+#'   
 #' @param x In a distance analysis, \code{x} is a numeric vector containing the proportion of a strip 
 #'   transect's half-width at which a group of individuals was sighted.  If \eqn{w} is the strip transect 
 #'   half-width or maximum sighting distance, and \eqn{d} is the perpendicular off-transect distance 

@@ -16,7 +16,7 @@ makes a poorly behaved distance function converge.  The valid
 values are "optim" which uses \code{optim::optim},
 and "nlminb" which uses \code{stats:nlminb}.  The authors 
 have had better luck with "nlminb" than "optim" and "nlminb" 
-runs noticably faster.  Problems with solutions near parameter 
+runs noticeably faster.  Problems with solutions near parameter 
 boundaries may require use of "optim".}
 
 \item{evalMax}{The maximum number of objective function

@@ -1,4 +1,6 @@
-#' Brewer's Sparrow site data (line-transect survey)
+#' @name sparrowSiteData
+#' 
+#' @title Brewer's Sparrow site data (line-transect survey)
 #' 
 #' \code{Rdistance} contains four example datasets: two collected using a
 #' line-transect survey (i.e., \code{\link{sparrowDetectionData}} and
@@ -26,8 +28,6 @@
 #' See the package vignettes for \code{Rdistance} tutorials using these
 #' datasets.
 #' 
-#' 
-#' @name sparrowSiteData
 #' 
 #' @docType data
 #' 

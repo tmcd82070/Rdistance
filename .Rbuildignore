@@ -12,5 +12,5 @@ distance_old
 ^tests$
 ^\.git$
 ^\.travis\.yml$
-R/dfuncModSel.R
-man/dfuncModSel.Rd
+README_files
+^\.addDict$

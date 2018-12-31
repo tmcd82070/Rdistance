@@ -1,14 +1,16 @@
-#' @name cosine.expansion
-#' 
 #' @title calculation of cosine expansion for detection function likelihoods
+#' 
 #' @description Computes the cosine expansion terms used in the likelihood of a distance analysis. 
 #'   More generally, will compute a cosine expansion of any numeric vector.
-#' @usage cosine.expansion(x, expansions)
+#'   
 #' @param x In a distance analysis, \code{x} is a numeric vector of the proportion of a strip transect's half-width 
 #'   at which a group of individuals were sighted.  If \eqn{w} is the strip transect half-width or maximum sighting 
 #'   distance, and \eqn{d} is the perpendicular off-transect distance to a sighted group (\eqn{d\leq w}{d <= w}), 
 #'   \code{x} is usually \eqn{d/w}.  More generally, \code{x} is a vector of numeric values
-#' @param expansions A scalar specifying the number of expansion terms to compute. Must be one of the integers 1, 2, 3, 4, or 5.
+#'   
+#' @param expansions A scalar specifying the number of expansion terms to compute. Must be one of the 
+#' integers 1, 2, 3, 4, or 5.
+#' 
 #' @details There are, in general, several expansions that can be called cosine. The cosine expansion used here is:
 #'   \itemize{
 #'     \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}

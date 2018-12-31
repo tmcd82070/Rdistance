@@ -1,6 +1,3 @@
-#' @name F.nLL
-#' @aliases F.nLL
-#' 
 #' @title Return the negative log likelihood for 
 #' a set of distance values
 #' 

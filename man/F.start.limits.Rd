@@ -4,7 +4,8 @@
 \alias{F.start.limits}
 \title{Set starting values and limits for parameters of Rdistance functions}
 \usage{
-F.start.limits(like, expan, w.lo, w.hi, dist, covars = NULL, pointSurvey = FALSE)
+F.start.limits(like, expan, w.lo, w.hi, dist, covars = NULL,
+  pointSurvey = FALSE)
 }
 \arguments{
 \item{like}{String specifying the likelihood for the distance function.  Possible values are 

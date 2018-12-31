@@ -1,9 +1,9 @@
-#' @name coef.dfunc
-#' @aliases coef.dfunc
 #' @title Coefficients of an estimated detection function
 #' @description Extract the coefficients and estimated parameters (if any) from 
 #'   a estimated detection function object.
+#'   
 #' @usage \method{coef}{dfunc}(object, \dots)
+#' 
 #' @param object An estimated distance function object.  An estimated distance 
 #'   function object has class 'dfunc', and is usually produced by a call to 
 #'   \code{dfuncEstim}.

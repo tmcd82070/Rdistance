@@ -1,5 +1,3 @@
-#' @name dfuncEstim
-#' 
 #' @title Estimate a detection function from distance-sampling data
 #' 
 #' @description Fit a specific detection function off-transect 

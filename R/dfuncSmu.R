@@ -1,6 +1,3 @@
-#' @name dfuncSmu
-#' @aliases dfuncSmu
-#' 
 #' @title Estimate a non-parametric smooth detection function 
 #' from distance-sampling data
 #' 

@@ -1,8 +1,7 @@
-#' @name F.double.obs.prob
-#' @aliases F.double.obs.prob
 #' @title Compute double observer probability of detection (No external covariates allowed)
+#' 
 #' @description Estimates the probability of detection in a two-observer system when observations are independent.
-#' @usage F.double.obs.prob( df, observer = "both" )
+#' 
 #' @param df A data frame containing the components \code{$obsby.1} and \code{$obsby.2}.
 #'   These components are either 0/1 (0 = missed, 1 = seen) or TRUE/FALSE (logical) vectors indicating whether
 #'   observer 1 (\code{obsby.1}) or observer 2 (\code{obsby.2}) spotted the target. There is 

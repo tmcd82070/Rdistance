@@ -1,5 +1,3 @@
-#' @name autoDistSamp
-#' @aliases autoDistSamp
 #' @title Automated classical distance analysis
 #' @description Perform automated classical detection function selection and 
 #' estimation of abundance.

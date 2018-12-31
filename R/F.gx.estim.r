@@ -1,8 +1,7 @@
-#' @name F.gx.estim
-#' 
 #' @title Estimate g(0) or g(x)
+#' 
 #' @description Estimate g(0) or g(x) for a specified distance function.
-#' @usage F.gx.estim(fit, x.scl=NULL, g.x.scl=NULL, observer=NULL)
+#' 
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
 #' @param x.scl The x coordinate (a distance) at which to scale the distance function to \code{g.x.scl}.  See Details.
 #' @param g.x.scl Height of the distance function at coordinate x. i.e., the distance function 

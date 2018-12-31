@@ -1,11 +1,11 @@
-#' @name F.start.limits
 #' @title Set starting values and limits for parameters of Rdistance functions
+#' 
 #' @description Return reasonable starting values and limits (boundaries) for the parameters of 
 #'   distance functions.  Starting values and limits are specified for 
 #'   all likelihoods and expansion terms.  This function is called by 
 #'   other routines in \code{Rdistance}, and is not intended to 
 #'   be called by the user.
-#' @usage F.start.limits(like, expan, w.lo, w.hi, dist, covars = NULL, pointSurvey = FALSE)
+#'   
 #' @param like String specifying the likelihood for the distance function.  Possible values are 
 #'   "hazrate" for hazard rate likelihood, "halfnorm" for the half 
 #'   normal likelihood, "uniform" for the uniform likelihood, 

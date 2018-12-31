@@ -1,8 +1,8 @@
 Package: Rdistance
 Type: Package
-Title: Analyses for Distance-Sampling and Abundance Estimation
+Title: Distance-Sampling Analyses for Density and Abundance Estimation
 Version: 2.1.3
-Date: 2018-09-10
+Date: 2018-12-28
 Maintainer: Trent McDonald <tmcdonald@west-inc.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="tmcdonald@west-inc.com"), 
   person("Jason", "Carlisle", role="aut", email="jcarlisle@west-inc.com"), 
@@ -19,20 +19,22 @@ Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="tmcdonald@w
   person("Earl", "Becker", role="ctb", comment="Gamma likelihood"), 
   person("Aaron", "Christ", role="ctb", comment="Gamma likelihood"), 
   person("Brook", "Russelland", role="ctb", comment="Gamma likelihood") )
-Description: Distance-sampling is a popular method for abundance estimation in
-  ecology. This package contains functions and associated routines to analyze
+Description: Distance-sampling is a popular method for estimating density and 
+  abundance of organisms in ecology. Rdistance contains routines that  
+  assist with analysis of
   distance-sampling data collected on point or line transects. 
-  It accommodates line and point transect analyses 
-  in one routine that accepts a regression-like formula object. Abundance routines
+  Distance models are specified using regression-like formula (similar 
+  to lm, glm, etc.). Abundance routines
   perform automated bootstrapping and automated detection-function 
   selection. Overall (study area) and site-level (transect or point) 
-  abundance estimates are available. A large suite of classical, parametric detection functions are 
-  included.  Some uncommon (e.g., Gamma, negative exponential) 
-  detection functions are also included and users can define 
-  their own custom detection functions if needed. One form of 
-  non-parametric smoothed distance function is included. 
+  abundance estimates are available. A large suite of classical, 
+  parametric detection functions are 
+  included along with some uncommon parametric 
+  functions (e.g., Gamma, negative exponential) and non-parametric
+  smoothed distance functions. Custom (user-defined) detection functions
+  are easily implemented (see vignette). 
   The help files and vignettes have been 
-  vetted by multiple authors and tested in multiple workshop 
+  vetted by multiple authors and tested in workshop 
   settings. 
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki

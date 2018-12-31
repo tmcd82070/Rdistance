@@ -1,14 +1,14 @@
-#' @name nexexp.like
-#' 
 #' @title Negative exponential distance function for distance analyses
 #' 
 #' @description Computes likelihood contributions for off-transect sighting distances, 
 #' scaled appropriately, for use as a distance likelihood.
 #' 
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
-#'   (i.e., \code{expansions = 0}), the distance likelihoods contain one or two canonical parameters (see Details). If one or more expansions are called for,
-#'   coefficients for the expansion terms follow coefficients for the canonical parameters.  If \code{p} is the number of canonical parameters, coefficients
-#'   for the expansion terms are \code{a[(p+1):length(a)]}.
+#'   (i.e., \code{expansions = 0}), the distance likelihoods contains only one canonical parameter, which 
+#'   is the first element of \code{a} (see Details). If one or more expansions are called for,
+#'   coefficients for the expansion terms follow coefficients for the canonical parameter.  
+#'   Coefficients
+#'   for the expansion terms, if present, are \code{a[2:length(a)]}.
 #' @param dist A numeric vector containing the observed distances.
 #' @param covars Data frame containing values of covariates at each observation in \code{dist}.
 #' @param w.lo Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.

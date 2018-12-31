@@ -1,12 +1,12 @@
-#' @name perpDists
-#' 
 #' @title Compute off-transect distances from sighting distances and angles
+#' 
 #' @description Computes off-transect (also called 'perpendicular') distances from measures of sighting distance and sighting angle.
-#' @usage perpDists(sightDist, sightAngle, data)
+#' 
 #' @param sightDist Character, name of column in \code{data} that contains the observed or sighting distances from the observer to the detected objects.
 #' @param sightAngle Character, name of column in \code{data} that contains the observed or sighting angles from the line transect to the detected 
 #'   objects.  Angles must be measured in degrees.
 #' @param data data.frame object containing sighting distance and sighting angle.
+#' 
 #' @details If observers recorded sighting distance and sighting angle (as is often common in line transect surveys), use this function to convert 
 #'   to off-transect distances, the required input data for \code{F.dfunc.estim}.
 #' @return A vector of off-transect (or perpendicular) distances.  Units are the same as \code{sightDist}.

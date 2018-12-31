@@ -4,7 +4,7 @@
 \alias{F.gx.estim}
 \title{Estimate g(0) or g(x)}
 \usage{
-F.gx.estim(fit, x.scl=NULL, g.x.scl=NULL, observer=NULL)
+F.gx.estim(fit, x.scl = NULL, g.x.scl = NULL, observer = NULL)
 }
 \arguments{
 \item{fit}{An estimated \code{dfunc} object.  See \code{dfuncEstim}.}

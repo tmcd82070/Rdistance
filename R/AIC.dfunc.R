@@ -1,7 +1,7 @@
-#' @name AIC.dfunc
-#' @aliases AIC.dfunc
 #' @title AICc and related fit statistics for detection function objects
+#' 
 #' @description Computes AICc, AIC, or BIC for estimated distance functions.
+#' 
 #' @param object An estimated detection function object.  An estimated detection 
 #'   function object has class 'dfunc', and is usually produced by a call to 
 #'   \code{dfuncEstim}.

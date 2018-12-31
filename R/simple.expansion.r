@@ -1,9 +1,8 @@
-#' @name simple.expansion
-#' @aliases simple.expansion
 #' @title Calculate simple polynomial expansion for detection function likelihoods
+#' 
 #' @description Computes simple polynomial expansion terms used in the likelihood of a distance analysis. More generally, will compute
 #'   polynomial expansions of any numeric vector.
-#' @usage simple.expansion(x, expansions)
+#'   
 #' @param x In a distance analysis, \code{x} is a numeric vector of the proportion of a strip transect's half-width 
 #'   at which a group of individuals were sighted.  If \eqn{w} is the strip transect half-width or maximum sighting 
 #'   distance, and \eqn{d} is the perpendicular off-transect distance to a sighted group (\eqn{d\leq w}{d <= w}), 

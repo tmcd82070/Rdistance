@@ -1,5 +1,3 @@
-#' @name smu.like
-#' 
 #' @title Smoothed likelihood function for distance analyses
 #' 
 #' @description Computes the likelihood of 

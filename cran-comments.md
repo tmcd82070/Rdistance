@@ -1,9 +1,9 @@
 ## Resubmission comments
-* This fixes a critical bug in the point transect methods of the previous version. 
+* This version fixes two critical bugs.  One in the point transect methods. One in the automated analysis routine.
 
 ## Current Version
-* 2.1.2
-* Previous version on CRAN: 2.1.1
+* 2.1.3
+* Previous version on CRAN: 2.1.2
 
 ## Test environments
 * local Windows 8.1 Pro, R 3.5.1 

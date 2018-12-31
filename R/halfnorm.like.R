@@ -1,5 +1,3 @@
-#' @name halfnorm.like
-#' 
 #' @title Half-normal likelihood function for distance analyses
 #' 
 #' @description This function computes the likelihood contributions for 

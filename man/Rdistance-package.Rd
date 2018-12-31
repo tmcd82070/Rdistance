@@ -7,8 +7,44 @@
 \alias{Rdistance}
 \alias{point-transect}
 \alias{line-transect}
-\title{Rdistance - Distance Sampling Analyses for Abundance Estimation}
+\title{Rdistance - Distance Sampling Analyses for Abundance Estimation
+
+
+\code{Rdistance} contains functions and associated routines to analyze
+distance-sampling data collected on point or line transects. 
+Some of \code{Rdistance}'s features include:
+\itemize{
+   \item Accommodation of both point and line transect analyses 
+    in one routine (\code{\link{dfuncEstim}}).
+   \item Regression-like formula for inclusion of covariate in 
+   distance functions (\code{\link{dfuncEstim}}).
+   \item Automatic bootstrap confidence intervals 
+   (\code{\link{abundEstim}}).
+   \item Availability of both study-area and site-level abundance
+   estimates (\code{\link{abundEstim}}).
+   \item Classical, parametric distance functions
+   (\code{\link{halfnorm.like}}, \code{\link{hazrate.like}}), and
+   expansion functions (\code{\link{cosine.expansion}}, 
+   \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}).
+   
+   \item Non-classic distance functions (\code{\link{Gamma.like}}, 
+   \code{\link{negexp.like}}, \code{\link{uniform.like}}) 
+   and a non-parametric smoother 
+   \code{\link{dfuncSmu}}).
+   
+   \item User defined distance functions. 
+    
+   \item Automated distance function fits and selection 
+   \code{\link{autoDistSamp}}.
+   \item Extended vignettes.
+   \item \code{print}, \code{plot}, \code{predict}, \code{coef}, 
+   and \code{summary} 
+   methods for distance function objects and abundance classes.
+}}
 \description{
+Rdistance - Distance Sampling Analyses for Abundance Estimation
+
+
 \code{Rdistance} contains functions and associated routines to analyze
 distance-sampling data collected on point or line transects. 
 Some of \code{Rdistance}'s features include:

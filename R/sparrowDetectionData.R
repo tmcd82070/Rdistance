@@ -1,4 +1,6 @@
-#' Brewer's Sparrow detection data (line-transect survey)
+#' @name sparrowDetectionData
+#' 
+#' @title Brewer's Sparrow detection data (line-transect survey)
 #' 
 #' \code{Rdistance} contains four example datasets: two collected using a
 #' line-transect survey (i.e., \code{\link{sparrowDetectionData}} and
@@ -27,8 +29,6 @@
 #' datasets.
 #' 
 #' 
-#' @name sparrowDetectionData
-#' 
 #' @docType data
 #' 
 #' @format A data.frame containing 356 rows and 5 columns.  Each row represents
@@ -49,6 +49,6 @@
 #' @references Carlisle, J.D. 2017. The effect of sage-grouse conservation on
 #' wildlife species of concern: implications for the umbrella species concept.
 #' Dissertation. University of Wyoming, Laramie, Wyoming, USA.
-
+#' 
 #' @keywords datasets
 NULL

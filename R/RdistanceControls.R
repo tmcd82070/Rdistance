@@ -30,7 +30,7 @@
 #' values are "optim" which uses \code{optim::optim},
 #' and "nlminb" which uses \code{stats:nlminb}.  The authors 
 #' have had better luck with "nlminb" than "optim" and "nlminb" 
-#' runs noticably faster.  Problems with solutions near parameter 
+#' runs noticeably faster.  Problems with solutions near parameter 
 #' boundaries may require use of "optim".   
 #'
 #' @param hessEps A vector of parameter distances used during 

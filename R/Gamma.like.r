@@ -1,5 +1,3 @@
-#' @name Gamma.like
-#' 
 #' @title Gamma distance function for distance analyses
 #' 
 #' @description Computes the gamma likelihood, scaled appropriately, for use as a likelihood in estimating a distance function.
