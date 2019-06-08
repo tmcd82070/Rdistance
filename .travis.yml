@@ -1,5 +1,43 @@
-# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
-
-language: R
-sudo: false
+#This YML file is to be used specificially for the Rdistance package. Other packages will require different YML file contents.
+#Use R language
+language: r
+sudo: true
 cache: packages
+warnings_are_errors: false
+
+env:
+  global:
+    - R_BUILD_ARGS="--no-build-vignettes --no-manual"
+    - R_CHECK_ARGS="--no-build-vignettes --no-manual --timings" #don't build the vignettes or manual
+    - _R_CHECK_TIMINGS_="0" #Allows for timing information for the examples of all functions
+    - CODECOV_TOKEN="<your_token_here>" #test token to ensure this service actually works
+
+r:
+  - release #build and test for stable release version only, devel can also be optionally used. 
+
+#install external dependencies, however, there are none for this package
+
+install:
+  - R -e 'install.packages("devtools")'
+  - R -e 'devtools::install_deps(dependencies = TRUE)'
+#This will catch installation issues
+  - R -e 'devtools::install_github("tmcd82070/Rdistance")'
+  - R -e 'install.packages("graphics")'
+  - R -e 'install.packages("stats")'
+  - R -e 'install.packages("utils")'
+  - R -e 'install.packages("covr")' #specifically for codecovr feature
+
+#Avoid building vignettes, they take too much time and will often time out the Travis CI  
+script:
+  - R CMD build --no-build-vignettes --no-manual .
+  - R CMD check --no-build-vignettes --no-manual --timings *tar.gz
+
+#report coverage for release version
+after_success:
+  - test $TRAVIS_R_VERSION_STRING = 'release' && Rscript -e 'covr::codecov()'
+  - Rscript -e 'devtools::install();devtools::test()'
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
