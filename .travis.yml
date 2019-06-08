@@ -20,7 +20,7 @@ r:
 install:
   - R -e 'install.packages("devtools")'
   - R -e 'devtools::install_deps(dependencies = TRUE)'
-#This will catch installation issues
+  #This will catch installation issues
   - R -e 'devtools::install_github("tmcd82070/Rdistance")'
   - R -e 'install.packages("graphics")'
   - R -e 'install.packages("stats")'
