@@ -1,8 +1,8 @@
 Package: Rdistance
 Type: Package
 Title: Distance-Sampling Analyses for Density and Abundance Estimation
-Version: 2.1.3
-Date: 2019-01-02
+Version: 2.1.4
+Date: 2019-06-11
 Maintainer: Trent McDonald <tmcdonald@west-inc.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="tmcdonald@west-inc.com"), 
   person("Jason", "Carlisle", role="aut", email="jcarlisle@west-inc.com"), 
@@ -18,7 +18,8 @@ Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="tmcdonald@w
   person("Pham", "Quang", role="ctb", comment="Gamma likelihood"), 
   person("Earl", "Becker", role="ctb", comment="Gamma likelihood"), 
   person("Aaron", "Christ", role="ctb", comment="Gamma likelihood"), 
-  person("Brook", "Russelland", role="ctb", comment="Gamma likelihood") )
+  person("Brook", "Russelland", role="ctb", comment="Gamma likelihood"), 
+  person("Stefan", "Emmons", role="ctb", comment="Automated tests"))
 Description: Distance-sampling is a popular method for estimating density and 
   abundance of organisms in ecology. Rdistance contains routines that  
   assist with analysis of
