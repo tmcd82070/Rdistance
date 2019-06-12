@@ -24,6 +24,9 @@
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
+context("Test the points_noCovars() function")
+
+test_that("points_noCovars() operates as it should", {
 data(thrasherDetectionData)
 head(thrasherDetectionData)
 
@@ -197,4 +200,4 @@ ds.fit$dht$individuals$N  # 0.4686923 (0.3792886 - 0.5791696)
 # Sigma
 coef(fit)  # 73.57595
 exp(ds.fit$ddf$ds$aux$ddfobj$scale$parameters)  # 73.57655
-
+})
