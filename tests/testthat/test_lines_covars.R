@@ -68,9 +68,9 @@ require(Rdistance)
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
-context("Test the linesCovars() function")
+context("Test the lines_Covars() function")
 
-test_that("linesCovars() works well", {
+test_that("lines_Covars() operates as it should", {
 data(sparrowDetectionData)
 head(sparrowDetectionData)
 
