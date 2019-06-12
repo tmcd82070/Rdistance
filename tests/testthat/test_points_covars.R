@@ -24,6 +24,9 @@
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
+context("Test the lines_points_Covars() function")
+
+test_that("lines_points_Covars() operates as it should", {
 data(thrasherDetectionData)
 head(thrasherDetectionData)
 
@@ -232,5 +235,6 @@ ds.fit$dht$individuals$N  # 0.4910311 (0.3917012 - 0.6155497)
 # Sigma
 coef(fit)  # Intercept = 4.63149158, dummy = -0.09736296
 ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept = 4.63150603, dummy = -0.09736732
+})
 
 
