@@ -68,6 +68,9 @@ require(Rdistance)
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
+context("Test the linesCovars() function")
+
+test_that("linesCovars() works well", {
 data(sparrowDetectionData)
 head(sparrowDetectionData)
 
@@ -329,5 +332,6 @@ ds.fit$dht$individuals$N  # 0.8753126 (0.6918557 - 1.107416)
 coef(fit)  # (Intercept)=3.880301; zBare=0.109066 
      
 ds.fit$ddf$ds$aux$ddfobj$scale$parameters  # Intercept =  3.8802998 , zBare = 0.1090674
+})
 
 
