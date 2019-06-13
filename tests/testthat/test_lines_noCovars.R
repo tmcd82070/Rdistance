@@ -71,108 +71,28 @@ require(Rdistance)
 context("Test the lines_noCovars() function")
 
 test_that("lines_noCovars Covars() operates as it should", {
-data(sparrowDetectionData)
-head(sparrowDetectionData)
+
+  data(sparrowDetectionData)
+  data(sparrowSiteData)
+  trunc <- 100
+  sparrow.dfunc <- dfuncEstim(formula=dist~1, detectionData=sparrowDetectionData, likelihood="halfnorm", w.hi=trunc)
+  plot(sparrow.dfunc)
+  sparrow.dfunc
+  
+  
+  ESW(sparrow.dfunc)  # 56.30098
 
 
+  fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                       area=10000, R=500, ci=NULL, plot.bs=TRUE)
+  
+  fit
+  
+  # Abundance estimate:  0.863415 ;  95% CI=( 0.6673237 to 1.091665 )
 
-# If the observers recorded sighting distance and sighting angle instead of perpendicular distance (as is often common
-# in line transect surveys), you can use the `perp.dists` function (detailed in Section 3) to calculate the perpendicular
-# distances based on the sighting distances and sighting angles.
-
-
-
-# The second required dataset is a transect data.frame
-# Each row is a transect, and the siteID and length columns are required (as named)
-# Other columns (e.g., transect-level covariates) are ignored, but may be useful in modeling abundance later
-data(sparrowSiteData)
-head(sparrowSiteData)
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-
-
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# 3) Fit a detection function
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# 3: Fit a detection function
-# After prepping the input data, the first step is to explore your data and fit a detection function.
-
-
-# Distance-sampling analysis is done on perpendicular distances (i.e., the distance from each detected group to the
-# transect, not to the observer).  We have provided the perpendicular distances (named `dist`) in the example data, but
-# observers originally recorded sighting distances and sighting angles.  Here we use the `perp.dists` function to
-# (re)calculate the perpendicular distances (`dist`) and remove the `sightdist` and `sightangle` columns.  See the help
-# documentation for `perp.dists` for details.
-
-
-# sparrowDetectionData$dist2 <- perp.dists(s.dist="sightdist", s.angle="sightangle", data=sparrowDetectionData)
-# 
-# sparrowDetectionData <- sparrowDetectionData[, -which(names(sparrowDetectionData) %in% c("sightdist", "sightangle", "dist2"))]                                                                  
-# head(sparrowDetectionData)
-
-
-
-# Explore the distribution of distances.
-hist(sparrowDetectionData$dist, col="grey", main="", xlab="Distance (m)")
-rug(sparrowDetectionData$dist)
-summary(sparrowDetectionData$dist)
-
-
-
-
-
-# Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the
-# half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
-# automated process that fits multiple detection functions and compares them using AICc.  Note that distances greater
-# than 100 m are quite sparse, so here we right-truncate the data, tossing out detections where `dist` > 100.
-trunc <- 100
-sparrow.dfunc <- dfuncEstim(formula=dist~1, detectionData=sparrowDetectionData, likelihood="halfnorm", w.hi=trunc)
-plot(sparrow.dfunc)
-sparrow.dfunc
-
-
-ESW(sparrow.dfunc)  # 56.30098
-effectiveDistance(sparrow.dfunc)     # 56.30098
-
-# The effective strip width (ESW) is the key information from the detection function that will be used to next estimate
-# abundance (or density).  The ESW is calculated by integrating under the detection function.  A survey with imperfect
-# detection and ESW equal to *X* effectively covers the same area as a study with perfect detection out to a distance
-# of *X*.  See the help documentation for `ESW` for details.
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# 4) Estimate abundance given the detection function -----
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-# Estimating abundance requires the additional information contained in the second required dataset, described earlier,
-# where each row represents one transect. Load the example dataset of surveyed sparrow transects from the package.
-
-
-# Next, estimate abundance (or density in this case) using `F.abund.estim`.  If `area`=1, then density is given in the
-# squared units of the distance measurements --- in this case, sparrows per square meter.  Instead, we set `area`=10000
-# in order to convert to sparrows per hectare (1 ha == 10,000 m^2^).  The equation used to calculate the abundance
-# estimate is detailed in the help documentation for `F.abund.estim`.
-
-# Confidence intervals for abundance are calculated using a bias-corrected bootstrapping method (see `F.abund.estim`),
-# and the detection function fit in each iteration of the bootstrap is plotted as a blue line (if `plot.bs=TRUE`).
-# Note that, as with all bootstrapping procedures, there may be slight differences in the confidence intervals between
-# runs due to so-called 'simulation slop'.  Increasing the number of bootstrap iterations (`R` = 100 used here) may be
-# necessary to stabilize CI estimates.
-
-fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     area=10000, R=500, ci=0.95, plot.bs=TRUE)
-
-fit
-
-# Abundance estimate:  0.863415 ;  95% CI=( 0.6673237 to 1.091665 )
-
-
-
-
-
-
-# Results of interest (such as the abundance estimate and confidence interval) can be extracted from the resulting
-# object (here called `fit`).
-fit$n.hat
-fit$ci
+  # Results of interest (such as the abundance estimate and confidence interval) can be extracted from the resulting
+  # object (here called `fit`).
+  fit$n.hat
 
 
 
@@ -214,20 +134,8 @@ fit$n.hat
 
 
 auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                        w.hi=trunc, plot=FALSE, area=10000, R=50, ci=0.95, plot.bs=TRUE)
+                        w.hi=trunc, plot=FALSE, area=10000, R=50, ci=NULL, plot.bs=TRUE)
 
-
-# Before the package overhaul, the top-ranked detection function was the negative
-# exponential likelihood, with one cosine expansion.
-
-# Now the negexp, 0 expansions is top-ranked.
-
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////#
-
-# This used to be the best-fitting detection function
-# best.old <- dfuncEstim(formula=dist~1, detectionData=sparrowDetectionData, likelihood="negexp", expansions=1, series="cosine", w.hi=100)
-# plot(best.old)
-# best.old
 
 
 
