@@ -15,29 +15,58 @@ This tutorial is meant to be a beginner's guide to analyzing line-transect data 
 
 # 1: Install and load Rdistance
 
-If you haven't already done so, install the latest version of `Rdistance`.  In the R console, issue `install.packages("Rdistance")`.  After the package is installed, it can be loaded into the current session as follows:
+If you haven't already done so, install the latest version of `Rdistance`.  In the R console, issue `install.packages("Rdistance")`.  You install the latest release of `Rdistance` with the command `devtools::install_github("tmcd82070/Rdistance")`.  After the package is installed, it is loaded into the current session using the following:
 ```{r}
 require(Rdistance)
 ```
 
 # 2: Read in input data
 
-`Rdistance` requires two input datasets.  These can be prepared outside of `R` and read in as data.frames using, for example, `read.csv`.  In the following sections, we make use of the sparrow example datasets already contained within `Rdistance`.
+`Rdistance` requires two input datasets for every analysis.  These can be prepared using any method that results in an `R` data.frame.  A common method is to format data into tables on separate sheets in `Excel`, export each sheet to CSV format, and read each into R using `read.csv`.  In the following sections, we make use of the sparrow example datasets which are already contained within `Rdistance`.
 
-The first required dataset is a detection data.frame, with a row for each detection, and the following required columns, named as follows:
+## *Detection* Data
+
+The first dataset required in an `Rdistance` analysis is the *detection* data.frame that contains one row for each detection, and a minimum of three required columns.  The required *detection* columns are:
 
 * `siteID` = Factor, the site or transect where the detection was made.
-* `groupsize` = Numeric, the number of individuals within the detected group.
 * `dist` = Numeric, the perpendicular distance (also known as off-transect distance) from the transect to the detected group.
+* `groupsize` = Numeric, the number of individuals in the group associated with each detection.  Note that this column is required to estimate 
+abundance (function `abundEstim`), but not for estimating the 
+distance function (function `dfuncEstim`). 
 
-If the observers recorded sighting distance and sighting angle instead of perpendicular distance (as is often common in line transect surveys), you can use the `perpDists` function (detailed in Section 3) to calculate the perpendicular distances based on the sighting distances and sighting angles.
+Which column contains perpendicular distances (hence, the name of 
+`dist` column) is specified on the 
+left-hand side of the formula argument to 
+function `dfuncEstim`.  The column(s) containing site or transect ID's 
+can be specified in argument `transectID` to function `dfuncEstim`. 
+If unspecified, 
+`transectID` is the set of common columns in the *detection* and
+*transect* data frames.  See `help(dfuncEstim)` for additional 
+details.  
 
-The second required dataset is a transect data.frame, with a row for each transect surveyed, and the following required columns, named as follows:
+If observers recorded straight-line sighting distance and sighting 
+angle instead of perpendicular distance (as is common in line transect 
+surveys), you can use the `perpDists` function (detailed in Section 3) 
+to calculate the perpendicular distances based on the sighting 
+distances and sighting angles.
+
+## *Transect* Data
+
+The second dataset required by `Rdistance` is the transect or site data.frame. The *transect* data frame contains one row for each "positive" (with detections) and "zero" (without detections) transects.  At a minimum 
+the *transect* data frame must contain the following information: 
 
 * `siteID` = Factor, the site or transect surveyed.
 * `length` = Numeric, the length of the transect.  Use the same units as the detection distances.
-* `shrubclass` = Factor, the height of sage shrubs (High or Low) where sparrow was detected
-* `...` = Any additional transect-level covariate columns (these will be ignored).
+
+In addition, the *transect* data set can contain transect (or site) level 
+covariates.  The sparrow data set contains the following covariate columns:
+
+* `observer` = Factor (five levels), identity of the observer who surveyed the transect.
+* `bare` = Number, the mean bare ground cover (\%) within 100 m of each transect.
+* `herb` = Number, the mean herbaceous cover (\%) within 100 m of each transect.
+* `shrub` = Number, the mean shrub cover (\%) within 100 m of each transect.
+* `height` = Number, the mean shrub height (cm) within 100 m of each transect.
+* `shrubclass` = Factor (two levels), class is "Low"" when shrub cover is < 10\%, "High" otherwise.
 
 # 3: Fit a detection function
 
@@ -48,8 +77,6 @@ data(sparrowDetectionData)
 head(sparrowDetectionData)
 data(sparrowSiteData)
 head(sparrowSiteData)
-
-
 ```
 
 Line-transect distance-sampling analysis is done on perpendicular distances (i.e., the distance from each detected group to the transect, not to the observer).  We have provided the perpendicular distances (named `dist`) in the example data, but observers originally recorded sighting distances and sighting angles.  Here we use the `perpDists` function to (re)calculate the perpendicular distances (`dist`) and remove the `sightdist` and `sightangle` columns.  See the help documentation for `perpDists` for details.
@@ -103,9 +130,9 @@ Confidence intervals for abundance are calculated using a bias-corrected bootstr
 
 Computing bootstrap confidence intervals for this vignette takes 
 time (>5s), and the masters at CRAN have better things to do than
-wait for a package to build.  In the code below, we supress bootstrap confidence 
-intervals with `ci = NULL`, then replace confidence endpoints with 
-values from a separate run with `R = 500` iterations. 
+wait for a package to build.  In the code below, we supress bootstrap 
+confidence intervals with `ci = NULL`, then replace confidence 
+endpoints with values from a separate run with `R = 500` iterations. 
 
 
 ```{r, fig.width=6, fig.height=4,results='hide'}
@@ -124,7 +151,9 @@ fit
 ```
 
 
-Results of interest (such as the abundance estimate and confidence interval) can be extracted from the resulting object (here called `fit`).
+Results of interest (such as the abundance estimate and 
+confidence interval) can be extracted from the resulting 
+object (here called `fit`).
 ``` {r}
 fit$n.hat
 fit$ci
@@ -445,7 +474,7 @@ auto<-list(n.hat=1.003543 ,
 ## uniform		cosine	1	Yes		Ok	3262.4814
 ## Computing bootstrap confidence interval on N...
 ## |===================================================================| 100%
-## 101 of 500 iterations did not converge.
+## 74 of 500 iterations did not converge.
 ## 
 ## ------------ Abundance Estimate Based on Top-Ranked Detection Function ------------
 ## Call: dfuncEstim(formula = formula, detectionData = detectionData,
@@ -467,7 +496,7 @@ auto<-list(n.hat=1.003543 ,
 ## AICc: 3260.732
 ## 
 ## Abundance estimate:  1.003543 ;  95% CI=( 0.7823177 to 1.366216 )
-## CI based on 399 of 500 successful bootstrap iterations
+## CI based on 426 of 500 successful bootstrap iterations
 ```
 
 You can see that the detection function with the lowest AICc value (and thus selected as the 'best') is the uniform likelihood.  It is worth noting that approximately 20% of the bootstrap iterations did not converge, indicating that the uniform detection function is unstable.  It might be best in this situation to exclude the uniform from the list of potential distance function forms. 

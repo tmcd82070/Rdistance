@@ -4,9 +4,17 @@
 \alias{hazrate.like}
 \title{Hazard rate likelihood function for distance analyses}
 \usage{
-hazrate.like(a, dist, covars = NULL, w.lo = 0, w.hi = max(dist),
-  series = "cosine", expansions = 0, scale = TRUE,
-  pointSurvey = FALSE)
+hazrate.like(
+  a,
+  dist,
+  covars = NULL,
+  w.lo = 0,
+  w.hi = max(dist),
+  series = "cosine",
+  expansions = 0,
+  scale = TRUE,
+  pointSurvey = FALSE
+)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and meaning 

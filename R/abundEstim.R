@@ -73,21 +73,52 @@
 #'   (2*ESW*tot.trans.len)} where \code{n.indiv} is either \code{avg.group.size * n} or
 #'   \code{sum(group.sizes)}, and \code{ESW} is the effective strip width
 #'   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
-#'   
-#'   The confidence interval for abundance assumes that the fundamental units of
-#'   replication (lines or points, hereafter "sites") are independent.
-#'   The bias corrected bootstrap
-#'   method used here resamples the units of replication (sites) and
-#'   recalculates the model's parameter estimates.  If a double-observer data
-#'   frame is included in \code{dfunc}, rows of the double-observer data frame
-#'   are re-sampled each bootstrap iteration. No model selection is performed.
-#'   By default, \code{R} = 500 iterations are performed, after which the bias
-#'   corrected confidence intervals are computed using the method given in Manly
-#'   (1997, section 3.4).
-#'   
-#' Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
+#'
+#'  Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
 #'     suppresses all intermediate output.  This is good when calling 
 #'     \code{abundEstim} from within other functions or during simulations.
+#'     
+#' @section Bootstrap Confidence Intervals:
+#' 
+#'   The bootstrap confidence interval for abundance 
+#'   assumes that the fundamental units of
+#'   replication (lines or points, hereafter "sites") are independent.
+#'   The bias corrected bootstrap
+#'   method used here resamples the units of replication (sites), 
+#'   refits the distance function, and estimates abundance using 
+#'   the resampled counts and re-estimated distance function. 
+#'   If a double-observer data
+#'   frame is included in \code{dfunc}, rows of the double-observer data frame
+#'   are re-sampled each bootstrap iteration. 
+#'   
+#'   This routine does not 
+#'   re-select the distance model fitted to resampled data.  The 
+#'   model in the input object is re-fitted every iteration.  
+#'   
+#'   By default, \code{R} = 500 iterations are performed, after which the bias
+#'   corrected confidence intervals are computed (Manly, 1997, section 3.4).
+#'   
+#'   During bootstrap iterations, the distance function can fail 
+#'   to converge on the resampled data.   An iteration can fail 
+#'   to converge for a two reasons:
+#'   (1) no detections on the iteration, and (2) bad configuration 
+#'   of distances on the iteration which pushes parameters to their 
+#'   bounds. When an iteration fails to produce a valid 
+#'   distance function, \code{Rdistance} 
+#'   uses the last convergent distance function to estimate 
+#'   abundance on the iteration rather than ignore these 
+#'   non-convergent iterations and continue. This approach includes 
+#'   all variation associated with counts, but can may not include 
+#'   all the variation associated with distance function estimation.  
+#'   If the proportion of non-convergent iterations is small 
+#'   (less than 20% by default), the resulting confidence interval 
+#'   on abundance is 
+#'   probably valid.  If the proportion of non-convergent iterations 
+#'   is not small (exceeds 20% by default), a warning is issued.  
+#'   The print method also issues this warning. This warning can be 
+#'   turned off by setting \code{maxBSFailPropForWarning} in the 
+#'   print method to 1.0.
+#'   
 #'   
 #' @return If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
 #'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
@@ -116,6 +147,7 @@
 #'   \code{x} is an 'abundance estimate' object. The confidence interval in
 #'   \code{ci} can be reproduced with \code{quantile(x$B[!is.na(x$B)],
 #'   p=names(x$ci) )}.}
+#'   \item{nItersConverged}{The number of bootstrap iterations that converged.  }
 #'   \item{alpha}{The (scalar) confidence level of the
 #'   confidence interval for \code{n.hat}.} 
 #'   
@@ -359,6 +391,8 @@ abundEstim <- function(dfunc, detectionData, siteData,
       }
 
       # Bootstrap
+      lastConvergentDfunc <- dfunc
+      convergedCount <- 0
       for (i in 1:R) {
         # sample rows, with replacement, from transect data
         new.siteData <- siteData[sample(nrow(siteData), nrow(siteData), replace=TRUE),,drop=FALSE]
@@ -374,25 +408,23 @@ abundEstim <- function(dfunc, detectionData, siteData,
         }
         new.detectionData <- detectionData[detectionData$siteID %in% new.trans, ]  # this is incomplete, since some transects were represented > once
         
-        # new.mergeData <- merge(new.detectionData, siteData, by="siteID")
-        
-        # replicate according to freqency in new sample
-        # merge to add Freq column to indicate how many times to repeat each row
-        red <- merge(new.detectionData, trans.freq, by.x="siteID", by.y="new.trans")
-        # expand this reduced set my replicating rows
-        new.detectionData <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
+        # It is possible that we detected no targets on these BS transects. 
+        # Fine, but we need to check cause the rep statement below throws an error 
+        # if there are no detections
+        if(nrow(new.detectionData) > 0) {
+          # If we have detections on this iteration, replicate according 
+          # to freqency of transects in new BS sample
+          # First, merge to add Freq column to indicate how many times to repeat each row
+          red <- merge(new.detectionData, trans.freq, by.x = "siteID", by.y = "new.trans")
+          # expand this reduced set by replicating rows
+          new.detectionData <- red[rep(seq.int(1, nrow(red)), red$Freq), -ncol(red)]
+        }
         
         # And merge on site-level covariates
         # Not needed if no covars, but cost in time should be negligible
-        # Need to merge now to get covars siteData that has unduplicated siteID.
+        # Need to merge now to get covars in siteData that has unduplicated siteID.
         new.mergeData <- merge(new.detectionData, siteData, by="siteID")
-        # unique(droplevels(new.detectionData$siteID))
-        # unique(droplevels(new.siteData$siteID))
-        # length(new.trans)
-        
-        # Extract distances
-        # new.x <- new.detectionData$dist
-        
+
         #update g(0) or g(x) estimate.
         if (is.data.frame(g.x.scl.orig)) {
           g.x.scl.bs <- g.x.scl.orig[sample(1:nrow(g.x.scl.orig), 
@@ -402,11 +434,9 @@ abundEstim <- function(dfunc, detectionData, siteData,
         }
         
         
-        # Re-fit detection function -- same function, new data
-        # fmla <- as.formula(dfunc$call[["formula"]])  # (jdc) when called from autoDistSamp, dfunc$call[["formula"]] is "formula"
-        
-        # Eventually, get smoothed function into dfuncEstim or one function
-        # this if statement is kluncky
+        # Eventually, we will get smoothed the function into 
+        # dfuncEstim or one function.
+        # This if statement is kluncky
         if( dfunc$like.form == "smu" ){
           dfunc.bs <- dfuncSmu(dfunc$formula, 
                                detectionData=new.mergeData,
@@ -420,8 +450,6 @@ abundEstim <- function(dfunc, detectionData, siteData,
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
                                warn = FALSE )
-          
-          
         } else {
           dfunc.bs <- dfuncEstim(formula = dfunc$formula,  
                                detectionData = new.mergeData,
@@ -435,6 +463,13 @@ abundEstim <- function(dfunc, detectionData, siteData,
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
                                warn = FALSE)
+        }
+        
+        if(dfunc.bs$convergence != 0) {
+          dfunc.bs <- lastConvergentDfunc
+        } else {
+          lastConvergentDfunc <- dfunc.bs
+          convergedCount <- convergedCount + 1
         }
         
         # Store ESW if it converged
@@ -489,14 +524,16 @@ abundEstim <- function(dfunc, detectionData, siteData,
       p.H <- pnorm(2 * z.0 + z.alpha)
       ans$ci <- quantile(n.hat.bs[!is.na(n.hat.bs)], p = c(p.L, p.H))
       ans$B <- n.hat.bs
-      if (!(dfunc$like.form=="smu") && any(is.na(n.hat.bs)) && showProgress){
-        cat(paste(sum(is.na(n.hat.bs)), "of", R, "iterations did not converge.\n"))
+      ans$nItersConverged <- convergedCount
+      if (!(dfunc$like.form=="smu") && (convergedCount < R) && showProgress){
+        cat(paste( R - convergedCount, "of", R, "iterations did not converge.\n"))
       }
       
     } else {
       # Don't compute CI if ci is null
       ans$B <- NA
       ans$ci <- c(NA, NA)
+      ans$nItersConverged <- NA
     }  # end else
     
     

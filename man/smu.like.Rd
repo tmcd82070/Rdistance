@@ -4,8 +4,17 @@
 \alias{smu.like}
 \title{Smoothed likelihood function for distance analyses}
 \usage{
-smu.like(a, dist, covars = NULL, w.lo = 0, w.hi, scale = TRUE,
-  series = NULL, expansions = 0, pointSurvey = FALSE)
+smu.like(
+  a,
+  dist,
+  covars = NULL,
+  w.lo = 0,
+  w.hi,
+  scale = TRUE,
+  series = NULL,
+  expansions = 0,
+  pointSurvey = FALSE
+)
 }
 \arguments{
 \item{a}{A data frame containing the smooth.  This data frame 

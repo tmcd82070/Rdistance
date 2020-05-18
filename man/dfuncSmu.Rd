@@ -5,10 +5,24 @@
 \title{Estimate a non-parametric smooth detection function 
 from distance-sampling data}
 \usage{
-dfuncSmu(formula, detectionData, siteData, bw = "SJ-dpi", adjust = 1,
-  kernel = "gaussian", pointSurvey = FALSE, w.lo = 0, w.hi = NULL,
-  x.scl = "max", g.x.scl = 1, observer = "both", warn = TRUE,
-  transectID = NULL, pointID = "point", length = "length")
+dfuncSmu(
+  formula,
+  detectionData,
+  siteData,
+  bw = "SJ-dpi",
+  adjust = 1,
+  kernel = "gaussian",
+  pointSurvey = FALSE,
+  w.lo = 0,
+  w.hi = NULL,
+  x.scl = "max",
+  g.x.scl = 1,
+  observer = "both",
+  warn = TRUE,
+  transectID = NULL,
+  pointID = "point",
+  length = "length"
+)
 }
 \arguments{
 \item{formula}{A formula object (e.g., dist ~ 1). 

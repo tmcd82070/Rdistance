@@ -4,11 +4,24 @@
 \alias{plot.dfunc}
 \title{Plot a distance (detection) function}
 \usage{
-\method{plot}{dfunc}(x, include.zero = FALSE, nbins = "Sturges",
-  newdata = NULL, legend = TRUE, vertLines = TRUE, plotBars = TRUE,
-  density = NULL, xlab = "Distance", ylab = if (x$pointSurvey)
-  "Observation density" else "Probability of detection", border = "blue",
-  col = 0, col.dfunc = "red", lty.dfunc = 1, lwd.dfunc = 2, ...)
+\method{plot}{dfunc}(
+  x,
+  include.zero = FALSE,
+  nbins = "Sturges",
+  newdata = NULL,
+  legend = TRUE,
+  vertLines = TRUE,
+  plotBars = TRUE,
+  density = NULL,
+  xlab = "Distance",
+  ylab = if (x$pointSurvey) "Observation density" else "Probability of detection",
+  border = "blue",
+  col = 0,
+  col.dfunc = "red",
+  lty.dfunc = 1,
+  lwd.dfunc = 2,
+  ...
+)
 }
 \arguments{
 \item{x}{An estimated distance function resulting from a call to

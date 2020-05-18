@@ -38,6 +38,13 @@
 #' 1 or the number of parameters in the model. See function 
 #' \code{\link{secondDeriv}}. 
 #' 
+#' @param maxBSFailPropForWarning The proportion of bootstrap 
+#' iterations that can fail without a warning. If the proportion 
+#' of bootstrap iterations that did not converge exceeds this 
+#' parameter, a warning about the validity of CI's is issued in 
+#' the print method for
+#' abundance objects. 
+#' 
 #' @return A list containing named components for each of the 
 #' controls.  This list has the same components as this function 
 #' has input parameters. 
@@ -58,14 +65,16 @@ RdistanceControls <- function(optimizer="nlminb",
                               maxIters=1000,
                               likeTol=1e-8,
                               coefTol=1.5e-8,
-                              hessEps=1e-8){
+                              hessEps=1e-8,
+                              maxBSFailPropForWarning = 0.2){
   
   list(optimizer=optimizer,
        evalMax=evalMax,
        maxIters=maxIters,
        likeTol=likeTol,
        coefTol=coefTol,
-       hessEps=hessEps
+       hessEps=hessEps,
+       maxBSFailPropForWarning = maxBSFailPropForWarning
       )
   
 }

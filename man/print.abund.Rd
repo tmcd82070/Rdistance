@@ -4,7 +4,12 @@
 \alias{print.abund}
 \title{Print abundance estimates}
 \usage{
-\method{print}{abund}(x, criterion = "AICc", ...)
+\method{print}{abund}(
+  x,
+  criterion = "AICc",
+  maxBSFailPropForWarning = RdistanceControls()$maxBSFailPropForWarning,
+  ...
+)
 }
 \arguments{
 \item{x}{An object output by \code{abundEstim}.  This is a distance function object that 
@@ -13,6 +18,15 @@ also contains abundance estimates, and has class \code{c("abund", "dfunc")}.}
 \item{criterion}{A string specifying the criterion to print.
 Must be one of "AICc" (the default), 
 "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
+
+\item{maxBSFailPropForWarning}{The proportion of bootstrap 
+iterations that can fail without a warning. If the proportion 
+of bootstrap iterations that did not converge exceeds this 
+parameter, a warning about the validity of CI's is issued and 
+a diagnostic message printed.  Increasing this to a number greater 
+than 1 will kill the warning, but ignoring a large number of non-convergent
+bootstrap iterations is a really bad idea (i.e., validity of the CI is 
+questionable).}
 
 \item{\dots}{Included for compatibility to other print methods.  Ignored here.}
 }

@@ -5,8 +5,18 @@
 \title{Return the negative log likelihood for 
 a set of distance values}
 \usage{
-F.nLL(a, dist, covars = NULL, like, w.lo = 0, w.hi = max(dist),
-  series, expansions = 0, pointSurvey, for.optim = F)
+F.nLL(
+  a,
+  dist,
+  covars = NULL,
+  like,
+  w.lo = 0,
+  w.hi = max(dist),
+  series,
+  expansions = 0,
+  pointSurvey,
+  for.optim = F
+)
 }
 \arguments{
 \item{a}{A vector of parameter values for

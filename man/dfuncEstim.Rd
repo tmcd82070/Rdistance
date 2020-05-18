@@ -4,11 +4,25 @@
 \alias{dfuncEstim}
 \title{Estimate a detection function from distance-sampling data}
 \usage{
-dfuncEstim(formula, detectionData, siteData, likelihood = "halfnorm",
-  pointSurvey = FALSE, w.lo = 0, w.hi = NULL, expansions = 0,
-  series = "cosine", x.scl = 0, g.x.scl = 1, observer = "both",
-  warn = TRUE, transectID = NULL, pointID = "point",
-  length = "length", control = RdistanceControls())
+dfuncEstim(
+  formula,
+  detectionData,
+  siteData,
+  likelihood = "halfnorm",
+  pointSurvey = FALSE,
+  w.lo = 0,
+  w.hi = NULL,
+  expansions = 0,
+  series = "cosine",
+  x.scl = 0,
+  g.x.scl = 1,
+  observer = "both",
+  warn = TRUE,
+  transectID = NULL,
+  pointID = "point",
+  length = "length",
+  control = RdistanceControls()
+)
 }
 \arguments{
 \item{formula}{A standard formula object (e.g., \code{dist ~ 1}, 
@@ -35,20 +49,20 @@ information:
   specify the site (transect or point) so that this 
   data frame can be merged with \code{siteData}.    
 } 
-Optionally, this data frame can contain the following 
-variables: 
+Optionally, this data frame can also contain the following 
+information: 
 \itemize{
   \item Group Sizes: The number of individuals in the group
-  associated with each detection.  If unspecified, \code{Rdistance}
-  assumes all detections are of single individuals (i.e., 
-  all group sizes are 1). 
+  associated with each detection.  This column is not 
+  required to estimate a distance function.  This column 
+  is required to estimate abundance (i.e., in function `abundEstim`).  
   
-  \item When \code{Rdistance} allows detection-level 
-  covariates, detection-level 
+  \item In a later release, \code{Rdistance} will allow detection-level 
+  covariates.  When that happens, detection-level 
   covariates will appear in this data frame. 
    
 }
-See example data set \code{\link{sparrowDetectionData}}).
+See example data set \code{\link{sparrowDetectionData}}.
 See also \bold{Input data frames} below 
 for information on when \code{detectionData} and 
 \code{siteData} are required inputs.}
@@ -140,13 +154,13 @@ may contain multiple sampling
 units (i.e., points) when \code{pointSurvey}=TRUE. 
 For line-transects, the \code{transectID} column(s) alone is 
 sufficient to specify unique sample sites. 
-For point-transects, the amalgamation of \code{transectID} and 
+For point-transects, the combination of \code{transectID} and 
 \code{pointID} specify unique sampling sites.  
 See \bold{Input data frames} below.}
 
 \item{pointID}{When point-transects are used, this is the 
 ID of points on a transect.  When \code{pointSurvey}=TRUE, 
-the amalgamation of \code{transectID} and 
+the combination of \code{transectID} and 
 \code{pointID} specify unique sampling sites.  
 See \bold{Input data frames}.  
 
@@ -266,7 +280,7 @@ the following merge must work:
 \code{merge(detectionData,siteData,by=transectID)}.
 
 For point-transects, 
-site ID's specify individual points are unique values 
+site ID's specify individual points and are unique values 
 of the combination \code{paste(transectID,pointID)}.
 In this case, the following merge must work:    
 \code{merge(detectionData,siteData,by=c(transectID, pointID)}.

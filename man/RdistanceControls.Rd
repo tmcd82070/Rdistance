@@ -4,9 +4,15 @@
 \alias{RdistanceControls}
 \title{Control parameters for \code{Rdistance} optimization.}
 \usage{
-RdistanceControls(optimizer = "nlminb", evalMax = 2000,
-  maxIters = 1000, likeTol = 1e-08, coefTol = 1.5e-08,
-  hessEps = 1e-08)
+RdistanceControls(
+  optimizer = "nlminb",
+  evalMax = 2000,
+  maxIters = 1000,
+  likeTol = 1e-08,
+  coefTol = 1.5e-08,
+  hessEps = 1e-08,
+  maxBSFailPropForWarning = 0.2
+)
 }
 \arguments{
 \item{optimizer}{A string specifying the optimizer 
@@ -42,6 +48,13 @@ optimization stops and a solution is declared.}
 computation of numeric second derivatives. Should have length 
 1 or the number of parameters in the model. See function 
 \code{\link{secondDeriv}}.}
+
+\item{maxBSFailPropForWarning}{The proportion of bootstrap 
+iterations that can fail without a warning. If the proportion 
+of bootstrap iterations that did not converge exceeds this 
+parameter, a warning about the validity of CI's is issued in 
+the print method for
+abundance objects.}
 }
 \value{
 A list containing named components for each of the 

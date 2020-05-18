@@ -2,7 +2,7 @@
 #' 
 #' @title Rdistance - Distance Sampling Analyses for Abundance Estimation
 #' 
-#' 
+#' @description 
 #' \code{Rdistance} contains functions and associated routines to analyze
 #' distance-sampling data collected on point or line transects. 
 #' Some of \code{Rdistance}'s features include:

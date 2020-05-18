@@ -30,7 +30,8 @@ Thrashers by the Wyoming Cooperative Fish & Wildlife Research Unit in 2013.
 
 See the package vignettes for \code{Rdistance} tutorials using these
 datasets.}
-\format{A data.frame containing 193 rows and 3 columns.  Each row represents
+\format{
+A data.frame containing 193 rows and 3 columns.  Each row represents
 a detected group of thrashers.  Column descriptions: 
 \enumerate{ 
 \item \code{siteID}: Factor (120 levels), the site or point where the detection
@@ -39,7 +40,8 @@ was made.
 the detected group.  
 \item \code{dist}: Number, the radial distance (m) from
 the transect to the detected group.  This is the distance used in analysis.
-}}
+}
+}
 \source{
 A subset of Jason Carlisle's dissertation data, University of Wyoming.
 }

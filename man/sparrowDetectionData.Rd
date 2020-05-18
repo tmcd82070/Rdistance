@@ -30,7 +30,8 @@ Thrashers by the Wyoming Cooperative Fish & Wildlife Research Unit in 2013.
 
 See the package vignettes for \code{Rdistance} tutorials using these
 datasets.}
-\format{A data.frame containing 356 rows and 5 columns.  Each row represents
+\format{
+A data.frame containing 356 rows and 5 columns.  Each row represents
 a detected group of sparrows.  Column descriptions: \enumerate{ \item
 \code{siteID}: Factor (72 levels), the site or transect where the detection
 was made.  \item \code{groupsize}: Number, the number of individuals within
@@ -39,7 +40,8 @@ the observer to the detected group.  \item \code{sightangle}: Number, the
 angle (degrees) from the transect line to the detected group.  \item
 \code{dist}: Number, the perpendicular, off-transect distance (m) from the
 transect to the detected group.  This is the distance used in analysis.
-Calculated using \code{\link{perpDists}}.  }}
+Calculated using \code{\link{perpDists}}.  }
+}
 \source{
 A subset of Jason Carlisle's dissertation data, University of Wyoming.
 }

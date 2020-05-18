@@ -10,6 +10,15 @@
 #' Must be one of "AICc" (the default), 
 #' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
 #' 
+#' @param maxBSFailPropForWarning The proportion of bootstrap 
+#' iterations that can fail without a warning. If the proportion 
+#' of bootstrap iterations that did not converge exceeds this 
+#' parameter, a warning about the validity of CI's is issued and 
+#' a diagnostic message printed.  Increasing this to a number greater 
+#' than 1 will kill the warning, but ignoring a large number of non-convergent
+#' bootstrap iterations is a really bad idea (i.e., validity of the CI is 
+#' questionable). 
+#' 
 #' @param \dots Included for compatibility to other print methods.  Ignored here.
 #' @details The default print method for class 'dfunc' is called, then the abundance estimates 
 #'   contained in \code{obj} are printed.
@@ -39,19 +48,35 @@
 #' @keywords models
 #' @export
 
-print.abund <- function( x, criterion="AICc", ... ){
-#
-#   Print an object of class 'abund', which is class 'dfunc' with
-#   an abundance estimate stored in it.
-#
+print.abund <- function( x, 
+                         criterion="AICc", 
+                         maxBSFailPropForWarning = RdistanceControls()$maxBSFailPropForWarning,
+                         ... ){
+  #
+  #   Print an object of class 'abund', which is class 'dfunc' with
+  #   an abundance estimate stored in it.
+  #
 
-print.dfunc( x, criterion=criterion )
-
-cat( paste( "Abundance estimate: ", format(x$n.hat), "; ",
-        paste(x$alpha*100, "% CI=(", sep=""), format(x$ci[1]), 
-        "to", format(x$ci[2]),
-        ")\n"))
-if(any(is.na(x$B))) cat(paste("CI based on", sum(!is.na(x$B)), "of", length(x$B), "successful bootstrap iterations\n"))        
-cat( "\n" )
+  print.dfunc( x, criterion=criterion )
+  
+  cat( paste( "Abundance estimate: ", format(x$n.hat), "; ",
+          paste(x$alpha*100, "% CI=(", sep=""), format(x$ci[1]), 
+          "to", format(x$ci[2]),
+          ")\n"))
+  if(!is.na(x$nItersConverged)){
+    if(x$nItersConverged < length(x$B)) {
+      cat(paste("CI based on", x$nItersConverged, "of", length(x$B), 
+                "successful bootstrap iterations\n"))
+      convRatio <- x$nItersConverged / length(x$B)
+      if((1.0-convRatio) > maxBSFailPropForWarning) {
+        warning("The proportion of non-convergent bootstrap iterations is high.", immediate. = TRUE)
+        cat(paste0("The proportion of non-convergent bootstrap iterations exceeds ",
+                  maxBSFailPropForWarning, ".\n",
+                  "You should figure out why this happened (low detections, unstable dfunc form, etc.),\n",
+                  "inspect the $B component of the abundance object (e.g., hist(x$B)), and decide whether the bootstrap CI is valid.\n"))
+      }
+    }
+  }
+  cat( "\n" )
 
 }

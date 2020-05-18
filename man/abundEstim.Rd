@@ -4,8 +4,17 @@
 \alias{abundEstim}
 \title{Estimate abundance from distance-sampling data}
 \usage{
-abundEstim(dfunc, detectionData, siteData, area = 1, ci = 0.95,
-  R = 500, plot.bs = FALSE, bySite = FALSE, showProgress = TRUE)
+abundEstim(
+  dfunc,
+  detectionData,
+  siteData,
+  area = 1,
+  ci = 0.95,
+  R = 500,
+  plot.bs = FALSE,
+  bySite = FALSE,
+  showProgress = TRUE
+)
 }
 \arguments{
 \item{dfunc}{An estimated 'dfunc' object produced by \code{dfuncEstim}.}
@@ -97,6 +106,7 @@ If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
   \code{x} is an 'abundance estimate' object. The confidence interval in
   \code{ci} can be reproduced with \code{quantile(x$B[!is.na(x$B)],
   p=names(x$ci) )}.}
+  \item{nItersConverged}{The number of bootstrap iterations that converged.  }
   \item{alpha}{The (scalar) confidence level of the
   confidence interval for \code{n.hat}.} 
   
@@ -136,22 +146,54 @@ The abundance estimate for line transect surveys (if no covariates
   (2*ESW*tot.trans.len)} where \code{n.indiv} is either \code{avg.group.size * n} or
   \code{sum(group.sizes)}, and \code{ESW} is the effective strip width
   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
-  
-  The confidence interval for abundance assumes that the fundamental units of
-  replication (lines or points, hereafter "sites") are independent.
-  The bias corrected bootstrap
-  method used here resamples the units of replication (sites) and
-  recalculates the model's parameter estimates.  If a double-observer data
-  frame is included in \code{dfunc}, rows of the double-observer data frame
-  are re-sampled each bootstrap iteration. No model selection is performed.
-  By default, \code{R} = 500 iterations are performed, after which the bias
-  corrected confidence intervals are computed using the method given in Manly
-  (1997, section 3.4).
-  
-Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
+
+ Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
     suppresses all intermediate output.  This is good when calling 
     \code{abundEstim} from within other functions or during simulations.
 }
+\section{Bootstrap Confidence Intervals}{
+
+
+  The bootstrap confidence interval for abundance 
+  assumes that the fundamental units of
+  replication (lines or points, hereafter "sites") are independent.
+  The bias corrected bootstrap
+  method used here resamples the units of replication (sites), 
+  refits the distance function, and estimates abundance using 
+  the resampled counts and re-estimated distance function. 
+  If a double-observer data
+  frame is included in \code{dfunc}, rows of the double-observer data frame
+  are re-sampled each bootstrap iteration. 
+  
+  This routine does not 
+  re-select the distance model fitted to resampled data.  The 
+  model in the input object is re-fitted every iteration.  
+  
+  By default, \code{R} = 500 iterations are performed, after which the bias
+  corrected confidence intervals are computed (Manly, 1997, section 3.4).
+  
+  During bootstrap iterations, the distance function can fail 
+  to converge on the resampled data.   An iteration can fail 
+  to converge for a two reasons:
+  (1) no detections on the iteration, and (2) bad configuration 
+  of distances on the iteration which pushes parameters to their 
+  bounds. When an iteration fails to produce a valid 
+  distance function, \code{Rdistance} 
+  uses the last convergent distance function to estimate 
+  abundance on the iteration rather than ignore these 
+  non-convergent iterations and continue. This approach includes 
+  all variation associated with counts, but can may not include 
+  all the variation associated with distance function estimation.  
+  If the proportion of non-convergent iterations is small 
+  (less than 20% by default), the resulting confidence interval 
+  on abundance is 
+  probably valid.  If the proportion of non-convergent iterations 
+  is not small (exceeds 20% by default), a warning is issued.  
+  The print method also issues this warning. This warning can be 
+  turned off by setting \code{maxBSFailPropForWarning} in the 
+  print method to 1.0.
+}
+
 \examples{
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)
