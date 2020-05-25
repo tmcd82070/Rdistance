@@ -92,11 +92,11 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
   
   # Apply truncation specified in dfunc object (including dist 
   # equal to w.lo and w.hi)
-  (detectionData <- detectionData[detectionData$dist >= dfunc$w.lo 
-                                    & detectionData$dist <= dfunc$w.hi, ])
+  detectionData <- detectionData[detectionData$dist >= dfunc$w.lo 
+                                    & detectionData$dist <= dfunc$w.hi, ]
   
   # sample size (number of detections, NOT individuals)
-  (n <- nrow(detectionData))
+  n <- nrow(detectionData)
   
   # total transect length
   tot.sites <- nrow(siteData)  # number of points or number of transects
@@ -126,16 +126,44 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
   nhat <- detectionData$groupsize / phat # inflated counts one per detection
   
   if (bySite) {
+    
+    if(!is.null(dfunc$covars)){
+      covarsInModel <- attr(terms(dfunc$model.frame), "term.labels")
+      allSiteLevelCovs <- all( covarsInModel %in% names(siteData) )
+      if( !allSiteLevelCovs ) {
+        nonSiteLevCovs <- paste("'",covarsInModel[!(covarsInModel %in% names(siteData))], 
+                                "'",collapse = ", ", sep="")
+        mess <-"Cannot estimate site-level abundance. bySite is TRUE but detection-level "
+        if(regexpr(",", nonSiteLevCovs) < 0) {
+          mess <- paste0(mess, "covariate ",
+                       nonSiteLevCovs,
+                       " is in the model. Options: remove this covariate from dfunc; ",
+                       "set bySite=FALSE; or, summarize it to the site-level,", 
+                       " place it in siteData under same name, and re-run ", 
+                       "abundEstim WITHOUT re-running dfuncEstim.")
+        } else {
+          mess <- paste0(mess, "covariates ",
+                         nonSiteLevCovs,
+                         " are in the model. Options: remove these covariates from dfunc; ",
+                         "set bySite=FALSE; or, summarize them to the site-level,", 
+                         " place them in siteData under same names, and re-run ", 
+                         "abundEstim WITHOUT re-running dfuncEstim.")
+          
+        }
+        stop(mess)
+      }
+    }
+    
     # ---- sum statistics by siteID
 
-    (nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat))
-    (nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum))
-    (nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df))
+    nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat)
+    nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum)
+    nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df)
 
-    (observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum))
-    (observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount))
+    observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
+    observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount)
 
-    (nhat.df <- merge(observedCount, nhat.df))  # should match perfectly
+    nhat.df <- merge(observedCount, nhat.df)  # should match perfectly
 
     # If detectionData$siteID is a factor and has all levels, even zero
     # sites, don't need to do this.  But, to be safe merge back to 
@@ -143,7 +171,7 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
 
     # Must do this to get pDetection on 0-sites.  Site must have 
     # non-missing covars if dfunc has covars
-    (esw <- effectiveDistance(dfunc, siteData))
+    esw <- effectiveDistance(dfunc, siteData)
     siteData <- data.frame(siteData, esw=esw)
     
     if (dfunc$pointSurvey) {
