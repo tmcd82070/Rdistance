@@ -18,3 +18,5 @@ Testing
 README_files
 ^\.addDict$
 WorkshopScripts
+^doc$
+^Meta$
