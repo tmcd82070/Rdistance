@@ -1,21 +1,22 @@
 #' @title Predict method for dfunc objects
 #' 
-#' @description Predict likelihood parameters or inflation 
-#' factors for distance function objects
+#' @description Predict likelihood parameters for distance function objects
 #' 
-#' @param object An estimated dfunc object.  See \code{\link{dfuncEstim}}. 
+#' @param object An estimated dfunc object.  See \code{dfuncEstim}. 
 #' 
 #' @param newdata A data frame containing new values of 
 #' the covariates at which predictions are to be computed. 
 #' 
 #' @param type The type of predictions desired. Currently, only 
-#' type = "parameters" is implemented and returns 
-#' parameters of the likelihood function.  
+#' type = "parameters" is implemented, which returns 
+#' predicted parameters of the likelihood function.  
+#' 
 #' 
 #' @param \dots Included for compatibility with generic \code{predict} methods.
 #' 
-#' @return A matrix of predicted parameter for the distance function
-#' estimated in \code{dfunc}. Extent of the first dimension (rows) in 
+#' @return A matrix of predicted parameters of the likelihood used to estimate
+#' the distance function
+#' in \code{dfunc}. The extent of the first dimension (rows) in 
 #' the returned matrix is equal to either the number of detection distances 
 #' in \code{detectionData} or number of rows in \code{newdata}. 
 #' The returned matrix's second dimension (columns) is 
@@ -23,9 +24,15 @@
 #' plus the number of expansion terms.  Without expansion terms, the number 
 #' of columns in the returned matrix 
 #' is either 1 or 2 depending on the likelihood (e.g., \code{halfnorm} has 
-#' one parameter, \code{hazrate} has two). 
+#' one parameter, \code{hazrate} has two). For example, if 
+#' the likelihood is \code{halfnorm}, the returned matrix contains 
+#' estimated standard errors of the half-normal likelihood. See the help 
+#' for each likelihoods to interpret the returned parameter values.
 #' 
 #' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#' 
+#' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
+#' \code{\link{uniform.like}}, \code{\link{hazrate.like}}, \code{\link{Gamma.like}}
 #' 
 #' @export
 #' 
