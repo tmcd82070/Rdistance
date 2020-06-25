@@ -26,7 +26,8 @@ install:
   - R -e 'install.packages("stats")'
   - R -e 'install.packages("utils")'
   - R -e 'install.packages("covr")' #specifically for codecovr feature
-
+  - R -e 'devtools::install_github("DistanceDevelopment/Distance")'
+  
 #Avoid building vignettes, they take too much time and will often time out the Travis CI  
 script:
   - R CMD build --no-build-vignettes --no-manual .
