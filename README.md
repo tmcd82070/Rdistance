@@ -6,6 +6,7 @@
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/Rdistance)](http://cran.rstudio.com/web/packages/Rdistance/index.html)
 [![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance)
 [![CRAN Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
+[![codecov](https://codecov.io/gh/tmcd82070/Rdistance/branch/master/graph/badge.svg)](https://codecov.io/gh/tmcd82070/Rdistance)
 
 <!--img src="http://cranlogs.r-pkg.org/badges/grand-total/survminer?color=orange" alt="Total Downloads">
 -->
