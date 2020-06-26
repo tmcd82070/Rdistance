@@ -26,6 +26,7 @@ install:
   - R -e 'install.packages("stats")'
   - R -e 'install.packages("utils")'
   - R -e 'install.packages("covr")' #specifically for codecovr feature
+  - R -e 'install.packages("Distance")'
 
 #Avoid building vignettes, they take too much time and will often time out the Travis CI  
 script:
