@@ -2,37 +2,27 @@
 library(Rdistance)
 context("likeParamNames")
 
-test_that("input like.form outputs expected vector of parameter names", {
+test_that("input=halfnorm outputs=halfnorm sigma", {
   expect_equal(likeParamNames("halfnorm"), c("Sigma"))
+})
+
+test_that("input=hazrate outputs=Sigma Beta", {
   expect_equal(likeParamNames("hazrate"), c("Sigma", "Beta"))
+})
+
+test_that("input=uniform outputs=Threshold Knee", {
   expect_equal(likeParamNames("uniform"), c("Threshold", "Knee"))
+})
+
+test_that("input=negexp outputs=Beta", {
   expect_equal(likeParamNames("negexp"), c("Beta"))
+})
+
+test_that("input=Gamma outputs=Shape Scale", {
   expect_equal(likeParamNames("Gamma"), c("Shape", "Scale"))
 })
 
-# commented out alternative: break up into individual expectations...
-
-# test_that("input=halfnorm outputs=halfnorm sigma", {
-#   expect_equal(likeParamNames("halfnorm"), c("Sigma"))
-# })
-# 
-# test_that("input=hazrate outputs=Sigma Beta", {
-#   expect_equal(likeParamNames("hazrate"), c("Sigma", "Beta"))
-# })
-# 
-# test_that("input=uniform outputs=Threshold Knee", {
-#   expect_equal(likeParamNames("uniform"), c("Threshold", "Knee"))
-# })
-# 
-# test_that("input=negexp outputs=Beta", {
-#   expect_equal(likeParamNames("negexp"), c("Beta"))
-# })
-# 
-# test_that("input=Gamma outputs=Shape Scale", {
-#   expect_equal(likeParamNames("Gamma"), c("Shape", "Scale"))
-# })
-
-# generate user defined function for testing
+# generate user defined function for testing 
 triangular.like <- function(a, dist, covars=NULL, 
                             pointSurvey=FALSE, w.lo=0, w.hi, 
                             series="", expansions=0, scale=TRUE){
