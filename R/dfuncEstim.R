@@ -159,6 +159,11 @@
 #' the defaults, and the requirements for this list. 
 #' See examples below for how to change controls.
 #' 
+#' @param smuTerms The number of smoothing terms to fit in the 
+#' distance function.  Default of 0 fits no spline functions in the
+#' distance function.  A value of 1 fits one spline smoothing function, 
+#' 2 fits two, etc. 
+#' 
 #' @section Input data frames:
 #' To save space and to easily specify 
 #' sites without detections, 
@@ -347,13 +352,24 @@
 #' @importFrom stats nlminb model.response is.empty.model 
 #' @importFrom stats model.matrix contrasts optim
 
-dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm", 
-                  pointSurvey = FALSE, w.lo=0, w.hi=NULL, 
-                  expansions=0, series="cosine", x.scl=0, g.x.scl=1, 
-                  observer="both", warn=TRUE, transectID=NULL, 
-                  pointID="point", 
-                  length="length",
-                  control=RdistanceControls()){
+dfuncEstim <- function (formula, 
+                        detectionData, 
+                        siteData, 
+                        likelihood = "halfnorm", 
+                        smuTerms = 0,
+                        pointSurvey = FALSE, 
+                        w.lo = 0, 
+                        w.hi = NULL, 
+                        expansions = 0, 
+                        series = "cosine", 
+                        x.scl = 0, 
+                        g.x.scl = 1, 
+                        observer = "both", 
+                        warn = TRUE, 
+                        transectID = NULL, 
+                        pointID = "point", 
+                        length = "length",
+                        control = RdistanceControls()){
   
   cl <- match.call()
   
@@ -381,8 +397,10 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   # It's likely that an error would be raised if a user did try the double-observer option,
   # but I'm adding a warning here, just in case
   if(observer != "both") {
-    stop("The double-observer routines were not been tested when updating to
-          version 2.x, so they have been disables for the time being.")
+    stop("The double-observer routines have not been tested in Rdistance 
+          versions >2.x, so they have been disables for the time being.
+          Contact the Rdistance authors if you need double observer analyses
+          and can help.")
   }
   
   
@@ -390,7 +408,9 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   mt <- attr(mf, "terms")
   dist <- model.response(mf,"any")
   covars <- if (!is.empty.model(mt)){
-    model.matrix(mt, mf)
+    model.matrix(object = mt, 
+                 data = mf, 
+                 contrasts.arg = control$contrasts )
   }
 
   if(is.null(w.hi)){
@@ -426,6 +446,12 @@ dfuncEstim <- function (formula, detectionData, siteData, likelihood="halfnorm",
   if (!is.null(covars) & expansions > 0) {
     expansions=0
     if(warn) warning("Expansions not allowed when covariates are present. Expansions set to 0.")
+  }
+  
+  # Minimum number of spline basis functions
+  if(expansions < 2 & series == "bspline"){
+    expansions <- 2
+    if(warn) warning("Minimum spline expansion terms = 2. Have used 2.")
   }
   
   
