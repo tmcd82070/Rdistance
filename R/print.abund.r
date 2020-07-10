@@ -16,7 +16,7 @@
 #' parameter, a warning about the validity of CI's is issued and 
 #' a diagnostic message printed.  Increasing this to a number greater 
 #' than 1 will kill the warning, but ignoring a large number of non-convergent
-#' bootstrap iterations is a really bad idea (i.e., validity of the CI is 
+#' bootstrap iterations may be a bad idea (i.e., validity of the CI is 
 #' questionable). 
 #' 
 #' @param \dots Included for compatibility to other print methods.  Ignored here.
