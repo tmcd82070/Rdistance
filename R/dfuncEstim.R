@@ -412,19 +412,24 @@ dfuncEstim <- function (formula,
                  data = mf, 
                  contrasts.arg = control$contrasts )
   }
-
+  
+  contr <- attr(covars,"contrasts")
+  assgn <- attr(covars,"assign")
+  
   if(is.null(w.hi)){
     w.hi <- max(dist, na.rm=TRUE)
   }
   
   ncovars <- ncol(covars)
-  assgn <- attr(covars,"assign")
   
 
   # Truncate for w.lo and w.hi
   ind <- (w.lo <= dist) & (dist <= w.hi)
   dist <- dist[ind]
-  covars <- covars[ind,,drop=FALSE]
+  covars <- covars[ind,,drop=FALSE]  # covars looses "extra" attributes here
+  attr(covars,"assign") <- assgn
+  attr(covars,"contrasts") <- contr
+
   
   # Eventually, I'd like to use a constant
   # column for covars to allow intercept only 

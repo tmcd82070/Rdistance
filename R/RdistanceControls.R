@@ -96,8 +96,9 @@ RdistanceControls <- function(optimizer="nlminb",
        maxIters=maxIters,
        likeTol=likeTol,
        coefTol=coefTol,
+       hessEps=hessEps,
        maxBSFailPropForWarning = maxBSFailPropForWarning,
-       contrasts=NULL
+       contrasts=contrasts
       )
   
 }
