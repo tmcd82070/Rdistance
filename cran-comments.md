@@ -1,15 +1,16 @@
 # Resubmission comments
-* This version fixes two critical bugs.  One in the point transect methods. One in the automated analysis routine.
+* This version fixes a critical bug in the bootstrap method, provides better error messages, and introduces testing files.  
 
-# Current Version
-* 2.1.3
-* Previous version on CRAN: 2.1.2
+# Version of current submission
+* 2.1.5
+* 2.1.4 was an interim version
+* Previous version on CRAN: 2.1.3
 
 # R CMD check --as-cran results
 No ERRORs or WARNINGs. 
 
 # Test environments
-* local Windows 10 Pro, R 3.5.2 
+* local: Windows 10 Pro, R version 4.0.0 (2020-04-24) -- "Arbor Day"
 * Unix (via Travis) : build passing
 
 # winbuilder: passing with note
