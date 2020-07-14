@@ -8,10 +8,6 @@ dfunc <- dfuncEstim(dist~1,
          detectionData=sparrowDetectionData, 
          w.hi=150)
    
-AIC(dfunc) 
-AIC(dfunc, criterion="AIC")  
-
-
 test_that("AIC(dfunc, criterion=AIC) returns equivalent obj as it did previously", {
   expect_equal_to_reference(AIC(dfunc, criterion="AIC"), "AIC_dfunc_AIC.rds")
 })
