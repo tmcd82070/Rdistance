@@ -166,7 +166,8 @@ integration.constant <- function(dist,
     else {
       # User defined likelihood case.  
       for(i in 1:nrow(unique.covars)){
-        temp.covars <- matrix(unique.covars[i,-PkeyCol],nrow=length(seqx),
+        # temp.covars <- matrix(unique.covars[i,-PkeyCol],nrow=length(seqx),
+        temp.covars <- matrix(unlist(unique.covars[i,-PkeyCol]),nrow=length(seqx),
                               ncol=ncol(unique.covars)-1, byrow=TRUE)
         seqy[[i]] <- density(dist = seqx, covars = temp.covars, 
                              scale = FALSE, w.lo = w.lo, w.hi = w.hi, 
