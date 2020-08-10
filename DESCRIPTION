@@ -20,6 +20,8 @@ Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="tmcdonald@w
   person("Aaron", "Christ", role="ctb", comment="Gamma likelihood"), 
   person("Brook", "Russelland", role="ctb", comment="Gamma likelihood"), 
   person("Stefan", "Emmons", role="ctb", comment="Automated tests"))
+  person("Will", "McDonald", role="ctb", comment="Automated tests"))
+  person("Reid", "Olson", role="ctb", comment="Automated tests and bug fixes"))
 Description: Distance-sampling is a popular method for estimating density and 
   abundance of organisms in ecology. Rdistance contains routines that  
   assist with analysis of
