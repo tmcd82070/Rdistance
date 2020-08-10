@@ -13,5 +13,5 @@ fit <- abundEstim(dfunc, detectionData=sparrowDetectionData,
 
 fit$nItersConverged <- 2
 test_that("print.abund(fit: nItersConverged < length(B)) returns expected warning", {
-  expect_warning(print.abund(fit), "The proportion of non-convergent bootstrap iterations is high.")
+  expect_warning(capture.output(print.abund(fit)), "The proportion of non-convergent bootstrap iterations is high.")
 })
