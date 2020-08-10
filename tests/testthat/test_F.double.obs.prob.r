@@ -5,10 +5,6 @@ context("F.double.obs.prob")
 set.seed(538392)
 obsrv <- data.frame( obsby.1=rbinom(100,1,.75), obsby.2=rbinom(100,1,.5) )
 
-F.double.obs.prob( obsrv, observer=1 )
-x<-F.double.obs.prob( obsrv, observer=2 )
-x<-F.double.obs.prob( obsrv, observer="both" )
-
 # using hard coded values rather than .rds file here 
 # as data set is generated using seeded random functions (so not likely to change)
 

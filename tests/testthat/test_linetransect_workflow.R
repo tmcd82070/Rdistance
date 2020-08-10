@@ -19,13 +19,11 @@ sparrow.dfunc <- dfuncEstim(
 fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                   area=10000, ci=NULL, plot.bs=FALSE)
 
-
 fitSite <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                       area=10000, ci=NULL, bySite=TRUE)
 
-auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     w.hi=trunc, plot=FALSE, area=10000, ci=NULL, plot.bs=FALSE)
-
+invisible(capture.output(auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                     w.hi=trunc, plot=FALSE, area=10000, ci=NULL, plot.bs=FALSE)))
 
 ##-----Test abundEstim
 
@@ -61,6 +59,4 @@ test_that("autoDistSamp function selection is correct", {
   
 test_that("dim of returned autoDistSamp df correct", {
   expect_equal(dim(auto$fitTable), c(41, 6))
-  
 })
-
