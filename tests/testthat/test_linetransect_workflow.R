@@ -23,8 +23,8 @@ fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteD
 fitSite <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                       area=10000, ci=NULL, bySite=TRUE)
 
-auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
-                     w.hi=trunc, plot=FALSE, area=10000, ci=NULL, plot.bs=FALSE)
+auto <- capture.output(autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
+                     w.hi=trunc, plot=FALSE, area=10000, ci=NULL, plot.bs=FALSE))
 
 
 ##-----Test abundEstim
