@@ -22,8 +22,7 @@ exp_3 <- simple.expansion(x, 3)
 exp_4 <- simple.expansion(x, 4)
 
 test_that("expansion of 1.5 generates expected results", {
-  expect_equal(simple.expansion(x, 2), exp_1.5)
-  # expect_equal(simple.expansion(x, 1.5), exp_1.5)
+  expect_equal(simple.expansion(x, 1.5), exp_1.5)
 })
 
 test_that("expansion of 2 generates expected results", {
