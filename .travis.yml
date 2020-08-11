@@ -37,7 +37,7 @@ script:
 after_success:
   - test $TRAVIS_R_VERSION_STRING = 'release' && Rscript -e 'covr::codecov()'
   - Rscript -e 'devtools::install();devtools::test()'
-  - bash <(curl -s https://codecov.io/bash)
+ # - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   email:
