@@ -9,6 +9,7 @@ dfuncEstim(
   detectionData,
   siteData,
   likelihood = "halfnorm",
+  smuTerms = 0,
   pointSurvey = FALSE,
   w.lo = 0,
   w.hi = NULL,
@@ -90,6 +91,11 @@ for when \code{detectionData} and \code{siteData} are required inputs.}
 likelihoods at present are "uniform", "halfnorm", 
 "hazrate", "negexp", and "Gamma". See vignette for a way to use 
 user-define likelihoods.}
+
+\item{smuTerms}{The number of smoothing terms to fit in the 
+distance function.  Default of 0 fits no spline functions in the
+distance function.  A value of 1 fits one spline smoothing function, 
+2 fits two, etc.}
 
 \item{pointSurvey}{A logical scalar specifying whether input data come
 from point-transect surveys (TRUE),

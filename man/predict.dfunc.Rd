@@ -7,20 +7,21 @@
 \method{predict}{dfunc}(object, newdata, type = c("parameters"), ...)
 }
 \arguments{
-\item{object}{An estimated dfunc object.  See \code{\link{dfuncEstim}}.}
+\item{object}{An estimated dfunc object.  See \code{dfuncEstim}.}
 
 \item{newdata}{A data frame containing new values of 
 the covariates at which predictions are to be computed.}
 
 \item{type}{The type of predictions desired. Currently, only 
-type = "parameters" is implemented and returns 
-parameters of the likelihood function.}
+type = "parameters" is implemented, which returns 
+predicted parameters of the likelihood function.}
 
 \item{\dots}{Included for compatibility with generic \code{predict} methods.}
 }
 \value{
-A matrix of predicted parameter for the distance function
-estimated in \code{dfunc}. Extent of the first dimension (rows) in 
+A matrix of predicted parameters of the likelihood used to estimate
+the distance function
+in \code{dfunc}. The extent of the first dimension (rows) in 
 the returned matrix is equal to either the number of detection distances 
 in \code{detectionData} or number of rows in \code{newdata}. 
 The returned matrix's second dimension (columns) is 
@@ -28,11 +29,17 @@ the number of canonical parameters in the likelihood
 plus the number of expansion terms.  Without expansion terms, the number 
 of columns in the returned matrix 
 is either 1 or 2 depending on the likelihood (e.g., \code{halfnorm} has 
-one parameter, \code{hazrate} has two).
+one parameter, \code{hazrate} has two). For example, if 
+the likelihood is \code{halfnorm}, the returned matrix contains 
+estimated standard errors of the half-normal likelihood. See the help 
+for each likelihoods to interpret the returned parameter values.
 }
 \description{
-Predict likelihood parameters or inflation 
-factors for distance function objects
+Predict likelihood parameters for distance function objects
+}
+\seealso{
+\code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
+\code{\link{uniform.like}}, \code{\link{hazrate.like}}, \code{\link{Gamma.like}}
 }
 \author{
 Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
