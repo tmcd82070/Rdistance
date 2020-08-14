@@ -45,4 +45,4 @@ BugReports: https://github.com/tmcd82070/Rdistance/issues
 Suggests: knitr, rmarkdown, testthat, devtools
 VignetteBuilder: knitr
 Imports: graphics, stats, utils, covr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

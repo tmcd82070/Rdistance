@@ -182,16 +182,19 @@ The abundance estimate for line transect surveys (if no covariates
   uses the last convergent distance function to estimate 
   abundance on the iteration rather than ignore these 
   non-convergent iterations and continue. This approach includes 
-  all variation associated with counts, but can may not include 
+  all variation associated with counts, but may not include 
   all the variation associated with distance function estimation.  
   If the proportion of non-convergent iterations is small 
   (less than 20% by default), the resulting confidence interval 
   on abundance is 
   probably valid.  If the proportion of non-convergent iterations 
   is not small (exceeds 20% by default), a warning is issued.  
-  The print method also issues this warning. This warning can be 
+  The print method (\code{print.abund}) is the routine that  issues this 
+  warning. The warning can be 
   turned off by setting \code{maxBSFailPropForWarning} in the 
-  print method to 1.0.
+  print method to 1.0, or by modifying the code in \code{RdistanceControls()}
+  to re-set the default threshold and storing the modified 
+  function in your \code{.GlobalEnv}.
 }
 
 \examples{
