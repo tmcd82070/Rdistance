@@ -12,8 +12,7 @@
 -->
 
 **Description:**
-Rdistance contains routines that  
-  assist with analysis of
+Rdistance contains routines that assist with analysis of
   distance-sampling data collected on point or line transects. 
   Distance models are specified using regression-like formula (similar 
   to lm, glm, etc.). Abundance routines
@@ -104,4 +103,4 @@ New features included:
  
 ## Contact
 
-Questions or interested in a future workshop? Contact the maintainer: Trent McDonald (tmcdonald@west-inc.com) 
+Questions or interested in a future workshop? Contact the maintainer: Trent McDonald (trent@mcdonalddatasciences.com) 
