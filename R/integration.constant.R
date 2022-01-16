@@ -89,7 +89,7 @@ integration.constant <- function(dist,
 
   density = match.fun(density)
   seqx = seq(w.lo, w.hi, length=200) # for trapazoid rule when needed
-
+  
   if(!is.null(covars)){
     # Not sure following is best to do. 
     # It is much faster to de-dup and compute values on just 
@@ -131,16 +131,16 @@ integration.constant <- function(dist,
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       sigma <- exp(s)
 
-      # Point is: temp.scaler should be itegral under distance function
+      # Point is: temp.scaler should be integral under distance function
       # We happen to know it for halfnorm (and some others below)
-      temp.scaler <- 2*(pnorm(w.hi,w.lo,sigma)-0.5) * sqrt(pi/2) * sigma
+      # Integrals are by defn unit-less; but, pnorm returns units. Drop apriori
+      # 0.5 is area to left of mean 
+      temp.scaler <- (pnorm(units::drop_units(w.hi),
+                            units::drop_units(w.lo),
+                            units::drop_units(sigma)) - 0.5) * 
+                      sqrt(2*pi) * units::drop_units(sigma)
       
-      # We had these statements when Aidan was requiring the pracma package. 
-      # for(i in 1:nrow(unique.covars)){
-      #   temp.scaler[i] <- sqrt(pi/2) * sigma[i] * (erf(w.hi/(sqrt(2)*sigma[i])) - erf(w.lo/(sqrt(2)*sigma[i])))
-      # }
-    }
-    else if(identical(density, hazrate.like) & expansions == 0){
+    } else if(identical(density, hazrate.like) & expansions == 0){
       s <- as.matrix(unique.covars[,-PkeyCol]) %*% matrix(a[-length(a)],ncol=1)
       sigma <- exp(s)
       beta = a[length(a)]
@@ -151,8 +151,7 @@ integration.constant <- function(dist,
           # integrate(f = function(x){1 - exp(-(x/sigma[i])^(-beta))},lower =  w.lo,
           #                 upper = w.hi, stop.on.error = F)$value
       }
-    }
-    else if(identical(density, negexp.like) & expansions == 0){
+    } else if(identical(density, negexp.like) & expansions == 0){
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       beta <- exp(s)
 
@@ -162,8 +161,7 @@ integration.constant <- function(dist,
       #   temp.scaler[i] <- unname((exp(-beta[i]*w.lo) - exp(-beta[i]*w.hi))/beta[i])
       # }
 
-    }
-    else {
+    } else {
       # User defined likelihood case.  
       for(i in 1:nrow(unique.covars)){
         temp.covars <- matrix(unlist(unique.covars[i,-PkeyCol]),nrow=length(seqx),
@@ -193,12 +191,13 @@ integration.constant <- function(dist,
     scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*dist)
   }
   else{
+    # density should return unit-less numbers (height of density function)
     seqy <- density( dist = seqx, scale = FALSE, w.lo = w.lo, 
                      w.hi = w.hi, a = a, expansions = expansions, 
                      series=series)
 
     #   trapezoid rule
-    scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
+    scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
   }
   #print(scaler)
   scaler

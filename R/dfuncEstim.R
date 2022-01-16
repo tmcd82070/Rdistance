@@ -1,6 +1,6 @@
 #' @title Estimate a detection function from distance-sampling data
 #' 
-#' @description Fit a specific detection function off-transect 
+#' @description Fit a specific detection function to off-transect 
 #' or off-point (radial) distances.
 #' 
 #' @param formula A standard formula object (e.g., \code{dist ~ 1}, 
@@ -320,7 +320,8 @@
 #' # Fit half-normal detection function
 #' dfunc <- dfuncEstim(formula=dist~1,
 #'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=100)
+#'                     likelihood="halfnorm", 
+#'                     w.hi=units::as_units(100, "m"))
 #' 
 #' # Fit a second half-normal detection function, now including
 #' # a categorical covariate for observer who surveyed the site (factor, 5 levels)
@@ -415,18 +416,48 @@ dfuncEstim <- function (formula,
   
   contr <- attr(covars,"contrasts")
   assgn <- attr(covars,"assign")
+
+  # Check for measurement units 
+  if( !inherits(dist, "units") & control$requireUnits ){
+    dfName <- deparse(substitute(detectionData))
+    stop(paste("Distance measurement units are required.", 
+               "Assign units using:\n", 
+               paste0("units(",dfName,"$dist)"), "<- '<units of measurment>',\n", 
+               "Popular choices are 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
+  } 
   
+  
+  if( !inherits(w.lo, "units") & control$requireUnits ){
+    w.lo <- units::as_units(w.lo, units(dist))
+    if( w.lo[1] != units::as_units(0, units(dist)) ){
+      warning(paste("Measurement units of w.lo were not found and were set to those of the distance measurements, i.e.,",
+                    paste0("[", units::deparse_unit(dist), "]\n"),
+                    "Suppress this warning by assigning units to w.lo using either\n", 
+                    "units(w.lo) <- '<units>' or",
+                    paste0("units::as_units(", w.lo, ", '<units>')\n"),
+                    "See units::valid_udunits() for valid symbolic units."
+      ))
+    }
+  }
+    
+    
   if(is.null(w.hi)){
     w.hi <- max(dist, na.rm=TRUE)
+  } else if( !inherits(w.hi, "units") & control$requireUnits ){
+    stop(paste("Max distance measurement units are required.",
+               "Assign units using either:\n", 
+               "units(w.hi) <- '<units>' or", 
+               paste0("as_units(", w.hi,", <units>) in function call\n"), 
+               "See units::valid_udunits() for valid symbolic units."))
   }
   
   ncovars <- ncol(covars)
   
-
   # Truncate for w.lo and w.hi
   ind <- (w.lo <= dist) & (dist <= w.hi)
   dist <- dist[ind]
   covars <- covars[ind,,drop=FALSE]  # covars looses "extra" attributes here
+  
   attr(covars,"assign") <- assgn
   attr(covars,"contrasts") <- contr
 
@@ -479,7 +510,6 @@ dfuncEstim <- function (formula,
   
   vnames<-dimnames(covars)[[2]]
 
-
   # Stop and print error if dist vector contains NAs
   if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
   
@@ -488,9 +518,10 @@ dfuncEstim <- function (formula,
   
   # Perform optimization
   if(control$optimizer == "optim"){
-    fit <- optim(strt.lims$start, F.nLL, 
-                 lower = strt.lims$lowlimit, 
-                 upper = strt.lims$uplimit, 
+    fit <- optim(strt.lims$start, 
+                 F.nLL, 
+                 lower = units::drop_units(strt.lims$lowlimit), # safe 
+                 upper = units::drop_units(strt.lims$uplimit), 
                  hessian = TRUE,
                  control = list(trace = 0, 
                                 maxit = control$maxIters,
@@ -507,10 +538,11 @@ dfuncEstim <- function (formula,
                  pointSurvey = pointSurvey, 
                  for.optim = T)
   } else if(control$optimizer == "nlminb"){
-    fit <- nlminb(strt.lims$start, F.nLL, 
-                 lower = strt.lims$lowlimit, 
-                 upper = strt.lims$uplimit, 
-                 control = list(trace = 0,
+    fit <- nlminb(start = strt.lims$start, 
+                  objective = F.nLL, 
+                  lower = units::drop_units(strt.lims$lowlimit), # safe, known to be in units of dist
+                  upper = units::drop_units(strt.lims$uplimit), # safe, known to be in units of dist
+                  control = list(trace = 0,
                                 eval.max = control$evalMax,
                                 iter.max = control$maxIters,
                                 rel.tol = control$likeTol,
@@ -584,19 +616,25 @@ dfuncEstim <- function (formula,
               pointSurvey = pointSurvey,
               formula = formula)
   
-  ans$loglik <- F.nLL(ans$parameters, ans$dist, covars = ans$covars, 
-                      like = ans$like.form, w.lo = ans$w.lo, w.hi = ans$w.hi, 
-                      series = ans$series, expansions = ans$expansions, 
-                      pointSurvey = ans$pointSurvey, for.optim = F)
+  ans$loglik <- F.nLL(ans$parameters, 
+                      ans$dist, 
+                      covars = ans$covars, 
+                      like = ans$like.form, 
+                      w.lo = ans$w.lo, 
+                      w.hi = ans$w.hi, 
+                      series = ans$series, 
+                      expansions = ans$expansions, 
+                      pointSurvey = ans$pointSurvey, 
+                      for.optim = F)
   
   # Assemble results
   class(ans) <- "dfunc"
   gx <- F.gx.estim(ans)
   ans$x.scl <- gx$x.scl
   ans$g.x.scl <- gx$g.x.scl
-  fuzz <- 1e-06
-  low.bound <- any(fit$par <= (strt.lims$lowlimit + fuzz))
-  high.bound <- any(fit$par >= (strt.lims$uplimit - fuzz))
+  fuzz <- units::as_units(1e-06, units(dist))
+  low.bound <- any(fit$par <= units::drop_units(strt.lims$lowlimit + fuzz))
+  high.bound <- any(fit$par >= units::drop_units(strt.lims$uplimit - fuzz))
   if (fit$convergence != 0) {
     if (warn) 
       warning(fit$message)

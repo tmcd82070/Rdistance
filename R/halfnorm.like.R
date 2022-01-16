@@ -142,27 +142,29 @@ halfnorm.like <- function(a,
     sigma <- a[1]
   }
 
-  key <- exp(-dist^2/(2*sigma^2))
+  units(sigma) <- units(dist)
+  
+  key <- -(dist*dist)/(2*sigma*sigma)  
+  # unit conversions happen in above statement; afterwards, key is unit-less
+  # But, must drop units in next statement because exp() for some reason does 
+  # not work with units = [1]
+  key <- exp(units::drop_units(key))
   dfunc <- key
   w <- w.hi - w.lo
   
   # If there are expansion terms
   if(expansions > 0){
     
-    nexp <- expansions #nexp <- min(expansions,length(a)-1)  # should be equal. If not, fire warning next
-    
-    #if( length(a) != (expansions+1) ) {
-    #    warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
-    #}
+    nexp <- expansions
     
     if (series=="cosine"){
-      dscl = dist/w
+      dscl <- units::drop_units(dist/w)   # unit conversion here; drop units is safe
       exp.term <- cosine.expansion( dscl, nexp )
     } else if (series=="hermite"){
-      dscl = dist/sigma
+      dscl <- units::drop_units(dist/sigma) # unit conversion here; drop units is safe
       exp.term <- hermite.expansion( dscl, nexp )
     } else if (series == "simple") {
-      dscl = dist/w
+      dscl <- units::drop_units(dist/w)    # unit conversion here; drop units is safe
       exp.term <- simple.expansion( dscl, nexp )
     } else {
       stop( paste( "Unknown expansion series", series ))
@@ -171,9 +173,7 @@ halfnorm.like <- function(a,
     dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
     
     
-  } #else if(length(a) > 1){
-  #warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
-  #}
+  } 
   
   if( scale ){
     dfunc = dfunc / integration.constant(dist=dist, 

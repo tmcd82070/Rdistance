@@ -53,27 +53,47 @@ The number of parameters to be fitted is
   This is the length of all vectors returned in the output list.
 }
 \examples{
-F.start.limits("uniform", 0, 0, 1000)
-  F.start.limits("uniform", 1, 0, 1000)
-  F.start.limits("uniform", 2, 0, 1000)
-  F.start.limits("uniform", 3, 0, 1000)
+  dist <- sparrowDetectionData$dist
+  units(dist) <- "m"
+  wl <- units::as_units(0, "m")
+  wh <- units::as_units(1000, "m")
   
-  F.start.limits("halfnorm", 0, 0, 1000, 500*runif(100))
-  F.start.limits("halfnorm", 1, 0, 1000, 500*runif(100))
-  F.start.limits("halfnorm", 2, 0, 1000, 500*runif(100))
-  F.start.limits("halfnorm", 3, 0, 1000, 500*runif(100))
+  F.start.limits("uniform", 0, wl, wh, dist)
+  F.start.limits("uniform", 1, wl, wh, dist)
+  F.start.limits("uniform", 2, wl, wh, dist)
+  F.start.limits("uniform", 3, wl, wh, dist)
   
-  F.start.limits("hazrate", 0, 0, 1000)
-  F.start.limits("hazrate", 1, 0, 1000)
-  F.start.limits("hazrate", 2, 0, 1000)
-  F.start.limits("hazrate", 3, 0, 1000)
+  F.start.limits("halfnorm", 0, wl, wh, dist)
+  F.start.limits("halfnorm", 1, wl, wh, dist)
+  F.start.limits("halfnorm", 2, wl, wh, dist)
+  F.start.limits("halfnorm", 3, wl, wh, dist)
   
-  F.start.limits("negexp", 0, 0, 1000)
-  F.start.limits("negexp", 1, 0, 1000)
-  F.start.limits("negexp", 2, 0, 1000)
-  F.start.limits("negexp", 3, 0, 1000)
+  F.start.limits("halfnorm", 0, wl, wh, dist, pointSurvey = TRUE)
+  F.start.limits("halfnorm", 1, wl, wh, dist, pointSurvey = TRUE)
+  F.start.limits("halfnorm", 2, wl, wh, dist, pointSurvey = TRUE)
+  F.start.limits("halfnorm", 3, wl, wh, dist, pointSurvey = TRUE)
   
-  F.start.limits("Gamma", 0, 0, 1000, 1000*runif(100))
+  F.start.limits("halfnorm", 0, wl, wh, dist, data.frame(A=1, B=2))
+  F.start.limits("halfnorm", 1, wl, wh, dist, data.frame(A=1, B=2))
+  F.start.limits("halfnorm", 2, wl, wh, dist, data.frame(A=1, B=2))
+  F.start.limits("halfnorm", 3, wl, wh, dist, data.frame(A=1, B=2))
+  
+  F.start.limits("halfnorm", 0, wl, wh, dist, data.frame(A=1, B=2), TRUE)
+  F.start.limits("halfnorm", 1, wl, wh, dist, data.frame(A=1, B=2), TRUE)
+  F.start.limits("halfnorm", 2, wl, wh, dist, data.frame(A=1, B=2), TRUE)
+  F.start.limits("halfnorm", 3, wl, wh, dist, data.frame(A=1, B=2), TRUE)
+  
+  F.start.limits("hazrate", 0, wl, wh, dist)
+  F.start.limits("hazrate", 1, wl, wh, dist)
+  F.start.limits("hazrate", 2, wl, wh, dist)
+  F.start.limits("hazrate", 3, wl, wh, dist)
+  
+  F.start.limits("negexp", 0, wl, wh, dist)
+  F.start.limits("negexp", 1, wl, wh, dist)
+  F.start.limits("negexp", 2, wl, wh, dist)
+  F.start.limits("negexp", 3, wl, wh, dist)
+  
+  F.start.limits("Gamma", 0, wl, wh, dist)
 }
 \seealso{
 \code{\link{dfuncEstim}}

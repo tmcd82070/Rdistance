@@ -231,7 +231,7 @@ are lists containing the following components:
   \item{formula}{The formula specified for the detection function.}
 }
 \description{
-Fit a specific detection function off-transect 
+Fit a specific detection function to off-transect 
 or off-point (radial) distances.
 }
 \section{Input data frames}{
@@ -336,7 +336,8 @@ data(sparrowSiteData)
 # Fit half-normal detection function
 dfunc <- dfuncEstim(formula=dist~1,
                     detectionData=sparrowDetectionData,
-                    likelihood="halfnorm", w.hi=100)
+                    likelihood="halfnorm", 
+                    w.hi=units::as_units(100, "m"))
 
 # Fit a second half-normal detection function, now including
 # a categorical covariate for observer who surveyed the site (factor, 5 levels)

@@ -11,6 +11,7 @@ RdistanceControls(
   likeTol = 1e-08,
   coefTol = 1.5e-08,
   hessEps = 1e-08,
+  requireUnits = TRUE,
   maxBSFailPropForWarning = 0.2,
   contrasts = NULL
 )
@@ -49,6 +50,17 @@ optimization stops and a solution is declared.}
 computation of numeric second derivatives. Should have length 
 1 or the number of parameters in the model. See function 
 \code{\link{secondDeriv}}.}
+
+\item{requireUnits}{A logical specifying whether measurement 
+units are required on distances and areas.  If TRUE, 
+measurement units are required on off-transect and radial 
+distances in the input data frame.  Likewise, measurement 
+units are required on transect length and study area size. 
+Assign units with statement like \code{units(detectionDf$dist) <- "m"}
+or \code{units(df$transectDf) <- "km"}.  Measurement units do not 
+need to be the same.  All units are converted appropriately during 
+internal computations.  \code{Rdistance} recognizes 
+units listed in \code{units::valid_udunits()}.}
 
 \item{maxBSFailPropForWarning}{The proportion of bootstrap 
 iterations that can fail without a warning. If the proportion 

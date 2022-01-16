@@ -38,12 +38,24 @@
 #' 1 or the number of parameters in the model. See function 
 #' \code{\link{secondDeriv}}. 
 #' 
+#' @param requireUnits A logical specifying whether measurement 
+#' units are required on distances and areas.  If TRUE, 
+#' measurement units are required on off-transect and radial 
+#' distances in the input data frame.  Likewise, measurement 
+#' units are required on transect length and study area size. 
+#' Assign units with statement like \code{units(detectionDf$dist) <- "m"}
+#' or \code{units(df$transectDf) <- "km"}.  Measurement units do not 
+#' need to be the same.  All units are converted appropriately during 
+#' internal computations.  \code{Rdistance} recognizes 
+#' units listed in \code{units::valid_udunits()}. 
+#' 
 #' @param maxBSFailPropForWarning The proportion of bootstrap 
 #' iterations that can fail without a warning. If the proportion 
 #' of bootstrap iterations that did not converge exceeds this 
 #' parameter, a warning about the validity of CI's is issued in 
 #' the print method for
 #' abundance objects. 
+#' 
 #' @param contrasts A list, whose entries are values 
 #' (numeric matrices, functions or character strings naming functions) 
 #' to be used as replacement values for the default contrasts function 
@@ -82,23 +94,25 @@
 #' 
 #' @export  
 
-RdistanceControls <- function(optimizer="nlminb",
-                              evalMax=2000,
-                              maxIters=1000,
-                              likeTol=1e-8,
-                              coefTol=1.5e-8,
-                              hessEps=1e-8,
+RdistanceControls <- function(optimizer = "nlminb",
+                              evalMax = 2000,
+                              maxIters = 1000,
+                              likeTol = 1e-8,
+                              coefTol = 1.5e-8,
+                              hessEps = 1e-8,
+                              requireUnits = TRUE,
                               maxBSFailPropForWarning = 0.2,
-                              contrasts=NULL){
+                              contrasts = NULL){
   
-  list(optimizer=optimizer,
-       evalMax=evalMax,
-       maxIters=maxIters,
-       likeTol=likeTol,
-       coefTol=coefTol,
-       hessEps=hessEps,
+  list(optimizer = optimizer,
+       evalMax = evalMax,
+       maxIters = maxIters,
+       likeTol = likeTol,
+       coefTol = coefTol,
+       hessEps = hessEps,
+       requireUnits = requireUnits,
        maxBSFailPropForWarning = maxBSFailPropForWarning,
-       contrasts=contrasts
+       contrasts = contrasts
       )
   
 }

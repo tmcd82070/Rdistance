@@ -2,7 +2,7 @@
 % Please edit documentation in R/ESW.R
 \name{ESW}
 \alias{ESW}
-\title{Effective Strip Width for line transect data}
+\title{Line transect Effective Strip Width (ESW)}
 \usage{
 ESW(obj, newdata)
 }
@@ -10,7 +10,8 @@ ESW(obj, newdata)
 \item{obj}{An estimated detection function object.  An estimated detection 
 function object has class 'dfunc', and is usually produced by a call to 
 \code{dfuncEstim}. The estimated detection function may optionally contain 
-a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
+a \eqn{g(0)} component that specifies detection probability 
+on the transect.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
 1 is assumed.}
 
 \item{newdata}{A data frame containing new values of 
@@ -20,22 +21,23 @@ covariates stored in \code{obj} are used. See \bold{Value} section.}
 }
 \value{
 If \code{newdata} is not missing and not NULL and 
-covariates are present in \code{obj}, returned value is 
-a vector with length equal to the number of rows in \code{newdata}. 
+covariates are present in \code{obj}, the returned value is 
+a vector of ESW values associated with covariates in the 
+distance function and equal in length to the number of rows in \code{newdata}. 
 If \code{newdata} is missing or NULL and covariates are present
-in \code{obj}, returned value is a vector with length equal to 
-the number of detections in \code{obj$dist}. In either of the 
-above cases, elements in the returned vector are 
-the effective strip widths for the corresponding set of 
-covariates.  
+in \code{obj}, an ESW vector with length equal to 
+the number of detections in \code{obj$dist} is returned. 
 
 If \code{obj} does not contain covariates, \code{newdata} is ignored and 
 a scalar equal to the (constant) effective strip width for all 
 detections is returned.
 }
 \description{
-Computes effective strip width (ESW) for estimated detection
-  functions from line transect data
+Returns effective strip width (ESW) from an estimated 
+  line transect detection
+  functions. This function applies only to line transect information.
+  Function \code{EDR} is for point transect data. Function 
+  \code{effectiveDistance} accepts either point or line transect data.
 }
 \details{
 Effective strip width (ESW) of a distance function is its
@@ -46,31 +48,31 @@ Effective strip width (ESW) of a distance function is its
   function at distance \eqn{x}, and \eqn{w.lo} and \eqn{w.hi} are the lower
   and upper truncation limits used during the survey.  }
   
-  Under perfect detection, area under the detection function is the entire 
-  half-width of 
-  the strip transect (from \code{obj$w.lo} to \code{obj$w.hi}).  
-  Under perfect detection, density is the number sighted targets 
+  If detection does not decline with distance, area under the detection 
+  function is the entire half-width of 
+  the strip transect (i.e., \code{obj$w.hi - obj$w.lo}).  
+  In this case density is the number sighted targets 
   divided by area surveyed, where area surveyed is 
   \code{obj$w.hi-obj$w.lo} times
   total length of transects.
   
-  When detection is not perfect, less than the total half-width is
-  \emph{effectively} covered. Buckland \emph{et al.} (1993) show that the
-  denominator of the density estimator in this case involves total length of 
+  When detection declines with distance, less than the total half-width is
+  \emph{effectively} covered. In this case, Buckland \emph{et al.} (1993) show that the
+  denominator of the density estimator is total length of 
   surveyed transects times area under the detection function (i.e., this
-  integral). By analogy with the perfect detection case, this integral can
-  be viewed as the transect half-width that observers \emph{effectively}
-  cover. In other words, a survey with imperfect detection and ESW equal to X
-  effectively covers the same area as a study with perfect detection out to a
+  integral). By analogy with the non-declining detection case, ESW is the 
+  transect half-width that observers \emph{effectively}
+  cover. In other words, if ESW = X, the study 
+  effectively covers the same area as a study with non-declining detection out to a
   distance of X.
   
-  The trapezoid rule is used to numerically integrate under the distance
-  function in \code{obj} from \code{obj$w.lo} to \code{obj$w.hi}. Two-hundred
+  \emph{A technical consideration}: Rdistance uses the trapezoid rule to numerically 
+  integrate under the distance
+  function from \code{obj$w.lo} to \code{obj$w.hi}. Two-hundred
   trapezoids are used in the approximation to speed calculations.  In some
-  rare cases, two hundred trapezoids may not be enough.  In these cases, the
-  code for this function can be \code{sink}-ed to a file, inspected in a text
-  editor, modified to bump the number of trapezoids, and \code{source}-d back
-  in.
+  rare cases, two hundred trapezoids may not be enough.  In these cases, 
+  users should modify this function's code and bump \code{seq.length} to 
+  a value greater than 200.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
@@ -84,11 +86,6 @@ dfunc <- dfuncEstim(formula=dist~1,
 # Compute effective strip width (ESW)
 ESW(dfunc)
 
-# ESW only applies to line transect surveys
-# EDR is the point transect equivalent
-# The effectiveDistance function tests whether the dfunc was
-# fit to line or point data, and returns either ESW or EDR accordingly
-effectiveDistance(dfunc)
 }
 \references{
 Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
@@ -96,9 +93,10 @@ Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
   Populations}. Chapman and Hall, London.
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{EDR}}
+\code{\link{dfuncEstim}}, \code{\link{EDR}}, 
+\code{\link{effectiveDistance}}
 }
 \author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+Trent McDonald
 }
 \keyword{modeling}

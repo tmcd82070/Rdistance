@@ -80,14 +80,20 @@ F.gx.estim <- function( fit, x.scl=NULL, g.x.scl=NULL, observer=NULL ){
 #   Estimate g0 or gx for the distance function in fit.
 #
 
-#   --------------------------------------------------------------------------------------
-#   First, compute x (the point to evaluate g() at)
+#   Will need measurement units later ----
+distUnits <- units(fit$dist)
+
+#   Compute x (the point to evaluate g() at) ----
 if( is.null( x.scl ) ){
     x.scl <- fit$call.x.scl
 }
+
+#   Compute height of g() at x.scl ----
 if( is.null( g.x.scl ) ){
     g.x.scl <- fit$call.g.x.scl
 }
+
+#   Double observers? ----
 if( is.null( observer ) ){
     observer <- fit$call.observer
 }
@@ -102,12 +108,14 @@ if( !is.character(x.scl) ){
 if( !is.character(x.scl) ){
 
     #   x is specified, first make sure w.low < x < w.high, then compute g(x)
+    x.scl <- units::as_units(x.scl, units(fit$dis))
+  
     if( x.scl < fit$w.lo ){
         x.scl <- fit$w.lo
-        warning(paste("x less than lower limit specified. Reset x.scl to lower limit (i.e.,", fit$w.lo, ")"))
+        warning(paste("x.scl is less than specified lower limit (w.lo). x.scl has been reset to", fit$w.lo))
     } else if( fit$w.hi < x.scl ) {
         x.scl <- fit$x.hi
-        warning(paste("x greater than upper limit specified. Reset x.scl to upper limit (i.e.,", fit$w.hi, ")"))
+        warning(paste("x.scl is greater than specified upper limit (w.hi). x.scl has been reset to", fit$w.hi))
     } 
 } else if( x.scl == "max" ){
   #   the x that maximizes g() must be estimated
