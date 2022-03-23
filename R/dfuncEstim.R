@@ -19,7 +19,12 @@
 #' \itemize{
 #'   \item Detection Distances: A single column containing 
 #'   detection distances must be specified on the left-hand 
-#'   side of \code{formula}.
+#'   side of \code{formula}.  As of Rdistance version 3.0.0, 
+#'   the detection distances must have measurement units attached. 
+#'   Attach measurements units to distances using \code{library(units);units()<-}.
+#'   For example, \code{library(units)} followed by \code{units(df$dist) <- "m"} or 
+#'   \code{units(df$dist) <- "ft"} will work. Alternatively, 
+#'   \code{df$dist <- units::set_units(df$dist, "m")} also works.
 #'   \item Site IDs: The ID of the transect or point 
 #'   (i.e., the 'site') where each object or group was detected.
 #'   The site ID  column(s) (see arguments \code{transectID} and
@@ -75,13 +80,21 @@
 #' or line-transect surveys (FALSE).  
 #' 
 #' @param w.lo Lower or left-truncation limit of the distances in distance data. 
-#' This is the minimum possible off-transect distance. Default is 0.
-#' 
+#' This is the minimum possible off-transect distance. Default is 0.  If 
+#' \code{w.lo} is greater than 0, it must be assigned measurement units
+#' using \code{units(w.lo) <- "<units>"} or \code{w.lo <- units::set_units(w.lo, "<units>")}
+#' or \code{w.lo <- units::as_units(<value>, "<units>")}
+#' #' 
 #' @param w.hi Upper or right-truncation limit of the distances 
 #' in \code{dist}. This is the maximum off-transect distance that 
-#' could be observed. If left unspecified (i.e., at the default of 
-#' NULL), right-truncation is set to the maximum of the observed 
-#' distances.
+#' could be observed. If unspecified (i.e., NULL), 
+#' right-truncation is set to the maximum of the observed 
+#' distances.  If \code{w.hi} is specified, it must have associated 
+#' measurement units.  Assign measurement units
+#' using \code{units(w.hi) <- "<units>"} or 
+#' \code{w.hi <- units::set_units(w.hi, "<units>")} 
+#' or 
+#' \code{w.hi = units::as_units(<value>,"<units>")}  
 #' 
 #' @param expansions A scalar specifying the number of terms 
 #' in \code{series} to compute. Depending on the series, 
@@ -163,6 +176,9 @@
 #' distance function.  Default of 0 fits no spline functions in the
 #' distance function.  A value of 1 fits one spline smoothing function, 
 #' 2 fits two, etc. 
+#' 
+#' @param outputUnits A string naming the symbolic units that results 
+#' should be processed in. 
 #' 
 #' @section Input data frames:
 #' To save space and to easily specify 
@@ -255,6 +271,37 @@
 #' the actual data, not to the bins.
 #' 
 #' 
+#' @section Measurement Units: 
+#' As of \code{Rdistance} version 3.0.0, measurement units are 
+#' require on all distances, including off-transect distances, radial 
+#' distances, and truncation distances (\code{w.lo} and \code{w.hi}). 
+#' This requirement is for analysis integrity. This requirement 
+#' ensures that results (e.g., ESW and abundance) are correctly 
+#' scaled and that applicable units on outputs are clear.
+#' 
+#' Measurement units should be assigned using  
+#' \code{units()<-} after attaching the \code{units} 
+#' package, or \code{units::set_units} or \code{units::as_units}. 
+#' \code{units::valid_udunits()}
+#' retrieves a list of all valid symbolic units. Units on distance measurements 
+#' in the detection data frame do not need to be the same as those for \code{w.lo}
+#' and \code{w.hi} because unit conversions are performed internally. That is, 
+#' all units are converted to those of the primary distance measurements in the 
+#' detection data frame.   For example, units on off-transect distances 
+#' could be "m" (meters) while units on \code{w.hi} could be "ft".  \code{w.hi} 
+#' will be converted to "m" before the upper cut-off is applied.  In 
+#' other words, specifying \code{w.hi = units::as_units(100, "m")} 
+#' yields the same results as \code{w.hi = units::as_units(328.08, "ft")}.
+#' 
+#' Units are required on the following: \code{dist$dist}; 
+#' \code{w.lo} (unless it is zero); \code{w.hi} (unless it is NULL); 
+#' and \code{x.scl}. 
+#' 
+#' If measurements are truly unit-less, or measurement units are unknown, 
+#' setting \code{RdistanceControls(requireUnits = FALSE)} suppresses 
+#' all unit checks and conversions.  In this case, users are on their own 
+#' and must check that all inputs and output are scaled correctly.   
+#'  
 #' @return  An object of class 'dfunc'.  Objects of class 'dfunc' 
 #' are lists containing the following components:
 #'   \item{parameters}{The vector of estimated parameter values. 
@@ -286,9 +333,9 @@
 #'   \item{call}{The original call of this function.}
 #'   \item{call.x.scl}{The distance at which the distance function 
 #'     is scaled. This is the x at which g(x) = \code{g.x.scl}.
-#'     Normally, \code{call.x.scl} = 0.}
+#'     Normally, \code{call.x.scl} = 0}. 
 #'   \item{call.g.x.scl}{The value of the distance function at distance
-#'     \code{call.x.scl}.  Normally, \code{call.g.x.scl} = 1.}
+#'     \code{call.x.scl}.  Normally, \code{call.g.x.scl} = 1}.
 #'   \item{call.observer}{The value of input parameter \code{observer}.}
 #'   \item{fit}{The fitted object returned by \code{optim}.  
 #'     See documentation for \code{optim}.}
@@ -370,6 +417,7 @@ dfuncEstim <- function (formula,
                         transectID = NULL, 
                         pointID = "point", 
                         length = "length",
+                        outputUnits = NULL,
                         control = RdistanceControls()){
   
   cl <- match.call()
@@ -417,39 +465,53 @@ dfuncEstim <- function (formula,
   contr <- attr(covars,"contrasts")
   assgn <- attr(covars,"assign")
 
+  
   # Check for measurement units 
   if( !inherits(dist, "units") & control$requireUnits ){
     dfName <- deparse(substitute(detectionData))
     stop(paste("Distance measurement units are required.", 
-               "Assign units using:\n", 
+               "Assign units by attaching 'units' package then:\n", 
                paste0("units(",dfName,"$dist)"), "<- '<units of measurment>',\n", 
                "Popular choices are 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
-  } 
-  
+  } else if( control$requireUnits ){
+    # if we are here, dist has units
+    # set units for output by converting dist units; w.lo, w.hi, and x.scl will all be converted later
+    if( !is.null(outputUnits) ){
+      units(dist) <- outputUnits
+    }
+    outUnits <- units(dist)
+  }
   
   if( !inherits(w.lo, "units") & control$requireUnits ){
-    w.lo <- units::as_units(w.lo, units(dist))
-    if( w.lo[1] != units::as_units(0, units(dist)) ){
-      warning(paste("Measurement units of w.lo were not found and were set to those of the distance measurements, i.e.,",
-                    paste0("[", units::deparse_unit(dist), "]\n"),
-                    "Suppress this warning by assigning units to w.lo using either\n", 
-                    "units(w.lo) <- '<units>' or",
-                    paste0("units::as_units(", w.lo, ", '<units>')\n"),
-                    "See units::valid_udunits() for valid symbolic units."
-      ))
+    if( w.lo[1] != 0 ){
+      stop(paste("Units of minimum distance are required.",
+                 "Assign units by attaching 'units' package then:\n", 
+                 "units(w.lo) <- '<units>' or", 
+                 paste0("units::as_units(", w.lo,", <units>) in function call\n"), 
+                 "See units::valid_udunits() for valid symbolic units."))
     }
+    # if we are here, w.lo is 0, it has no units, and we require units
+    w.lo <- units::set_units(w.lo, outUnits)  # assign units to 0
+  } else if( control$requireUnits ){
+    # if we are here, w.lo has units and we require units, convert to the output units
+    units(w.lo) <- outUnits
   }
     
     
   if(is.null(w.hi)){
-    w.hi <- max(dist, na.rm=TRUE)
+    w.hi <- max(dist, na.rm=TRUE)  # units flow through max automatically
   } else if( !inherits(w.hi, "units") & control$requireUnits ){
     stop(paste("Max distance measurement units are required.",
-               "Assign units using either:\n", 
+               "Assign units by attaching 'units' package then:\n", 
                "units(w.hi) <- '<units>' or", 
-               paste0("as_units(", w.hi,", <units>) in function call\n"), 
+               paste0("units::as_units(", w.hi,", <units>) in function call\n"), 
                "See units::valid_udunits() for valid symbolic units."))
+  } else if( control$requireUnits ){
+    # if we are here, w.hi has units and we require them, convert to output units
+    units(w.hi) <- outUnits
   }
+
+  # Units on x.scl are enforced in F.gx.estim
   
   ncovars <- ncol(covars)
   
@@ -614,7 +676,9 @@ dfuncEstim <- function (formula,
               fit = fit, 
               factor.names = factor.names, 
               pointSurvey = pointSurvey,
-              formula = formula)
+              formula = formula, 
+              control = control, 
+              outputUnits = outUnits)
   
   ans$loglik <- F.nLL(ans$parameters, 
                       ans$dist, 
