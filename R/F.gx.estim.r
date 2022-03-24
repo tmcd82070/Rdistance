@@ -1,9 +1,16 @@
-#' @title Estimate g(0) or g(x)
+#' @title F.gx.estim - Estimate g(0) or g(x)
 #' 
 #' @description Estimate g(0) or g(x) for a specified distance function.
 #' 
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
-#' @param x.scl The x coordinate (a distance) at which to scale the distance function to \code{g.x.scl}.  See Details.
+#' @param x.scl The x coordinate (a distance) at which to scale the 
+#'   sightability function to \code{g.x.scl}.  
+#'   When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
+#'   units assigned using either \code{library(units);units(x.scl) <- '<units>'}
+#'   or \code{x.scl <- units::set_units(x.scl, <units>)} or 
+#'   \code{x.scl <- units::as_units(<value>, <units>)}.  See
+#'   \code{units::valid_udunits()} for valid symbolic units. See Details for more on 
+#'   scaling the sightability function.
 #' @param g.x.scl Height of the distance function at coordinate x. i.e., the distance function 
 #'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. See Details.
 #' @param observer A numeric scalar or text string specifying whether observer 1 or observer 2 or both were full-time observers. 
@@ -14,46 +21,80 @@
 #'   by observer 2 are ignored. The estimate of detection in this case is the ratio of number of targets seen by both observers 
 #'   to the number seen by both plus the number seen by just observer 2. If observer = "both", the 
 #'   computation goes both directions.
-#' @details There are several estimation cases covered by the inputs \code{x.scl} and \code{g.x.scl}:
 #'   
-#'   (1) g(0) = 1  (the default): Inputs are \code{x.scl} = 0, \code{g.x.scl} = 1. 
-#'   Note that \code{x.scl} will be set to \code{w.lo}, which is not necessarily 0.
+#' @details This routine scales sightability such that 
+#' g(\code{x.scl}) = \code{g.x.scl}, where g() is the sightability function.
+#' Specification of \code{x.scl} and \code{g.x.scl} covers several estimation cases:
+#' \enumerate{  
+#'   \item \bold{g(0) = 1} : (the default) Inputs are \code{x.scl} = 0, \code{g.x.scl} = 1. 
+#'   If \code{w.lo} > 0, \code{x.scl} will be set to \code{w.lo}
+#'   so technically this case is g(\code{w.low}) = 1.
 #'   
-#'   (2) User specified g(\code{x.scl}) = \code{g.x.scl}:  Inputs are \code{x.scl} = a number greater than or equal 
-#'   to \code{w.lo}, \code{g.x.scl} = 
-#'     a number between 0 and 1.
+#'   \item \bold{User supplied probability at specified distance}: Inputs are 
+#'   \code{x.scl} = a number greater than or equal 
+#'   to \code{w.lo}, \code{g.x.scl} = a number between 0 and 1.  This case 
+#'   covers situations where sightability on the transect (distance 0) is 
+#'   not perfect and researchers have an estimate of sightability on 
+#'   the transect.  This case also applies if researchers use multiple 
+#'   observers to estimate that sightability at distance \code{x.scl} 
+#'   is \code{g.x.scl}. 
 #'   
-#'   (3) Maximum g() specified: Inputs are \code{x.scl}="max", \code{g.x.scl} =  a number between 0 and 1.  In this case, 
-#'   g() is scaled such that g(x.max) = \code{g.x.scl}, where x.max is the distance that maximizes g.  
-#'   x.max is computed and returned.
+#'   \item \bold{Maximum sightability specified}: Inputs 
+#'   are \code{x.scl}="max", \code{g.x.scl} =  a number 
+#'   between 0 and 1.  In this case, 
+#'   g() is scaled such that its maximum value is \code{g.x.scl}.  
+#'   This routine computes the distance at which g() is maximum, sets 
+#'   g()'s height there to \code{g.x.scl}, and returns \code{x.max} where 
+#'   x.max is the distance at which g is maximized. This case covers the 
+#'   common aerial survey situation where maximum sightability is slightly 
+#'   off the transect, but the distance at which the maximum occurs 
+#'   is unknown. This case is the default, with \code{g.x.scl} = 1, 
+#'   when gamma distance functions are estimated. 
+#'   
+#'   \item \bold{Double observer system}: Inputs are 
+#'   \code{x.scl}="max", \code{g.x.scl} = <a data frame>. 
+#'   In this case, g(x.max) = h, where x.max is the distance that 
+#'   maximizes g and h is the height of g() at x.max. 
+#'   h is computed from the double observer data frame (see below for 
+#'   structure of the double observer data frame).
 #'   
 #'   
-#'   (4) Maximum g() estimated by double observer system: Inputs are \code{x.scl}="max", \code{g.x.scl} =  a data frame. 
-#'   In this case, g(x.max) = h, where x.max is the distance that maximizes g and h is the height of g() at x.max. 
-#'   h is computed from the double observer data frame (see below for structure of the double observer data frame).
-#'   
-#'   
-#'   (5) Distance of independence specified, height computed from double observer system: Inputs are 
+#'   \item \bold{Distance of independence specified, height computed from double 
+#'   observer system}: Inputs are 
 #'   \code{x.scl} = a number greater than or equal to \code{w.lo}
-#'   \code{g.x.scl} = a data frame.  In this case, g(\code{x.scl}) = h, where h is computed from the double observer data frame 
+#'   \code{g.x.scl} = a data frame.  In this case, g(\code{x.scl}) = h, where h 
+#'   is computed from the double observer data frame 
 #'   (see below for structure of the double observer data frame). 
+#'
+#' }   
 #'   
+#'   When \code{x.scl}, \code{g.x.scl}, or \code{observer} are NULL, the routine 
+#'   will look for \code{$call.x.scl}, or \code{$call.g.x.scl}, or 
+#'   \code{$call.observer} components of the \code{fit} object.  This means the 
+#'   3 parameters specified 
+#'   during the original call to \code{dfuncEstim} will be used. Later, different 
+#'   values can be specified in a call to \code{F.gx.estim} 
+#'   without having to re-estimate the distance function. Because of this feature, 
+#'   the default values of \code{x.scl} = 0 and 
+#'   \code{g.x.scl} = 1 and \code{observer} = "both" are specified in the call 
+#'   to \code{dfuncEstim}. 
 #'   
-#'   When \code{x.scl}, \code{g.x.scl}, or \code{observer} are NULL, the routine will look for \code{$call.x.scl}, or \code{$call.g.x.scl}, or 
-#'   \code{$call.observer} components of the \code{fit} object.  This means the 3 parameters to be specified 
-#'   during the original call to \code{dfuncEstim}. Later, different values can be specified in a call to \code{F.gx.estim} 
-#'   without having to re-estimate the distance function. Because of this feature, the default values of \code{x.scl} = 0 and 
-#'   \code{g.x.scl} = 1 and \code{observer} = "both" are specified in the call to \code{dfuncEstim}. 
-#'   
-#'   Structure of the double observer data frame:  When \code{g.x.scl} is a data frame, it is assumed to contain 
+#' @section Structure of the double observer data frame:  
+#' When \code{g.x.scl} is a data frame, it is assumed to contain 
 #'   the components \code{$obsby.1} and \code{$obsby.2} (no flexibility on names). 
-#'   These components are TRUE/FALSE (logical) vectors indicating whether 
+#'   Each row in the data frame contains data from one sighted target. 
+#'   The \code{$obsby.1} and \code{$obsby.2} components are 
+#'   TRUE/FALSE (logical) vectors indicating whether 
 #'   observer 1 (\code{obsby.1}) or observer 2 (\code{obsby.2}) spotted the target.
+#'   
 #' @return A list comprised of the following components:
 #'   \item{x.scl}{The value of x (distance) at which g() is evaluated.  }
 #'   \item{comp2 }{The estimated value of g() when evaluated at \code{x.scl}.  }
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#'   
+#' @author Trent McDonald
+#' 
 #' @seealso \code{\link{dfuncEstim}}
+#' 
 #' @examples \dontrun{
 #'   # NOTE, this example is out of date as of version 2.0.x
 #'   # Non-double observer example
@@ -99,7 +140,7 @@ if( is.null( observer ) ){
 }
 
 if( !is.character(x.scl) ){
-    if( x.scl == 0 & fit$like.form == "Gamma" ){
+    if( units::drop_units(x.scl) == 0 & fit$like.form == "Gamma" ){
         x.scl <- "max"
         warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
     }
@@ -108,7 +149,19 @@ if( !is.character(x.scl) ){
 if( !is.character(x.scl) ){
 
     #   x is specified, first make sure w.low < x < w.high, then compute g(x)
-    x.scl <- units::as_units(x.scl, units(fit$dis))
+    if( !inherits(x.scl, "units") & fit$control$requireUnits ){
+      if( x.scl[1] != 0 ){
+        stop(paste("Measurement units for x.scl are required.",
+                   "Assign units using either:\n", 
+                   "units::units(x.scl) <- '<units>' or", 
+                   paste0("units::as_units(", x.scl,", <units>) in function call\n"), 
+                   "See units::valid_udunits() for valid symbolic units."))
+      }
+      x.scl <- units::as_units(x.scl, fit$outputUnits)
+    } else if( fit$control$requireUnits ){
+      # if we are here, x.scl has units and we require units, convert to the output units
+      units(x.scl) <- fit$outputUnits
+    }
   
     if( x.scl < fit$w.lo ){
         x.scl <- fit$w.lo
