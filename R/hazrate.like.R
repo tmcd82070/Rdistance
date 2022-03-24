@@ -140,12 +140,14 @@ hazrate.like <- function(a,
     } else {
       s <- a[1]
     }
-	
-	beta = a[length(a) - expansions]
-	key = 1 - exp(-(dist/s)^(-beta))
+    
+    units(s) <- units(dist)  
+
+  	beta <- a[length(a) - expansions]
+  	key <- -(dist/s)^(-beta)
+  	key <- 1 - exp(units::drop_units(key))
     dfunc <- key
     w <- w.hi - w.lo
-
 
     if(expansions > 0){
 
@@ -155,23 +157,23 @@ hazrate.like <- function(a,
         #    warning("Wrong number of parameters in expansion. Should be (expansions+2). Higher terms ignored.")
         #}
 
-		if (series=="cosine"){
-            dscl = dist/w
-            exp.term <- cosine.expansion( dscl, nexp )
-		} else if (series=="hermite"){
-            dscl = dist/s
-            exp.term <- hermite.expansion( dscl, nexp )
-		} else if (series == "simple") {
-            dscl = dist/w
-            exp.term <- simple.expansion( dscl, nexp )
-        } else {
-            stop( paste( "Unknown expansion series", series ))
-        }
-
-        dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
-
-
-    }# else if(length(a) > 2){
+  		if (series=="cosine"){
+              dscl = units::drop_units(dist/w)  # unit conversion here; drop units is safe
+              exp.term <- cosine.expansion( dscl, nexp )
+  		} else if (series=="hermite"){
+              dscl = units::drop_units(dist/s)
+              exp.term <- hermite.expansion( dscl, nexp )
+  		} else if (series == "simple") {
+              dscl = units::drop_units(dist/w)
+              exp.term <- simple.expansion( dscl, nexp )
+      } else {
+              stop( paste( "Unknown expansion series", series ))
+      }
+  
+      dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
+    }
+    
+    # else if(length(a) > 2){
     #    warning("Wrong number of parameters in hazrate. Only 2 needed if no expansions. Higher terms ignored.")
     #}
 
