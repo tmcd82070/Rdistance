@@ -349,9 +349,9 @@
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
 #'    abundance of biological populations}. Oxford University Press, Oxford, UK.
 #'     
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-#'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}\cr
-#'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
+#' @author Trent McDonald, McDonald Data Sciences, \email{trent@mcdonalddatasciences.com}\cr
+#'         Jason Carlisle, Wyoming Game and Fish Department, \email{jason.carlisle@wyo.gov}\cr
+#'         Aidan McDonald, Viridium Inc., \email{aidan@mcdcentral.org}
 #'         
 #' @seealso \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 #' See likelihood-specific help files (e.g., \code{\link{halfnorm.like}}) for
