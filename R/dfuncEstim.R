@@ -491,7 +491,7 @@ dfuncEstim <- function (formula,
                  "See units::valid_udunits() for valid symbolic units."))
     }
     # if we are here, w.lo is 0, it has no units, and we require units
-    w.lo <- units::set_units(w.lo, outUnits)  # assign units to 0
+    w.lo <- units::as_units(w.lo, outUnits)  # assign units to 0
   } else if( control$requireUnits ){
     # if we are here, w.lo has units and we require units, convert to the output units
     units(w.lo) <- outUnits
