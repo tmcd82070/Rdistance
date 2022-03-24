@@ -96,10 +96,11 @@ print.dfunc <- function( x, criterion="AICc", ... ){
       cat(paste("Function:", casefold(x$like.form, upper=TRUE), mess, "\n") )
     } 
     
-    cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
+    cat(paste("Strip:", format(x$w.lo), "to", format(x$w.hi), "\n"))
     
     effDist <- effectiveDistance(x)
-    pDetect <- effDist / (x$w.hi - x$w.lo)
+    pDetect <- effDist / (x$w.hi - x$w.lo) 
+    pDetect <- units::drop_units(pDetect)  # units of pDetect should always be [1]
     if( is.null(x$covars) ){
       if(x$pointSurvey){
         cat(paste("Effective detection radius (EDR):", format(effDist), "\n"))
@@ -118,7 +119,7 @@ print.dfunc <- function( x, criterion="AICc", ... ){
       }
     }
     
-    cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
+    cat(paste("Scaling: g(", format(x$x.scl), ") = ", format(x$g.x.scl), "\n", sep=""))
     cat(paste("Log likelihood:", format(x$loglik), "\n"))
     if( !is.smoothed ){
       aic <- AIC.dfunc(x,criterion=criterion) 
