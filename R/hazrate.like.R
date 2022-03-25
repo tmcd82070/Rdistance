@@ -92,8 +92,6 @@
 #'   FALSE, the integral of the likelihood is
 #'   arbitrary.
 #'   
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #'         
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
@@ -144,7 +142,7 @@ hazrate.like <- function(a,
     units(s) <- units(dist)  
 
   	beta <- a[length(a) - expansions]
-  	key <- -(dist/s)^(-beta)
+  	key <- -((dist/s)^(-beta))
   	key <- 1 - exp(units::drop_units(key))
     dfunc <- key
     w <- w.hi - w.lo
