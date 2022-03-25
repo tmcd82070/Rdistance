@@ -1,7 +1,6 @@
-#' @title Uniform likelihood function for distance analyses
+#' @title Uniform distance function likelihood
 #' 
-#' @description This function computes likelihood contributions for 
-#' sighting distances, scaled appropriately, for use as a distance likelihood.
+#' @description Computes the uniform form of a distance function.
 #' 
 #' @param a A vector of likelihood parameter values. Length and meaning 
 #' depend on \code{series} and \code{expansions}. If no expansion terms 
@@ -117,9 +116,6 @@
 #' If \code{scale} = FALSE, the integral of the likelihood is
 #'   arbitrary.
 #'   
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#'         
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{hazrate.like}},
@@ -153,7 +149,7 @@ uniform.like <- function(a,
 
     #   A couple internal functions first.
     #   This is the heavy-side function.  Basically, a steep logistic. f is just heavi flipped over
-    heavi <- function(x,k){ 1 / (1 + exp( -k*x ))}
+    heavi <- function(x,k){ 1 / (1 + exp( -units::drop_units(k*x) ))}
     f <- function(beta1, beta2, x){ 1 - heavi(x-beta1,beta2) }
 
 
@@ -170,37 +166,34 @@ uniform.like <- function(a,
     } else {
       beta1 <- a[1]
     }
-    beta2 <- a[length(a)-expansions]
     
-
+    units(beta1) <- units(dist)  
+    
+    beta2 <- a[length(a)-expansions]
 	  key <- f(beta1, beta2, dist)
-
     dfunc <- key
     w <- w.hi - w.lo
-#    cat(paste( "w.lo=", w.lo, "w.hi=", w.hi, "\n"))
+
+    #    cat(paste( "w.lo=", w.lo, "w.hi=", w.hi, "\n"))
 
     # If there are expansion terms
     if(expansions > 0){
 
         nexp <- expansions #min(expansions,length(a)-2)  # should be equal. If not, fire warning next
 
-        #if( length(a) != (expansions+2) ) {
-            #warning("Wrong number of parameters in expansion. Should be (expansions+2). High terms ignored.")
-        #}
-
-		if (series=="cosine"){
-            dscl = dist/w
-            exp.term <- cosine.expansion( dscl, nexp )
-		} else if (series=="hermite"){
-            dscl = dist/ (a[1]/sqrt(12))  # denom is approx std of U[0,a[1]]
-            exp.term <- hermite.expansion( dscl, nexp )
-		} else if (series == "simple") {
-            dscl = dist/w
-            exp.term <- simple.expansion( dscl, nexp )
+    		if (series=="cosine"){
+                dscl = units::drop_units(dist/w)
+                exp.term <- cosine.expansion( dscl, nexp )
+    		} else if (series=="hermite"){
+                dscl = units::drop_units(dist/ (a[1]/sqrt(12)))  # denom is approx std of U[0,a[1]]
+                exp.term <- hermite.expansion( dscl, nexp )
+    		} else if (series == "simple") {
+                dscl = units::drop_units(dist/w)
+                exp.term <- simple.expansion( dscl, nexp )
         } else {
-            stop( paste( "Unknown expansion series", series ))
+                stop( paste( "Unknown expansion series", series ))
         }
-
+    
         dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
     }
 
@@ -215,11 +208,6 @@ uniform.like <- function(a,
                                                  expansions=expansions, 
                                                  pointSurvey = pointSurvey)
     }
-
-#   df2 <- dfunc[ order(dist) ]
-#   d2 <- dist[ order(dist) ]
-#   cat(paste("integral=", sum( diff(d2) * (df2[-1] + df2[-length(df2)]) ) / 2, "\n" ))
-#   readline("Enter:")
 
     c(dfunc)
 }
