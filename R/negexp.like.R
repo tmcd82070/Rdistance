@@ -1,16 +1,24 @@
-#' @title Negative exponential distance function for distance analyses
+#' @title Negative exponential distance function
 #' 
-#' @description Computes likelihood contributions for off-transect sighting distances, 
-#' scaled appropriately, for use as a distance likelihood.
+#' @description Computes the negative exponential form of 
+#' a distance function 
 #' 
-#' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
-#'   (i.e., \code{expansions = 0}), the distance likelihoods contains only one canonical parameter, which 
-#'   is the first element of \code{a} (see Details). If one or more expansions are called for,
-#'   coefficients for the expansion terms follow coefficients for the canonical parameter.  
-#'   Coefficients
-#'   for the expansion terms, if present, are \code{a[2:length(a)]}.
+#' @param a A vector of likelihood parameter values. Length and 
+#'   meaning depend on \code{series} and \code{expansions}. If 
+#'   no expansion terms were called for
+#'   (i.e., \code{expansions = 0}), the distance likelihood 
+#'   contains only one canonical parameter, which 
+#'   is the first element of \code{a} (see Details). If one 
+#'   or more expansions are called for,
+#'   coefficients for the expansion terms follow 
+#'   coefficients for the canonical parameter.  
+#'   Coefficients for the expansion terms, if present, are \code{a[2:length(a)]}.
+#'   
 #' @param dist A numeric vector containing the observed distances.
-#' @param covars Data frame containing values of covariates at each observation in \code{dist}.
+#' 
+#' @param covars Data frame containing values of covariates at each 
+#'   observation in \code{dist}.
+#' 
 #' @param w.lo Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.
 #'   Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
 #' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
@@ -38,9 +46,6 @@
 #'   sum. If \code{scale} = TRUE, the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, the integral of the likelihood is
 #'   arbitrary.
 #'   
-#' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
-#'         
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{uniform.like}},
@@ -90,7 +95,11 @@ negexp.like <- function (a,
       beta <- a[1]
     }
     
-	  key = exp(-beta*dist)
+    # units(beta) <- units(dist)  
+    beta <-  units::as_units(beta, units(dist))
+    
+    key = -beta*dist
+    key <- exp(units::drop_units(key))
     dfunc <- key
     w <- w.hi - w.lo
 
@@ -103,26 +112,24 @@ negexp.like <- function (a,
             #warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
         }
 
-		if (series=="cosine"){
-            dscl = dist/w
-            exp.term <- cosine.expansion( dscl, nexp )
-		} else if (series=="hermite"){
-            dscl = dist/w
-            exp.term <- hermite.expansion( dscl, nexp )
-		} else if (series == "simple") {
-            dscl = dist/w
-            exp.term <- simple.expansion( dscl, nexp )
+    		if (series=="cosine"){
+                dscl = units::drop_units(dist/w)
+                exp.term <- cosine.expansion( dscl, nexp )
+    		} else if (series=="hermite"){
+                dscl = units::drop_units(dist/w)
+                exp.term <- hermite.expansion( dscl, nexp )
+    		} else if (series == "simple") {
+                dscl = units::drop_units(dist/w)
+                exp.term <- simple.expansion( dscl, nexp )
         } else {
-            stop( paste( "Unknown expansion series", series ))
+              stop( paste( "Unknown expansion series", series ))
         }
 
         dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
 
 
-    } else if(length(a) > 1){
-        #warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
-    }
-
+    } 
+    
     if( scale ){
         dfunc = dfunc / integration.constant(dist=dist, 
                                              density=negexp.like, 
