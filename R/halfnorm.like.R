@@ -142,7 +142,7 @@ halfnorm.like <- function(a,
     sigma <- a[1]
   }
 
-  units(sigma) <- units(dist)
+  sigma <-  units::as_units(sigma, units(dist))
   
   key <- -(dist*dist)/(2*sigma*sigma)  
   # unit conversions happen in above statement; afterwards, key is unit-less

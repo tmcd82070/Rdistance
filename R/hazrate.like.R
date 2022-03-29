@@ -139,7 +139,7 @@ hazrate.like <- function(a,
       s <- a[1]
     }
     
-    units(s) <- units(dist)  
+    s <-  units::as_units(s, units(dist))
 
   	beta <- a[length(a) - expansions]
   	key <- -((dist/s)^(-beta))
