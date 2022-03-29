@@ -399,6 +399,7 @@
 #' @export
 #' @importFrom stats nlminb model.response is.empty.model 
 #' @importFrom stats model.matrix contrasts optim
+#' @import units
 
 dfuncEstim <- function (formula, 
                         detectionData, 
@@ -452,7 +453,6 @@ dfuncEstim <- function (formula,
           and can help.")
   }
   
-  
   mf <- getDfuncModelFrame(formula, data)
   mt <- attr(mf, "terms")
   dist <- model.response(mf,"any")
@@ -465,7 +465,6 @@ dfuncEstim <- function (formula,
   contr <- attr(covars,"contrasts")
   assgn <- attr(covars,"assign")
 
-  
   # Check for measurement units 
   if( !inherits(dist, "units") & control$requireUnits ){
     dfName <- deparse(substitute(detectionData))
@@ -477,11 +476,11 @@ dfuncEstim <- function (formula,
     # if we are here, dist has units
     # set units for output by converting dist units; w.lo, w.hi, and x.scl will all be converted later
     if( !is.null(outputUnits) ){
-      units(dist) <- outputUnits
+      dist <-  units::as_units(dist, outputUnits)
     }
     outUnits <- units(dist)
   }
-  
+
   if( !inherits(w.lo, "units") & control$requireUnits ){
     if( w.lo[1] != 0 ){
       stop(paste("Units of minimum distance are required.",
@@ -494,9 +493,8 @@ dfuncEstim <- function (formula,
     w.lo <- units::as_units(w.lo, outUnits)  # assign units to 0
   } else if( control$requireUnits ){
     # if we are here, w.lo has units and we require units, convert to the output units
-    units(w.lo) <- outUnits
+    w.lo <-  units::as_units(w.lo, outUnits)
   }
-    
     
   if(is.null(w.hi)){
     w.hi <- max(dist, na.rm=TRUE)  # units flow through max automatically
@@ -508,11 +506,10 @@ dfuncEstim <- function (formula,
                "See units::valid_udunits() for valid symbolic units."))
   } else if( control$requireUnits ){
     # if we are here, w.hi has units and we require them, convert to output units
-    units(w.hi) <- outUnits
+    w.hi <-  units::as_units(w.hi, outUnits)
   }
 
   # Units on x.scl are enforced in F.gx.estim
-  
   ncovars <- ncol(covars)
   
   # Truncate for w.lo and w.hi
