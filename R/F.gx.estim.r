@@ -3,6 +3,7 @@
 #' @description Estimate g(0) or g(x) for a specified distance function.
 #' 
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
+#' 
 #' @param x.scl The x coordinate (a distance) at which to scale the 
 #'   sightability function to \code{g.x.scl}.  
 #'   When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
@@ -11,15 +12,21 @@
 #'   \code{x.scl <- units::as_units(<value>, <units>)}.  See
 #'   \code{units::valid_udunits()} for valid symbolic units. See Details for more on 
 #'   scaling the sightability function.
+#'   
 #' @param g.x.scl Height of the distance function at coordinate x. i.e., the distance function 
 #'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. See Details.
-#' @param observer A numeric scalar or text string specifying whether observer 1 or observer 2 or both were full-time observers. 
+#'   
+#' @param observer A numeric scalar or text string specifying whether observer 1 
+#'   or observer 2 or both were full-time observers. 
 #'   This parameter dictates which set of observations form the denominator 
 #'   of a double observer system.   
-#'   If, for example, observer 2 was a data recorder and part-time observer, or if observer 2 
-#'   was the pilot, set \code{observer} = 1.  If \code{observer} = 1, observations by observer 1 not seen 
-#'   by observer 2 are ignored. The estimate of detection in this case is the ratio of number of targets seen by both observers 
-#'   to the number seen by both plus the number seen by just observer 2. If observer = "both", the 
+#'   If, for example, observer 2 was a data recorder and part-time observer, 
+#'   or if observer 2 was the pilot, set \code{observer} = 1.  
+#'   If \code{observer} = 1, observations by observer 1 not seen 
+#'   by observer 2 are ignored. The estimate of detection in this case is the 
+#'   ratio of number of targets seen by both observers 
+#'   to the number seen by both plus the number seen by just observer 2. 
+#'   If observer = "both", the 
 #'   computation goes both directions.
 #'   
 #' @details This routine scales sightability such that 
@@ -139,11 +146,17 @@ if( is.null( observer ) ){
     observer <- fit$call.observer
 }
 
+# overide x.scl for Gamma likelihood
 if( !is.character(x.scl) ){
-    if( units::drop_units(x.scl) == 0 & fit$like.form == "Gamma" ){
-        x.scl <- "max"
-        warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
-    }
+  if( inherits(x.scl, "units") ){ # this if needed cause drop units does not work on plain vector
+    isZero <- units::drop_units(x.scl) == 0 
+  } else {
+    isZero <- x.scl == 0
+  }
+  if( isZero & fit$like.form == "Gamma" ){
+    x.scl <- "max"
+    warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
+  }
 }
 
 if( !is.character(x.scl) ){
@@ -157,10 +170,10 @@ if( !is.character(x.scl) ){
                    paste0("units::as_units(", x.scl,", <units>) in function call\n"), 
                    "See units::valid_udunits() for valid symbolic units."))
       }
-      x.scl <- units::as_units(x.scl, fit$outputUnits)
+      x.scl <- units::set_units(x.scl, fit$outputUnits, mode = "standard")
     } else if( fit$control$requireUnits ){
       # if we are here, x.scl has units and we require units, convert to the output units
-      units(x.scl) <- fit$outputUnits
+      x.scl <- units::set_units(x.scl, fit$outputUnits, mode = "standard")
     }
   
     if( x.scl < fit$w.lo ){
