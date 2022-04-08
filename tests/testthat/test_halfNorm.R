@@ -13,7 +13,12 @@ dfuncFit <- dfuncEstim(formula=dist~1,
                     pointSurvey=FALSE, 
                     expansions = 0, 
                     x.scl = units::as_units(0, "m"), 
-                    g.x.scl = 1)
+                    g.x.scl = 1 
+                    )
+
+test_that("Halfnorm default prints", {
+  expect_output(print(dfuncFit), regexp = "AICc:")
+})
 
 test_that("Halfnorm Sigma = 46.35870", {
   expect_equal(round(coef(dfuncFit)[["Sigma"]], 5), round(46.3586986528704, 5))
@@ -36,11 +41,8 @@ test_that("Halfnorm prints", {
 
 # Devise some method to test plots
 test_that("Halfnorm plots", {
-  expect_output_file({
-    png(filename = "trash.png")
-    plot(dfuncFit)
-    dev.off(dev.cur())},
-    "trash.png")
+  expect_silent(tmp <- plot(dfuncFit))
+  expect_gt(tmp$yscl, 0)
   })
 
 
@@ -69,6 +71,9 @@ dfuncFit <- dfuncEstim(formula=dist~1,
                        x.scl = units::as_units(25, "m"), 
                        g.x.scl = 1)
 
+test_that("Halfnorm Left Trunc prints", {
+  expect_output(print(dfuncFit), regexp = "Strip: 25 \\[m\\]")
+})
 
 
 test_that("Halfnorm left truncation Sigma = 49.19439", {
@@ -93,11 +98,8 @@ test_that("Halfnorm left truncation prints", {
 
 # Devise some method to test plots
 test_that("Halfnorm left truncation plots", {
-  expect_output_file({
-    png(filename = "trash.png")
-    plot(dfuncFit)
-    dev.off(dev.cur())},
-    "trash.png")
+  expect_silent(tmp <- plot(dfuncFit))
+  expect_gt(tmp$yscl, 0)
 })
 
 
@@ -126,6 +128,10 @@ dfuncFit <- dfuncEstim(formula=dist~1,
                        x.scl = units::as_units(25, "m"), 
                        g.x.scl = 1)
 
+test_that("Halfnorm Positive x.scl prints", {
+  expect_output(print(dfuncFit), regexp = "25 \\[m\\]")
+})
+
 test_that("Halfnorm positive x.scl Sigma = 46.3587", {
   expect_equal(round(coef(dfuncFit)[["Sigma"]], 4), round(46.3587, 4))
 })
@@ -148,11 +154,8 @@ test_that("Halfnorm positive x.scl prints", {
 
 # Devise some method to test plots
 test_that("Halfnorm positive x.scl plots", {
-  expect_output_file({
-    png(filename = "trash.png")
-    plot(dfuncFit)
-    dev.off(dev.cur())},
-    "trash.png")
+  expect_silent(tmp <- plot(dfuncFit))
+  expect_gt(tmp$yscl, 0)
 })
 
 
@@ -167,6 +170,11 @@ dfuncFit <- dfuncEstim(formula=dist~1,
                        expansions = 0, 
                        x.scl = units::as_units(25, "m"), 
                        g.x.scl = 0.8)
+
+test_that("Halfnorm g(x.sclll) < 1 prints", {
+  expect_output(print(dfuncFit), regexp = "= 0.8")
+})
+
 
 test_that("Halfnorm g.x.scl < 1 Sigma = 46.3587", {
   expect_equal(round(coef(dfuncFit)[["Sigma"]], 4), round(46.3587, 4))
@@ -190,10 +198,10 @@ test_that("Halfnorm g.x.scl < 1 prints", {
 
 # Devise some method to test plots
 test_that("Halfnorm g.x.scl < 1 plots", {
-  expect_output_file({
-    png(filename = "trash.png")
-    plot(dfuncFit)
-    dev.off(dev.cur())},
-    "trash.png")
+  expect_silent(tmp <- plot(dfuncFit))
+  expect_gt(tmp$yscl, 0)
 })
 
+test_that("Halfnorm prints", {
+  expect_output(print(dfuncFit), regexp = "AICc:")
+})

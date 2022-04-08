@@ -92,9 +92,8 @@
 #' distances.  If \code{w.hi} is specified, it must have associated 
 #' measurement units.  Assign measurement units
 #' using \code{units(w.hi) <- "<units>"} or 
-#' \code{w.hi <- units::set_units(w.hi, "<units>")} 
-#' or 
-#' \code{w.hi = units::as_units(<value>,"<units>")}  
+#' \code{w.hi <- units::set_units(w.hi, "<units>")}. 
+#' See examples in the help for \code{set_units}. 
 #' 
 #' @param expansions A scalar specifying the number of terms 
 #' in \code{series} to compute. Depending on the series, 
@@ -125,11 +124,11 @@
 #' its default value of \code{TRUE}.  When computing bootstrap 
 #' confidence intervals, setting \code{warn = FALSE} 
 #' turns off annoying warnings when an iteration does 
-#' not converge.  Regardless of \code{warn}, messages about 
+#' not converge.  Regardless of \code{warn}, after 
+#' completion all messages about 
 #' convergence and boundary conditions are printed 
 #' by \code{print.dfunc}, \code{print.abund}, and 
-#' \code{plot.dfunc}, so there should be little harm in 
-#' setting \code{warn = FALSE}.
+#' \code{plot.dfunc}. 
 #' 
 #' @param transectID A character vector naming the transect ID column(s) in
 #' \code{detectionData} and \code{siteData}.  \code{Rdistance} 
@@ -171,11 +170,6 @@
 #' \code{\link{RdistanceControls}} function for explanation of each value,
 #' the defaults, and the requirements for this list. 
 #' See examples below for how to change controls.
-#' 
-#' @param smuTerms The number of smoothing terms to fit in the 
-#' distance function.  Default of 0 fits no spline functions in the
-#' distance function.  A value of 1 fits one spline smoothing function, 
-#' 2 fits two, etc. 
 #' 
 #' @param outputUnits A string naming the symbolic units that results 
 #' should be processed in. 
@@ -405,7 +399,6 @@ dfuncEstim <- function (formula,
                         detectionData, 
                         siteData, 
                         likelihood = "halfnorm", 
-                        smuTerms = 0,
                         pointSurvey = FALSE, 
                         w.lo = 0, 
                         w.hi = NULL, 
@@ -476,7 +469,7 @@ dfuncEstim <- function (formula,
     # if we are here, dist has units
     # set units for output by converting dist units; w.lo, w.hi, and x.scl will all be converted later
     if( !is.null(outputUnits) ){
-      dist <-  units::as_units(dist, outputUnits)
+      dist <-  units::set_units(dist, outputUnits, mode = "standard")
     }
     outUnits <- units(dist)
   }
@@ -490,10 +483,10 @@ dfuncEstim <- function (formula,
                  "See units::valid_udunits() for valid symbolic units."))
     }
     # if we are here, w.lo is 0, it has no units, and we require units
-    w.lo <- units::as_units(w.lo, outUnits)  # assign units to 0
+    w.lo <- units::set_units(w.lo, outUnits, mode = "standard")  # assign units to 0
   } else if( control$requireUnits ){
     # if we are here, w.lo has units and we require units, convert to the output units
-    w.lo <-  units::as_units(w.lo, outUnits)
+    w.lo <-  units::set_units(w.lo, outUnits, mode = "standard")
   }
     
   if(is.null(w.hi)){
@@ -506,7 +499,7 @@ dfuncEstim <- function (formula,
                "See units::valid_udunits() for valid symbolic units."))
   } else if( control$requireUnits ){
     # if we are here, w.hi has units and we require them, convert to output units
-    w.hi <-  units::as_units(w.hi, outUnits)
+    w.hi <-  units::set_units(w.hi, outUnits, mode = "standard")
   }
 
   # Units on x.scl are enforced in F.gx.estim
@@ -693,7 +686,7 @@ dfuncEstim <- function (formula,
   gx <- F.gx.estim(ans)
   ans$x.scl <- gx$x.scl
   ans$g.x.scl <- gx$g.x.scl
-  fuzz <- units::as_units(1e-06, units(dist))
+  fuzz <- units::set_units(1e-06, outUnits, mode = "standard")
   low.bound <- any(fit$par <= units::drop_units(strt.lims$lowlimit + fuzz))
   high.bound <- any(fit$par >= units::drop_units(strt.lims$uplimit - fuzz))
   if (fit$convergence != 0) {
