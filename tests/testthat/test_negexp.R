@@ -13,7 +13,11 @@ data(sparrowDetectionData)
 # combinations of relevant parameters is:
 testInputs <- expand.grid(
   likelihood = c( "uniform", "halfnorm", "hazrate", "negexp", "Gamma"),
+<<<<<<< HEAD
   pointSurvey = c(FALSE, TRUE),
+=======
+  pointSurvey = c(TRUE, FALSE),
+>>>>>>> enforceUnits
   w.lo = c(0, 50), 
   w.hi = c(NULL, 100), 
   expansions = 0:5,
@@ -42,6 +46,7 @@ test_dfuncEstim <- function( params,
                            pointSurvey = params$pointSurvey[i], 
                            expansions = params$expansions[i], 
                            x.scl = units::as_units(params$x.scl[i], "m"), 
+<<<<<<< HEAD
                            g.x.scl = as.numeric(params$g.x.scl[i]), 
                            observer = params$observer[i], 
                            outputUnits = params$outputUnits[i])
@@ -77,6 +82,22 @@ test_dfuncEstim <- function( params,
     
     
         
+=======
+                           g.x.scl = params$g.x.scl[i], 
+                           observer = params$observer[i], 
+                           outputUnits = params$outputUnits[i])
+    
+    test_that("Halfnorm g(x.sclll) < 1 prints", {
+      expect_output(print(dfuncFit), regexp = "= 0.8")
+    })
+    
+    
+    test_that("Halfnorm g.x.scl < 1 Sigma = 46.3587", {
+      expect_equal(round(coef(dfuncFit)[["Sigma"]], 4), round(46.3587, 4))
+    })
+    
+    
+>>>>>>> enforceUnits
     test_that("Halfnorm g.x.scl < 1 ESW =  52.09004 [m]", {
       expect_equal(round(ESW(dfuncFit), 5), units::as_units( 52.09004, "m"))
     })
@@ -106,5 +127,9 @@ test_dfuncEstim <- function( params,
 }  
   
   
+<<<<<<< HEAD
 
+=======
+}
+>>>>>>> enforceUnits
 
