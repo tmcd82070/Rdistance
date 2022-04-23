@@ -10,8 +10,7 @@ a site (transect) surveyed.  Column descriptions:
 
 \enumerate{ 
   \item \code{siteID}: Factor (72 levels), the site or transect surveyed.  
-  \item \code{length}: Number, the length (m) of each transect.  Use the same units
-    for all distance measurements.
+  \item \code{length}: Number, the length (m) of each transect.  
   \item \code{observer}: Factor (five levels), identity of the observer 
   who surveyed the transect.
   \item \code{bare}: Number, the mean bare ground cover (\%) within 100 m of each transect.

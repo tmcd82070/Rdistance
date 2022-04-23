@@ -133,8 +133,4 @@ plot(x, hazrate.like(c(50, 2), x), type="l", col="blue")
          \code{\link{negexp.like}},
          \code{\link{Gamma.like}}
 }
-\author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
-        Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-}
 \keyword{models}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/negexp.like.R
 \name{negexp.like}
 \alias{negexp.like}
-\title{Negative exponential distance function for distance analyses}
+\title{Negative exponential distance function}
 \usage{
 negexp.like(
   a,
@@ -17,16 +17,21 @@ negexp.like(
 )
 }
 \arguments{
-\item{a}{A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
-(i.e., \code{expansions = 0}), the distance likelihoods contains only one canonical parameter, which 
-is the first element of \code{a} (see Details). If one or more expansions are called for,
-coefficients for the expansion terms follow coefficients for the canonical parameter.  
-Coefficients
-for the expansion terms, if present, are \code{a[2:length(a)]}.}
+\item{a}{A vector of likelihood parameter values. Length and 
+meaning depend on \code{series} and \code{expansions}. If 
+no expansion terms were called for
+(i.e., \code{expansions = 0}), the distance likelihood 
+contains only one canonical parameter, which 
+is the first element of \code{a} (see Details). If one 
+or more expansions are called for,
+coefficients for the expansion terms follow 
+coefficients for the canonical parameter.  
+Coefficients for the expansion terms, if present, are \code{a[2:length(a)]}.}
 
 \item{dist}{A numeric vector containing the observed distances.}
 
-\item{covars}{Data frame containing values of covariates at each observation in \code{dist}.}
+\item{covars}{Data frame containing values of covariates at each 
+observation in \code{dist}.}
 
 \item{w.lo}{Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.
 Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.}
@@ -55,8 +60,8 @@ A numeric vector the same length and order as \code{dist} containing the likelih
   arbitrary.
 }
 \description{
-Computes likelihood contributions for off-transect sighting distances, 
-scaled appropriately, for use as a distance likelihood.
+Computes the negative exponential form of 
+a distance function
 }
 \details{
 The negative exponential likelihood is \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is a slope parameter to be estimated. 
@@ -89,9 +94,5 @@ plot(dfunc)
          \code{\link{uniform.like}},
          \code{\link{hazrate.like}},
          \code{\link{Gamma.like}}
-}
-\author{
-Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
 }
 \keyword{models}

@@ -22,6 +22,7 @@ dfuncEstim(
   transectID = NULL,
   pointID = "point",
   length = "length",
+  outputUnits = NULL,
   control = RdistanceControls()
 )
 }
@@ -42,7 +43,12 @@ information:
 \itemize{
   \item Detection Distances: A single column containing 
   detection distances must be specified on the left-hand 
-  side of \code{formula}.
+  side of \code{formula}.  As of Rdistance version 3.0.0, 
+  the detection distances must have measurement units attached. 
+  Attach measurements units to distances using \code{library(units);units()<-}.
+  For example, \code{library(units)} followed by \code{units(df$dist) <- "m"} or 
+  \code{units(df$dist) <- "ft"} will work. Alternatively, 
+  \code{df$dist <- units::set_units(df$dist, "m")} also works.
   \item Site IDs: The ID of the transect or point 
   (i.e., the 'site') where each object or group was detected.
   The site ID  column(s) (see arguments \code{transectID} and
@@ -102,13 +108,22 @@ from point-transect surveys (TRUE),
 or line-transect surveys (FALSE).}
 
 \item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
-This is the minimum possible off-transect distance. Default is 0.}
+This is the minimum possible off-transect distance. Default is 0.  If 
+\code{w.lo} is greater than 0, it must be assigned measurement units
+using \code{units(w.lo) <- "<units>"} or \code{w.lo <- units::set_units(w.lo, "<units>")}
+or \code{w.lo <- units::as_units(<value>, "<units>")}
+#'}
 
 \item{w.hi}{Upper or right-truncation limit of the distances 
 in \code{dist}. This is the maximum off-transect distance that 
-could be observed. If left unspecified (i.e., at the default of 
-NULL), right-truncation is set to the maximum of the observed 
-distances.}
+could be observed. If unspecified (i.e., NULL), 
+right-truncation is set to the maximum of the observed 
+distances.  If \code{w.hi} is specified, it must have associated 
+measurement units.  Assign measurement units
+using \code{units(w.hi) <- "<units>"} or 
+\code{w.hi <- units::set_units(w.hi, "<units>")} 
+or 
+\code{w.hi = units::as_units(<value>,"<units>")}}
 
 \item{expansions}{A scalar specifying the number of terms 
 in \code{series} to compute. Depending on the series, 
@@ -179,6 +194,9 @@ the point's ID and set \code{pointID} equal to 1 for all points.}
 \code{siteData} that contains transect length. This is ignored if 
 \code{pointSurvey} = TRUE.}
 
+\item{outputUnits}{A string naming the symbolic units that results 
+should be processed in.}
+
 \item{control}{A list containing optimization control parameters such 
 as the maximum number of iterations, tolerance, the optimizer to use, 
 etc.  See the 
@@ -218,9 +236,9 @@ are lists containing the following components:
   \item{call}{The original call of this function.}
   \item{call.x.scl}{The distance at which the distance function 
     is scaled. This is the x at which g(x) = \code{g.x.scl}.
-    Normally, \code{call.x.scl} = 0.}
+    Normally, \code{call.x.scl} = 0}. 
   \item{call.g.x.scl}{The value of the distance function at distance
-    \code{call.x.scl}.  Normally, \code{call.g.x.scl} = 1.}
+    \code{call.x.scl}.  Normally, \code{call.g.x.scl} = 1}.
   \item{call.observer}{The value of input parameter \code{observer}.}
   \item{fit}{The fitted object returned by \code{optim}.  
     See documentation for \code{optim}.}
@@ -327,6 +345,39 @@ function for visualization; however, the function is fit to
 the actual data, not to the bins.
 }
 
+\section{Measurement Units}{
+ 
+As of \code{Rdistance} version 3.0.0, measurement units are 
+require on all distances, including off-transect distances, radial 
+distances, and truncation distances (\code{w.lo} and \code{w.hi}). 
+This requirement is for analysis integrity. This requirement 
+ensures that results (e.g., ESW and abundance) are correctly 
+scaled and that applicable units on outputs are clear.
+
+Measurement units should be assigned using  
+\code{units()<-} after attaching the \code{units} 
+package, or \code{units::set_units} or \code{units::as_units}. 
+\code{units::valid_udunits()}
+retrieves a list of all valid symbolic units. Units on distance measurements 
+in the detection data frame do not need to be the same as those for \code{w.lo}
+and \code{w.hi} because unit conversions are performed internally. That is, 
+all units are converted to those of the primary distance measurements in the 
+detection data frame.   For example, units on off-transect distances 
+could be "m" (meters) while units on \code{w.hi} could be "ft".  \code{w.hi} 
+will be converted to "m" before the upper cut-off is applied.  In 
+other words, specifying \code{w.hi = units::as_units(100, "m")} 
+yields the same results as \code{w.hi = units::as_units(328.08, "ft")}.
+
+Units are required on the following: \code{dist$dist}; 
+\code{w.lo} (unless it is zero); \code{w.hi} (unless it is NULL); 
+and \code{x.scl}. 
+
+If measurements are truly unit-less, or measurement units are unknown, 
+setting \code{RdistanceControls(requireUnits = FALSE)} suppresses 
+all unit checks and conversions.  In this case, users are on their own 
+and must check that all inputs and output are scaled correctly.
+}
+
 \examples{
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)
@@ -377,8 +428,8 @@ details on each built-in likelihood.  See package vignettes for information on c
 user-defined likelihoods.
 }
 \author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-        Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}\cr
-        Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
+Trent McDonald, McDonald Data Sciences, \email{trent@mcdonalddatasciences.com}\cr
+        Jason Carlisle, Wyoming Game and Fish Department, \email{jason.carlisle@wyo.gov}\cr
+        Aidan McDonald, Viridium Inc., \email{aidan@mcdcentral.org}
 }
 \keyword{model}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/uniform.like.R
 \name{uniform.like}
 \alias{uniform.like}
-\title{Uniform likelihood function for distance analyses}
+\title{Uniform distance function likelihood}
 \usage{
 uniform.like(
   a,
@@ -82,8 +82,7 @@ If \code{scale} = FALSE, the integral of the likelihood is
   arbitrary.
 }
 \description{
-This function computes likelihood contributions for 
-sighting distances, scaled appropriately, for use as a distance likelihood.
+Computes the uniform form of a distance function.
 }
 \details{
 The uniform likelihood is not technically uniform. 
@@ -156,9 +155,5 @@ plot(x, uniform.like(c(50, 1), x), type="l", col="blue")
          \code{\link{hazrate.like}},
          \code{\link{negexp.like}},
          \code{\link{Gamma.like}}
-}
-\author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
-        Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 }
 \keyword{models}
