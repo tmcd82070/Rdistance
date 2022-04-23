@@ -1,5 +1,5 @@
 library(Rdistance)
-context("Negexp distance function")
+context("dfuncEstim")
 
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)
@@ -37,11 +37,11 @@ test_dfuncEstim <- function( params,
     dfuncFit <- dfuncEstim(formula = formula,
                            detectionData=detectDf,
                            likelihood = params$likelihood[i],  
-                           w.lo = units::as_units(params$w.lo[i], "m"),
-                           w.hi = units::as_units(params$w.hi[i], "m"), 
+                           w.lo = units::set_units(params$w.lo[i], "m"),
+                           w.hi = units::set_units(params$w.hi[i], "m"), 
                            pointSurvey = params$pointSurvey[i], 
                            expansions = params$expansions[i], 
-                           x.scl = units::as_units(params$x.scl[i], "m"), 
+                           x.scl = units::set_units(params$x.scl[i], "m"), 
                            g.x.scl = as.numeric(params$g.x.scl[i]), 
                            observer = params$observer[i], 
                            outputUnits = params$outputUnits[i])
@@ -65,44 +65,47 @@ test_dfuncEstim <- function( params,
     test_that(paste(testParams, ": TEST Like"), {
       expect_output(print(dfuncFit), regexp = paste0("\\nFunction: ", toupper(params$likelihood[i]), "\\s+\\n"))
     })
-    
-    test_that(paste(testParams, ": TEST g.x.scl"), {
-      expect_output(print(dfuncFit), regexp = paste("=", params$g.x.scl[i]))
+
+    test_that(paste(testParams, ": TEST Strip"), {
+      lo <- units::set_units( units::set_units(params$w.lo[i], "m"), params$outputUnits[i], mode = "standard" )
+      hi <- units::set_units( units::set_units(params$w.hi[i], "m"), params$outputUnits[i], mode = "standard" )
+      tstString <- paste0("Strip: ", format(lo), " to ", format(hi))
+      tstString <- gsub("[\\[\\]]", ".", tstString, perl = T)
+      expect_output(print(dfuncFit), regexp = tstString)
+    })
+
+    test_that(paste(testParams, ": TEST ESW computation"), {
+      expect_length(ESW(dfuncFit), 1)
     })
     
+    test_that(paste(testParams, ": TEST ESW print"), {
+      esw <- format(ESW(dfuncFit))
+      esw <- gsub("[\\[\\]]", ".", esw, perl = T)
+      if(params$pointSurvey[i]){
+        tstString <- paste("Effective detection radius \\(EDR\\):", esw)
+      } else {
+        tstString <- paste("Effective strip width \\(ESW\\):", esw)
+      }
+      expect_output(print(dfuncFit), regexp = tstString)
+    })
     
+    test_that(paste(testParams, ": TEST Scaling"), {
+      x0 <- format(units::set_units( units::set_units(params$x.scl[i], "m"),  params$outputUnits[i], mode = "standard" ))
+      x0 <- gsub("[\\[\\]]", ".", x0, perl = T)
+      tstString <- paste0("Scaling: g\\(", x0, "\\) = ", params$g.x.scl[i])
+      expect_output(print(dfuncFit), regexp = tstString)
+    })
+    
+    test_that(paste(testParams, ": TEST AICc computation"), {
+      expect_length(AIC(dfuncFit), 1)
+    })    
+        
     test_that(paste(testParams, ": TEST AICc"), {
       expect_output(print(dfuncFit), regexp = "\\nAICc: [0-9\\.]+\\n")
     })
-    
-    
-        
-    test_that("Halfnorm g.x.scl < 1 ESW =  52.09004 [m]", {
-      expect_equal(round(ESW(dfuncFit), 5), units::as_units( 52.09004, "m"))
-    })
-    
-    aicRef <- c(2970.605)
-    attr(aicRef, "criterion") <- "AICc"
-    
-    test_that("Halfnorm g.x.scl < 1 AIC = 2970.605", {
-      expect_equal(round(AIC(dfuncFit), 3), aicRef)
-    })
-    
-    test_that("Halfnorm g.x.scl < 1 prints", {
-      expect_gt(length(capture_output_lines(print(dfuncFit))), 15) # > 15 lines of output
-    })
-    
-    # Devise some method to test plots
-    test_that("Halfnorm g.x.scl < 1 plots", {
-      expect_silent(tmp <- plot(dfuncFit))
-      expect_gt(tmp$yscl, 0)
-    })
-    
-    test_that("Halfnorm prints", {
-      expect_output(print(dfuncFit), regexp = "AICc:")
-    })
   }
-  
+    
+
 }  
   
   

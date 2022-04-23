@@ -14,7 +14,9 @@
 #'   scaling the sightability function.
 #'   
 #' @param g.x.scl Height of the distance function at coordinate x. i.e., the distance function 
-#'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. See Details.
+#'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. If \code{g.x.scl} is not 
+#'   a data frame, it must be a numeric value (vector of length 1) between 0 and 1. 
+#'   See Details. 
 #'   
 #' @param observer A numeric scalar or text string specifying whether observer 1 
 #'   or observer 2 or both were full-time observers. 
@@ -41,8 +43,8 @@
 #'   \code{x.scl} = a number greater than or equal 
 #'   to \code{w.lo}, \code{g.x.scl} = a number between 0 and 1.  This case 
 #'   covers situations where sightability on the transect (distance 0) is 
-#'   not perfect and researchers have an estimate of sightability on 
-#'   the transect.  This case also applies if researchers use multiple 
+#'   not perfect and researchers have an estimate of sightability at distance 
+#'   \code{x.scl} off the transect.  For example, researchers may use multiple 
 #'   observers to estimate that sightability at distance \code{x.scl} 
 #'   is \code{g.x.scl}. 
 #'   
@@ -60,9 +62,9 @@
 #'   
 #'   \item \bold{Double observer system}: Inputs are 
 #'   \code{x.scl}="max", \code{g.x.scl} = <a data frame>. 
-#'   In this case, g(x.max) = h, where x.max is the distance that 
-#'   maximizes g and h is the height of g() at x.max. 
-#'   h is computed from the double observer data frame (see below for 
+#'   In this case, g(\italic{x}) = \italic{h}, where \italic{x} is the distance that 
+#'   maximizes g and \italic{h} is the height of g() at \italic{x} 
+#'   computed from the double observer data frame (see below for 
 #'   structure of the double observer data frame).
 #'   
 #'   
@@ -209,13 +211,19 @@ if( is.data.frame(g.x.scl) ){
     #   Compute g(x) from double observer data
     g.x.scl <- F.double.obs.prob( g.x.scl, observer )
 } else {
-    #   g(x) is specified, nothing to do except check range
+    #   g(x) is specified, nothing to do except check validity
+    if( length(g.x.scl) > 1 ){
+        g.x.scl <- g.x.scl[1]
+        warning(paste("Vector of g(x) values found in F.gx.estim. Only the first value,", g.x.scl, "has been used."))
+    }
     if( g.x.scl < 0 ){
         g.x.scl <- 0
-        warning("Impossible g(x) < 0 specified in F.gx.estim. g(x) reset to 0.")
+        warning("Impossible g.x.scl < 0 specified in F.gx.estim. g(x) has been reset to 0.")
     } else if( g.x.scl > 1 ){
         g.x.scl <- 1
         warning("Impossible g(x) > 1 specified in F.gx.estim. g(x) reset to 1.")
+    } else if( is.character(g.x.scl) ){
+        stop(paste0("g.x.scl cannot be character valued. Found '", g.x.scl, "'. Convert this to numeric."))
     }
 }
   

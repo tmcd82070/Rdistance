@@ -25,6 +25,7 @@ F.maximize.g <- function( fit, covars = NULL ){
 
 g.neg <-  function(x, params, covars = NULL, like, w.lo, w.hi, series, expansions=0, pointSurvey = F){
 
+    print(x)
     f.like <- match.fun(paste( like, ".like", sep=""))
 
     if( x < w.lo ){
@@ -43,11 +44,28 @@ g.neg <-  function(x, params, covars = NULL, like, w.lo, w.hi, series, expansion
 }
 
 x.start <- (fit$w.lo + fit$w.hi) / 10 + fit$w.lo
+x.start <- units::drop_units(x.start)
+lw <- units::drop_units(fit$w.lo)
+hi <- units::drop_units(fit$w.hi)
 
-x.max <- optim(par = x.start, fn = g.neg,  params = fit$parameters, 
-               method = "L-BFGS-B", w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
-               expansions=fit$expansions, series=fit$series, lower=fit$w.lo, 
-               upper=fit$w.hi, covars = covars, pointSurvey = fit$pointSurvey)
+
+x.max <- optim(par = x.start, 
+               fn = g.neg,  
+               method = "L-BFGS-B", 
+               lower=lw, 
+               upper=hi, 
+               
+               params = fit$parameters, 
+               w.lo=units::drop_units(fit$w.lo), 
+               w.hi=units::drop_units(fit$w.hi), 
+               like=fit$like.form,
+               expansions=fit$expansions, 
+               series=fit$series, 
+               covars = covars, 
+               pointSurvey = fit$pointSurvey)
+
+!here fix the units 
+  
 
 if( x.max$convergence != 0 ){
     warning(paste("Maximum of g() could not be found. Message=", x.max$message))
