@@ -5,17 +5,20 @@
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
 #' 
 #' @param x.scl The x coordinate (a distance) at which to scale the 
-#'   sightability function to \code{g.x.scl}.  
+#'   sightability function to \code{g.x.scl}, or the string "max".  
 #'   When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
 #'   units assigned using either \code{library(units);units(x.scl) <- '<units>'}
-#'   or \code{x.scl <- units::set_units(x.scl, <units>)} or 
-#'   \code{x.scl <- units::as_units(<value>, <units>)}.  See
-#'   \code{units::valid_udunits()} for valid symbolic units. See Details for more on 
+#'   or \code{x.scl <- units::set_units(x.scl, <units>)}. See
+#'   \code{units::valid_udunits()} for valid symbolic units. See 
+#'   Details for more on 
 #'   scaling the sightability function.
 #'   
-#' @param g.x.scl Height of the distance function at coordinate x. i.e., the distance function 
-#'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. If \code{g.x.scl} is not 
-#'   a data frame, it must be a numeric value (vector of length 1) between 0 and 1. 
+#' @param g.x.scl Height of the distance function at coordinate \emph{x}. 
+#'   The distance function 
+#'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. 
+#'   If \code{g.x.scl} is not 
+#'   a data frame, it must be a numeric value (vector of length 1) 
+#'   between 0 and 1. 
 #'   See Details. 
 #'   
 #' @param observer A numeric scalar or text string specifying whether observer 1 
@@ -43,8 +46,10 @@
 #'   \code{x.scl} = a number greater than or equal 
 #'   to \code{w.lo}, \code{g.x.scl} = a number between 0 and 1.  This case 
 #'   covers situations where sightability on the transect (distance 0) is 
-#'   not perfect and researchers have an estimate of sightability at distance 
-#'   \code{x.scl} off the transect.  For example, researchers may use multiple 
+#'   not perfect.  This case  assumes researchers have an independent 
+#'   estimate of sightability at distance 
+#'   \code{x.scl} off the transect.  For example, researchers could be
+#'   using multiple 
 #'   observers to estimate that sightability at distance \code{x.scl} 
 #'   is \code{g.x.scl}. 
 #'   
@@ -62,8 +67,8 @@
 #'   
 #'   \item \bold{Double observer system}: Inputs are 
 #'   \code{x.scl}="max", \code{g.x.scl} = <a data frame>. 
-#'   In this case, g(\italic{x}) = \italic{h}, where \italic{x} is the distance that 
-#'   maximizes g and \italic{h} is the height of g() at \italic{x} 
+#'   In this case, g(\emph{x}) = \emph{h}, where \emph{x} is the distance that 
+#'   maximizes g and \emph{h} is the height of g() at \emph{x} 
 #'   computed from the double observer data frame (see below for 
 #'   structure of the double observer data frame).
 #'   
@@ -71,8 +76,8 @@
 #'   \item \bold{Distance of independence specified, height computed from double 
 #'   observer system}: Inputs are 
 #'   \code{x.scl} = a number greater than or equal to \code{w.lo}
-#'   \code{g.x.scl} = a data frame.  In this case, g(\code{x.scl}) = h, where h 
-#'   is computed from the double observer data frame 
+#'   \code{g.x.scl} = a data frame.  In this case, g(\code{x.scl}) = \emph{h}, 
+#'   where \emph{h} is computed from the double observer data frame 
 #'   (see below for structure of the double observer data frame). 
 #'
 #' }   
@@ -82,7 +87,7 @@
 #'   \code{$call.observer} components of the \code{fit} object.  This means the 
 #'   3 parameters specified 
 #'   during the original call to \code{dfuncEstim} will be used. Later, different 
-#'   values can be specified in a call to \code{F.gx.estim} 
+#'   values can be specified in a direct call to \code{F.gx.estim} 
 #'   without having to re-estimate the distance function. Because of this feature, 
 #'   the default values of \code{x.scl} = 0 and 
 #'   \code{g.x.scl} = 1 and \code{observer} = "both" are specified in the call 
