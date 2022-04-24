@@ -48,3 +48,4 @@ Suggests: knitr, rmarkdown, testthat, devtools
 VignetteBuilder: knitr
 Imports: graphics, stats, utils, units
 RoxygenNote: 7.1.2
+Encoding: UTF-8

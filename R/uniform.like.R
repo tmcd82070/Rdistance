@@ -167,7 +167,7 @@ uniform.like <- function(a,
       beta1 <- a[1]
     }
     
-    beta1 <-  units::as_units(beta1, units(dist))
+    beta1 <-  units::set_units(beta1, units(dist), mode = "standard")
 
     beta2 <- a[length(a)-expansions]
 	  key <- f(beta1, beta2, dist)
