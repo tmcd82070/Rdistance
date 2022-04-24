@@ -108,14 +108,7 @@
 #' specifies the type of expansion to use. Valid values at 
 #' present are 'simple', 'hermite', and 'cosine'. 
 #' 
-#' @param x.scl This parameter is passed to \code{F.gx.estim}. 
-#' See \code{F.gx.estim} documentation for definition.
-#' 
-#' @param g.x.scl This parameter is passed to \code{F.gx.estim}. 
-#' See \code{F.gx.estim} documentation for definition.
-#' 
-#' @param observer This parameter is passed to \code{F.gx.estim}. 
-#' See \code{F.gx.estim} documentation for definition.
+#' @inheritParams F.gx.estim
 #' 
 #' @param warn A logical scalar specifying whether to issue 
 #' an R warning if the estimation did not converge or if one 
@@ -171,8 +164,18 @@
 #' the defaults, and the requirements for this list. 
 #' See examples below for how to change controls.
 #' 
-#' @param outputUnits A string naming the symbolic units that results 
-#' should be processed in. 
+#' @param outputUnits A string giving the symbolic measurment 
+#' units that results should be reported in.   Any 
+#' distance measurement unit in \code{units::valid_udunits()} 
+#' will work.  The strings for common distance symbolic units are: 
+#' "m" for meters, "ft" for feet, "cm" for centimeters, "mm" for 
+#' millimeters, "mi" for miles, "nmile" for 
+#' nautical miles ("nm" is nano meters), "in" for inches, 
+#' "yd" for yards, "km" for kilometers, "fathom" for fathoms, 
+#' "chains" for chains, and "furlong" for furlongs.  
+#' If \code{outputUnits} is unspecified (NULL),
+#' output units are taken from the distance measurements in 
+#' \code{data}.  
 #' 
 #' @section Input data frames:
 #' To save space and to easily specify 
@@ -267,25 +270,29 @@
 #' 
 #' @section Measurement Units: 
 #' As of \code{Rdistance} version 3.0.0, measurement units are 
-#' require on all distances, including off-transect distances, radial 
+#' require on all distances.  This includes off-transect 
+#' distances, radial 
 #' distances, and truncation distances (\code{w.lo} and \code{w.hi}). 
-#' This requirement is for analysis integrity. This requirement 
-#' ensures that results (e.g., ESW and abundance) are correctly 
-#' scaled and that applicable units on outputs are clear.
-#' 
+#' This requirement 
+#' ensures that internal calculations and results 
+#' (e.g., ESW and abundance) are correct 
+#' and that the units on outputs numbers are clear.   
+#' Input distances can have variable units. For example, 
+#' distances can be in specified in "m", \code{w.hi} in "in", 
+#' and \code{w.lo} in "km".  Internally, all distances are 
+#' converted to the units specified by \code{outputUnits} 
+#' (or the units of input distances if 
+#' \code{outputUnits} is NULL) prior to application, and 
+#' all output is reported 
+#' in units of \code{outputUnits}. In 
+#' other words, specifying \code{w.hi = units::set_units(100, "m")} 
+#' yields the same results as \code{w.hi = units::set_units(328.08, "ft")}.
+#'   
 #' Measurement units should be assigned using  
 #' \code{units()<-} after attaching the \code{units} 
-#' package, or \code{units::set_units} or \code{units::as_units}. 
+#' package or \code{units::set_units}. 
 #' \code{units::valid_udunits()}
-#' retrieves a list of all valid symbolic units. Units on distance measurements 
-#' in the detection data frame do not need to be the same as those for \code{w.lo}
-#' and \code{w.hi} because unit conversions are performed internally. That is, 
-#' all units are converted to those of the primary distance measurements in the 
-#' detection data frame.   For example, units on off-transect distances 
-#' could be "m" (meters) while units on \code{w.hi} could be "ft".  \code{w.hi} 
-#' will be converted to "m" before the upper cut-off is applied.  In 
-#' other words, specifying \code{w.hi = units::as_units(100, "m")} 
-#' yields the same results as \code{w.hi = units::as_units(328.08, "ft")}.
+#' retrieves a list of all valid symbolic units. 
 #' 
 #' Units are required on the following: \code{dist$dist}; 
 #' \code{w.lo} (unless it is zero); \code{w.hi} (unless it is NULL); 
@@ -294,7 +301,7 @@
 #' If measurements are truly unit-less, or measurement units are unknown, 
 #' setting \code{RdistanceControls(requireUnits = FALSE)} suppresses 
 #' all unit checks and conversions.  In this case, users are on their own 
-#' and must check that all inputs and output are scaled correctly.   
+#' and must check that inputs and output are scaled correctly.   
 #'  
 #' @return  An object of class 'dfunc'.  Objects of class 'dfunc' 
 #' are lists containing the following components:
@@ -308,7 +315,8 @@
 #'     of the distance function, estimated by the inverse of the Hessian
 #'     of the fit evaluated at the estimates.  There is no guarantee this 
 #'     matrix is positive-definite and should be viewed with caution.  
-#'     Error estimates derived from bootstrapping are generally more reliable.}   
+#'     Error estimates derived from bootstrapping are generally 
+#'     more reliable.}   
 #'   \item{loglik}{The maximized value of the log likelihood 
 #'     (more specifically, the minimized value of the negative 
 #'     log likelihood).}
@@ -322,15 +330,32 @@
 #'   \item{dist}{The input vector of observed distances.}
 #'   \item{covars}{A \code{model.matrix} containing the covariates
 #'     used in the fit. }
-#'   \item{expansions}{The number of expansion terms used during estimation.}
+#'   \item{expansions}{The number of expansion terms used 
+#'   during estimation.}
 #'   \item{series}{The type of expansion used during estimation.}
 #'   \item{call}{The original call of this function.}
-#'   \item{call.x.scl}{The distance at which the distance function 
-#'     is scaled. This is the x at which g(x) = \code{g.x.scl}.
-#'     Normally, \code{call.x.scl} = 0}. 
-#'   \item{call.g.x.scl}{The value of the distance function at distance
-#'     \code{call.x.scl}.  Normally, \code{call.g.x.scl} = 1}.
-#'   \item{call.observer}{The value of input parameter \code{observer}.}
+#'   \item{call.x.scl}{The \emph{input} or user requested 
+#'     distance at which 
+#'     the distance function is scaled. }
+#'   \item{call.g.x.scl}{The \code{input} value specifying the 
+#'     height of the distance function at a distance 
+#'     of \code{call.x.scl}.  }
+#'   \item{call.observer}{The value of input parameter \code{observer}.
+#'     The input \code{observer} parameter is only applicable when 
+#'     \code{g.x.scl} is a data frame.}
+#'   \item{x.scl}{The \emph{actual} distance at which 
+#'     the distance function is scaled to some value.  
+#'     i.e., this is the actual \emph{x} at 
+#'     which g(\emph{x}) = \code{g.x.scl}.
+#'     Note that \code{call.x.scl} = \code{x.scl} unless 
+#'     \code{call.x.scl} == "max", in which case \code{x.scl} is the 
+#'     distance at which \emph{g}() is maximized. }. 
+#'   \item{g.x.scl}{The \emph{actual} height of the distance function 
+#'     at a distance of \code{x.scl}. 
+#'     Note that \code{g.x.scl} = \code{call.g.x.scl} unless \code{call.g.x.scl}
+#'     is a multiple observer data frame, in which case \code{g.x.scl} is the 
+#'     actual height of the distance function at \code{x.scl} computed 
+#'     from the multiple observer data frame.   }.
 #'   \item{fit}{The fitted object returned by \code{optim}.  
 #'     See documentation for \code{optim}.}
 #'   \item{factor.names}{The names of any factors in \code{formula}}
@@ -338,6 +363,8 @@
 #'     This is TRUE if distances are radial from a point. FALSE 
 #'     if distances are perpendicular off-transect. }
 #'   \item{formula}{The formula specified for the detection function.}
+#'   \item{outputUnits}{The measurement units used for output.  All 
+#'     distance measurements are converted to these units internally. }
 #'     
 #' @references Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
