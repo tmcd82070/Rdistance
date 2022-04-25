@@ -192,21 +192,30 @@ if( !is.character(x.scl) ){
     } 
 } else if( x.scl == "max" ){
   #   the x that maximizes g() must be estimated
-
-    if( fit$like.form == "Gamma" ){
-        r <- fit$par[1]
-        lam <- fit$par[2]
-        b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
-        x.scl <- lam * b * (r - 1)   # this is x that maximizes g() when g is Gamma
-    } else if( fit$like.form == "smu"){
-        x.scl <- fit$fit$x[which.max(fit$fit$y)]
-    } else {
-        #   Must compute maximum numerically
-        x.scl <- F.maximize.g( fit )
-    }
+  if( fit$like.form == "Gamma" ){
+    r <- fit$par[1]
+    lam <- fit$par[2]
+    b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
+    x.scl <- lam * b * (r - 1)   # this is x that maximizes g() when g is Gamma
+  } else if( fit$like.form == "smu"){
+    x.scl <- fit$fit$x[which.max(fit$fit$y)]
+  } else if( fit$like.form %in% c("uniform", "halfnorm", "negexp", "hazrate") ){
+    # All these are monotonically negative
+    x.scl <- fit$w.lo 
+  } else {
+    # if we are here, we have a user-defined likelihood, and we don't know 
+    # where it's maximum is. Hence, we compute the maximum numerically. 
+    # It is on the user to make sure their likelihood is well behaved and 
+    # gives a nice maximum.
+    x.scl <- F.maximize.g( fit )
+  }
+  # x.scl came in as "max", we must return one with units attached. 
+  # F.maximize.g returns a unitless x.scl
+  x.scl <- units::set_units(x.scl, fit$outputUnits, mode = "standard")
+  
 } else {
-    x.scl <- NA
-    warning("Invalid character string for x.scl specified in F.gx.estim. x.scl set to missing.")
+  x.scl <- units::set_units(NA, fit$outputUnits, mode = "standard")
+  warning("Invalid character string for x.scl specified in F.gx.estim. x.scl set to missing.")
 }
 
 #   --------------------------------------------------------------------------------------
