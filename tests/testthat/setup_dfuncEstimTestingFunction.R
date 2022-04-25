@@ -12,7 +12,7 @@ test_dfuncEstim <- function( params,
                              formula = dist ~ 1){
   
   for( i in 1:nrow(params) ){
-    testParams <- paste0("i=", i,
+    testParams <- paste0("i=", i, "/", nrow(params),
                          ", Like=", params$likelihood[i], 
                          ", w.lo=", params$w.lo[i],
                          ", w.hi=", params$w.hi[i], 
@@ -51,7 +51,8 @@ test_dfuncEstim <- function( params,
                        x.scl = param.x.scl, 
                        g.x.scl = as.numeric(params$g.x.scl[i]), 
                        observer = params$observer[i], 
-                       outputUnits = params$outputUnits[i])
+                       outputUnits = params$outputUnits[i]), 
+            regexp = "x.scl is less than specified lower limit"
           )
         })
         param.x.scl <- param.w.lo
@@ -70,15 +71,85 @@ test_dfuncEstim <- function( params,
                         g.x.scl = as.numeric(params$g.x.scl[i]), 
                         observer = params$observer[i], 
                         outputUnits = params$outputUnits[i]), error = function(e){e}, warning = function(w){w})
-    if( inherits(tmp, "warning") | inherits(tmp, "error") ){
-      convergeMess <- "FAILURE .singular variance-covariance matrix."
-    } else if( any(is.na(diag(tmp$varcovar))) | any(diag(tmp$varcovar) < 0.0) ){
-      convergeMess <- "FAILURE .singular variance-covariance matrix."
-    } else {
-      convergeMess <- "Success"
-    }
     
-    dfuncFit <- dfuncEstim(formula = formula,
+    if( inherits(tmp, "warning") | inherits(tmp, "error") ){
+      # I cannot seem to trap the warning thrown by dfuncEstim AND return the 
+      # fitted object outside test_that. So, it's totally redundant, but I do 
+      # the same tests here as in the false clause of this "if". 
+      
+      test_that("Under singular var-cov warning", {
+        dfuncFit <- expect_warning( dfuncEstim(formula = formula,
+                             detectionData=detectDf,
+                             likelihood = params$likelihood[i],
+                             w.lo = param.w.lo,
+                             w.hi = units::set_units(params$w.hi[i], "m"),
+                             pointSurvey = params$pointSurvey[i],
+                             expansions = params$expansions[i],
+                             x.scl = param.x.scl,
+                             g.x.scl = as.numeric(params$g.x.scl[i]),
+                             observer = params$observer[i],
+                             outputUnits = params$outputUnits[i]),
+                     regexp = "Singular variance-covariance matrix")
+        
+        test_that("Like", {
+          expect_output(print(dfuncFit), regexp = paste0("\\nFunction: ", toupper(params$likelihood[i]), "\\s+\\n"))
+        })
+        
+        convergeMess <- "FAILURE .singular variance-covariance matrix."
+        test_that(convergeMess, {
+          expect_output(print(dfuncFit), regexp = paste0("\\nConvergence: ", convergeMess, "\\n"))
+        })
+        
+        test_that("Strip", {
+          lo <- units::set_units( units::set_units(params$w.lo[i], "m"), params$outputUnits[i], mode = "standard" )
+          hi <- units::set_units( units::set_units(params$w.hi[i], "m"), params$outputUnits[i], mode = "standard" )
+          tstString <- paste0("Strip: ", format(lo), " to ", format(hi))
+          tstString <- gsub("[\\[\\]]", ".", tstString, perl = T)
+          expect_output(print(dfuncFit), regexp = tstString)
+        })
+
+        test_that("ESW computation", {
+          expect_length(ESW(dfuncFit), 1)
+        })
+        
+        test_that("ESW print", {
+          esw <- format(ESW(dfuncFit))
+          esw <- gsub("[\\[\\]]", ".", esw, perl = T)
+          if(params$pointSurvey[i]){
+            tstString <- paste("Effective detection radius \\(EDR\\):", esw)
+          } else {
+            tstString <- paste("Effective strip width \\(ESW\\):", esw)
+          }
+          expect_output(print(dfuncFit), regexp = tstString)
+        })
+        
+        test_that("Scaling", {
+          if( !is.character(param.x.scl) ){
+            x0 <- format(units::set_units( param.x.scl,  params$outputUnits[i], mode = "standard" ))
+          } else {
+            x0 <- format(dfuncFit$x.scl)
+          }
+          x0 <- gsub("[\\[\\]]", ".", x0, perl = T)
+          tstString <- paste0("Scaling: g\\(", x0, "\\) = ", params$g.x.scl[i])
+          expect_output(print(dfuncFit), regexp = tstString)
+        })
+        
+        test_that("AICc computation", {
+          expect_length(AIC(dfuncFit), 1)
+        })    
+        
+        test_that("AICc", {
+          expect_output(print(dfuncFit), regexp = "\\nAICc: [0-9\\.]+\\n")
+        })
+      })
+    } else {
+      if( any(is.na(diag(tmp$varcovar))) | any(diag(tmp$varcovar) < 0.0) ){
+        convergeMess <- "FAILURE .singular variance-covariance matrix."
+      } else {
+        convergeMess <- "Success"
+      }
+
+      dfuncFit <- dfuncEstim(formula = formula,
                            detectionData=detectDf,
                            likelihood = params$likelihood[i],  
                            w.lo = param.w.lo,
@@ -89,55 +160,58 @@ test_dfuncEstim <- function( params,
                            g.x.scl = as.numeric(params$g.x.scl[i]), 
                            observer = params$observer[i], 
                            outputUnits = params$outputUnits[i])
-    
-
-    # Basically, go down the output line by line testing. If it prints, it's good.
-    test_that(convergeMess, {
-      expect_output(print(dfuncFit), regexp = paste0("\\nConvergence: ", convergeMess, "\\n"))
-    })
-
-    test_that("Like", {
-      expect_output(print(dfuncFit), regexp = paste0("\\nFunction: ", toupper(params$likelihood[i]), "\\s+\\n"))
-    })
-
-    test_that("Strip", {
-      lo <- units::set_units( units::set_units(params$w.lo[i], "m"), params$outputUnits[i], mode = "standard" )
-      hi <- units::set_units( units::set_units(params$w.hi[i], "m"), params$outputUnits[i], mode = "standard" )
-      tstString <- paste0("Strip: ", format(lo), " to ", format(hi))
-      tstString <- gsub("[\\[\\]]", ".", tstString, perl = T)
-      expect_output(print(dfuncFit), regexp = tstString)
-    })
-
-    test_that("ESW computation", {
-      expect_length(ESW(dfuncFit), 1)
-    })
-    
-    test_that("ESW print", {
-      esw <- format(ESW(dfuncFit))
-      esw <- gsub("[\\[\\]]", ".", esw, perl = T)
-      if(params$pointSurvey[i]){
-        tstString <- paste("Effective detection radius \\(EDR\\):", esw)
-      } else {
-        tstString <- paste("Effective strip width \\(ESW\\):", esw)
-      }
-      expect_output(print(dfuncFit), regexp = tstString)
-    })
-    
-    test_that("Scaling", {
-      x0 <- format(units::set_units( param.x.scl,  params$outputUnits[i], mode = "standard" ))
-      x0 <- gsub("[\\[\\]]", ".", x0, perl = T)
-      tstString <- paste0("Scaling: g\\(", x0, "\\) = ", params$g.x.scl[i])
-      expect_output(print(dfuncFit), regexp = tstString)
-    })
-    
-    test_that("AICc computation", {
-      expect_length(AIC(dfuncFit), 1)
-    })    
-        
-    test_that("AICc", {
-      expect_output(print(dfuncFit), regexp = "\\nAICc: [0-9\\.]+\\n")
-    })
-    
+      
+      test_that(convergeMess, {
+        expect_output(print(dfuncFit), regexp = paste0("\\nConvergence: ", convergeMess, "\\n"))
+      })
+  
+      # Basically, go down the output line by line testing. If it prints, it's good.
+      test_that("Like", {
+        expect_output(print(dfuncFit), regexp = paste0("\\nFunction: ", toupper(params$likelihood[i]), "\\s+\\n"))
+      })
+  
+      test_that("Strip", {
+        lo <- units::set_units( units::set_units(params$w.lo[i], "m"), params$outputUnits[i], mode = "standard" )
+        hi <- units::set_units( units::set_units(params$w.hi[i], "m"), params$outputUnits[i], mode = "standard" )
+        tstString <- paste0("Strip: ", format(lo), " to ", format(hi))
+        tstString <- gsub("[\\[\\]]", ".", tstString, perl = T)
+        expect_output(print(dfuncFit), regexp = tstString)
+      })
+  
+      test_that("ESW computation", {
+        expect_length(ESW(dfuncFit), 1)
+      })
+      
+      test_that("ESW print", {
+        esw <- format(ESW(dfuncFit))
+        esw <- gsub("[\\[\\]]", ".", esw, perl = T)
+        if(params$pointSurvey[i]){
+          tstString <- paste("Effective detection radius \\(EDR\\):", esw)
+        } else {
+          tstString <- paste("Effective strip width \\(ESW\\):", esw)
+        }
+        expect_output(print(dfuncFit), regexp = tstString)
+      })
+      
+      test_that("Scaling", {
+        if( !is.character(param.x.scl) ){
+          x0 <- format(units::set_units( param.x.scl,  params$outputUnits[i], mode = "standard" ))
+        } else {
+          x0 <- format(dfuncFit$x.scl)
+        }
+        x0 <- gsub("[\\[\\]]", ".", x0, perl = T)
+        tstString <- paste0("Scaling: g\\(", x0, "\\) = ", params$g.x.scl[i])
+        expect_output(print(dfuncFit), regexp = tstString)
+      })
+      
+      test_that("AICc computation", {
+        expect_length(AIC(dfuncFit), 1)
+      })    
+          
+      test_that("AICc", {
+        expect_output(print(dfuncFit), regexp = "\\nAICc: [0-9\\.]+\\n")
+      })
+    }
   }
 
 }  
