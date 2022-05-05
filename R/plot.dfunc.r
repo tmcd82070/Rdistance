@@ -1,32 +1,32 @@
 #' @aliases plot.dfunc
 #'   
-#' @title Plot a distance (detection) function
+#' @title plot.dfunc - Plot method for distance (detection) functions
 #'   
-#' @description Plot method for an estimated distance function. Estimated
-#'   distance functions are of class 'dfunc'
+#' @description Plot method for objects of class '\code{dfunc}'.  Objects of 
+#' class '\code{dfunc}' are estimated distance functions produced by 
+#' \code{\link{dfunc.estim}}. 
 #'   
 #' @param x An estimated distance function resulting from a call to
 #'   \code{dfuncEstim}.
 #'   
-#' @param include.zero Boolean value specifying whether to include 0 in the
-#'   plot.  A value of TRUE will include 0 on the left hand end of the x-axis
-#'   regardless of the range of distances.  A value of FALSE will plot only the
-#'   input distance range (\code{w.lo} to \code{w.hi}).
+#' @param include.zero Boolean value specifying whether to include 0 on the x-axis 
+#' of the plot.  A value of TRUE will include 0 on the left hand end of the x-axis
+#' regardless of the range of distances.  A value of FALSE will plot only the
+#' input distance range (\code{w.lo} to \code{w.hi}).
 #'   
 #' @param nbins Internally, this function uses \code{hist} to compute histogram
 #'   bars for the plot. This argument is the \code{breaks} argument to
 #'   \code{hist}.  This can be either a vector giving the breakpoints between
-#'   bars, a single number giving the suggested number of bars, a string naming
+#'   bars, the suggested number of bars (a single number), a string naming
 #'   an algorithm to compute the number of bars, or a function to compute the
-#'   number of bars.  See \code{help(hist)} for all options.
+#'   number of bars.  See \code{\link{hist}} for all options.
 #'   
-#' @param newdata Matrix containing values of covariates to plot. Each row is a
-#'   set of covariate values (i.e. each column contains all values of each
-#'   covariate)
+#' @param newdata Matrix containing covariates value to use for generating the 
+#' distance plotted function(s). Each row is a set of covariate values and produces one line.
 #'   
-#' @param legend Logical scalar for whether to include legend. 
-#'   If TRUE, a legend will be included on plot detailing
-#'   covariate values plotted.
+#' @param legend Logical scalar for whether to include a legend. 
+#'   If TRUE, a legend will be included on the plot detailing
+#'   the covariate values use to generate the plot.
 #'   
 #' @param plotBars Logical scalar for whether to plot the histogram 
 #' of distances behind the distance function.  If FALSE, no histogram 
@@ -40,7 +40,7 @@
 #' shading lines, in lines per inch, for the bars underneath 
 #' the distance function. Values of NULL or a number strictly less than 0 
 #' mean solid fill using colors from parameter \code{col}.  If 
-#' \code{density =0 }, bars are not filled with any color or lines. 
+#' \code{density = 0}, bars are not filled and only the borders are rendered. 
 #' 
 #' @param col A vector of bar fill colors or line colors when bars are 
 #' drawn and \code{density != 0}, replicated
@@ -78,7 +78,7 @@
 #' distance functions using the same line type, set \code{lty.dfunc} to
 #' a constant vector having length at least 2 (e.g., 
 #' \code{lty.dfunc = c(1,1)}) will 
-#' plot all solid lines).
+#' plot all solid lines.
 #' 
 #' @param lwd.dfunc Line width of the distance function(s), replicated 
 #' to the required length.  
@@ -97,7 +97,9 @@
 #'   this routine uses \code{graphics::barplot} 
 #'  for setting up the initial plotting region and
 #'  most parameters to \code{graphics::barplot} can 
-#'  be specified (exceptions noted above in description of '\dots').The form of the likelihood and any series
+#'  be specified (exceptions noted above in description of '\dots').
+#'  
+#'  The form of the likelihood and any series
 #'   expansions is printed in the main title (overwrite this with 
 #'   \code{main="<my title>"}). Convergence of the distance
 #'   function is checked.  If the distance function did not converge, a warning
@@ -107,8 +109,8 @@
 #'   
 #'   
 #' @return The input distance function is returned, with two additional
-#'   components related to the plot that may be needed if additional lines or
-#'   text is to added to the plot by the user.  These additional components are:
+#'   components. These additional components can be used to add lines or
+#'   text.  These additional components are:
 #'   
 #'   \item{xscl.plot}{Scaling factor for horizontal coordinates.  Due to the way
 #'   \code{barplot} works, the x-axis has been scaled.  The internal coordinates
@@ -119,15 +121,12 @@
 #'   
 #'   \item{yscl}{Scaling factor for vertical coordinates.  The histogram and
 #'   distance function plotted by this routine are scaled so that height of the
-#'   distance function at \code{w.lo} is \code{g0}.  Usually, this means the
+#'   distance function at \code{x.scl} is \code{g.x.scl}.  Usually, this means the
 #'   distance curve is scaled so that the y-intercept is 1, or that g(0) = 1. 
-#'   To add a plot feature at a real coordinate of y, y must be divided by this
-#'   returned parameters.  For example, to draw a horizontal line at y-axis
-#'   coordinate of 1.0, issue \code{abline(h=1/obj$yscl)}.  }
+#'   To add a plot feature at a real coordinate of \emph{y}, \emph{y} must be divided by this
+#'   value.  For example, to draw a horizontal line at y-axis
+#'   coordinate of 1.0, the correct call is \code{abline(h=1/obj$yscl)}.  }
 #'   
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr 
-#' Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-#' 
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
 #'   \code{\link{print.abund}}
 #'   
