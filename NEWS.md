@@ -1,3 +1,20 @@
+Changes in version 2.2.0 (2022-05-06)
+==============
+* ~~BIG CHANGE~~: Require measurement units on all distance inputs and parameters. 
+Measurement units are converted to appropriate values internally, and output 
+reports units. (e.g., units on strip width, study area size, etc.)
+* Added density calculation to abundEstim, with bootstrapping. 
+* ~~Change in default parameter~~: Changed default value for 'area' parameter 
+to abundEstim from 1 to NULL, but NULL results in assignment of 1 square output 
+unit.  
+* Added color to print methods.  Results are in green, if the R terminal 
+allows it (i.e., in Rstudio, but not R gui). 
+* Reformatted default output to include density and abundance when 
+printing an 'abund' object.
+* Fixed bug in F.gx.estim that occasionally popped up when sighting 
+function is monotonically decreassing.
+* Updated and clarified documentation of several routines. 
+
 Changes in version 2.1.5 (2020-06-17)
 ==============
 * Fixed bug when bootstrap iteration selects zero targets 
