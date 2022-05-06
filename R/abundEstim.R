@@ -33,17 +33,17 @@
 #'     is used during bootstrapping to resample sites. 
 #'    
 #'     
-#' @param area Total study area size.  If \code{area} = 1, density is estimated.
-#'   Density has units (number of animals) per (squared 
-#'   units of the distance measurements).  For example, if distance values fitted
-#'   in \code{dfunc} are meters, density is number of individuals per
-#'   square meter.  If distances are miles, density is number of
-#'   individuals per square mile.  If \code{area} > 1, total abundance on the
-#'   study area is estimated and units are (number of animals).  This can also
-#'   be used to convert units for density. For example, if distance values fitted
-#'   in \code{dfunc} are meters, and area is set to 10,000, density is number
-#'   of individuals per hectare (ha; 1 ha = 10,000 square meters).
-#'   square meter.
+#' @param area Total study area size. If \code{area} is NULL (the default), 
+#'   area is set to 1 square unit of the output units. The default
+#'   is mostly for the case when interest lies in density. If \code{area}
+#'   is not NULL, it must have measurement units. 
+#'   The units on \code{area} must be convertible
+#'   to squared output units (if output units are "m", but be convertable 
+#'   to "m^2"). Hence, units on \code{area} must be two-dimensional.
+#'   Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and 
+#'   others all work.  If the \code{units}
+#'   package can convert \code{area} to the squared output units, 
+#'   it can be used. 
 #'   
 #' @param ci A scalar indicating the confidence level of confidence intervals. 
 #'   Confidence intervals are computed using the bias corrected bootstrap
@@ -67,6 +67,8 @@
 #'   intervals for these site-level abundance estimates, so \code{ci} is set to
 #'   \code{NULL} if \code{bySite = TRUE}. See \code{\link{estimateN}}.
 #'   
+#' @inheritParams dfuncEstim
+#'    
 #' @details The abundance estimate for line transect surveys (if no covariates
 #'    are included in the detection function) is \deqn{N =
 #'   \frac{n.indiv(area)}{2(ESW)(tot.trans.len)}}{N = n.indiv*area /
@@ -127,6 +129,13 @@
 #'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
 #'   object (see \code{dfuncEstim}), plus the following: 
 #'   
+#'   \item{density}{Estimated density on the sampled area. The \emph{effectively}
+#'   sampled area is 2*L*ESW (not 2*L*w.hi). Density has squared units of the 
+#'   requested output units.  E.g., if \code{outputUnits} = "km" in the call 
+#'   to \code{dfuncEstim}}, units on density are 1/km^2. There exists no flexibility
+#'   to have differring distance and density units (e.g., "m" and "ha", or "km" and 
+#'   "acre").  To convert density to other units, use 
+#'   \code{units::set_units(x$density, "<units>")}. 
 #'  \item{abundance}{Estimated abundance in the study area (if \code{area} >
 #'  1) or estimated density in the study area (if \code{area} = 1).}
 #'   \item{n}{The number of detections
@@ -516,9 +525,10 @@ abundEstim <- function(dfunc,
       
     } else {
       # Don't compute CI if ci is null
-      ans$B <- NA
-      ans$ci <- c(NA, NA)
-      ans$nItersConverged <- NA
+      ans$B <- NULL
+      ans$density.ci <- c(NULL, NULL)
+      ans$n.hat.ci <- c(NULL, NULL)
+      ans$nItersConverged <- NULL
     }  # end else
     
     
