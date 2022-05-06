@@ -58,31 +58,45 @@ print.abund <- function( x,
 
   print.dfunc( x, criterion=criterion )
 
+  hasCI <- all(!is.null(x$density.ci))
+  
   # --- Density printout ----
-  mess <- c("Density in sampled area:", paste0(x$alpha*100, "% CI:"))
-  mess <- format(mess, justify = "right")
-  mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
-  ci <- paste( colorize(format(x$density.ci[1])), 
-               "to", 
-               colorize(format(x$density.ci[2])) )
-  ptEst <- colorize( colorize(format(x$density)), col = "bold" )
-  mess <- paste(mess, c(ptEst, ci))
+  if( hasCI ){
+    mess <- c("Density in sampled area:", paste0(x$alpha*100, "% CI:"))
+    mess <- format(mess, justify = "right")
+    mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
+    ci <- paste( colorize(format(x$density.ci[1])), 
+                 "to", 
+                 colorize(format(x$density.ci[2])) )
+    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+    mess <- paste(mess, c(ptEst, ci))
+  } else {
+    mess <- c("Density in sampled area:")
+    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+    mess <- paste(mess, ptEst)
+  }
   cat(paste0(mess, "\n"))
 
   # ---- Abundance printout ----
   cat("\n")  # blank line between for readability
-  mess <- c(paste0( "Abundance in ", format(x$area), " study area:"), 
-                    paste0(x$alpha*100, "% CI:"))
-  mess <- format(mess, justify = "right")
-  mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
-  ci <- paste( colorize(format(x$n.hat.ci[1])), 
-               "to", 
-               colorize(format(x$n.hat.ci[2])) )
-  ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
-  mess <- paste(mess, c(ptEst, ci))
+  if( hasCI ){
+    mess <- c(paste0( "Abundance in ", format(x$area), " study area:"), 
+                      paste0(x$alpha*100, "% CI:"))
+    mess <- format(mess, justify = "right")
+    mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
+    ci <- paste( colorize(format(x$n.hat.ci[1])), 
+                 "to", 
+                 colorize(format(x$n.hat.ci[2])) )
+    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+    mess <- paste(mess, c(ptEst, ci))
+  } else {
+    mess <- paste0( "Abundance in ", format(x$area), " study area:")
+    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+    mess <- paste(mess, ptEst)
+  }
   cat(paste0(mess, "\n"))
   
-  if(!is.na(x$nItersConverged)){
+  if(!is.null(x$nItersConverged)){
     if(x$nItersConverged < nrow(x$B)) {
       cat(paste("CI based on", x$nItersConverged, "of", length(x$B), 
                 "successful bootstrap iterations\n"))
@@ -96,6 +110,6 @@ print.abund <- function( x,
       }
     }
   }
-  cat( "\n" )
+  # cat( "\n" )
 
 }
