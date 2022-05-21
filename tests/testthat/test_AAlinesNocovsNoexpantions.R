@@ -28,8 +28,18 @@ testInputs <- expand.grid(
   stringsAsFactors = FALSE
 )
 
+abundParams <- data.frame(
+  area = units::set_units(c(1, 100), "m^2"), 
+  ci = .95,
+  R = 20,
+  bySite = FALSE,
+  plot.bs = FALSE,
+  showProgress = TRUE
+)
 # Need to test:  presence of covariates, Point surveys
 
-res <- test_dfuncEstim( params = testInputs,
+res <- test_dfuncEstim( detectParams = testInputs[1:5,],
+                        abundParams = abundParams,
                         detectDf = sparrowDetectionData, 
+                        abundDf = sparrowSiteData,
                         formula = dist ~ 1 )
