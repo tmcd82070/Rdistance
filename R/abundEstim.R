@@ -7,31 +7,9 @@
 #'   
 #' @param dfunc An estimated 'dfunc' object produced by \code{dfuncEstim}.
 #' 
-#' @param detectionData A data.frame with each row representing one detection
-#'   (see example dataset, \code{\link{sparrowDetectionData}}) and with at least
-#'   the following three columns: 
-#'   \itemize{ 
-#'     \item \code{siteID} = ID of the transect or point. 
-#'     \item \code{groupsize} = the number of individuals in the detected group. 
-#'     \item \code{dist} = the perpendicular, off-transect distance or radial
-#'       off-point distance to the detected group. 
-#'   }
-#'   
-#' @param siteData A data.frame with each row representing one site 
-#'   (transect or point) (see example dataset, 
-#'   \code{\link{sparrowSiteData}}). If the data in \code{detectionData}
-#'   is from line transects, \code{siteData} must have at 
-#'   least the following two columns:
-#'   \itemize{ 
-#'     \item \code{siteID} = ID of the transect or point. This vector 
-#'     is used during bootstrapping to resample sites. 
-#'     \item \code{length} = the length of the transect. 
-#'   }
-#'   If the data in \code{detectionData}
-#'   is from point transects, \code{siteData} must have a
-#'   \code{siteID} column only.  For both data types, \code{siteID} 
-#'     is used during bootstrapping to resample sites. 
-#'    
+#  Inherit 'detectionData' and 'siteData' documentation
+#' @inheritParams dfuncEstim 
+#' 
 #'     
 #' @param area Total study area size. If \code{area} is NULL (the default), 
 #'   area is set to 1 square unit of the output units. The default
@@ -67,8 +45,6 @@
 #'   intervals for these site-level abundance estimates, so \code{ci} is set to
 #'   \code{NULL} if \code{bySite = TRUE}. See \code{\link{estimateN}}.
 #'   
-#' @inheritParams dfuncEstim
-#'    
 #' @details The abundance estimate for line transect surveys (if no covariates
 #'    are included in the detection function) is \deqn{N =
 #'   \frac{n.indiv(area)}{2(ESW)(tot.trans.len)}}{N = n.indiv*area /
@@ -285,7 +261,10 @@ abundEstim <- function(dfunc,
     # if we are here, area is NULL: Report abundance in 1 square unit of measure
     area <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
   } else if( control$requireUnits ){
-    # if we are here, area has units. Convert area units to outputUnits.
+    # if we are here, area has units and it is not null (because you cannot 
+    # assign units to NULL) but it could be NA)
+    # Convert area units to square of outputUnits.
+    # This converts units like "hectare" to "m^2". If cannot convert, and error is thrown here
     squareOutputUnits <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
     area <- units::set_units(area, squareOutputUnits, mode = "standard")
   }
@@ -354,9 +333,6 @@ abundEstim <- function(dfunc,
     } else {
       ans$esw <- abund$pDetection * abund$w  # for lines
     }
-    
-    
-    
     
     
     if (!is.null(ci)) {

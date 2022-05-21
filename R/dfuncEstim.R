@@ -19,26 +19,25 @@
 #' \itemize{
 #'   \item Detection Distances: A single column containing 
 #'   detection distances must be specified on the left-hand 
-#'   side of \code{formula}.  As of Rdistance version 3.0.0, 
+#'   side of \code{formula}.  As of Rdistance version 2.2.0, 
 #'   the detection distances must have measurement units attached. 
 #'   Attach measurements units to distances using \code{library(units);units()<-}.
 #'   For example, \code{library(units)} followed by \code{units(df$dist) <- "m"} or 
 #'   \code{units(df$dist) <- "ft"} will work. Alternatively, 
 #'   \code{df$dist <- units::set_units(df$dist, "m")} also works.
+#'   
 #'   \item Site IDs: The ID of the transect or point 
 #'   (i.e., the 'site') where each object or group was detected.
 #'   The site ID  column(s) (see arguments \code{transectID} and
 #'   \code{pointID}) must 
 #'   specify the site (transect or point) so that this 
 #'   data frame can be merged with \code{siteData}.    
-#' } 
-#' Optionally, this data frame can also contain the following 
-#' information: 
-#' \itemize{
-#'   \item Group Sizes: The number of individuals in the group
+#'  
+#'   \item If abundance will be estimated, this data frame 
+#'   must also contain column \code{groupsize}. \code{groupsize}
+#'   contains the number of individuals 
 #'   associated with each detection.  This column is not 
-#'   required to estimate a distance function.  This column 
-#'   is required to estimate abundance (i.e., in function `abundEstim`).  
+#'   required to estimate a distance function only.   
 #'   
 #'   \item In a later release, \code{Rdistance} will allow detection-level 
 #'   covariates.  When that happens, detection-level 
