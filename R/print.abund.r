@@ -98,9 +98,9 @@ print.abund <- function( x,
   
   if(!is.null(x$nItersConverged)){
     if(x$nItersConverged < nrow(x$B)) {
-      cat(paste("CI based on", x$nItersConverged, "of", length(x$B), 
+      cat(paste("CI based on", x$nItersConverged, "of", nrow(x$B), 
                 "successful bootstrap iterations\n"))
-      convRatio <- x$nItersConverged / length(x$B)
+      convRatio <- x$nItersConverged / nrow(x$B)
       if((1.0-convRatio) > maxBSFailPropForWarning) {
         warning("The proportion of non-convergent bootstrap iterations is high.", immediate. = TRUE)
         cat(paste0("The proportion of non-convergent bootstrap iterations exceeds ",
