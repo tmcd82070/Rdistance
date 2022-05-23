@@ -2,6 +2,7 @@
 
 S3method(AIC,dfunc)
 S3method(coef,dfunc)
+S3method(lines,dfunc)
 S3method(plot,dfunc)
 S3method(predict,dfunc)
 S3method(print,abund)
