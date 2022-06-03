@@ -37,6 +37,10 @@ abundParams <- data.frame(
   showProgress = TRUE
 )
 # Need to test:  presence of covariates, Point surveys
+# Need to test:  presence of covariates, 
+#    Point surveys, 
+#    All the options in controls$ esp $requireunits
+#    by.site = T in abundEstim
 
 res <- test_dfuncEstim( detectParams = testInputs[1:5,],
                         abundParams = abundParams,
