@@ -251,7 +251,7 @@ test_dfuncEstim <- function( detectParams,
       # ---- Test abundance methods for these parameters ----
       if(!is.null(abundParams)){
         test_abundEstim(abundParams = abundParams, 
-                   dfuncDf = dfuncDf, 
+                   dfuncDf = detectDf, 
                    abundDf = abundDf,
                    distFunc = dfuncFit)
       }

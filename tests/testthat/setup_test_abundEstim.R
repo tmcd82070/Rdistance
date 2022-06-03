@@ -43,9 +43,15 @@ test_abundEstim <- function( abundParams,
   for( j in 1:nrow(abundParams) ){
     testParams <- abundParams[j,,drop = FALSE]
     
+    if(is.na(testParams$ci)){
+      ciParam <- NULL
+    } else {
+      ciParam <- testParams$ci
+    }
+    
     testContext <- paste0("j=", j, "/", nrow(abundParams),
                          ", Area=", testParams$area,
-                         ", ci=", testParams$ci, 
+                         ", ci=", ciParam, 
                          ", plot.bs=", testParams$plot.bs,
                          ", showProgress=", testParams$showProgress, 
                          ", bySite=", testParams$bySite,
@@ -59,10 +65,10 @@ test_abundEstim <- function( abundParams,
     # cat("\n")
     
     abundEst <- abundEstim(dfunc = distFunc, 
-                             detectionData = detectDf, 
+                             detectionData = dfuncDf, 
                              siteData = abundDf,
                              area = testParams$area,
-                             ci = testParams$ci, 
+                             ci = ciParam, 
                              plot.bs = testParams$plot.bs,
                              showProgress = testParams$showProgress, 
                              bySite = testParams$bySite,
@@ -73,7 +79,7 @@ test_abundEstim <- function( abundParams,
     # Check added components of output
     newComponents <- c( "density", "n.hat", "n", "area", "tran.len", 
                         "avg.group.size", "esw" )
-    if(!is.null(testParams$ci)){
+    if(!is.null(ciParam)){
       newComponents <- c(newComponents, 
                          c("n.hat.ci", "density.ci", "B", "nItersConverged", "alpha" ))
     }
@@ -130,8 +136,8 @@ test_abundEstim <- function( abundParams,
     })
 
     # Confidence interval tests
-    if(!is.null(testParams$ci)){
-      ciLev <- paste0(100*testParams$ci, "% ")
+    if(!is.null(ciParam)){
+      ciLev <- paste0(100*ciParam, "% ")
       
       test_that("n.hatCILength2", {
         expect_length(abundEst$n.hat.ci, 2)
