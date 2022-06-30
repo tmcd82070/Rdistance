@@ -183,12 +183,12 @@ integration.constant <- function(dist,
     }
   }
   else if(pointSurvey){
-    seqy <- seqx * density( dist = seqx, scale = FALSE, 
+    seqy <- units::drop_units(seqx) * density( dist = seqx, scale = FALSE, 
                             w.lo = w.lo, w.hi = w.hi, a = a, 
                             expansions = expansions, series=series)
 
     #   trapezoid rule
-    scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*dist)
+    scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*units::drop_units(dist))
   }
   else{
     # density should return unit-less numbers (height of density function)

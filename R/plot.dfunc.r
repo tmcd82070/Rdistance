@@ -197,7 +197,7 @@ plot.dfunc <- function( x,
     brks <- seq(x$w.lo, x$w.hi, by=xscl)
     brks <- c(brks, brks[length(brks)] + xscl )   # make sure last bin goes outside range of data
     cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, 
-                  breaks=brks, include.lowest=TRUE, 
+                  breaks=units::drop_units(brks), include.lowest=TRUE, 
                   warn.unused = FALSE)
     cnts$breaks <- units::as_units(cnts$breaks, x$outputUnits)
     cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
@@ -436,8 +436,7 @@ plot.dfunc <- function( x,
     for(i in 1:ncol(y)){
       lines( x.seq, y[,i], col=col.dfunc[i], lwd=lwd.dfunc[i], lty = lty.dfunc[i] )
     }
-  }
-  else{
+  } else{
     lines( x.seq, y, col=col.dfunc, lwd=lwd.dfunc, lty=lty.dfunc )
   }
 

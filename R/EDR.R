@@ -123,7 +123,14 @@ EDR <- function(obj, newdata){
                                      series = obj$series)
     # obj$dist is in denominator of integration.constant for point surveys. 
     # multiply here to remove it. vector inside root should be constant.
-    rho <- sqrt(2*integral*obj$dist)[1]
+    rho <- sqrt(2 * integral * units::drop_units(obj$dist))[1]
+    
+    # multiplying by obj$dist in above line was a trick because we called 
+    # integration.constant (because computations are complicated). But what about units? 
+    # rho should have same units as obj$dist, but one cannot take root of vectors with units. 
+    # So, add back the units. 
+    rho <- units::set_units(rho, obj$outputUnits, mode = "standard")
+  
   }
   
   rho
