@@ -238,16 +238,18 @@ abundEstim <- function(dfunc,
   }
   
   # ---- Measurement units check. ----
-  if( !inherits(siteData$length, "units") & control$requireUnits ){
-    dfName <- deparse(substitute(siteData))
-    stop(paste("Transect length measurement units are required.", 
-               "Assign units to transect length by attaching 'units' package then:\n", 
-               paste0("units(",dfName,"$length)"), "<- '<units of measurment>',\n", 
-               "Popular choices are 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
-  } else if( control$requireUnits ){
-    # if we are here, length has units. convert them to units used during estimation.
-    # Input dfunc must have a $outputUnits component.
-    siteData$length <-  units::set_units(siteData$length, dfunc$outputUnits, mode = "standard")
+  if( !dfunc$pointSurvey ){
+    if( !inherits(siteData$length, "units") & control$requireUnits ){
+      dfName <- deparse(substitute(siteData))
+      stop(paste("Transect length measurement units are required.", 
+                 "Assign units to transect length by attaching 'units' package then:\n", 
+                 paste0("units(",dfName,"$length)"), "<- '<units of measurment>',\n", 
+                 "For example, 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
+    } else if( control$requireUnits ){
+      # if we are here, length has units. convert them to units used during estimation.
+      # Input dfunc must have a $outputUnits component.
+      siteData$length <-  units::set_units(siteData$length, dfunc$outputUnits, mode = "standard")
+    }
   }
   
   if( !inherits(area, "units") & control$requireUnits ){
@@ -255,8 +257,8 @@ abundEstim <- function(dfunc,
       # If we are here, area did not come with units, we require units, and it's not null: ERROR
       stop(paste("Study area measurement units are required.", 
                  "Assign units to area by attaching 'units' package then:\n", 
-                 "units(area) <- '<units of measurment>',", 
-                 "Popular choices are 'm^2' (sq meters), 'ha' (hectares), 'km^2', or 'acre'.\nSee units::valid_udunits()"))
+                 "units(area) <- '<units of measurment>'.", 
+                 "For example, '<units of measure>' = 'm^2' (sq meters), 'ha' (hectares), 'km^2', or 'acre'.\nSee units::valid_udunits()"))
     }
     # if we are here, area is NULL: Report abundance in 1 square unit of measure
     area <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
@@ -286,10 +288,10 @@ abundEstim <- function(dfunc,
   if (plot.bs) {
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
     par(xpd=TRUE)
-    plot(dfunc)
-    if( dfunc$pointSurvey ){
-      lines(dfunc, col="red", lwd=3)
-    } 
+    pltParams <- plot(dfunc)
+    # if( dfunc$pointSurvey ){
+    #   lines(dfunc, col="red", lwd=3)
+    # } 
   }
   
 

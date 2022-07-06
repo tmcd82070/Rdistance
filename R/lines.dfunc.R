@@ -7,6 +7,12 @@
 #'   
 #' @inheritParams plot.dfunc
 #' 
+#' @param yscl A scalar for point survey detection functions.  For point 
+#' surveys, the observation density line produced by this routine 
+#' is multiplied by \code{yscl}.  This is necessary for bootstrapped 
+#' point survey detection densities to plot on top of the observed 
+#' histogram of radial distances. Ignored for line transect surveys.
+#' 
 #' @param \dots Parameters to \code{lines} used to control attributes like 
 #' color, line width, line type, etc. 
 #'   
@@ -77,7 +83,8 @@ lines.dfunc <- function(x, newdata = NULL,  ...) {
   y <- t(y)
   
   if( x$pointSurvey ){
-    y <- y * (x.seq - x$w.lo)
+    yscl <- units::drop_units(x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
+    y <- y * units::drop_units(x.seq - x$w.lo) / yscl
   }
   
   # if(plot.axes){

@@ -117,7 +117,7 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
     phat <- esw / w  # for lines
   }
 
-  # phat should be unitless
+  # phat should be unit-less; check just to be sure, if so drop "1" units
   onesUnit <- units::set_units(1, "1")
   if( units(phat) == units(onesUnit) ){
     phat <- units::drop_units(phat)
