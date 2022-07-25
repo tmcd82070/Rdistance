@@ -115,60 +115,71 @@ ESW <- function( obj, newdata ){
     x0 <- obj$x.scl
   }
   
-  if( is.null(obj$covars) ){
-    # no covariates case; return scalar
-    y <- like( obj$parameters, x - obj$w.lo, series=obj$series, covars = NULL, 
-               expansions=obj$expansions, w.lo = obj$w.lo, w.hi=obj$w.hi, 
-               pointSurvey = obj$pointSurvey, scale=FALSE )
-
-
-    f.at.x0 <- like( obj$parameters, x0 - obj$w.lo, series=obj$series, 
-                     covars = NULL, expansions=obj$expansions, 
-                     w.lo=obj$w.lo, w.hi=obj$w.hi, 
-                     pointSurvey = obj$pointSurvey, scale=FALSE )
-    
-    y <- y * g.at.x0 / f.at.x0
-    
-    # trapezoid rule.  
-    # [tlm] not sure I agree with this old comment: Use x[3] and x[2] because for 
-    # hazard rate, x[1] is not evenly spaced with rest.
-        
-    esw <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2 
-    
-  } else {
-    # covariate case; return vector
+  zero <- units::set_units(x = 0
+                           , value = obj$outputUnits
+                           , mode = "standard")
+  
+  if(  !is.null(obj$covars) ){
+    # covariate case; eventually will return a vector
     if(missing(newdata)){
       newdata <- NULL  # in this case, predict.dfunc will use obj$covars, but gotta have something to pass
     }
-
-    params <- predict.dfunc(obj, newdata, type="parameters")
-
-    # Use covars= NULL here because we evaluated covariates to get params above
-    # after this, y is n X length(x).  each row is a unscaled distance 
-    # function (f(x))
-    y <- apply(params, 1, like, dist= x - obj$w.lo, 
-               series=obj$series, covars = NULL, 
-               expansions=obj$expansions, 
-               w.lo = obj$w.lo, w.hi=obj$w.hi, 
-               pointSurvey = obj$pointSurvey )    
-    y <- t(y)
-
-    f.at.x0 <- apply(params, 1, like, dist= x0 - obj$w.lo, 
-                     series=obj$series, covars = NULL, 
-                     expansions=obj$expansions, 
-                     w.lo=obj$w.lo, w.hi=obj$w.hi, 
-                     pointSurvey = obj$pointSurvey )
-    scaler <- g.at.x0 / f.at.x0 # a length n vector 
-    
-    y <- y * scaler  # length(scalar) == nrow(y), so this works right
-
-    # trapezoid rule.  
-    dy <- x[3]-x[2]
-    y1 <- y[,-1,drop=FALSE]
-    y  <- y[,-ncol(y),drop=FALSE]
-    esw <- dy*rowSums(y + y1)/2
+    params <- predict(obj, newdata, type="parameters")
+  } else {
+    # no covariates; eventually will return a scaler
+    params <- matrix( obj$parameters, nrow = 1)
   }
+
+  y <- apply(X = params
+             , MARGIN = 1
+             , FUN = like
+             , dist= x - obj$w.lo
+             , series = obj$series
+             , covars = NULL
+             , expansions=obj$expansions
+             , w.lo = zero
+             , w.hi=obj$w.hi - obj$w.lo
+             , pointSurvey = FALSE
+             , scale = FALSE
+             )    
+  y <- t(y)
+
+  # at this point, y is either 1 X length(x) (no covars) or n X length(x) (covars).
+  # Each row is a unscaled distance function (does not integrate to one b.c., scale = F).
   
+  f.at.x0 <- apply(X = params
+                   , MARGIN = 1
+                   , FUN = like
+                   , dist= x0 - obj$w.lo
+                   , series = obj$series
+                   , covars = NULL
+                   , expansions=obj$expansions
+                   , w.lo = zero
+                   , w.hi=obj$w.hi - obj$w.lo
+                   , pointSurvey = FALSE
+                   , scale = FALSE
+  )
+    
+  # If g.at.x0 = 1, we don't need to rescale; but, rescale even in this case, 
+  # just in case there are cases I have not thought about (e.g., 
+  # when like() does not have maximum at 1.0)
+  
+  scaler <- g.at.x0 / f.at.x0 # a length n vector 
+  
+  y <- y * scaler  # length(scalar) == nrow(y), so this works right
+
+  dx <- x[3]-x[2]
+  
+  # Reiman sum: Used in Rdistance version < 0.2.2
+  # y1 <- y[,-1,drop=FALSE]
+  # y  <- y[,-ncol(y),drop=FALSE]
+  # esw <- dx*rowSums(y + y1)/2
+  
+  # Trapezoid rule. (dx/2)*(f(x1) + 2f(x_2) + ... + 2f(x_n-1) + f(n)) 
+  ends <- c(1,ncol(y))
+  esw <- (dx/2) * (rowSums( y[,ends,drop=FALSE] ) + 
+                   2*rowSums(y[,-ends, drop=FALSE] ))
+
   esw
   
 }
