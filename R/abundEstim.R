@@ -288,7 +288,7 @@ abundEstim <- function(dfunc,
   if (plot.bs) {
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
     par(xpd=TRUE)
-    pltParams <- plot(dfunc)
+    plot(dfunc)
     # if( dfunc$pointSurvey ){
     #   lines(dfunc, col="red", lwd=3)
     # } 
@@ -454,7 +454,6 @@ abundEstim <- function(dfunc,
           B$density[i] <- abund.bs$density
 
           if (plot.bs ) {
-            # (jdc) - this is plotting the prob of detection, doesn't match scaling of dfunc plot for points
             lines(dfunc.bs, col = "blue", lwd = 0.5)  
           }
           
