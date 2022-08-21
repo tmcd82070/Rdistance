@@ -81,9 +81,10 @@
 #' @param w.lo Lower or left-truncation limit of the distances in distance data. 
 #' This is the minimum possible off-transect distance. Default is 0.  If 
 #' \code{w.lo} is greater than 0, it must be assigned measurement units
-#' using \code{units(w.lo) <- "<units>"} or \code{w.lo <- units::set_units(w.lo, "<units>")}
-#' or \code{w.lo <- units::as_units(<value>, "<units>")}
-#' #' 
+#' using \code{units(w.lo) <- "<units>"} or 
+#' \code{w.lo <- units::set_units(w.lo, "<units>")}. 
+#' See examples in the help for \code{set_units}.
+#'  
 #' @param w.hi Upper or right-truncation limit of the distances 
 #' in \code{dist}. This is the maximum off-transect distance that 
 #' could be observed. If unspecified (i.e., NULL), 
@@ -173,7 +174,7 @@
 #' "yd" for yards, "km" for kilometers, "fathom" for fathoms, 
 #' "chains" for chains, and "furlong" for furlongs.  
 #' If \code{outputUnits} is unspecified (NULL),
-#' output units are taken from the distance measurements in 
+#' output units are the same as distance measurements units in 
 #' \code{data}.  
 #' 
 #' @section Input data frames:
@@ -657,17 +658,17 @@ dfuncEstim <- function (formula,
   if(!any(is.na(fit$hessian)) & !any(is.infinite(fit$hessian))){
     qrh <- qr(fit$hessian)
     if (qrh$rank < nrow(fit$hessian)) {
-      warning("Singular variance-covariance matrix.")
+      if (warn) warning("Singular variance-covariance matrix.")
       varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
     } else {
       varcovar <- tryCatch(solve(fit$hessian), error=function(e){NaN})
       if(length(varcovar) == 1 && is.nan(varcovar)){
-        warning("Singular variance-covariance matrix.")
+        if (warn) warning("Singular variance-covariance matrix.")
         varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
       }
     }
   } else {
-    warning("fit did not converge, or converged to (Inf,-Inf)")
+    if (warn) warning("fit did not converge, or converged to (Inf,-Inf)")
     varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
   }
   
@@ -716,14 +717,12 @@ dfuncEstim <- function (formula,
   low.bound <- any(fit$par <= units::drop_units(strt.lims$lowlimit + fuzz))
   high.bound <- any(fit$par >= units::drop_units(strt.lims$uplimit - fuzz))
   if (fit$convergence != 0) {
-    if (warn) 
-      warning(fit$message)
+    if (warn) warning(fit$message)
   }
   else if (low.bound | high.bound) {
     ans$convergence <- -1
     ans$fit$message <- "One or more parameters at its boundary."
-    if (warn) 
-      warning(ans$fit$message)
+    if (warn) warning(ans$fit$message)
   }
   ans
   

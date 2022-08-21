@@ -110,15 +110,25 @@ print.dfunc <- function( x, criterion="AICc", ... ){
     pDetect <- units::drop_units(pDetect)  # units of pDetect should always be [1]
     if( is.null(x$covars) ){
       if(x$pointSurvey){
-        cat(paste("Effective detection radius (EDR):", 
-                  colorize(format(effDist)), "\n"))
-        cat(paste("Probability of detection:", 
-                  colorize(format(pDetect^2)), "\n"))
+        mess <- "Effective detection radius (EDR):"
+        pDetect <- pDetect^2
       } else {
-        cat(paste("Effective strip width (ESW):", 
-                  colorize(format(effDist)), "\n"))
+        mess <- "Effective strip width (ESW):"
+      }
+      if( pDetect > 1 ){
+        cat(paste(mess, 
+                  colorize(format(effDist), col = "red"), 
+                  colorize("> (w.hi - w.lo)", col = "red"), "\n"))
         cat(paste("Probability of detection:", 
-                  colorize(format(pDetect)), "\n"))
+                  colorize(format(pDetect), col = "red"),
+                  colorize("> 1", col = "red"), "\n"))
+      } else {
+        cat(paste(mess, 
+                  colorize(format(effDist)), 
+                  "\n"))
+        cat(paste("Probability of detection:", 
+                  colorize(format(pDetect)),
+                  "\n"))
       }
     } else {
       if(x$pointSurvey){
@@ -136,9 +146,17 @@ print.dfunc <- function( x, criterion="AICc", ... ){
     
     cat(paste("Scaling: g(", 
               colorize(format(x$x.scl)), ") = ", 
-              colorize(format(x$g.x.scl)), "\n", sep=""))
+              colorize(format(x$g.x.scl)), sep=""))
+    if(pDetect > 1){
+      cat(colorize(" <-Check this", col = "red"))
+      cat("\n")
+    } else {
+      cat("\n")
+    }
+    
     cat(paste("Log likelihood:", 
               colorize(format(x$loglik)), "\n"))
+    
     if( !is.smoothed ){
       aic <- AIC.dfunc(x,criterion=criterion) 
       cat(paste0(attr(aic,"criterion"),": ", 

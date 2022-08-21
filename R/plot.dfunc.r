@@ -453,10 +453,7 @@ plot.dfunc <- function( x,
   
   #   print area under the curve
   area <- effectiveDistance(x)
-  #area2 <- (x[3] - x[2]) * sum(y[-length(y)]+y[-1]) / 2   # use x[3] and x[2] because for hazard rate, x[1] is not evenly spaced with rest
-  #print(c(area,area2))
-  #text( max(x.seq), max(y.lims)-0.025*diff(y.lims), paste("ESW =", round(area,3)), adj=1)
-  
+
   #   If model did not converge, print a message on the graph.
   if( (x$like.form != "smu") && x$convergence != 0 ){
     if( x$convergence == -1 ){
@@ -466,11 +463,21 @@ plot.dfunc <- function( x,
     }
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", x$fit$message, sep=""), cex=1, adj=.5, col="black")
-  } else if( any(is.na(area)) | any(area > x$w.hi) ){
-    #   invalid scaling, g0 is wrong
-    mess <- "Scaling failure(s)"
+  } else if( any(y > 1) ){
+    # some g(x) > 1, should'nt happen
+    mess <- "Probabilities > 1"
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
-    mess <- paste("Check g0=", round(g.at.x0,2), "assumption")
+    mess <- "g(x) > 1 should not happen"
+    text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
+    mess <- paste0("Check g(", format(x0), ")= ", round(g.at.x0,2), " assumption")
+    text( mean(x.seq), mean(y.lims), paste("\n\n\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
+  } else if( any(is.na(area)) | any(area > (x$w.hi - x$w.lo) )){
+    # (TLM) pretty sure no way this can happen, i.e., if area > (w.hi - w.lo), 
+    # then some g(x) > 1, which is caught in the previous if clause.
+    # but, I will leave this code here for the time being.
+    mess <- "EffDist>(w.hi-w.lo)"
+    text( mean(x.seq), mean(y.lims), mess, cex=2, adj=.5, col="red")
+    mess <- paste0("Check g(", format(x0), ")= ", round(g.at.x0,2), " assumption")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
   } else if( any(is.na(y)) | any(y < 0) ){
     #   invalid scaling, g0 is wrong

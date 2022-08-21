@@ -352,7 +352,6 @@ abundEstim <- function(dfunc,
       }
 
       # Bootstrap
-      lastConvergentDfunc <- dfunc
       convergedCount <- 0
       for (i in 1:R) {
         # sample rows, with replacement, from transect data
@@ -427,15 +426,10 @@ abundEstim <- function(dfunc,
                                warn = FALSE)
         }
         
-        if(dfunc.bs$convergence != 0) {
-          dfunc.bs <- lastConvergentDfunc
-        } else {
-          lastConvergentDfunc <- dfunc.bs
-          convergedCount <- convergedCount + 1
-        }
-        
         # Store ESW if it converged
         if (dfunc$like.form == "smu" || dfunc.bs$convergence == 0) {
+
+          convergedCount <- convergedCount + 1
           
           # Note: there are duplicate siteID's in newSiteData.  This is okay
           # because number of unique siteIDs is never computed in estimateN. 
