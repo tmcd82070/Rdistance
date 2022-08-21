@@ -180,7 +180,8 @@ plot.dfunc <- function( x,
   # a constant used later
   zero <- units::as_units(0, x$outputUnits)
   
-  cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, 
+  xInStrip <- x$dist[x$dist < x$w.hi & x$dist > x$w.lo]
+  cnts <- hist( xInStrip, plot=FALSE, 
                 breaks=nbins, warn.unused = FALSE )
   
   # hist should return breaks with units attached, but it does not
@@ -196,7 +197,7 @@ plot.dfunc <- function( x,
     # do the hist again, this time specifying breaks exactly
     brks <- seq(x$w.lo, x$w.hi, by=xscl)
     brks <- c(brks, brks[length(brks)] + xscl )   # make sure last bin goes outside range of data
-    cnts <- hist( x$dist[x$dist<x$w.hi & x$dist>x$w.lo], plot=FALSE, 
+    cnts <- hist( xInStrip, plot=FALSE, 
                   breaks=units::drop_units(brks), include.lowest=TRUE, 
                   warn.unused = FALSE)
     cnts$breaks <- units::as_units(cnts$breaks, x$outputUnits)
