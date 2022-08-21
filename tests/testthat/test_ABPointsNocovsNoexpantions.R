@@ -1,14 +1,12 @@
-
+# Test POINT transects
 
 # Load example sparrow data (line transect survey type)
-data(sparrowDetectionData)
-
-# This file tests all the options of LINE TRANSECTS without covariates. 
+# data(thrasherDetectionData)
 
 # The set of parameters to test
 testInputs <- expand.grid(
   likelihood = c( "uniform", "halfnorm", "hazrate", "negexp"),
-  pointSurvey = c(FALSE),
+  pointSurvey = TRUE,
   w.lo = c(0, 50), 
   w.hi = c(NA, 100), 
   expansions = 0,
@@ -33,6 +31,6 @@ abundParams <- expand.grid(
 
 res <- test_dfuncEstim( detectParams = testInputs,
                         abundParams = abundParams,
-                        detectDf = sparrowDetectionData, 
-                        abundDf = sparrowSiteData,
+                        detectDf = thrasherDetectionData, 
+                        abundDf = thrasherSiteData,
                         formula = dist ~ 1 )

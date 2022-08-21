@@ -49,7 +49,7 @@ test_abundEstim <- function( abundParams,
       ciParam <- testParams$ci
     }
     
-    testContext <- paste0("j=", j, "/", nrow(abundParams),
+    testContext <- paste0("  A:", j, "/", nrow(abundParams),
                          ", Area=", testParams$area,
                          ", ci=", ciParam, 
                          ", plot.bs=", testParams$plot.bs,
@@ -77,17 +77,24 @@ test_abundEstim <- function( abundParams,
     )
     
     # Check added components of output
-    newComponents <- c( "density", "n.hat", "n", "area", "tran.len", 
-                        "avg.group.size", "esw" )
+    if(distFunc$pointSurvey){
+      newComponents <- c( "density", "n.hat", "n", "area", 
+                          "avg.group.size", "esw" )
+    } else {
+      newComponents <- c( "density", "n.hat", "n", "area", "tran.len", 
+                          "avg.group.size", "esw" )
+    }
+    
     if(!is.null(ciParam)){
       newComponents <- c(newComponents, 
                          c("n.hat.ci", "density.ci", "B", "nItersConverged", "alpha" ))
     }
+    
     test_that("abundComponents", {
       expect_setequal(setdiff(names(abundEst), names(distFunc)), newComponents)
     })
 
-    # n.hat not null and has units
+    # n.hat not null, not NA, and does not have units
     test_that("n.hatNotNull", {
       expect_true(!is.null(abundEst$n.hat))
     })
@@ -100,6 +107,7 @@ test_abundEstim <- function( abundParams,
       expect_s3_class(abundEst$n.hat, NA)
     })
     
+    # Density should have units
     test_that("densityIsUnits", {
       expect_s3_class(abundEst$density, "units")
     })
@@ -108,16 +116,18 @@ test_abundEstim <- function( abundParams,
       expect_s3_class(abundEst$area, "units")
     })
 
-    test_that("tran.lenIsUnits", {
-      expect_s3_class(abundEst$tran.len, "units")
-    })
+    if( !distFunc$pointSurvey ){
+      test_that("tran.lenIsUnits", {
+        expect_s3_class(abundEst$tran.len, "units")
+      })
     
-    test_that("tran.lenUnits", {
-      expect_equal(units(abundEst$tran.len), abundEst$outputUnits)
-    })
+      test_that("tran.lenUnits", {
+        expect_equal(units(abundEst$tran.len), abundEst$outputUnits)
+      })
+    }
 
     test_that("areaUnits", {
-      x <- units::set_units(1, units(abundEst$tran.len), mode = "standard")
+      x <- units::set_units(1, abundEst$outputUnits, mode = "standard")
       expect_equal(units(abundEst$area), units(x*x))
     })
     
@@ -137,29 +147,31 @@ test_abundEstim <- function( abundParams,
 
     # Confidence interval tests
     if(!is.null(ciParam)){
-      ciLev <- paste0(100*ciParam, "% ")
-      
-      test_that("n.hatCILength2", {
-        expect_length(abundEst$n.hat.ci, 2)
-      })
-      
-      test_that("n.hatCINotMissing", {
-        expect_true(all(!is.na(abundEst$n.hat.ci)))
-      })
-
-      test_that("densCILength2", {
-        expect_length(abundEst$density.ci, 2)
-      })
-      
-      test_that("densCINotMissing", {
-        expect_true(all(!is.na(abundEst$density.ci)))
-      })
-      
-      test_that("densCIPrint", {
-        expect_output(print(abundEst, maxBSFailPropForWarning = 1.0), 
-                      regexp = paste0(ciLev, "CI: ", numberRegEx, " to ", numberRegEx), 
-                      perl = TRUE)
-      })
+      if( abundEst$nItersConverged > 0 ){
+        ciLev <- paste0(100*ciParam, "% ")
+        
+        test_that("n.hatCILength2", {
+          expect_length(abundEst$n.hat.ci, 2)
+        })
+        
+        test_that("n.hatCINotMissing", {
+          expect_true(all(!is.na(abundEst$n.hat.ci)))
+        })
+  
+        test_that("densCILength2", {
+          expect_length(abundEst$density.ci, 2)
+        })
+        
+        test_that("densCINotMissing", {
+          expect_true(all(!is.na(abundEst$density.ci)))
+        })
+        
+        test_that("densCIPrint", {
+          expect_output(print(abundEst, maxBSFailPropForWarning = 1.0), 
+                        regexp = paste0(ciLev, "CI: ", numberRegEx, " to ", numberRegEx), 
+                        perl = TRUE)
+        })
+      }
     }
   }
 

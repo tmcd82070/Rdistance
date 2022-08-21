@@ -69,14 +69,14 @@ summary(thrasherDetectionData$dist)
 
 
 quantile(thrasherDetectionData$dist, c(0.5, 0.85, 0.9, 0.95))
-trunc <- 175
+trunc <- units::set_units(175, "m")
 
 # Next, fit a detection function (plotted as a red line) using `F.dfunc.estim`.  For now, we will proceed using the
 # half-normal likelihood as the detection function, but in Section 5 of this tutorial, we demonstrate how to run an
 # automated process that fits multiple detection functions and compares them using AICc.  Larger distances are quite
 # sparse, so here we right-truncate the data, tossing out detections where `dist` > trunc.
 thrasher.dfunc <- dfuncEstim(formula=dist~1, detectionData=thrasherDetectionData, likelihood="halfnorm",
-                                w.hi=trunc, pointSurvey=TRUE)
+                                w.hi=trunc, pointSurvey=TRUE, outputUnits = "km")
 plot(thrasher.dfunc)
 thrasher.dfunc
 
@@ -107,7 +107,7 @@ effectiveDistance(thrasher.dfunc)
 
 # (jdc) the plotting of the bootstrap isn't right...
 fit <- abundEstim(dfunc=thrasher.dfunc, detectionData=thrasherDetectionData, siteData=thrasherSiteData,
-                     area=10000, R=500, ci=0.95, plot.bs=TRUE)
+                     area=set_units(10000, "m^2"), R=500, ci=0.95, plot.bs=TRUE)
 fit
 
 
