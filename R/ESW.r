@@ -170,16 +170,22 @@ ESW <- function( obj, newdata ){
 
   dx <- x[3]-x[2]
   
-  # Reiman sum: Used in Rdistance version < 0.2.2
+  # Eventually, will get all the numerical integration 
+  # into one routine (or use R built-in integrate())
+  #
+  # Trapazoid rule: Computation used in Rdistance version < 0.2.2
   # y1 <- y[,-1,drop=FALSE]
   # y  <- y[,-ncol(y),drop=FALSE]
   # esw <- dx*rowSums(y + y1)/2
   
   # Trapezoid rule. (dx/2)*(f(x1) + 2f(x_2) + ... + 2f(x_n-1) + f(n)) 
+  # Faster than above, maybe.
   ends <- c(1,ncol(y))
   esw <- (dx/2) * (rowSums( y[,ends,drop=FALSE] ) + 
                    2*rowSums(y[,-ends, drop=FALSE] ))
+  
 
+  
   esw
   
 }
