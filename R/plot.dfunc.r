@@ -180,7 +180,10 @@ plot.dfunc <- function( x,
   # a constant used later
   zero <- units::as_units(0, x$outputUnits)
   
-  xInStrip <- x$dist[x$dist < x$w.hi & x$dist > x$w.lo]
+  d <- x$dist
+  whi <- x$w.hi
+  wlo <- x$w.lo
+  xInStrip <- d[(d < whi) & (d > wlo)]
   cnts <- hist( xInStrip, plot=FALSE, 
                 breaks=nbins, warn.unused = FALSE )
   
