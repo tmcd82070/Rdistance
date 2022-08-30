@@ -581,7 +581,7 @@ dfuncEstim <- function (formula,
   # This works when covars is NULL and must be called 
   # even when ncovars == 1 to cover case like dist ~ -1+x (no intercept)
   for(i in 1:ncol(mf)){
-    if(class(mf[,i]) == "factor"){
+    if(is.factor(mf[,i])){
       factor.names <- c(factor.names, names(mf)[i])
     }
   }
