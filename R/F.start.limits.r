@@ -25,8 +25,7 @@
 #'   \item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
 #'   \item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
 #'   \item{names}{Vector of names for the likelihood parameters and expansion terms.}
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-#'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
+#'  
 #' @seealso \code{\link{dfuncEstim}}
 #' @examples 
 #'   dist <- sparrowDetectionData$dist
@@ -72,118 +71,131 @@
 #'   F.start.limits("Gamma", 0, wl, wh, dist)
 #' @keywords models
 #' @export
-F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, pointSurvey = FALSE ){
+F.start.limits <- function( like
+                          , expan
+                          , w.lo
+                          , w.hi
+                          , dist
+                          , covars = NULL
+                          , pointSurvey = FALSE ){
   #
   #   Establish starting value for parameters, and limits passed to the optimizer
   #
+  # Someday: Get rid of the special cases of no covariates. 
   
   #   Number of parameters
   if(!is.null(covars)){
-  ncovars <- ncol(covars)
-  }else{ncovars <- 1}
+    ncovars <- ncol(covars)
+  } else { 
+    ncovars <- 1
+  }
   
   np <- expan + 1*(like %in% c("hazrate","uniform")) + ncovars
   
+  zero <- 0.0
+  negInf <- -Inf 
+  posInf <- Inf 
+
+  # Take max() just in case there are distances < w.lo; there should not be, but...
+  # We want unit conversions here; e.g., dist in m, w.lo in ft
+  dMin <- max( min(dist), w.lo )
+  dMax <- min( max(dist), w.hi )
   w <- w.hi - w.lo
-  
-  distUnits <- units(dist)
-  
-  zero <- units::as_units(0, distUnits)
-  zeroLogUnits <- log(units::as_units(1, distUnits))
-  negInf <- units::as_units(-Inf, distUnits)
-  posInf <- -negInf
-  negInfLog <- log(zero)
-  posInfLog <- log(posInf)
+  medDist <- median(dist)
+  if( inherits(dist, "units") ){
+    # Only time dist will not have units is when user overrides requirement
+    # otherwise this always runs
+    dMin <- units::drop_units(dMin)
+    dMax <- units::drop_units(dMax)
+    w <- units::drop_units(w)
+    medDist <- units::drop_units(medDist)
+  }
   
   #   No starting values given
   if( like == "hazrate" ){
-    if( ncovars > 1 ){
-      start <- c(log(.5*w), 
-                 rep(log(units::as_units(exp(0),distUnits)), ncovars-1), 
-                 log(units::as_units(exp(1),distUnits)),
-                 rep(log(units::as_units(exp(0),distUnits)), expan))
-      low   <- c(log(units::as_units(exp(-10),distUnits)), 
-                 rep(negInfLog, ncovars-1), 
-                 log(units::as_units(exp(0.01),distUnits)), 
-                 rep(negInfLog, expan))
-      high  <- c(posInfLog, 
-                 rep( posInfLog, ncovars-1), 
-                 posInfLog, 
-                 rep( posInfLog, expan))
+    if( ncovars > 1 ){  
+      start <- c(log(0.8 * medDist)   # Sigma 
+                 , rep(0, ncovars-1)    # any covars
+                 , log(1)               # k
+                 , rep(0, expan))        # any expansions
+      low   <- c(negInf
+                 , rep(negInf, ncovars-1)
+                 , log(0.01)
+                 , rep(negInf, expan))
+      high  <- c(posInf
+                 , rep( posInf, ncovars-1)
+                 , log( 100 )
+                 , rep( posInf, expan))
+      nms <- c(colnames(covars), "k")
     } else {
-      start <- c(.5*w, 
-                 units::as_units(1,distUnits),
-                 rep(units::as_units(0,distUnits), np - 2))
-      low   <- c(units::as_units(0,distUnits), 
-                 rep(negInf, ncovars-1), 
-                 units::as_units(.01, distUnits), 
-                 rep(negInf, expan))
-      high  <- c(posInf, 
-                 rep( posInf, ncovars-1), 
-                 posInf, 
-                 rep( posInf, expan))
+      start <- c(0.8 * medDist      # Sigma 
+                 , 1                # k
+                 , rep(0, expan))   # any expansions
+      low   <- c(dMin
+                 , 0.01
+                 , rep(negInf, expan))
+      high  <- c(dMax
+                 , 100
+                 , rep( posInf, expan))
+      nms <- c("Sigma", "k")
     }
-    if( ncovars > 1 ){
-      nms <- c(colnames(covars), "Beta")
-    } else {
-      nms <- c("Sigma", "Beta")
-    }
+      
     if(expan > 0){
       nms <- c(nms, paste( "a", 1:expan, sep=""))
     }
     
   } else if( like == "halfnorm" ){
-    if( ncovars > 1 ){
-      start <- c(log(sqrt(sum( (dist - w.lo)^2 )/length(dist))), 
-                 rep(zeroLogUnits, np - 1))
-      low <- c(rep(negInfLog, np))
-      high  <- c(posInfLog, rep( posInfLog, np - 1 ))
-    } else if(pointSurvey){
-      start <- c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), rep(zero, np - 1))
-      low <- c(zero, rep(negInf, np - 1 ))
-      high  <- c(posInf, rep( posInf, np - 1 ))
-    } else{
-      start <- c(sqrt(sum( (dist - w.lo)^2 )/length(dist)), 
-                 rep(zero, np - 1))
-      low <- c(zero, rep(negInf, np - 1 ))
-      high  <- c(posInf, rep( posInf, np - 1 ))
+    sdHalf <- sqrt(sum( (dist - w.lo)^2 )/length(dist))
+    if( inherits(sdHalf, "units") ){
+      # Only time sdHalf will not have units is when user overides requirement
+      # otherwise this always runs
+      sdHalf <- units::drop_units(sdHalf)
     }
+    
     if( ncovars > 1 ){
+      start <- c(log(sdHalf)
+               , rep(zero, np - 1))
+      low <- rep(negInf, np)
+      high  <- rep( posInf, np )
       nms <- colnames(covars)
     } else {
+      start <- c(sdHalf
+               , rep(zero, np - 1))
+      low <- c(dMin
+             , rep(negInf, np - 1 ))
+      high  <- c(dMax
+               , rep( posInf, np - 1 ))
       nms <- c("Sigma")
-    }
+    } 
     if(expan > 0){
       nms <- c(nms, paste( "a", 1:(np-ncovars), sep=""))
     }
     
   } else if( like == "uniform" ){
     if( ncovars > 1 ){
-      start <- c(log(.1*w), 
-                 rep(zeroLogUnits, ncovars-1), 
-                 log(units::as_units(exp(1), distUnits)), 
-                 rep(zeroLogUnits, expan))
-      low   <- c(log(units::as_units(exp(-14), distUnits)), 
-                 rep(negInfLog, ncovars-1), 
-                 zeroLogUnits, 
-                 rep(negInfLog, expan))
-      high  <- c(log(w), rep(posInfLog, ncovars-1), posInfLog, rep( posInfLog, expan))
-    } else {
-      start <- c(.1*w, 
-                 units::as_units(1, distUnits), 
-                 rep(zero, np - 2))
-      low   <- c(units::as_units(1e-6, distUnits), 
-                 rep(negInf, ncovars-1), 
-                 zero, 
-                 rep(negInf, expan))
-      high  <- c(w, 
-                 rep(posInf, ncovars-1), 
-                 posInf, 
-                 rep( posInf, expan))
-    }
-    if( ncovars > 1 ){
+      start <- c(log(medDist)                          # Threshold 
+                 , rep(zero, ncovars-1)                # Covars
+                 , log(w)                              # Knee
+                 , rep(zero, expan))                   # any expansions
+      low   <- c(log(dMin)
+                 , rep(negInf, ncovars-1)
+                 , log(0.01*w)
+                 , rep(negInf, expan))
+      high  <- c(log(dMax)
+                 , rep(posInf, ncovars-1)
+                 , log(20000*w)
+                 , rep( posInf, expan))
       nms <- c(colnames(covars), "Knee")
     } else {
+      start <- c(medDist
+                 , 1*w
+                 , rep(zero, expan))
+      low   <- c(dMin
+                 , 0.01 * w
+                 , rep(negInf, expan))
+      high  <- c(dMax, 
+                 20000 * w, 
+                 rep( posInf, expan))
       nms <- c("Threshold", "Knee")
     }
     if(expan > 0){
@@ -192,26 +204,26 @@ F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, pointS
     
   } else if( like == "negexp" ){
     if( ncovars > 1 ){
-      start <- c(zero, rep(zero, np - 1))
-      low   <- c(negInf, rep(negInf, np - 1 ))
-      high  <- c(posInf, rep( posInf, np - 1 ))
-    } else {
-      start <- c(units::as_units(1,distUnits), 
-                 rep(zero, np - 1))
-      low   <- c(zero, 
-                 rep(negInf, np - 1 ))
-      high  <- c(posInf, rep( posInf, np - 1 ))
-    }
-    if( ncovars > 1 ){
+      start <- c(zero
+               , rep(zero, np - 1))
+      low   <- c(negInf
+               , rep(negInf, np - 1 ))
+      high  <- c(posInf
+               , rep( posInf, np - 1 ))
       nms <- colnames(covars)
     } else {
+      start <- c( 0.5*(0.5 / (log(medDist) - log(dMin))) + 0.5*(0.5/ (log(dMax) - log(medDist))), 
+                 rep(zero, expan))
+      low   <- c(0.01, 
+                 rep(negInf, expan ))
+      high  <- c(100*w
+                 , rep( posInf, expan ))
       nms <- c("Beta")
     }
     if(expan > 0){
       nms <- c(nms, paste( "a", 1:expan, sep=""))
     }
-    
-    
+  
   } else if( like == "Gamma" ){
     d <- dist[ w.lo <= dist & dist <= w.hi ]
     d <- d[ d > zero ] # even though 0 is legit, can't take log of it
@@ -222,15 +234,15 @@ F.start.limits <- function( like, expan, w.lo, w.hi, dist, covars = NULL, pointS
     if( r <= 1 ) r <- 1.01
     b <- ( (r-1) / exp(1) )^(r-1) / gamma(r)
     lam <- mean(d,na.rm=TRUE) / (r * b)
-    r <- units::as_units(r, distUnits)
+    #r <- units::as_units(r, distUnits)
     
     if( ncovars > 1 ){
       start <- c(log(r), rep(0, ncovars-1), log(lam))
-      low   <- c(log(units::as_units(1.0001, distUnits)), rep(negInfLog, ncovars-1), zeroLogUnits)
+      low   <- c(log(1.0001), rep(negInf, ncovars-1), zero)
       nms <- colnames(covars)
     } else {
       start <- c(r, lam)
-      low   <- c(units::as_units(1.0001,distUnits), zero)
+      low   <- c(1.0001, zero)
       nms <- c("Shape", "Scale")
     }
     high  <- c(posInf, posInf)
