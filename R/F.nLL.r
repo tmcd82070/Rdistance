@@ -77,6 +77,10 @@ F.nLL <- function(a, dist, covars = NULL, like, w.lo=0, w.hi=max(dist), series, 
     L[ !is.na(L) & (L <= 0) ] <- 1e-6   # happens at very bad values of parameters
 
     nLL <- -sum(log(L), na.rm=TRUE)  # Note that distances > w in LL are set to NA
-    #print(nLL)
+
+    # Rules: No matter how bad the guess at a, you cannot return Inf, -Inf, NA, or NaN
+    # This means f.like can return NA, but not NaN (div by 0), Inf or -Inf for any row of data
+    # Must program the likelihoods to trap these values and return the appropriate .Machine constants
+    
     nLL
 }

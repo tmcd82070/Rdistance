@@ -473,7 +473,7 @@ dfuncEstim <- function (formula,
           and can help.")
   }
   
-  mf <- getDfuncModelFrame(formula, data)
+  mf <- Rdistance:::getDfuncModelFrame(formula, data)
   mt <- attr(mf, "terms")
   dist <- model.response(mf,"any")
   covars <- if (!is.empty.model(mt)){
@@ -617,26 +617,26 @@ dfuncEstim <- function (formula,
                  pointSurvey = pointSurvey, 
                  for.optim = T)
   } else if(control$optimizer == "nlminb"){
-    fit <- nlminb(start = strt.lims$start, 
-                  objective = F.nLL, 
-                  lower = units::drop_units(strt.lims$lowlimit), # safe, known to be in units of dist
-                  upper = units::drop_units(strt.lims$uplimit), # safe, known to be in units of dist
-                  control = list(trace = 0,
-                                eval.max = control$evalMax,
-                                iter.max = control$maxIters,
-                                rel.tol = control$likeTol,
-                                x.tol = control$coefTol
-                                ), 
-                 dist = dist, 
-                 like = likelihood, 
-                 covars = covars,
-                 w.lo = w.lo, 
-                 w.hi = w.hi, 
-                 expansions = expansions, 
-                 series = series, 
-                 pointSurvey = pointSurvey, 
-                 for.optim = T 
-                 )
+    fit <- nlminb(start = strt.lims$start
+                , objective = F.nLL
+                , lower = strt.lims$lowlimit
+                , upper = strt.lims$uplimit
+                , control = list(trace = 0
+                              , eval.max = control$evalMax
+                              , iter.max = control$maxIters
+                              , rel.tol = control$likeTol
+                              ,  x.tol = control$coefTol
+                              )
+                , dist = dist
+                , like = likelihood
+                , covars = covars
+                , w.lo = w.lo
+                , w.hi = w.hi
+                , expansions = expansions
+                , series = series
+                , pointSurvey = pointSurvey
+                , for.optim = T 
+                )
     names(fit)[names(fit)=="evaluations"]<-"counts"
     fit$hessian <- secondDeriv(fit$par, 
                                F.nLL, 
@@ -713,9 +713,9 @@ dfuncEstim <- function (formula,
   gx <- F.gx.estim(ans)
   ans$x.scl <- gx$x.scl
   ans$g.x.scl <- gx$g.x.scl
-  fuzz <- units::set_units(1e-06, outUnits, mode = "standard")
-  low.bound <- any(fit$par <= units::drop_units(strt.lims$lowlimit + fuzz))
-  high.bound <- any(fit$par >= units::drop_units(strt.lims$uplimit - fuzz))
+  fuzz <- 1e-06
+  low.bound <- any(fit$par <= strt.lims$lowlimit + fuzz)
+  high.bound <- any(fit$par >= strt.lims$uplimit - fuzz)
   if (fit$convergence != 0) {
     if (warn) warning(fit$message)
   }

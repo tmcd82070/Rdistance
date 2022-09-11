@@ -133,12 +133,12 @@ ESW <- function( obj, newdata ){
   y <- apply(X = params
              , MARGIN = 1
              , FUN = like
-             , dist= x - obj$w.lo
+             , dist = x - obj$w.lo
              , series = obj$series
              , covars = NULL
-             , expansions=obj$expansions
+             , expansions = obj$expansions
              , w.lo = zero
-             , w.hi=obj$w.hi - obj$w.lo
+             , w.hi = obj$w.hi - obj$w.lo
              , pointSurvey = FALSE
              , scale = FALSE
              )    
@@ -160,7 +160,8 @@ ESW <- function( obj, newdata ){
                    , scale = FALSE
   )
     
-  # If g.at.x0 = 1, we don't need to rescale; but, rescale even in this case, 
+  # If g.at.x0 = 1, we don't need to rescale b.c. scale = FALSE above; i.e. y[,1] = 1
+  # but, I will rescale even in this case, 
   # just in case there are cases I have not thought about (e.g., 
   # when like() does not have maximum at 1.0)
   
@@ -183,9 +184,7 @@ ESW <- function( obj, newdata ){
   ends <- c(1,ncol(y))
   esw <- (dx/2) * (rowSums( y[,ends,drop=FALSE] ) + 
                    2*rowSums(y[,-ends, drop=FALSE] ))
-  
 
-  
   esw
   
 }
