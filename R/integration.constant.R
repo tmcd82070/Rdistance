@@ -135,10 +135,10 @@ integration.constant <- function(dist,
       # We happen to know it for halfnorm (and some others below)
       # Integrals are by defn unit-less; but, pnorm returns units. Drop apriori
       # 0.5 is area to left of mean 
-      temp.scaler <- (pnorm(units::drop_units(w.hi),
-                            units::drop_units(w.lo),
-                            units::drop_units(sigma)) - 0.5) * 
-                      sqrt(2*pi) * units::drop_units(sigma)
+      temp.scaler <- (pnorm(units::drop_units(w.hi)
+                          , units::drop_units(w.lo)
+                          , sigma) - 0.5) * 
+                      sqrt(2*pi) * sigma
       
     } else if(identical(density, hazrate.like) & expansions == 0){
       s <- as.matrix(unique.covars[,-PkeyCol]) %*% matrix(a[-length(a)],ncol=1)
@@ -199,6 +199,17 @@ integration.constant <- function(dist,
     #   trapezoid rule
     scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
   }
+  
+  # there are cases where the guess at parameters is so bad, that the integration
+  # constant is 0 (consider pnorm(100,0,2e30)). But, we don't want to return 0
+  # because it goes in denominator of likelihood and results in Inf, which is 
+  # not informative.  nlminb guesses NaN after that sometimes. We want to return 
+  # the smallest possible number that does not result in log(x) = -Inf
+  if( any(scaler <= .Machine$double.xmin) ){
+    indZeros <- scaler <= .Machine$double.xmin
+    scaler[ indZeros ] <- .Machine$double.xmax / sum(indZeros)
+  }
+  
   #print(scaler)
   scaler
 }
