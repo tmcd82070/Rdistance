@@ -127,6 +127,8 @@ halfnorm.like <- function(a,
                           scale = TRUE, 
                           pointSurvey = FALSE){
 
+  # rule is: parameter 'a' never has units.  None of its components do, even though they could (e.g., sigma = a[1])
+  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
   if(!is.null(covars)){
@@ -141,21 +143,17 @@ halfnorm.like <- function(a,
   } else {
     sigma <- a[1]
   }
-
-  sigma <-  units::as_units(sigma, units(dist))
+  # cat(paste0("a[", 1:length(a), "]= ", a, "\n"))
   
-  key <- -(dist*dist)/(2*sigma*sigma)  
-  # unit conversions happen in above statement; afterwards, key is unit-less
-  # But, must drop units in next statement because exp() for some reason does 
-  # not work with units = [1]
-  key <- exp(units::drop_units(key))
-  dfunc <- key
-  w <- w.hi - w.lo
+  key <- -(units::drop_units(dist*dist))/(2*sigma*sigma)  
+  # Above is safe. Units of sigma will scale to units of dist. 'key' is unit-less
+  key <- exp(key)
   
   # If there are expansion terms
   if(expansions > 0){
     
     nexp <- expansions
+    w <- w.hi - w.lo  # 'w' has units here, we want this so conversions below happen
     
     if (series=="cosine"){
       dscl <- units::drop_units(dist/w)   # unit conversion here; drop units is safe
@@ -170,13 +168,11 @@ halfnorm.like <- function(a,
       stop( paste( "Unknown expansion series", series ))
     }
     
-    dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
-    
-    
+    key <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
   } 
   
   if( scale ){
-    dfunc = dfunc / integration.constant(dist=dist, 
+    key = key / integration.constant(dist=dist, 
                                          density=halfnorm.like, 
                                          a=a,
                                          covars = covars, 
@@ -187,5 +183,6 @@ halfnorm.like <- function(a,
                                          pointSurvey = pointSurvey)   # scales underlying density to integrate to 1.0
 
   }
-  c(dfunc)
+
+  c(key)
 }
