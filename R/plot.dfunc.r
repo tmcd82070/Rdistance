@@ -55,33 +55,30 @@
 #'  lines at \code{w.lo} and \code{w.hi} from 0 to the  
 #'  distance function. 
 #'  
-#' @param col.dfunc Color of the distance function(s), replicated to 
-#' the required length. If covariates or \code{newdata} is present 
-#' and \code{length(col.dfunc)==1}, 
-#' \code{col.dfunc} is expanded to 
-#' to number of plotted distance functions by setting it equal 
-#' to \code{graphics::rainbow(n)}, where \code{n} is the number 
-#' of plotted distance functions.  If you want to plot all 
-#' distance functions in the same color, set \code{col.dfunc} to
-#' a constant vector having length at least 2 (e.g., 
-#' \code{col.dfunc = c(1,1)}) will 
-#' plot all curves in black).
+#' @param col.dfunc Color of the distance function(s).
+#' If only one distance function (one line) is being plotted, 
+#' the default color is "red".
+#' If covariates or \code{newdata} are present, 
+#' the default value uses \code{graphics::rainbow(n)}, 
+#' where \code{n} is the number 
+#' of plotted distance functions.  Otherwise, \code{col.dfunc} 
+#' is replicated to the required length.  Plot all 
+#' distance functions in the same color by setting 
+#' \code{col.dfunc} to
+#' a scalar. Plot blue-red pairs of distance functions 
+#' by setting \code{col.dfunc} = c("blue", "red")}. Etc. 
 #'   
-#'  
-#' @param lty.dfunc Line type of the distance function(s), replicated 
-#' to the required length.  If covariates or \code{newdata} is present 
-#' and \code{length(lty.dfunc)==1}, 
-#' \code{lty.dfunc} is expanded to 
-#' to number of plotted distance functions by setting it equal 
-#' to \code{lty.dfunc + 0:(n-1)}, where \code{n} is the number 
-#' of plotted distance functions.  If you want to plot all 
-#' distance functions using the same line type, set \code{lty.dfunc} to
-#' a constant vector having length at least 2 (e.g., 
-#' \code{lty.dfunc = c(1,1)}) will 
-#' plot all solid lines.
+#' @param lty.dfunc Line type of the distance function(s).
+#' If covariates or \code{newdata} is present, 
+#' the default uses line types  
+#' to \code{1:n}, where \code{n} is the number 
+#' of plotted distance functions.  Otherwise, \code{lty.dfunc} 
+#' is replicated to the required length. Plot solid lines
+#' by specifying \code{lty.dfunc = 1}. Plot solid-dashed line pairs
+#' by specifying \code{lty.dfunc = c(1,2)}. Etc.
 #' 
 #' @param lwd.dfunc Line width of the distance function(s), replicated 
-#' to the required length.  
+#' to the required length. Default is 2 for all lines.  
 #' 
 #' @param \dots When bars are plotted, this routine 
 #'  uses \code{graphics::barplot} for setting up the 
@@ -172,9 +169,9 @@ plot.dfunc <- function( x,
                         ylab = NULL,
                         border = "blue",
                         col = 0,
-                        col.dfunc="red",
-                        lty.dfunc=1,
-                        lwd.dfunc=2,
+                        col.dfunc=NULL,
+                        lty.dfunc=NULL,
+                        lwd.dfunc=NULL,
                         ... ){
 
   # a constant used later
@@ -218,43 +215,49 @@ plot.dfunc <- function( x,
     x0 <- x$x.scl
   }
   
-  # Create the function that calculates mode (=most frequent values) of a vector. 
-  getmode <- function(v) {
-    uniqv <- unique(v)
-    uniqv[which.max(tabulate(match(v, uniqv)))]
-  }
-  
   like <- match.fun( paste( x$like.form, ".like", sep=""))
   
   x.seq <- seq( x$w.lo, x$w.hi, length=200)
   
+  # Work out predicted lines ----
+  
+  # Function returning mode (=most frequent values) of a FACTOR. 
+  getmode <- function(v) {
+    uniqv <- table(v)
+    factor(names(uniqv)[which.max(uniqv)], levels = levels(v))
+  }
+  
   if(!is.null(x$covars)){
-    if(!is.null(x$factor.names)) {
-      fac <- x$model.frame[,x$factor.names]
-    } 
 
-    covMeans <- matrix(NA, nrow = 1, ncol = length(colnames(x$model.frame[-c(1)])))
-    colnames(covMeans) <- colnames(x$model.frame[-c(1)])
-    for(n in colnames(x$model.frame[-c(1)])) {
-      if(n %in% x$factor.names) {
-        modeFac <- getmode(x$model.frame[[n]])# Calculate mode
-        covMeans[,n] <- modeFac # store
-      } else {
-        meanFac <- mean(x$model.frame[[n]])# Calculate mean
-        covMeans[,n] <- meanFac # store
-      }
-    }
-    
-    # compute column means of covariantes because need them later to scale bars
-    covMeanMat <- col.m <- colMeans(x$covars)
-    
-    covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
-    
     if(missing(newdata) || is.null(newdata)){
-      newdata <- as.data.frame(covMeans)
+      # Note: x$model.frame has all distances, even those < w.lo and > w.hi,
+      # and x$model.frame[,1] is the response (i.e., distances).
+      # x$covars has ONLY covariates for distances between w.lo and w.hi
+      
+      covNames <- labels(terms(x$model.frame)) # Intercept not included here
+      newdata <- matrix(NA, nrow = 1, ncol = length(covNames))
+      colnames(newdata) <- covNames
+      newdata <- data.frame(newdata)
+      origDist <- model.response(x$model.frame) # because x$dist is missing out of strip obs
+      inStrip <- (x$w.lo <= origDist) & (origDist <= x$w.hi)
+      factor.names <- attr(terms(x$model.frame), "dataClasses")
+      factor.names <- names(factor.names)[ factor.names == "factor" ]
+      for( nm in covNames ) {
+        if( nm %in% factor.names ) {
+          newdata[,nm] <- getmode(x$model.frame[inStrip, nm]) # Use mode to predict
+        } else {
+          newdata[,nm] <- mean(x$model.frame[inStrip, nm]) # Use mean
+        }
+      }
+    } else {
+      # If we are here: newdata was given by the user
+      # Numeric values are okay.  Check for character values and convert to factors
+      
     }
     
-    params <- predict.dfunc(x, newdata, type="parameters")
+    params <- predict.dfunc(object = x
+                          , newdata = newdata
+                          , type="parameters")
     
     # Use covars= NULL here because we evaluated covariates to get params above
     # after apply, y is length(x) x nrow(newdata).  each column is a unscaled distance 
@@ -275,12 +278,21 @@ plot.dfunc <- function( x,
     
     y <- y * scaler  # length(scalar) == nrow(y), so this works right
 
-    y <- t(y)
-        
-    if(x$pointSurvey){
+    y <- t(y) # for some reason, we go back to columns b.c. we plot by columns below. Could change this.
+
+    if( !x$pointSurvey ){
+      ybarhgts <- cnts$density * scaler[1]  # not sure this is right
+      # plotBars <- TRUE
+    } else {
       y <- y * (x.seq - x$w.lo)
+      yscl <- (x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
+      ybarhgts <-  cnts$density * yscl
+      # plotBars <- FALSE
     }
-  }  else {
+    
+  } else {
+    
+    # this is the No Covars case
     y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, 
                w.lo=zero, w.hi=x$w.hi - x$w.lo, pointSurvey = FALSE, covars=NULL )
 
@@ -299,31 +311,9 @@ plot.dfunc <- function( x,
       
       y <- y * scaler  
       y <- y * units::drop_units(x.seq - x$w.lo)
-    }
-  }
-  
-  if( include.zero & x$like.form == "hazrate" ){
-    x.seq[1] <- x$w.lo
-  }
-  
-
-  if(!is.null(x$covars)){
-    if( !x$pointSurvey ){
-      f.max <- F.maximize.g(x, covMeanMat)
-      yscl <- g.at.x0 / f.max
-      #yscl <- 1
-      if(length(yscl > 1)){
-        yscl <- yscl[1]
-      }
-      ybarhgts <- cnts$density * yscl
-      # plotBars <- TRUE
-    } else {
-      yscl <- (x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
+      yscl <- units::drop_units(x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
       ybarhgts <-  cnts$density * yscl
-      # plotBars <- FALSE
-    }
-  } else {
-    if( !x$pointSurvey ){
+    } else {
       # (tlm) someone stuck in the following line, which works when xmax = 0, 
       # but I don't think works for other cases, like Gamma.
       #f.max <- F.maximize.g(x, covars = NULL) 
@@ -331,7 +321,7 @@ plot.dfunc <- function( x,
       f.max <- like( x$parameters, x0 - x$w.lo, series=x$series, covars=NULL,
                      expansions=x$expansions, w.lo=zero, 
                      w.hi=x$w.hi-x$w.lo, pointSurvey = x$pointSurvey )
-
+      
       if(any(is.na(f.max) | (f.max <= 0))){
         #   can happen when parameters at the border of parameter space
         yscl <- 1.0
@@ -339,16 +329,21 @@ plot.dfunc <- function( x,
       } else {
         yscl <- g.at.x0 / f.max
       }
-
+      
       if(length(yscl > 1)){
         yscl <- yscl[1]
       }
       y <- y * yscl
       ybarhgts <- cnts$density * yscl
-    } else {
-      yscl <- units::drop_units(x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
-      ybarhgts <-  cnts$density * yscl
-    }
+      
+      y <- matrix(y, ncol = 1)
+    } 
+  }
+  
+  # after here, y is a matrix, columns are distance functions.
+  
+  if( include.zero & x$like.form == "hazrate" ){
+    x.seq[1] <- x$w.lo
   }
   
   y.finite <- y[ y < Inf ]
@@ -365,6 +360,7 @@ plot.dfunc <- function( x,
     xlab <- paste0("Distance ", format(zero)) # zero cause it has units
     xlab <- sub("0 ", "", xlab) # erase 0 but leave units
   } 
+  
   # Default ylab ----
   if(is.null(ylab)){
     ylab <- if(x$pointSurvey) "Observation density" else "Probability of detection"
@@ -420,32 +416,30 @@ plot.dfunc <- function( x,
   #y.poly <- c(0, y, 0)
   #polygon( x.poly, y.poly, density=15, border="red", lwd=2 )
   
-  #   Draw the distance function lines
-  if(is.matrix(y)){
-    if(length(col.dfunc) == 1){
-      col.dfunc <- rainbow(ncol(y))
-    } else if(length(col.dfunc) < ncol(y)){
-      col.dfunc <- rep(col.dfunc,ceiling(ncol(y)/length(col.dfunc)))[1:ncol(y)]
-    }
-    if(length(lty.dfunc) == 1){
-      lty.dfunc <- lty.dfunc + 0:(ncol(y)-1)
-    } else if(length(lty.dfunc) < ncol(y)){
-      lty.dfunc <- rep(lty.dfunc,ceiling(ncol(y)/length(lty.dfunc)))[1:ncol(y)]
-    }
-    if(length(lwd.dfunc) == 1){
-      lwd.dfunc <- rep(lwd.dfunc,ncol(y))
-    } else if(length(lwd.dfunc) < ncol(y)){
-      lwd.dfunc <- rep(lwd.dfunc,ceiling(ncol(y)/length(lwd.dfunc)))[1:ncol(y)]
-    }
-    for(i in 1:ncol(y)){
-      lines( x.seq, y[,i], col=col.dfunc[i], lwd=lwd.dfunc[i], lty = lty.dfunc[i] )
-    }
-  } else{
-    lines( x.seq, y, col=col.dfunc, lwd=lwd.dfunc, lty=lty.dfunc )
+  #   Work out the colors, line types, and line widths ----
+  if( is.null(col.dfunc) ){
+    # rainbow(1) is red, the default for one line
+    col.dfunc <- rainbow(ncol(y))
+  } else if(length(col.dfunc) < ncol(y)){
+    col.dfunc <- rep(col.dfunc,ceiling(ncol(y)/length(col.dfunc)))[1:ncol(y)]
+  }
+  if( is.null(lty.dfunc) ){
+    lty.dfunc <- 1:ncol(y)
+  } else if(length(lty.dfunc) < ncol(y)){
+    lty.dfunc <- rep(lty.dfunc,ceiling(ncol(y)/length(lty.dfunc)))[1:ncol(y)]
+  }
+  if( is.null(lwd.dfunc) ){
+    lwd.dfunc <- rep(2,ncol(y))
+  } else if(length(lwd.dfunc) < ncol(y)){
+    lwd.dfunc <- rep(lwd.dfunc,ceiling(ncol(y)/length(lwd.dfunc)))[1:ncol(y)]
+  }
+  
+  # Draw distance functions ----
+  for(i in 1:ncol(y)){
+    lines( x.seq, y[,i], col=col.dfunc[i], lwd=lwd.dfunc[i], lty = lty.dfunc[i] )
   }
 
-
-  #   These two add vertical lines at 0 and w if called for
+  #   Add vertical lines at 0 and w if called for ----
   if(vertLines){
     lines( rep(x.seq[1], 2), c(0,y[1]), col=col.dfunc[1], lwd=lwd.dfunc[1],
            lty=lty.dfunc[1])
@@ -454,9 +448,6 @@ plot.dfunc <- function( x,
            lty=lty.dfunc[1] )
   }
   
-  #   print area under the curve
-  area <- effectiveDistance(x)
-
   #   If model did not converge, print a message on the graph.
   if( (x$like.form != "smu") && x$convergence != 0 ){
     if( x$convergence == -1 ){
@@ -474,14 +465,6 @@ plot.dfunc <- function( x,
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
     mess <- paste0("Check g(", format(x0), ")= ", round(g.at.x0,2), " assumption")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
-  } else if( any(is.na(area)) | any(area > (x$w.hi - x$w.lo) )){
-    # (TLM) pretty sure no way this can happen, i.e., if area > (w.hi - w.lo), 
-    # then some g(x) > 1, which is caught in the previous if clause.
-    # but, I will leave this code here for the time being.
-    mess <- "EffDist>(w.hi-w.lo)"
-    text( mean(x.seq), mean(y.lims), mess, cex=2, adj=.5, col="red")
-    mess <- paste0("Check g(", format(x0), ")= ", round(g.at.x0,2), " assumption")
-    text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
   } else if( any(is.na(y)) | any(y < 0) ){
     #   invalid scaling, g0 is wrong
     mess <- "Probabilities < 0"
