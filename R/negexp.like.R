@@ -1,4 +1,4 @@
-#' @title Negative exponential distance function
+#' @title negexp.like - Negative exponential distance function
 #' 
 #' @description Computes the negative exponential form of 
 #' a distance function 
@@ -12,7 +12,6 @@
 #'   or more expansions are called for,
 #'   coefficients for the expansion terms follow 
 #'   coefficients for the canonical parameter.  
-#'   Coefficients for the expansion terms, if present, are \code{a[2:length(a)]}.
 #'   
 #' @param dist A numeric vector containing the observed distances.
 #' 
@@ -33,10 +32,15 @@
 #'   constant of integration.  All user defined likelihoods must have and use this parameter.
 #' @param pointSurvey Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
 #' 
-#' @details The negative exponential likelihood is \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is a slope parameter to be estimated. 
-#'   \bold{Expansion Terms}: If \code{expansions} = k (k > 0), the expansion function specified by \code{series} is called (see for example
-#'   \code{\link{cosine.expansion}}). Assuming \eqn{h_{ij}(x)}{h_ij(x)} is the \eqn{j^{th}}{j-th} expansion term for the \eqn{i^{th}}{i-th} distance and that 
-#'   \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}are (estimated) coefficients for the expansion terms, the likelihood contribution for the \eqn{i^{th}}{i-th} 
+#' @details The negative exponential likelihood is 
+#' \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is a 
+#' slope parameter to be estimated. 
+#' 
+#' \bold{Expansion Terms}: If \code{expansions} = k (k > 0), the expansion 
+#' function specified by \code{series} is called (see for example
+#' \code{\link{cosine.expansion}}). Assuming \eqn{h_{ij}(x)}{h_ij(x)} is 
+#' the \eqn{j^{th}}{j-th} expansion term for the \eqn{i^{th}}{i-th} distance and that 
+#' \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}are (estimated) coefficients for the expansion terms, the likelihood contribution for the \eqn{i^{th}}{i-th} 
 #'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}
 #'   {f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 #'   

@@ -1,8 +1,8 @@
-#' @title Hazard rate likelihood function for distance analyses
+#' @title hazrate.like - Hazard rate likelihood 
 #' 
-#' @description This function computes likelihood contributions for 
-#' off-transect sighting distances, scaled appropriately, for use as 
-#' a distance likelihood.
+#' @description Computes the hazard rate likelihood of  
+#' off-transect distances, given parameters. Primarily used as 
+#' a minimization objective during distance function estimation.
 #' 
 #' @param a A vector of likelihood parameter values. Length and meaning 
 #' depend on \code{series} and \code{expansions}. If no expansion terms 
@@ -58,11 +58,15 @@
 #' transect data, FALSE if line transect data.
 #' 
 #' @details The hazard rate likelihood is 
-#' \deqn{f(x|a,b) = 1 - \exp(-(x/\sigma)^{-\beta})}{%
-#' f(x|a,b) = 1 - exp(-(x/Sigma)^(-Beta))} 
-#' where \eqn{\sigma}{Sigma} is a variance parameter, 
-#' and \eqn{\beta}{Beta}
-#'   is a slope parameter to be estimated. 
+#' \deqn{f(x|\sigma,k) = 1 - \exp(-(x/\sigma)^{-k})}{%
+#' f(x|Sigma,k) = 1 - exp(-(x/Sigma)^(-k))} 
+#' where \eqn{\sigma}{Sigma} determines location 
+#' (i.e., distance at which the function equals 1 - exp(-1) = 0.632), 
+#' and \eqn{k}{k} determines slope of the function 
+#' at \eqn{\sigma}{Sigma} (i.e., larger k equals steeper 
+#' slope at \eqn{\sigma}{Sigma}). For distance analysis, 
+#' the valid range for both \eqn{\sigma}{Sigma} and k is
+#' \eqn{\geq 0}{>=0}.  
 #'   
 #'   \bold{Expansion Terms}: If \code{expansions} = k 
 #'   (k > 0), the expansion function specified by 

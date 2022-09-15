@@ -1,4 +1,4 @@
-#' @title Uniform distance function likelihood
+#' @title uniform.like - Uniform distance function likelihood
 #' 
 #' @description Computes the uniform form of a distance function.
 #' 
@@ -7,9 +7,9 @@
 #' were called for (i.e., \code{expansions = 0}), the distance likelihoods 
 #' contain one or two canonical parameters (see Details). If one or more 
 #' expansions are called for, coefficients for the expansion terms 
-#' follow coefficients for the canonical parameters.  If \code{p} is 
-#' the number of canonical parameters, coefficients for the 
-#' expansion terms are \code{a[(p+1):length(a)]}.
+#' follow coefficients for the canonical parameters in elements
+#' \code{a[(p+1):length(a)]}, where \code{p} is 
+#' the number of canonical parameters (2) plus number of covariates.
 #' 
 #' @param dist A numeric vector containing the observed distances.
 #' 
@@ -53,30 +53,32 @@
 #' @param pointSurvey Boolean. TRUE if \code{dist} is point 
 #' transect data, FALSE if line transect data.
 #' 
-#' @details The uniform likelihood is not technically uniform. 
-#' This function is continuous at its upper limit (a true uniform 
-#' is discontinuous at its upper limit) which allows better 
-#' estimation of the upper limit. The function has two 
-#' parameters (the upper limit or 'threshold' and the 'knee') and
-#' can look similar to a uniform or a negative exponential.  
+#' @details 
 #' 
-#' The uniform likelihood used here is actually the 
-#' \emph{heavy side} or \emph{logistic} function of the form, 
+#' The 'uniform' likelihood used here is 
+#' technically not uniform. 
+#' The function is continuous at its upper end where a true uniform 
+#' is discontinuous at its upper end.  The function has two 
+#' parameters (the upper end called the 'threshold' and 
+#' the slope at the upper end called the 'knee').  In engineering, 
+#' this function is sometimes called the 
+#' \emph{heavy side} function.  In other areas of statistics, 
+#' this function is called \emph{logistic}.  The technical form 
+#' of the function is, 
 #' \deqn{f(x|a,b) = 1 - \frac{1}{1 + \exp(-b(x-a))} = 
 #' \frac{\exp( -b(x-a) )}{1 + exp( -b(x-a) )},}{%
 #' f(x|a,b) = 1 - 1 / (1 + exp(-b*(x-a))) = exp(-b*(x-a)) / (1 + exp(-b*(x-a))),} 
-#' where \eqn{a} and \eqn{b} are the parameters to be estimated.  
+#' where \eqn{a} is the "threshold" and \eqn{b} is the "knee". 
 #' 
-#' Parameter \eqn{a}, the "threshold", is the location of the 
+#' Parameter \eqn{a} = "threshold" is the location of the 
 #' approximate upper limit of a uniform distribution's 
 #' support.  The inverse likelihood of 0.5 
 #' is \code{a} before scaling 
 #' (i.e., \code{uniform.like(c(a,b),a,scale=FALSE)} equals 
 #' \code{0.5}). 
 #' 
-#' Parameter \code{b}, the "knee", is the sharpness 
-#' of the bend at \code{a} and estimates the degree to which 
-#' observations decline at the outer limit of sightability.  
+#' Parameter \code{b} = "knee" is slope of function 
+#' at \code{a}.  
 #' Note that, prior to scaling for \code{g.x.scl}, 
 #' the slope of the likelihood at \eqn{a} is \eqn{-b/4}. 
 #' After scaling for \code{g.x.scl}, the inverse of 

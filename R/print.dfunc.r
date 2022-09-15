@@ -148,7 +148,7 @@ print.dfunc <- function( x, criterion="AICc", ... ){
               colorize(format(x$x.scl)), ") = ", 
               colorize(format(x$g.x.scl)), sep=""))
     if(any(pDetect > 1.0)){
-      cat(colorize(" <-One or more P(detect)>1: Check scaling", col = "red"))
+      cat(colorize(" <- One or more P(detect)>1: Check scaling", col = "red"))
       cat("\n")
     } else {
       cat("\n")
