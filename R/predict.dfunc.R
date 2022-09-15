@@ -24,12 +24,8 @@
 #' plus the number of expansion terms.  Without expansion terms, the number 
 #' of columns in the returned matrix 
 #' is either 1 or 2 depending on the likelihood (e.g., \code{halfnorm} has 
-#' one parameter, \code{hazrate} has two). For example, if 
-#' the likelihood is \code{halfnorm}, the returned matrix contains 
-#' estimated standard errors of the half-normal likelihood. See the help 
+#' one parameter, \code{hazrate} has two). See the help 
 #' for each likelihoods to interpret the returned parameter values.
-#' 
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #' 
 #' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
 #' \code{\link{uniform.like}}, \code{\link{hazrate.like}}, \code{\link{Gamma.like}}
@@ -44,6 +40,7 @@
 # Type = "inflation" predicts the inflation factor for all
 # observations.  Inflation factors use likelihood parameters to compute
 # effective sampling distances (ESW or EDR) and inverts them.
+# type = "function" predicts the actual distance functions
 
 
  
