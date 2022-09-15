@@ -187,14 +187,19 @@ test_dfuncEstim <- function( detectParams,
     # Would be better to assign returned effectiveDistance to correct 
     # frame, but these run fast so okay to re-run
     test_that("Effective distance computes", {
-      expect_length(effectiveDistance(dfuncFit), 1)
+      if( is.null(dfuncFit$covars) ){
+        nED <- 1
+      } else {
+        nED <- length(dfuncFit$dist)
+      }
+      expect_length(effectiveDistance(dfuncFit), nED)
     })
     
     efd <- effectiveDistance(dfuncFit)
     
-    test_that("Effective distance >= 0", {
+    test_that("Effective distance(s) > 0", {
       zero <- units::set_units(0, dfuncFit$outputUnits, mode = "standard")
-      expect_gte(efd, zero)
+      expect_true( all( efd > zero), label = "Some EFDs <= 0" )
     })
 
     nominalW <- param.w.hi - param.w.lo
@@ -203,25 +208,28 @@ test_dfuncEstim <- function( detectParams,
       # don't know the range of effective distance because g(x) could be > 1 for some x.
       # Don't test in this case.  Warnings and red text are printed and plotted.
       test_that("Effective distance <= w.hi-w.lo", {
-        expect_lte(efd, nominalW)
+        expect_true( all(efd <= nominalW), label = "Some EFDs > W" )
       })
     }
     
     test_that("Effective distance prints", {
-      efdString <- format(efd)
+      efdString <- format(mean(efd))
       efdString <- gsub("[\\[\\]]", ".", efdString, perl = T)
       if(detectParams$pointSurvey[i]){
-        tstString <- paste("Effective detection radius \\(EDR\\):", efdString)
+        tstString <- paste("[E|e]ffective detection radius \\(EDR\\):", efdString)
       } else {
-        tstString <- paste("Effective strip width \\(ESW\\):", efdString)
+        tstString <- paste("[E|e]ffective strip width \\(ESW\\):", efdString)
+      }
+      if(!is.null(dfuncFit$covars)){
+        tstString <- paste("Average", tstString)
       }
       expect_output(print(dfuncFit), regexp = tstString)
     })
     
-    if( efd > nominalW ){
+    if( any(efd > nominalW) ){
       # check that red text is printed
-      tstString <- "> \\(w.hi - w.lo\\)"
-      expect_output(print(dfuncFit), regexp = tstString)
+      tstString <- "<- One or more"
+      expect_output(print(dfuncFit), regexp = tstString, label = "Red text re Pr()>1 did not print")
     }
     
     test_that("Scaling prints", {
