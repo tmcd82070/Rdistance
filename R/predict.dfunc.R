@@ -71,7 +71,8 @@ predict.dfunc <- function(object, newdata,
       # Terms <- terms(as.formula(object$formula))  # Jason's bug fix
       Terms <- terms(object$model.frame)
       Terms <- delete.response(Terms)
-      m <- model.frame(Terms, newdata)
+      xLevs <- lapply( x$model.frame, levels )
+      m <- model.frame(Terms, newdata, xlev = xLevs)
       X <- model.matrix(Terms, m, contrasts.arg = attr(object$covars,"contrasts"))
     }
     
