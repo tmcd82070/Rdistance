@@ -69,11 +69,11 @@ predict.dfunc <- function(object, newdata,
       # (tlm, 9/15/2022) model frame is stored in object. Safest formula to use 
       # is there
       # Terms <- terms(as.formula(object$formula))  # Jason's bug fix
-      Terms <- terms(object$model.frame)
-      Terms <- delete.response(Terms)
-      xLevs <- lapply( x$model.frame, levels )
-      m <- model.frame(Terms, newdata, xlev = xLevs)
-      X <- model.matrix(Terms, m, contrasts.arg = attr(object$covars,"contrasts"))
+      Terms <- terms( object$model.frame )
+      Terms <- delete.response( Terms )
+      xLevs <- lapply( object$model.frame, levels )
+      m <- model.frame( Terms, newdata, xlev = xLevs )
+      X <- model.matrix( Terms, m, contrasts.arg = attr(object$covars,"contrasts") )
     }
     
     BETA <- coef(object)
