@@ -39,4 +39,4 @@ res <- test_dfuncEstim( detectParams = testInputs,
                         abundParams = abundParams,
                         detectDf = sparrowDetectionData, 
                         abundDf = sparrowSiteData,
-                        formula = dist ~ sightdist )
+                        formula = dist ~ sightdist + observer )
