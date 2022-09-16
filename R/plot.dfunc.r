@@ -249,11 +249,7 @@ plot.dfunc <- function( x,
           newdata[,nm] <- mean(x$model.frame[inStrip, nm]) # Use mean
         }
       }
-    } else {
-      # If we are here: newdata was given by the user
-      # Numeric values are okay.  Check for character values and convert to factors
-      
-    }
+    } 
     
     params <- predict.dfunc(object = x
                           , newdata = newdata
@@ -262,18 +258,27 @@ plot.dfunc <- function( x,
     # Use covars= NULL here because we evaluated covariates to get params above
     # after apply, y is length(x) x nrow(newdata).  each column is a unscaled distance 
     # function (f(x))
-    y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
-               series=x$series, covars = NULL, 
-               expansions=x$expansions, 
-               w.lo = x$w.lo, w.hi=x$w.hi, 
-               pointSurvey = FALSE )  
+    y <- apply(X = params
+             , MARGIN = 1
+             , FUN = like
+             , dist = x.seq - x$w.lo
+             , series = x$series, covars = NULL
+             , expansions = x$expansions
+             , w.lo = zero
+             , w.hi=x$w.hi - x$w.lo
+             , pointSurvey = FALSE )  
     y <- t(y)  # now, each row of y is a dfunc
     
-    f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
-                     series=x$series, covars = NULL, 
-                     expansions=x$expansions, 
-                     w.lo=x$w.lo, w.hi=x$w.hi, 
-                     pointSurvey = FALSE )
+    f.at.x0 <- apply(X = params
+                   , MARGIN = 1
+                   , FUN = like
+                   , dist = x0 - x$w.lo
+                   , series = x$series
+                   , covars = NULL
+                   , expansions = x$expansions
+                   , w.lo = zero
+                   , w.hi = x$w.hi - x$w.lo
+                   , pointSurvey = FALSE )
     scaler <- g.at.x0 / f.at.x0 # a length n vector 
     
     y <- y * scaler  # length(scalar) == nrow(y), so this works right
