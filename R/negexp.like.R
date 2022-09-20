@@ -36,13 +36,13 @@
 #' \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is a 
 #' slope parameter to be estimated. 
 #' 
-#' \bold{Expansion Terms}: If \code{expansions} = k (k > 0), the expansion 
+#' \bold{Expansion Terms}: If the number of \code{expansions} = k (k > 0), the expansion 
 #' function specified by \code{series} is called (see for example
 #' \code{\link{cosine.expansion}}). Assuming \eqn{h_{ij}(x)}{h_ij(x)} is 
 #' the \eqn{j^{th}}{j-th} expansion term for the \eqn{i^{th}}{i-th} distance and that 
 #' \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}are (estimated) coefficients for the expansion terms, the likelihood contribution for the \eqn{i^{th}}{i-th} 
-#'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}
-#'   {f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+#'   distance is, 
+#'   \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}{f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 #'   
 #' @return A numeric vector the same length and order as \code{dist} containing the likelihood contribution for corresponding distances in \code{dist}. 
 #'   Assuming \code{L} is the returned vector from one of these functions, the full log likelihood of all the data is \code{-sum(log(L), na.rm=T)}. Note that the
@@ -84,58 +84,52 @@ negexp.like <- function (a,
                          scale = TRUE,
                          pointSurvey = FALSE){
 
-    dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
+  # rule is: parameter 'a' never has units.
+  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
+  
+  dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
 
-    if(!is.null(covars)){
-      
-      q <- ncol(covars)
-      # not necessary, in all negexp norm cases, no extra params hanging off the end 
-      # but, I'll leave it here so it's compatible with other likelihoods and 
-      # just in case we want to allow expansions with covariates later.
-      beta <- a[1:q] 
-      s <- drop( covars %*% matrix(beta,ncol=1) )      
-      beta <- exp(s)
-    } else {
-      beta <- a[1]
-    }
+  # What's in a? : 
+  #   If no covariates: a = [a, <expansion coef>]
+  #   If covariates:    a = [(Intercept), b1, ..., bp, <expansion coef>]
     
-    # units(beta) <- units(dist)  
-    beta <-  units::as_units(beta, units(dist))
+  if(!is.null(covars)){
+    q <- ncol(covars)
+    beta <- a[1:q] 
+    s <- drop( covars %*% matrix(beta,ncol=1) )      
+    beta <- exp(s)  # link function here
+  } else {
+    beta <- a[1]
+  }
     
-    key = -beta*dist
-    key <- exp(units::drop_units(key))
-    dfunc <- key
-    w <- w.hi - w.lo
+
+  key = -beta * units::drop_units(dist)
+  key <- exp(key)
 
 
     if(expansions > 0){
 
-        nexp <- min(expansions,length(a)-1)  # should be equal. If not, fire warning next
+        w <- w.hi - w.lo
         
-        if( length(a) != (expansions+1) ) {
-            #warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
-        }
-
     		if (series=="cosine"){
                 dscl = units::drop_units(dist/w)
-                exp.term <- cosine.expansion( dscl, nexp )
+                exp.term <- cosine.expansion( dscl, expansions )
     		} else if (series=="hermite"){
                 dscl = units::drop_units(dist/w)
-                exp.term <- hermite.expansion( dscl, nexp )
+                exp.term <- hermite.expansion( dscl, expansions )
     		} else if (series == "simple") {
                 dscl = units::drop_units(dist/w)
-                exp.term <- simple.expansion( dscl, nexp )
+                exp.term <- simple.expansion( dscl, expansions )
         } else {
               stop( paste( "Unknown expansion series", series ))
         }
 
-        dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
-
+        key <- key * (1 + c(exp.term %*% a[(length(a)-(expansions-1)):(length(a))]))
 
     } 
     
     if( scale ){
-        dfunc = dfunc / integration.constant(dist=dist, 
+        key = key / integration.constant(dist=dist, 
                                              density=negexp.like, 
                                              a=a,
                                              covars = covars, 
@@ -146,5 +140,11 @@ negexp.like <- function (a,
                                              pointSurvey = pointSurvey)  # makes integral from w.lo to w.hi = 1.0
     }
     
-    c(dfunc)
+  # cat(paste("nLL=", -sum(log(key), na.rm=TRUE), "\n"))
+  # cat(paste("n(NA)=", sum(is.na(key)), "\n"))
+  # cat(paste("n(Inf)=", sum(is.infinite(key)), "\n"))
+  # cat(paste("n(NaN)=", sum(is.nan(key)), "\n"))
+  # if(any(is.na(a) | is.nan(a) | is.infinite(a))) readline("-------- hit return...")
+
+    c(key)
 }
