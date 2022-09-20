@@ -68,8 +68,8 @@
 #' the valid range for both \eqn{\sigma}{Sigma} and k is
 #' \eqn{\geq 0}{>=0}.  
 #'   
-#'   \bold{Expansion Terms}: If \code{expansions} = k 
-#'   (k > 0), the expansion function specified by 
+#'   \bold{Expansion Terms}: If \code{expansions} = e 
+#'   (e > 0), the expansion function specified by 
 #'   \code{series} is called (see for example
 #'   \code{\link{cosine.expansion}}). Assuming 
 #'   \eqn{h_{ij}(x)}{h_ij(x)} is the \eqn{j^{th}}{j-th} 
@@ -77,10 +77,10 @@
 #'   \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)} are 
 #'   (estimated) coefficients for the expansion terms, the 
 #'   likelihood contribution for the \eqn{i^{th}}{i-th} 
-#'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + 
-#'   \sum_{j=1}^{k} c_j h_{ij}(x)).}{%
-#'   f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + 
-#'   c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+#'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_e) = f(x|a,b)(1 + 
+#'   \sum_{j=1}^{e} c_j h_{ij}(x)).}{%
+#'   f(x|a,b,c_1,c_2,...,c_e) = f(x|a,b)(1 + c(1) h_i1(x) + 
+#'   c(2) h_i2(x) + ... + c(e) h_ik(x)). }
 #'   
 #' @return A numeric vector the same length and order as 
 #' \code{dist} containing the likelihood contribution for 
@@ -127,69 +127,62 @@ hazrate.like <- function(a,
                          expansions = 0, 
                          scale = TRUE, 
                          pointSurvey = FALSE){
-	
-
-    dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
-    if(!is.null(covars)){
-      q <- ncol(covars)
-      beta <- a[1:q]
-      s <- drop( covars %*% beta )
-      # s <- 0
-      # for (i in 1:(ncol(covars)))
-      #   s <- s + a[i]*covars[,i]
-      s <- exp(s)
-    } else {
-      s <- a[1]
-    }
-    
-    s <-  units::as_units(s, units(dist))
+  # rule is: parameter 'a' never has units.
+  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
+  dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
 
-  	beta <- a[length(a) - expansions]
-  	key <- -((dist/s)^(-beta))
-  	key <- 1 - exp(units::drop_units(key))
-    dfunc <- key
+  # What's in a? : 
+  #   If no covariates: a = [Sigma, k, <expansion coef>]
+  #   If covariates:    a = [(Intercept), b1, ..., bp, k, <expansion coef>]
+  
+  if(!is.null(covars)){
+    q <- ncol(covars)
+    beta <- a[1:q]
+    s <- drop( covars %*% beta )
+    s <- exp(s)  # link function here
+  } else {
+    s <- a[1]
+  }
+  
+	K <- a[length(a) - expansions]
+	key <- -(( units::drop_units(dist)/s )^(-K))
+	key <- 1 - exp(key)
+	# Above is safe. Units of sigma will scale to units of dist. 'key' is unit-less
+	dfunc <- key
+
+  if(expansions > 0){
+
     w <- w.hi - w.lo
 
-    if(expansions > 0){
+		if (series=="cosine"){
+            dscl = units::drop_units(dist/w)  # unit conversion here; drop units is safe
+            exp.term <- cosine.expansion( dscl, expansions )
+		} else if (series=="hermite"){
+            dscl = units::drop_units(dist/s)
+            exp.term <- hermite.expansion( dscl, expansions )
+		} else if (series == "simple") {
+            dscl = units::drop_units(dist/w)
+            exp.term <- simple.expansion( dscl, expansions )
+    } else {
+            stop( paste( "Unknown expansion series", series ))
+    }
 
-        nexp <- expansions #nexp <- min(expansions,length(a)-2)  # should be equal. If not, fire warning next
-        
-        #if( length(a) != (expansions+2) ) {
-        #    warning("Wrong number of parameters in expansion. Should be (expansions+2). Higher terms ignored.")
-        #}
+    expCoefs <- a[(length(a)-(expansions-1)):(length(a))]
+    key <- key * (1 + c(exp.term %*% expCoefs))
+  }
 
-  		if (series=="cosine"){
-              dscl = units::drop_units(dist/w)  # unit conversion here; drop units is safe
-              exp.term <- cosine.expansion( dscl, nexp )
-  		} else if (series=="hermite"){
-              dscl = units::drop_units(dist/s)
-              exp.term <- hermite.expansion( dscl, nexp )
-  		} else if (series == "simple") {
-              dscl = units::drop_units(dist/w)
-              exp.term <- simple.expansion( dscl, nexp )
-      } else {
-              stop( paste( "Unknown expansion series", series ))
-      }
+  if( scale ){
+      key = key / integration.constant(dist = dist
+                                     , density = hazrate.like
+                                     , a = a
+                                     , covars = covars
+                                     , w.lo = w.lo
+                                     , w.hi = w.hi
+                                     , series = series
+                                     , expansions = expansions
+                                     , pointSurvey = pointSurvey)
+  }
   
-      dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
-    }
-    
-    # else if(length(a) > 2){
-    #    warning("Wrong number of parameters in hazrate. Only 2 needed if no expansions. Higher terms ignored.")
-    #}
-
-    if( scale ){
-        dfunc = dfunc / integration.constant(dist=dist, 
-                                             density=hazrate.like, 
-                                             a=a, 
-                                             covars = covars, 
-                                             w.lo=w.lo, 
-                                             w.hi=w.hi, 
-                                             series=series,
-                                             expansions=expansions, 
-                                             pointSurvey = pointSurvey)
-    }
-    
-    c(dfunc)
+  c(key)
 }
