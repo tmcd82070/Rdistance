@@ -66,7 +66,7 @@
 #' distance functions in the same color by setting 
 #' \code{col.dfunc} to
 #' a scalar. Plot blue-red pairs of distance functions 
-#' by setting \code{col.dfunc} = c("blue", "red")}. Etc. 
+#' by setting \code{col.dfunc} = \code{c("blue", "red")}. Etc. 
 #'   
 #' @param lty.dfunc Line type of the distance function(s).
 #' If covariates or \code{newdata} is present, 
@@ -227,124 +227,91 @@ plot.dfunc <- function( x,
     factor(names(uniqv)[which.max(uniqv)], levels = levels(v))
   }
   
-  if(!is.null(x$covars)){
 
-    if(missing(newdata) || is.null(newdata)){
-      # Note: x$model.frame has all distances, even those < w.lo and > w.hi,
-      # and x$model.frame[,1] is the response (i.e., distances).
-      # x$covars has ONLY covariates for distances between w.lo and w.hi
-      
-      covNames <- labels(terms(x$model.frame)) # Intercept not included here
-      newdata <- matrix(NA, nrow = 1, ncol = length(covNames))
-      colnames(newdata) <- covNames
-      newdata <- data.frame(newdata)
-      origDist <- model.response(x$model.frame) # because x$dist is missing out of strip obs
-      inStrip <- (x$w.lo <= origDist) & (origDist <= x$w.hi)
-      factor.names <- attr(terms(x$model.frame), "dataClasses")
-      factor.names <- names(factor.names)[ factor.names == "factor" ]
-      for( nm in covNames ) {
-        if( nm %in% factor.names ) {
-          newdata[,nm] <- getmode(x$model.frame[inStrip, nm]) # Use mode to predict
-        } else {
-          newdata[,nm] <- mean(x$model.frame[inStrip, nm]) # Use mean
-        }
+  # Fixup new data ----
+  if(missing(newdata) || is.null(newdata)){
+    # Note: x$model.frame has all distances, even those < w.lo and > w.hi,
+    # and x$model.frame[,1] is the response (i.e., distances).
+    # x$covars has ONLY covariates for distances between w.lo and w.hi
+    # x$model.frame has the original factors un-expanded to indicator variables.
+    # x$covars has all factors expanded into indicators using specified contrasts.
+    
+    covNames <- labels(terms(x$model.frame)) # Intercept not included here
+    newdata <- matrix(NA, nrow = 1, ncol = length(covNames))
+    colnames(newdata) <- covNames
+    newdata <- data.frame(newdata)
+    origDist <- model.response(x$model.frame) # because x$dist is missing out of strip obs
+    inStrip <- (x$w.lo <= origDist) & (origDist <= x$w.hi)
+    factor.names <- attr(terms(x$model.frame), "dataClasses")
+    factor.names <- names(factor.names)[ factor.names == "factor" ]
+    for( nm in covNames ) {
+      if( nm %in% factor.names ) {
+        newdata[,nm] <- getmode(x$model.frame[inStrip, nm]) # Use mode to predict
+      } else {
+        newdata[,nm] <- mean(x$model.frame[inStrip, nm]) # Use mean
       }
-    } 
-    
-    params <- predict.dfunc(object = x
-                          , newdata = newdata
-                          , type="parameters")
-    
-    # Use covars= NULL here because we evaluated covariates to get params above
-    # after apply, y is length(x) x nrow(newdata).  each column is a unscaled distance 
-    # function (f(x))
-    y <- apply(X = params
-             , MARGIN = 1
-             , FUN = like
-             , dist = x.seq - x$w.lo
-             , series = x$series, covars = NULL
-             , expansions = x$expansions
-             , w.lo = zero
-             , w.hi=x$w.hi - x$w.lo
-             , pointSurvey = FALSE )  
-    y <- t(y)  # now, each row of y is a dfunc
-    
-    f.at.x0 <- apply(X = params
-                   , MARGIN = 1
-                   , FUN = like
-                   , dist = x0 - x$w.lo
-                   , series = x$series
-                   , covars = NULL
-                   , expansions = x$expansions
-                   , w.lo = zero
-                   , w.hi = x$w.hi - x$w.lo
-                   , pointSurvey = FALSE )
-    scaler <- g.at.x0 / f.at.x0 # a length n vector 
-    
-    y <- y * scaler  # length(scalar) == nrow(y), so this works right
-
-    y <- t(y) # for some reason, we go back to columns b.c. we plot by columns below. Could change this.
-
-    if( !x$pointSurvey ){
-      ybarhgts <- cnts$density * scaler[1]  # not sure this is right
-      # plotBars <- TRUE
-    } else {
-      y <- y * (x.seq - x$w.lo)
-      yscl <- (x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
-      ybarhgts <-  cnts$density * yscl
-      # plotBars <- FALSE
     }
-    
-  } else {
-    
-    # this is the No Covars case
-    y <- like( x$parameters, x.seq - x$w.lo, series=x$series, expansions=x$expansions, 
-               w.lo=zero, w.hi=x$w.hi - x$w.lo, pointSurvey = FALSE, covars=NULL )
-
-    if(x$pointSurvey){
-      f.at.x0 <- like( x$parameters, x0 - x$w.lo, series=x$series, expansions=x$expansions, 
-                       w.lo=zero, w.hi=x$w.hi-x$w.lo, pointSurvey = FALSE, covars=NULL, 
-                       scale=FALSE)
-      
-      if(any(is.na(f.at.x0) | (f.at.x0 <= 0))){
-        #   can happen when parameters at the border of parameter space
-        scaler <- 1
-        warning("g(x.scale) is missing or <= zero. One or more parameters likely at their boundaries. Caution.")
-      } else {
-        scaler <- g.at.x0 / f.at.x0 
-      }
-      
-      y <- y * scaler  
-      y <- y * units::drop_units(x.seq - x$w.lo)
-      yscl <- units::drop_units(x.seq[2]-x.seq[1]) * sum(y[-length(y)]+y[-1]) / 2
-      ybarhgts <-  cnts$density * yscl
-    } else {
-      # (tlm) someone stuck in the following line, which works when xmax = 0, 
-      # but I don't think works for other cases, like Gamma.
-      #f.max <- F.maximize.g(x, covars = NULL) 
-      
-      f.max <- like( x$parameters, x0 - x$w.lo, series=x$series, covars=NULL,
-                     expansions=x$expansions, w.lo=zero, 
-                     w.hi=x$w.hi-x$w.lo, pointSurvey = x$pointSurvey )
-      
-      if(any(is.na(f.max) | (f.max <= 0))){
-        #   can happen when parameters at the border of parameter space
-        yscl <- 1.0
-        warning("g(x.scale) is missing or <= zero. One or more parameters likely at their boundaries. Caution.")
-      } else {
-        yscl <- g.at.x0 / f.max
-      }
-      
-      if(length(yscl > 1)){
-        yscl <- yscl[1]
-      }
-      y <- y * yscl
-      ybarhgts <- cnts$density * yscl
-      
-      y <- matrix(y, ncol = 1)
-    } 
+  } 
+  
+  # Predict params ----
+  params <- predict.dfunc(object = x
+                        , newdata = newdata
+                        , type="parameters")
+  
+  if(is.null(x$covars)){
+    # If model has no covariates, there is only one line regardless of newdata.
+    params <- params[1,,drop = FALSE]
   }
   
+  # Predict distance function lines ----
+  # Use covars= NULL here because we evaluated covariates in predict.dfunc above.
+  # After next apply, y is length(x.seq) x nrow(parms).  each column is a unscaled distance 
+  # function (f(x))
+  y <- apply(X = params
+           , MARGIN = 1
+           , FUN = like
+           , dist = x.seq - x$w.lo
+           , series = x$series
+           , covars = NULL
+           , expansions = x$expansions
+           , w.lo = zero
+           , w.hi = x$w.hi - x$w.lo
+           , pointSurvey = FALSE
+           , scale = TRUE
+           )  
+  
+  y <- t(y)  # now, each row of y is a dfunc
+
+  f.at.x0 <- apply(X = params
+                 , MARGIN = 1
+                 , FUN = like
+                 , dist = x0 - x$w.lo
+                 , series = x$series
+                 , covars = NULL
+                 , expansions = x$expansions
+                 , w.lo = zero
+                 , w.hi = x$w.hi - x$w.lo
+                 , pointSurvey = FALSE 
+                 , scale = TRUE
+                 )
+  
+  scaler <- g.at.x0 / f.at.x0 # a length n vector, n = nrow(params) 
+
+  # Did you know that 'scaler' is ESW?  Only applies for lines. Makes sense. 1/f(0) = ESW in 
+  # the old formulas.
+  
+  y <- y * scaler  # length(scalar) == nrow(y), so this works right
+
+  y <- t(y) # for some reason, we go back to columns b.c. we plot by columns below. Could change this.
+
+  if( x$pointSurvey ){
+    # ybarhgts <- cnts$density * scaler[1]  # not sure this is right
+    # } else {
+    y <- y * units::drop_units(x.seq - x$w.lo)
+    scaler <- units::drop_units(x.seq[2]-x.seq[1]) * colSums(y[-nrow(y),,drop = FALSE]+y[-1,,drop = FALSE]) / 2
+  }
+  ybarhgts <-  cnts$density * mean(scaler)
+
   # after here, y is a matrix, columns are distance functions.
   
   if( include.zero & x$like.form == "hazrate" ){
@@ -453,7 +420,7 @@ plot.dfunc <- function( x,
            lty=lty.dfunc[1] )
   }
   
-  #   If model did not converge, print a message on the graph.
+  # Check convergence ----
   if( (x$like.form != "smu") && x$convergence != 0 ){
     if( x$convergence == -1 ){
       mess <- "Solution failure"
@@ -462,7 +429,10 @@ plot.dfunc <- function( x,
     }
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", x$fit$message, sep=""), cex=1, adj=.5, col="black")
-  } else if( any(y > 1) ){
+  }
+  
+  # Check for Probabilities > 1 ----
+  if( any(y > 1) & (!x$pointSurvey) ){
     # some g(x) > 1, should'nt happen
     mess <- "Probabilities > 1"
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
@@ -470,7 +440,10 @@ plot.dfunc <- function( x,
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
     mess <- paste0("Check g(", format(x0), ")= ", round(g.at.x0,2), " assumption")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
-  } else if( any(is.na(y)) | any(y < 0) ){
+  } 
+  
+  # Check missing or <0 y values ----
+  if( any(is.na(y)) | any(y < 0) ){
     #   invalid scaling, g0 is wrong
     mess <- "Probabilities < 0"
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
@@ -478,7 +451,7 @@ plot.dfunc <- function( x,
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
   }
 
-  # Add legend to plot if covars are present
+  # Legend ----
   if(legend & !is.null(x$covars)){
     for(j in 1:ncol(newdata)){
       if(is.numeric(newdata[,j])){
@@ -504,8 +477,10 @@ plot.dfunc <- function( x,
            col = col.dfunc, cex = 0.7)
   }
   
-  #x$xscl.plot <- xscl   # gonna need this to plot something on the graph.
-  x$yscl <- yscl   # this is g(x) / f(x).  Might want this later.
+  # Clean up ----
+  x$yscl <- scaler   # this is g(x) / f(x) = ESW if lines. One for each row in newdata.  Might want this later.
+  x$barHeights <- ybarhgts  # scaled to mean scaler.
+  x$barWidths <- xscl
   
   invisible(x)
 }

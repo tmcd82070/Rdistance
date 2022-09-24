@@ -94,33 +94,44 @@ EDR <- function(obj, newdata){
 
     # seqy <- seqx * density( dist = seqx, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
     
+    zero <- units::set_units(x = 0
+                             , value = obj$outputUnits
+                             , mode = "standard")
+
     x <- x - obj$w.lo
-    y <- x * apply(params, 1, like, dist= x, 
-               series=obj$series, covars = NULL, 
-               expansions=obj$expansions, 
-               w.lo = 0, w.hi=obj$w.hi-obj$w.lo, 
-               pointSurvey = obj$pointSurvey, 
-               scale=FALSE)    
+    y <- x * apply(X = params
+                 , MARGIN = 1
+                 , FUN = like
+                 , dist = x
+                 , series = obj$series
+                 , covars = NULL
+                 , expansions = obj$expansions
+                 , w.lo = zero
+                 , w.hi = obj$w.hi - obj$w.lo
+                 , pointSurvey = obj$pointSurvey
+                 , scale=FALSE)    
     y <- t(y)
 
     # Trapazoid rule.  
-    dx <- x[3]-x[2]
+    dx <- units::drop_units(x[3]-x[2])
     y1 <- y[,-1,drop=FALSE]
     y  <- y[,-ncol(y),drop=FALSE]
     rho <- dx*rowSums(y + y1)/2
     rho <- sqrt(2*rho)
-  
+    rho <- units::set_units(rho, obj$outputUnits, mode = "standard")
+    
   } else {
     # this returns (Integral xg(x)dx)/dist
-    integral <- integration.constant(dist=obj$dist,
-                                     density=like,
-                                     a=obj$parameters, 
-                                     covars = obj$covars,
-                                     w.lo=obj$w.lo, 
-                                     w.hi=obj$w.hi, 
-                                     expansions = obj$expansions,
-                                     pointSurvey = obj$pointSurvey,
-                                     series = obj$series)
+    integral <- integration.constant(dist = obj$dist
+                                   , density = like
+                                   , a = obj$parameters
+                                   , covars = obj$covars
+                                   , w.lo = obj$w.lo
+                                   , w.hi = obj$w.hi
+                                   , expansions = obj$expansions
+                                   , pointSurvey = obj$pointSurvey
+                                   , series = obj$series
+                                   )
     # obj$dist is in denominator of integration.constant for point surveys. 
     # multiply here to remove it. vector inside root should be constant.
     rho <- sqrt(2 * integral * units::drop_units(obj$dist))[1]

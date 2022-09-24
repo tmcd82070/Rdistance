@@ -90,8 +90,8 @@ integration.constant <- function(dist,
   density = match.fun(density)
   
   # We need w.lo, w.hi, and dist to have same units. 
-  # This is important because we occasionally drop units in "key" function calculation 
-  # of densities. I cannot think of a case where units(w.lo) != units(dist), 
+  # This is important because we occasionally drop units in integral calculations below. 
+  # I cannot think of a case where units(w.lo) != units(dist), 
   # but just in case...
   if( units(w.lo) != units(dist)){
     w.lo <- units::set_units(w.lo, units(dist), mode = "standard")
@@ -123,7 +123,7 @@ integration.constant <- function(dist,
     unique.covars <- covars[!dupCovars,] 
     PkeyCol <- ncol(unique.covars)
     
-    # Remember that unique.covars now has extra column, zzzPkey hanging off the end
+    # Remember that unique.covars now has extra column, zzzPkey 
     # don't include this column in calculations below (or set a[last]=0)
     # covars and unique.covars now have Pkey, which we will use to 
     # merge later
@@ -135,14 +135,23 @@ integration.constant <- function(dist,
     if(pointSurvey){
       seqx = seq(w.lo, w.hi, length=nTrapazoids) 
       for(i in 1:nrow(unique.covars)){
-        temp.covars <- matrix(as.numeric(unique.covars[i,-PkeyCol]),nrow=length(seqx),ncol=ncol(unique.covars)-1, byrow=TRUE)
-        seqy[[i]] <- seqx * density(a = a, dist = seqx, covars = temp.covars,
-                    scale = FALSE, w.lo = w.lo, w.hi = w.hi, 
-                    expansions = expansions, series=series)
-        temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
+        temp.covars <- matrix(as.numeric(unique.covars[i,-PkeyCol])
+                            , nrow = length(seqx)
+                            , ncol = ncol(unique.covars)-1
+                            , byrow=TRUE)
+        seqy[[i]] <- units::drop_units(seqx) * density(a = a
+                                  , dist = seqx
+                                  , covars = temp.covars
+                                  , scale = FALSE
+                                  , w.lo = w.lo
+                                  , w.hi = w.hi
+                                  , expansions = expansions
+                                  , series=series
+                                  )
+        temp.scaler[i] <- units::drop_units(seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
-    }
-    else if(identical(density, halfnorm.like) & expansions == 0){
+
+    } else if(identical(density, halfnorm.like) & expansions == 0){
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       sigma <- exp(s)  # link function here
 
@@ -200,19 +209,19 @@ integration.constant <- function(dist,
                            , expansions = expansions
                            , series = series 
                            )
-        temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
+        temp.scaler[i] <- units::drop_units(seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
     }
 
-    df <- data.frame(unique.covars,temp.scaler)
+    df <- data.frame(unique.covars, temp.scaler)
 
     z <- merge(covars, df, by.x="zzzPkey", by.y="zzzPkey", sort=F)
     scaler <- z$temp.scaler
     if(pointSurvey){
-      scaler <- scaler/dist
+      scaler <- scaler/units::drop_units(dist)
     }
-  }
-  else if(pointSurvey){
+  } else if( pointSurvey ){
+    # This case is POINTS - NO Covariates
     seqx = seq(w.lo, w.hi, length=nTrapazoids) 
     seqy <- units::drop_units(seqx) * density( dist = seqx, scale = FALSE, 
                             w.lo = w.lo, w.hi = w.hi, a = a, 
@@ -220,9 +229,9 @@ integration.constant <- function(dist,
 
     #   trapezoid rule
     scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*units::drop_units(dist))
-  }
-  else{
-    # density should return unit-less numbers (height of density function)
+  } else {
+    # This case is LINES - NO Covariates
+    # Density should return unit-less numbers (height of density function)
     seqx = seq(w.lo, w.hi, length=nTrapazoids) 
     seqy <- density( dist = seqx, scale = FALSE, w.lo = w.lo, 
                      w.hi = w.hi, a = a, expansions = expansions, 
@@ -239,6 +248,7 @@ integration.constant <- function(dist,
   # the smallest possible number that does not result in log(x) = -Inf.
   # Because of the negative applied in nLL function we actually mant to return
   # the largest possible numbers such that when we sum them and others we don't get Inf
+
   if( any(indZeros <- is.na(scaler) | 
                is.infinite(scaler) | 
                is.nan(scaler) |
