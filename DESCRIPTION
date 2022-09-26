@@ -47,5 +47,5 @@ BugReports: https://github.com/tmcd82070/Rdistance/issues
 Suggests: knitr, rmarkdown, testthat, devtools
 VignetteBuilder: knitr
 Imports: graphics, stats, utils, units
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Encoding: UTF-8
