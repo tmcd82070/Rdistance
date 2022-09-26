@@ -408,7 +408,12 @@ plot.dfunc <- function( x,
   
   # Draw distance functions ----
   for(i in 1:ncol(y)){
-    lines( x.seq, y[,i], col=col.dfunc[i], lwd=lwd.dfunc[i], lty = lty.dfunc[i] )
+    lines( x.seq, y[,i]
+         , col=col.dfunc[i]
+         , lwd=lwd.dfunc[i]
+         , lty = lty.dfunc[i]
+         , xpd = TRUE
+         )
   }
 
   #   Add vertical lines at 0 and w if called for ----
