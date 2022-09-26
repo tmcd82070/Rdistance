@@ -77,7 +77,7 @@
 negexp.like <- function (a, 
                          dist, 
                          covars = NULL, 
-                         w.lo = 0, 
+                         w.lo = units::set_units(0,"m"), 
                          w.hi = max(dist),
                          series = "cosine", 
                          expansions = 0, 
@@ -124,8 +124,14 @@ negexp.like <- function (a,
               stop( paste( "Unknown expansion series", series ))
         }
 
-        key <- key * (1 + c(exp.term %*% a[(length(a)-(expansions-1)):(length(a))]))
+        expanCoefs <- a[(length(a)-(expansions-1)):(length(a))]
+        key <- key * (1 + c(exp.term %*% expanCoefs))
 
+        # without monotonicity restraints, function can go negative, 
+        # especially in a gap between datapoints. This makes no sense in distance
+        # sampling and screws up the convergence. 
+        key[ which(key < 0) ] <- 0
+        
     } 
     
     if( scale ){

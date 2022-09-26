@@ -59,37 +59,36 @@
 #' 
 #' @details 
 #' 
-#' The 'logistic' likelihood used has two 
-#' parameters.  Parameter \emph{a} determines the scale and is 
-#' sometimes called the 'threshold'.  Parameter \emph{b} determines 
-#' sharpness (slope) of the likelihood's decrease at \emph{a} and is sometimes 
-#' called the 'knee'.  In engineering, 
-#' this function is sometimes called the 
-#' \emph{heavy side} function.  The technical form 
+#' The 'logistic' likelihood contains two 
+#' parameters.  Parameter \eqn{a} determines the scale and is 
+#' labeled 'threshold' in Rdistance.  Parameter \eqn{b} determines 
+#' sharpness (slope) of the likelihood's decrease at \eqn{a} and is labeled
+#' 'knee' in Rdistance.  
+#' This function is sometimes called the 
+#' \emph{heavy side} function (e.g., engineering).  The technical form 
 #' of the function is, 
 #' \deqn{f(x|a,b) = 1 - \frac{1}{1 + \exp(-b(x-a))} = 
 #' \frac{\exp( -b(x-a) )}{1 + exp( -b(x-a) )},}{%
-#' f(x|a,b) = 1 - 1 / (1 + exp(-b*(x-a))) = exp(-b*(x-a)) / (1 + exp(-b*(x-a))),} 
-#' where \eqn{a} is the "threshold" and \eqn{b} is the "knee". 
+#' f(x|a,b) = 1 - 1 / (1 + exp(-b*(x-a))) = exp(-b*(x-a)) / (1 + exp(-b*(x-a))).} 
 #' 
-#' Parameter \eqn{a} = "threshold" is the location (distance) of 
-#' the distribution's median. That is, the inverse likelihood of 0.5 
-#' is \code{a} before scaling 
-#' (i.e., \code{uniform.like(c(a,b),a,scale=FALSE)} equals 
+#' Parameter \eqn{a} is the location (distance) of 
+#' 0.5. That is, the inverse likelihood of 0.5 
+#' is \eqn{a} before scaling 
+#' (i.e., \code{logistic.like( c(a,b), a, scale=FALSE)} equals 
 #' \code{0.5}). 
 #' 
-#' Parameter \code{b} = "knee" is slope of function 
-#' at \code{a}.  
-#' Prior to scaling for \code{g.x.scl}, 
-#' the slope of the likelihood at \eqn{a} is \eqn{-b/4}. 
+#' Parameter \eqn{b} is slope of function 
+#' at \eqn{a}.  
+#' Prior to scaling, 
+#' slope of the likelihood at \eqn{a} is \eqn{-b/4}. 
 #' If \eqn{b}
 #' is large, the "knee" is sharp and the likelihood can look 
 #' uniform with support from 
 #' \code{w.lo} to \eqn{a/f(0)}.  If \eqn{b} is small, the 
 #' "knee" is shallow and the density of observations declines 
-#' in an elongated "S" shape pivoting at \code{a/f(0)}.  
-#' As  \code{b} grows large and assuming f(0) = 1, the effective 
-#' strip width approaches \code{a}.  
+#' in an elongated "S" shape pivoting at \eqn{a/f(0)}.  
+#' As \eqn{b} grows large and assuming f(0) = 1, the effective 
+#' strip width approaches \eqn{a}.  
 #' 
 #' See plots in Examples. 
 #' 
@@ -144,7 +143,7 @@
 logistic.like <- function(a
                         , dist
                         , covars = NULL
-                        , w.lo = 0
+                        , w.lo = units::set_units(0,"m")
                         , w.hi = max(dist)
                         , series = "cosine"
                         , expansions = 0
@@ -201,6 +200,12 @@ logistic.like <- function(a
 
       expCoefs <- a[(length(a)-(expansions-1)):(length(a))]
       key <- key * (1 + c(exp.term %*% expCoefs))
+      
+      # without monotonicity restraints, function can go negative, 
+      # especially in a gap between datapoints. This makes no sense in distance
+      # sampling and screws up the convergence. 
+      key[ which(key < 0) ] <- 0
+      
   }
 
   if( scale ){

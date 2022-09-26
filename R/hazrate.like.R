@@ -121,7 +121,7 @@
 hazrate.like <- function(a, 
                          dist, 
                          covars = NULL, 
-                         w.lo = 0, 
+                         w.lo = units::set_units(0,"m"), 
                          w.hi = max(dist), 
                          series = "cosine", 
                          expansions = 0, 
@@ -170,6 +170,11 @@ hazrate.like <- function(a,
 
     expCoefs <- a[(length(a)-(expansions-1)):(length(a))]
     key <- key * (1 + c(exp.term %*% expCoefs))
+    
+    # without monotonicity restraints, function can go negative, 
+    # especially in a gap between datapoints. This makes no sense in distance
+    # sampling and screws up the convergence. 
+    key[ which(key < 0) ] <- 0
   }
 
   if( scale ){

@@ -81,11 +81,9 @@
 #' hence \code{na.rm=TRUE} in the sum. 
 #' If \code{scale} = TRUE, the integral of the likelihood from
 #'  \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, 
-#'  the integral of the likelihood is something else.
+#'  the integral of the likelihood is something else. 
+#' Values are always greater than or equal to zero.
 #'  
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#'         
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{uniform.like}},
@@ -120,7 +118,7 @@
 halfnorm.like <- function(a, 
                           dist, 
                           covars = NULL, 
-                          w.lo = 0, 
+                          w.lo = units::set_units(0,"m"), 
                           w.hi = max(dist), 
                           series = "cosine", 
                           expansions = 0, 
@@ -132,19 +130,14 @@ halfnorm.like <- function(a,
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
   if(!is.null(covars)){
-    
     q <- ncol(covars)
-    # not necessary, in all half norm cases, no extra params hanging off the end 
-    # but, I'll leave it here so it's compatible with other likelihoods and 
-    # just in case we want to allow expansions with covariates later.
     beta <- a[1:q] 
     s <- drop( covars %*% matrix(beta,ncol=1) )
     sigma <- exp(s)
   } else {
     sigma <- a[1]
   }
-  # cat(paste0("a[", 1:length(a), "]= ", a, "\n"))
-  
+
   key <- -(units::drop_units(dist*dist))/(2*sigma*sigma)  
   # Above is safe. Units of sigma will scale to units of dist. 'key' is unit-less
   key <- exp(key)
@@ -168,7 +161,14 @@ halfnorm.like <- function(a,
       stop( paste( "Unknown expansion series", series ))
     }
     
-    key <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
+    expCoeffs <- a[(length(a)-(nexp-1)):(length(a))]
+    key <- key * (1 + c(exp.term %*% expCoeffs))
+    
+    # without monotonicity restraints, function can go negative, 
+    # especially in a gap between datapoints. This makes no sense in distance
+    # sampling and screws up the convergence. 
+    key[ which(key < 0) ] <- 0
+    
   } 
   
   if( scale ){
