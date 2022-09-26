@@ -74,9 +74,21 @@ F.nLL <- function(a, dist, covars = NULL, like, w.lo=0, w.hi=max(dist), series, 
     }
     
     #print(L)
-    L[ !is.na(L) & (L <= 0) ] <- 1e-6   # happens at very bad values of parameters
+    L[ !is.na(L) & (L <= 0) ] <- .Machine$double.xmin   # happens at very bad values of parameters
 
-    nLL <- -sum(log(L), na.rm=TRUE)  # Note that distances > w in LL are set to NA
-    #print(nLL)
+    nLL <- -sum(log(L), na.rm=TRUE)  # Note that distances > w in L are set to NA
+
+    # Rules: 
+    #   RULE 1 FOR LIKELIHOODS: No matter how bad the guess at a, you cannot return Inf, -Inf, NA, or NaN
+    #   This means f.like can return NA, but not NaN (div by 0), Inf or -Inf for any row of data
+    #   Must program the likelihoods to trap these values and return the appropriate .Machine constants
+    #
+    #   RULE 2 FOR NLL: It is possible for all rows of returned L to be non-Inf and non-NaN, 
+    #   but there be enough of them that the sum overflows to Inf. I.e., values in L are 
+    #   hyper-close to 0 and log(L) is close to -Inf, then sum overflows.  Trap this here.
+    if( is.infinite(nLL) ){
+      nLL <- .Machine$double.xmax
+    }
+    
     nLL
 }

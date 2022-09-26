@@ -7,43 +7,21 @@
 #'   
 #' @param dfunc An estimated 'dfunc' object produced by \code{dfuncEstim}.
 #' 
-#' @param detectionData A data.frame with each row representing one detection
-#'   (see example dataset, \code{\link{sparrowDetectionData}}) and with at least
-#'   the following three columns: 
-#'   \itemize{ 
-#'     \item \code{siteID} = ID of the transect or point. 
-#'     \item \code{groupsize} = the number of individuals in the detected group. 
-#'     \item \code{dist} = the perpendicular, off-transect distance or radial
-#'       off-point distance to the detected group. 
-#'   }
-#'   
-#' @param siteData A data.frame with each row representing one site 
-#'   (transect or point) (see example dataset, 
-#'   \code{\link{sparrowSiteData}}). If the data in \code{detectionData}
-#'   is from line transects, \code{siteData} must have at 
-#'   least the following two columns:
-#'   \itemize{ 
-#'     \item \code{siteID} = ID of the transect or point. This vector 
-#'     is used during bootstrapping to resample sites. 
-#'     \item \code{length} = the length of the transect. 
-#'   }
-#'   If the data in \code{detectionData}
-#'   is from point transects, \code{siteData} must have a
-#'   \code{siteID} column only.  For both data types, \code{siteID} 
-#'     is used during bootstrapping to resample sites. 
-#'    
+#  Inherit 'detectionData' and 'siteData' documentation
+#' @inheritParams dfuncEstim 
+#' 
 #'     
-#' @param area Total study area size.  If \code{area} = 1, density is estimated.
-#'   Density has units (number of animals) per (squared 
-#'   units of the distance measurements).  For example, if distance values fitted
-#'   in \code{dfunc} are meters, density is number of individuals per
-#'   square meter.  If distances are miles, density is number of
-#'   individuals per square mile.  If \code{area} > 1, total abundance on the
-#'   study area is estimated and units are (number of animals).  This can also
-#'   be used to convert units for density. For example, if distance values fitted
-#'   in \code{dfunc} are meters, and area is set to 10,000, density is number
-#'   of individuals per hectare (ha; 1 ha = 10,000 square meters).
-#'   square meter.
+#' @param area Total study area size. If \code{area} is NULL (the default), 
+#'   area is set to 1 square unit of the output units. The default
+#'   is mostly for the case when interest lies in density. If \code{area}
+#'   is not NULL, it must have measurement units. 
+#'   The units on \code{area} must be convertible
+#'   to squared output units (if output units are "m", but be convertable 
+#'   to "m^2"). Hence, units on \code{area} must be two-dimensional.
+#'   Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and 
+#'   others all work.  If the \code{units}
+#'   package can convert \code{area} to the squared output units, 
+#'   it can be used. 
 #'   
 #' @param ci A scalar indicating the confidence level of confidence intervals. 
 #'   Confidence intervals are computed using the bias corrected bootstrap
@@ -127,6 +105,13 @@
 #'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
 #'   object (see \code{dfuncEstim}), plus the following: 
 #'   
+#'   \item{density}{Estimated density on the sampled area. The \emph{effectively}
+#'   sampled area is 2*L*ESW (not 2*L*w.hi). Density has squared units of the 
+#'   requested output units.  E.g., if \code{outputUnits} = "km" in the call 
+#'   to \code{dfuncEstim}}, units on density are 1/km^2. There exists no flexibility
+#'   to have differring distance and density units (e.g., "m" and "ha", or "km" and 
+#'   "acre").  To convert density to other units, use 
+#'   \code{units::set_units(x$density, "<units>")}. 
 #'  \item{abundance}{Estimated abundance in the study area (if \code{area} >
 #'  1) or estimated density in the study area (if \code{area} = 1).}
 #'   \item{n}{The number of detections
@@ -200,10 +185,9 @@
 #' # Fit half-normal detection function
 #' dfunc <- dfuncEstim(formula=dist~1,
 #'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#'                     likelihood="halfnorm", w.hi=units::as_units(100, "m"), pointSurvey=FALSE)
 #' 
 #' # Estimate abundance given a detection function
-#' # Note, area=10000 converts to density per hectare (for distances measured in meters)
 #' # Note, a person should do more than R=20 iterations
 #' fit <- abundEstim(dfunc, detectionData=sparrowDetectionData,
 #'                   siteData=sparrowSiteData, area=10000, R=20, ci=0.95,
@@ -218,10 +202,16 @@
 #' @importFrom graphics lines par
 #' @importFrom utils txtProgressBar setTxtProgressBar
 
-abundEstim <- function(dfunc, detectionData, siteData,
-                          area=1, ci=0.95, R=500, 
-                          plot.bs=FALSE, bySite=FALSE,
-                          showProgress=TRUE){
+abundEstim <- function(dfunc, 
+                       detectionData, 
+                       siteData,
+                       area=NULL, 
+                       ci=0.95, 
+                       R=500, 
+                       plot.bs=FALSE, 
+                       bySite=FALSE,
+                       showProgress=TRUE, 
+                       control = RdistanceControls()){
   
   # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
   if(!("dist" %in% names(detectionData))) stop("There is no column named 'dist' in your detectionData.")
@@ -247,7 +237,41 @@ abundEstim <- function(dfunc, detectionData, siteData,
     stop("Site IDs must be unique.")
   }
   
+  # ---- Measurement units check. ----
+  if( !dfunc$pointSurvey ){
+    if( !inherits(siteData$length, "units") & control$requireUnits ){
+      dfName <- deparse(substitute(siteData))
+      stop(paste("Transect length measurement units are required.", 
+                 "Assign units to transect length by attaching 'units' package then:\n", 
+                 paste0("units(",dfName,"$length)"), "<- '<units of measurment>',\n", 
+                 "For example, 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
+    } else if( control$requireUnits ){
+      # if we are here, length has units. convert them to units used during estimation.
+      # Input dfunc must have a $outputUnits component.
+      siteData$length <-  units::set_units(siteData$length, dfunc$outputUnits, mode = "standard")
+    }
+  }
   
+  if( !inherits(area, "units") & control$requireUnits ){
+    if( !is.null(area) ){
+      # If we are here, area did not come with units, we require units, and it's not null: ERROR
+      stop(paste("Study area measurement units are required.", 
+                 "Assign units to area by attaching 'units' package then:\n", 
+                 "units(area) <- '<units of measurment>'.", 
+                 "For example, '<units of measure>' = 'm^2' (sq meters), 'ha' (hectares), 'km^2', or 'acre'.\nSee units::valid_udunits()"))
+    }
+    # if we are here, area is NULL: Report abundance in 1 square unit of measure
+    area <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
+  } else if( control$requireUnits ){
+    # if we are here, area has units and it is not null (because you cannot 
+    # assign units to NULL) but it could be NA)
+    # Convert area units to square of outputUnits.
+    # This converts units like "hectare" to "m^2". If cannot convert, and error is thrown here
+    squareOutputUnits <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
+    area <- units::set_units(area, squareOutputUnits, mode = "standard")
+  }
+  
+  # ---- Check CI - bySite combination ----
   # (jdc) this function isn't setup to generate bootstrap CIs of site-level abundance
   # (jdc) so allowing bySite=TRUE and !is.null(ci) is misleading, and throws an error
   # (jdc) in the bias-correction stage because ans$n.hat has the wrong dimensions
@@ -260,79 +284,14 @@ abundEstim <- function(dfunc, detectionData, siteData,
   }
   
   
-  # =============================================
-  # Plotting 
-  f.plot.bs <- function(x,plot.axes=FALSE,  ...) {
-    x.seq <- seq(x$w.lo, x$w.hi, length = 200)
-    g.at.x0 <- x$g.x.scl
-    x0 <- x$x.scl
-
-    if( x$like.form == "smu"){
-      y <- smu.like(x$parameters, x.seq - x$w.lo, x$w.hi, 
-                    scale = FALSE, pointSurvey = FALSE)
-      f.at.x0 <- smu.like(x$parameters, x0 - x$w.lo, x$w.hi, 
-                          scale = FALSE, pointSurvey = FALSE)
-    } else {
-      if(!is.null(x$covars)){
-        covMeanMat <-  colMeans(x$covars)
-        covMeanMat <- matrix(covMeanMat, 1) # this has the intercept
-  
-        BETA <- stats::coef(x)
-        p <- ncol(x$covars)
-        beta <- BETA[1:p]   # could be extra parameters tacked on. e.g., knee for uniform
-        params <- covMeanMat %*% beta
-        params <- exp(params)  # All link functions are exp...thus far
-        if(p<length(BETA)){
-          extraParams <- matrix(BETA[(p+1):length(BETA)], nrow(covMeanMat), length(BETA)-p, byrow=TRUE)
-          params <- cbind(params, extraParams)
-        }
-        #params <- predict.dfunc(x, newdata=covMeans, type="parameters")
-      } else {
-        params <- matrix(x$parameters,1)
-      }
-      
-      y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
-                 series=x$series, covars = NULL, 
-                 expansions=x$expansions, 
-                 w.lo = x$w.lo, w.hi=x$w.hi, 
-                 pointSurvey = FALSE )  
-      y <- t(y)  # now, each row of y is a dfunc
-  
-      f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
-                       series=x$series, covars = NULL, 
-                       expansions=x$expansions, 
-                       w.lo=x$w.lo, w.hi=x$w.hi, 
-                       pointSurvey = FALSE )
-    }
-    
-    scaler <- g.at.x0 / f.at.x0 # a length n vector 
-    
-    y <- y * scaler  # length(scalar) == nrow(y), so this works right
-    
-    y <- t(y)
-    
-    if( x$pointSurvey ){
-      y <- y * (x.seq - x$w.lo)
-    }
-    
-    if(plot.axes){
-      yMax <- max(y*1.2)
-      plot(1,1,type="n",ylim=c(0,yMax), xlim=range(x.seq), xlab="",ylab="",bty="n")
-      title( xlab="Distance", ylab="Observation density" )
-    } 
-    lines(x.seq, y , ...)
-    
-  }
-  # =============================================
   
   if (plot.bs) {
     like <- match.fun(paste(dfunc$like.form, ".like", sep = ""))
     par(xpd=TRUE)
-    if( dfunc$pointSurvey ){
-      f.plot.bs(dfunc,plot.axes=TRUE, col="red", lwd=3)
-    } else {
-      plot(dfunc) 
-    }
+    plot(dfunc)
+    # if( dfunc$pointSurvey ){
+    #   lines(dfunc, col="red", lwd=3)
+    # } 
   }
   
 
@@ -363,6 +322,7 @@ abundEstim <- function(dfunc, detectionData, siteData,
     # but the print.abund and print.dfunc were not working
     # when I just stored ans <- abund.  This is clunky, but resolves the issue.
     ans <- dfunc
+    ans$density <- abund$density
     ans$n.hat <- abund$abundance
     ans$n <- abund$n.groups
     ans$area <- abund$area
@@ -377,15 +337,13 @@ abundEstim <- function(dfunc, detectionData, siteData,
     }
     
     
-    
-    
-    
     if (!is.null(ci)) {
       # Compute bootstrap CI by resampling transects
       
       g.x.scl.orig <- dfunc$call.g.x.scl  # g(0) or g(x) estimate
       
-      n.hat.bs <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
+      B <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
+      B <- data.frame(density = B, abundance = B)
       
       # now including utils as import,
       if(showProgress){
@@ -465,19 +423,14 @@ abundEstim <- function(dfunc, detectionData, siteData,
                                g.x.scl = g.x.scl.bs,
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
+                               outputUnits = dfunc$outputUnits,
                                warn = FALSE)
         }
         
-        if(dfunc.bs$convergence != 0) {
-          dfunc.bs <- lastConvergentDfunc
-        } else {
-          lastConvergentDfunc <- dfunc.bs
-          convergedCount <- convergedCount + 1
-        }
-        
         # Store ESW if it converged
-        if (dfunc$like.form == "smu" || dfunc.bs$convergence == 0) {
-          
+        if(dfunc$like.form == "smu" || dfunc.bs$convergence == 0) {
+          convergedCount <- convergedCount + 1
+
           # Note: there are duplicate siteID's in newSiteData.  This is okay
           # because number of unique siteIDs is never computed in estimateN. 
           # Number of sites in estiamteN is nrow(newSiteData)
@@ -485,17 +438,17 @@ abundEstim <- function(dfunc, detectionData, siteData,
           # Estimate abundance
           # (jdc) this function isn't setup to generate bootstrap CIs of site-level abundance, so this is always bySite=FALSE
           # (jdc) so bySite=TRUE and !is.null(ci) is perhaps misleading
-          abund.bs <- estimateN(dfunc=dfunc.bs,
-                                detectionData=new.detectionData,
-                                siteData=new.siteData, area=area, 
-                                bySite=FALSE)
+          abund.bs <- estimateN(dfunc = dfunc.bs,
+                                detectionData = new.detectionData,
+                                siteData = new.siteData, 
+                                area = area, 
+                                bySite = FALSE)
           
-          n.hat.bs[i] <- abund.bs$abundance
-          
-          
+          B$abundance[i] <- abund.bs$abundance
+          B$density[i] <- abund.bs$density
+
           if (plot.bs ) {
-            # (jdc) - this is plotting the prob of detection, doesn't match scaling of dfunc plot for points
-            f.plot.bs(dfunc.bs, col = "blue", lwd = 0.5)  
+            lines(dfunc.bs, col = "blue", lwd = 0.5)  
           }
           
           
@@ -515,18 +468,27 @@ abundEstim <- function(dfunc, detectionData, siteData,
       
       # plot red line of original fit again (over bs lines)
       if (plot.bs) {
-        f.plot.bs(dfunc, col = "red", lwd = 3)
+        lines(dfunc, col = "red", lwd = 3)
       } 
-      
-      
+
+      # Density units do not get assigned to B. Assign them now      
+      B$density <- units::set_units(B$density, units(ans$density), mode = "standard")
+
       # Calculate CI from bootstrap replicates using bias-corrected bootstrap method in Manly text
-      p <- mean(n.hat.bs > ans$n.hat, na.rm = TRUE)
-      z.0 <- qnorm(1 - p)
-      z.alpha <- qnorm(1 - ((1 - ci)/2))
-      p.L <- pnorm(2 * z.0 - z.alpha)
-      p.H <- pnorm(2 * z.0 + z.alpha)
-      ans$ci <- quantile(n.hat.bs[!is.na(n.hat.bs)], p = c(p.L, p.H))
-      ans$B <- n.hat.bs
+      # Abundance first
+      bcCI <- function(x.bs, x, ci){
+        p <- mean(x.bs > x, na.rm = TRUE)
+        z.0 <- qnorm(1 - p)
+        z.alpha <- qnorm(1 - ((1 - ci)/2))
+        p.L <- pnorm(2 * z.0 - z.alpha)
+        p.H <- pnorm(2 * z.0 + z.alpha)
+        ans <- quantile(x.bs[!is.na(x.bs)], p = c(p.L, p.H))
+        names(ans) <- paste0(100*c( (1 - ci)/2, 1 - (1-ci)/2 ), "%")
+        ans
+      }
+      ans$n.hat.ci <- bcCI(B$abundance, ans$n.hat, ci)
+      ans$density.ci <- bcCI(B$density, ans$density, ci)
+      ans$B <- B
       ans$nItersConverged <- convergedCount
       if (!(dfunc$like.form=="smu") && (convergedCount < R) && showProgress){
         cat(paste( R - convergedCount, "of", R, "iterations did not converge.\n"))
@@ -534,9 +496,10 @@ abundEstim <- function(dfunc, detectionData, siteData,
       
     } else {
       # Don't compute CI if ci is null
-      ans$B <- NA
-      ans$ci <- c(NA, NA)
-      ans$nItersConverged <- NA
+      ans$B <- NULL
+      ans$density.ci <- c(NULL, NULL)
+      ans$n.hat.ci <- c(NULL, NULL)
+      ans$nItersConverged <- NULL
     }  # end else
     
     

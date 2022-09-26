@@ -1,0 +1,22 @@
+---
+title: Notes
+output: html_document
+---
+This is where you are:
+
+## Need to test:  
+1.    presence of covariates (point and line)
+2.    [DONE] Testing methods for Point surveys (start with x_test_points_noCovars.R maybe)
+3.    Test methods for all the options in controls$ esp $requireunits
+4.    Test methods for by.site = T in abundEstim
+5.    Test methods that compare to past values, not just for presence of output
+6.    [DONE] Test file for different units to check equality. e.g., set w.hi = "100 m" then w.hi = 100 m in ft and check that answers are same.
+
+ 
+## Changes anticipated:
+1.    Include one numerical integration routine.  Maybe use R::integrate().
+Call this routine from integration.constant() and ESW().  Upgrade to 
+Simpson's alternate composite formula. https://en.wikipedia.org/wiki/Simpson's_rule
+
+(dx/48) * (17f(x_0) + 59f(x_1) + 43f(x_2) + 49f(x_3) + 48f(x_4) + 48f(x_5) + ...
+          + 48f(x_n-4) + 49f(x_n-3) + 43f(x_n-2) + 59f(x_n-1) + 17f(x_n))

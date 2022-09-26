@@ -51,17 +51,19 @@ processing a vignette, or the package's [GitHub Wiki](https://github.com/tmcd820
 ## Installation
 
 **Stable version:** 
-`install.packages("Rdistance")`
+```
+install.packages("Rdistance")
+```
 
 **Development version:** Directly from GitHub using the `devtools` package:
 
-`devtools::install_github("tmcd82070/Rdistance")`
+```
+if (!require("devtools")) {
+  install.packages("devtools")
+}
+devtools::install_github("tmcd82070/Rdistance")
+```
 
-Or, one can clone the repository and install using regular R 
-package installation methods.  In a command window:
-
-`git clone https://github.com/tmcd82070/Rdistance.git Rdistance`<br>
-`r CMD install Rdistance`
 
 <img src="README_files/RdistanceSeparator.PNG" width="4032" />
 

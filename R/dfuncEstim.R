@@ -1,6 +1,6 @@
 #' @title Estimate a detection function from distance-sampling data
 #' 
-#' @description Fit a specific detection function off-transect 
+#' @description Fit a specific detection function to off-transect 
 #' or off-point (radial) distances.
 #' 
 #' @param formula A standard formula object (e.g., \code{dist ~ 1}, 
@@ -19,21 +19,25 @@
 #' \itemize{
 #'   \item Detection Distances: A single column containing 
 #'   detection distances must be specified on the left-hand 
-#'   side of \code{formula}.
+#'   side of \code{formula}.  As of Rdistance version 2.2.0, 
+#'   the detection distances must have measurement units attached. 
+#'   Attach measurements units to distances using \code{library(units);units()<-}.
+#'   For example, \code{library(units)} followed by \code{units(df$dist) <- "m"} or 
+#'   \code{units(df$dist) <- "ft"} will work. Alternatively, 
+#'   \code{df$dist <- units::set_units(df$dist, "m")} also works.
+#'   
 #'   \item Site IDs: The ID of the transect or point 
 #'   (i.e., the 'site') where each object or group was detected.
 #'   The site ID  column(s) (see arguments \code{transectID} and
 #'   \code{pointID}) must 
 #'   specify the site (transect or point) so that this 
 #'   data frame can be merged with \code{siteData}.    
-#' } 
-#' Optionally, this data frame can also contain the following 
-#' information: 
-#' \itemize{
-#'   \item Group Sizes: The number of individuals in the group
+#'  
+#'   \item If abundance will be estimated, this data frame 
+#'   must also contain column \code{groupsize}. \code{groupsize}
+#'   contains the number of individuals 
 #'   associated with each detection.  This column is not 
-#'   required to estimate a distance function.  This column 
-#'   is required to estimate abundance (i.e., in function `abundEstim`).  
+#'   required to estimate a distance function only.   
 #'   
 #'   \item In a later release, \code{Rdistance} will allow detection-level 
 #'   covariates.  When that happens, detection-level 
@@ -75,13 +79,21 @@
 #' or line-transect surveys (FALSE).  
 #' 
 #' @param w.lo Lower or left-truncation limit of the distances in distance data. 
-#' This is the minimum possible off-transect distance. Default is 0.
-#' 
+#' This is the minimum possible off-transect distance. Default is 0.  If 
+#' \code{w.lo} is greater than 0, it must be assigned measurement units
+#' using \code{units(w.lo) <- "<units>"} or 
+#' \code{w.lo <- units::set_units(w.lo, "<units>")}. 
+#' See examples in the help for \code{set_units}.
+#'  
 #' @param w.hi Upper or right-truncation limit of the distances 
 #' in \code{dist}. This is the maximum off-transect distance that 
-#' could be observed. If left unspecified (i.e., at the default of 
-#' NULL), right-truncation is set to the maximum of the observed 
-#' distances.
+#' could be observed. If unspecified (i.e., NULL), 
+#' right-truncation is set to the maximum of the observed 
+#' distances.  If \code{w.hi} is specified, it must have associated 
+#' measurement units.  Assign measurement units
+#' using \code{units(w.hi) <- "<units>"} or 
+#' \code{w.hi <- units::set_units(w.hi, "<units>")}. 
+#' See examples in the help for \code{set_units}. 
 #' 
 #' @param expansions A scalar specifying the number of terms 
 #' in \code{series} to compute. Depending on the series, 
@@ -96,14 +108,7 @@
 #' specifies the type of expansion to use. Valid values at 
 #' present are 'simple', 'hermite', and 'cosine'. 
 #' 
-#' @param x.scl This parameter is passed to \code{F.gx.estim}. 
-#' See \code{F.gx.estim} documentation for definition.
-#' 
-#' @param g.x.scl This parameter is passed to \code{F.gx.estim}. 
-#' See \code{F.gx.estim} documentation for definition.
-#' 
-#' @param observer This parameter is passed to \code{F.gx.estim}. 
-#' See \code{F.gx.estim} documentation for definition.
+#' @inheritParams F.gx.estim
 #' 
 #' @param warn A logical scalar specifying whether to issue 
 #' an R warning if the estimation did not converge or if one 
@@ -112,11 +117,11 @@
 #' its default value of \code{TRUE}.  When computing bootstrap 
 #' confidence intervals, setting \code{warn = FALSE} 
 #' turns off annoying warnings when an iteration does 
-#' not converge.  Regardless of \code{warn}, messages about 
+#' not converge.  Regardless of \code{warn}, after 
+#' completion all messages about 
 #' convergence and boundary conditions are printed 
 #' by \code{print.dfunc}, \code{print.abund}, and 
-#' \code{plot.dfunc}, so there should be little harm in 
-#' setting \code{warn = FALSE}.
+#' \code{plot.dfunc}. 
 #' 
 #' @param transectID A character vector naming the transect ID column(s) in
 #' \code{detectionData} and \code{siteData}.  \code{Rdistance} 
@@ -159,10 +164,18 @@
 #' the defaults, and the requirements for this list. 
 #' See examples below for how to change controls.
 #' 
-#' @param smuTerms The number of smoothing terms to fit in the 
-#' distance function.  Default of 0 fits no spline functions in the
-#' distance function.  A value of 1 fits one spline smoothing function, 
-#' 2 fits two, etc. 
+#' @param outputUnits A string giving the symbolic measurment 
+#' units that results should be reported in.   Any 
+#' distance measurement unit in \code{units::valid_udunits()} 
+#' will work.  The strings for common distance symbolic units are: 
+#' "m" for meters, "ft" for feet, "cm" for centimeters, "mm" for 
+#' millimeters, "mi" for miles, "nmile" for 
+#' nautical miles ("nm" is nano meters), "in" for inches, 
+#' "yd" for yards, "km" for kilometers, "fathom" for fathoms, 
+#' "chains" for chains, and "furlong" for furlongs.  
+#' If \code{outputUnits} is unspecified (NULL),
+#' output units are the same as distance measurements units in 
+#' \code{data}.  
 #' 
 #' @section Input data frames:
 #' To save space and to easily specify 
@@ -255,6 +268,41 @@
 #' the actual data, not to the bins.
 #' 
 #' 
+#' @section Measurement Units: 
+#' As of \code{Rdistance} version 3.0.0, measurement units are 
+#' require on all distances.  This includes off-transect 
+#' distances, radial 
+#' distances, and truncation distances (\code{w.lo} and \code{w.hi}). 
+#' This requirement 
+#' ensures that internal calculations and results 
+#' (e.g., ESW and abundance) are correct 
+#' and that the units on outputs numbers are clear.   
+#' Input distances can have variable units. For example, 
+#' distances can be in specified in "m", \code{w.hi} in "in", 
+#' and \code{w.lo} in "km".  Internally, all distances are 
+#' converted to the units specified by \code{outputUnits} 
+#' (or the units of input distances if 
+#' \code{outputUnits} is NULL) prior to application, and 
+#' all output is reported 
+#' in units of \code{outputUnits}. In 
+#' other words, specifying \code{w.hi = units::set_units(100, "m")} 
+#' yields the same results as \code{w.hi = units::set_units(328.08, "ft")}.
+#'   
+#' Measurement units should be assigned using  
+#' \code{units()<-} after attaching the \code{units} 
+#' package or \code{units::set_units}. 
+#' \code{units::valid_udunits()}
+#' retrieves a list of all valid symbolic units. 
+#' 
+#' Units are required on the following: \code{dist$dist}; 
+#' \code{w.lo} (unless it is zero); \code{w.hi} (unless it is NULL); 
+#' and \code{x.scl}. 
+#' 
+#' If measurements are truly unit-less, or measurement units are unknown, 
+#' setting \code{RdistanceControls(requireUnits = FALSE)} suppresses 
+#' all unit checks and conversions.  In this case, users are on their own 
+#' and must check that inputs and output are scaled correctly.   
+#'  
 #' @return  An object of class 'dfunc'.  Objects of class 'dfunc' 
 #' are lists containing the following components:
 #'   \item{parameters}{The vector of estimated parameter values. 
@@ -267,7 +315,8 @@
 #'     of the distance function, estimated by the inverse of the Hessian
 #'     of the fit evaluated at the estimates.  There is no guarantee this 
 #'     matrix is positive-definite and should be viewed with caution.  
-#'     Error estimates derived from bootstrapping are generally more reliable.}   
+#'     Error estimates derived from bootstrapping are generally 
+#'     more reliable.}   
 #'   \item{loglik}{The maximized value of the log likelihood 
 #'     (more specifically, the minimized value of the negative 
 #'     log likelihood).}
@@ -281,15 +330,32 @@
 #'   \item{dist}{The input vector of observed distances.}
 #'   \item{covars}{A \code{model.matrix} containing the covariates
 #'     used in the fit. }
-#'   \item{expansions}{The number of expansion terms used during estimation.}
+#'   \item{expansions}{The number of expansion terms used 
+#'   during estimation.}
 #'   \item{series}{The type of expansion used during estimation.}
 #'   \item{call}{The original call of this function.}
-#'   \item{call.x.scl}{The distance at which the distance function 
-#'     is scaled. This is the x at which g(x) = \code{g.x.scl}.
-#'     Normally, \code{call.x.scl} = 0.}
-#'   \item{call.g.x.scl}{The value of the distance function at distance
-#'     \code{call.x.scl}.  Normally, \code{call.g.x.scl} = 1.}
-#'   \item{call.observer}{The value of input parameter \code{observer}.}
+#'   \item{call.x.scl}{The \emph{input} or user requested 
+#'     distance at which 
+#'     the distance function is scaled. }
+#'   \item{call.g.x.scl}{The \code{input} value specifying the 
+#'     height of the distance function at a distance 
+#'     of \code{call.x.scl}.  }
+#'   \item{call.observer}{The value of input parameter \code{observer}.
+#'     The input \code{observer} parameter is only applicable when 
+#'     \code{g.x.scl} is a data frame.}
+#'   \item{x.scl}{The \emph{actual} distance at which 
+#'     the distance function is scaled to some value.  
+#'     i.e., this is the actual \emph{x} at 
+#'     which g(\emph{x}) = \code{g.x.scl}.
+#'     Note that \code{call.x.scl} = \code{x.scl} unless 
+#'     \code{call.x.scl} == "max", in which case \code{x.scl} is the 
+#'     distance at which \emph{g}() is maximized. }. 
+#'   \item{g.x.scl}{The \emph{actual} height of the distance function 
+#'     at a distance of \code{x.scl}. 
+#'     Note that \code{g.x.scl} = \code{call.g.x.scl} unless \code{call.g.x.scl}
+#'     is a multiple observer data frame, in which case \code{g.x.scl} is the 
+#'     actual height of the distance function at \code{x.scl} computed 
+#'     from the multiple observer data frame.   }.
 #'   \item{fit}{The fitted object returned by \code{optim}.  
 #'     See documentation for \code{optim}.}
 #'   \item{factor.names}{The names of any factors in \code{formula}}
@@ -297,14 +363,16 @@
 #'     This is TRUE if distances are radial from a point. FALSE 
 #'     if distances are perpendicular off-transect. }
 #'   \item{formula}{The formula specified for the detection function.}
+#'   \item{outputUnits}{The measurement units used for output.  All 
+#'     distance measurements are converted to these units internally. }
 #'     
 #' @references Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
 #'    abundance of biological populations}. Oxford University Press, Oxford, UK.
 #'     
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-#'         Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}\cr
-#'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
+#' @author Trent McDonald, McDonald Data Sciences, \email{trent@mcdonalddatasciences.com}\cr
+#'         Jason Carlisle, Wyoming Game and Fish Department, \email{jason.carlisle@wyo.gov}\cr
+#'         Aidan McDonald, Viridium Inc., \email{aidan@mcdcentral.org}
 #'         
 #' @seealso \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 #' See likelihood-specific help files (e.g., \code{\link{halfnorm.like}}) for
@@ -320,7 +388,8 @@
 #' # Fit half-normal detection function
 #' dfunc <- dfuncEstim(formula=dist~1,
 #'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=100)
+#'                     likelihood="halfnorm", 
+#'                     w.hi=units::as_units(100, "m"))
 #' 
 #' # Fit a second half-normal detection function, now including
 #' # a categorical covariate for observer who surveyed the site (factor, 5 levels)
@@ -351,12 +420,12 @@
 #' @export
 #' @importFrom stats nlminb model.response is.empty.model 
 #' @importFrom stats model.matrix contrasts optim
+#' @import units
 
 dfuncEstim <- function (formula, 
                         detectionData, 
                         siteData, 
                         likelihood = "halfnorm", 
-                        smuTerms = 0,
                         pointSurvey = FALSE, 
                         w.lo = 0, 
                         w.hi = NULL, 
@@ -369,6 +438,7 @@ dfuncEstim <- function (formula,
                         transectID = NULL, 
                         pointID = "point", 
                         length = "length",
+                        outputUnits = NULL,
                         control = RdistanceControls()){
   
   cl <- match.call()
@@ -391,6 +461,15 @@ dfuncEstim <- function (formula,
   } else{
     data <- NULL
   }
+
+  if( likelihood == "uniform" ){
+    .Deprecated(new = "logistic.like"
+                , package = "Rdistance"
+                , msg = paste("'unform.like' been re-named and is deprecated.\n"
+                       , "Using likelihood = 'logistic' instead.")
+                , old = "uniform.like")
+    likelihood <- "logistic"
+  }  
   
 
   # (jdc) The double-observer method hasn't been checked since updating to version 2.x
@@ -403,8 +482,7 @@ dfuncEstim <- function (formula,
           and can help.")
   }
   
-  
-  mf <- getDfuncModelFrame(formula, data)
+  mf <- Rdistance:::getDfuncModelFrame(formula, data)
   mt <- attr(mf, "terms")
   dist <- model.response(mf,"any")
   covars <- if (!is.empty.model(mt)){
@@ -415,18 +493,59 @@ dfuncEstim <- function (formula,
   
   contr <- attr(covars,"contrasts")
   assgn <- attr(covars,"assign")
-  
-  if(is.null(w.hi)){
-    w.hi <- max(dist, na.rm=TRUE)
+
+  # Check for measurement units 
+  if( !inherits(dist, "units") & control$requireUnits ){
+    dfName <- deparse(substitute(detectionData))
+    stop(paste("Distance measurement units are required.", 
+               "Assign units by attaching 'units' package then:\n", 
+               paste0("units(",dfName,"$dist)"), "<- '<units of measurment>',\n", 
+               "Popular choices are 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
+  } else if( control$requireUnits ){
+    # if we are here, dist has units
+    # set units for output by converting dist units; w.lo, w.hi, and x.scl will all be converted later
+    if( !is.null(outputUnits) ){
+      dist <-  units::set_units(dist, outputUnits, mode = "standard")
+    }
+    outUnits <- units(dist)
   }
-  
+
+  if( !inherits(w.lo, "units") & control$requireUnits ){
+    if( w.lo[1] != 0 ){
+      stop(paste("Units of minimum distance are required.",
+                 "Assign units by attaching 'units' package then:\n", 
+                 "units(w.lo) <- '<units>' or", 
+                 paste0("units::as_units(", w.lo,", <units>) in function call\n"), 
+                 "See units::valid_udunits() for valid symbolic units."))
+    }
+    # if we are here, w.lo is 0, it has no units, and we require units
+    w.lo <- units::set_units(w.lo, outUnits, mode = "standard")  # assign units to 0
+  } else if( control$requireUnits ){
+    # if we are here, w.lo has units and we require units, convert to the output units
+    w.lo <-  units::set_units(w.lo, outUnits, mode = "standard")
+  }
+    
+  if(is.null(w.hi)){
+    w.hi <- max(dist, na.rm=TRUE)  # units flow through max automatically
+  } else if( !inherits(w.hi, "units") & control$requireUnits ){
+    stop(paste("Max distance measurement units are required.",
+               "Assign units by attaching 'units' package then:\n", 
+               "units(w.hi) <- '<units>' or", 
+               paste0("units::as_units(", w.hi,", <units>) in function call\n"), 
+               "See units::valid_udunits() for valid symbolic units."))
+  } else if( control$requireUnits ){
+    # if we are here, w.hi has units and we require them, convert to output units
+    w.hi <-  units::set_units(w.hi, outUnits, mode = "standard")
+  }
+
+  # Units on x.scl are enforced in F.gx.estim
   ncovars <- ncol(covars)
   
-
   # Truncate for w.lo and w.hi
   ind <- (w.lo <= dist) & (dist <= w.hi)
   dist <- dist[ind]
   covars <- covars[ind,,drop=FALSE]  # covars looses "extra" attributes here
+  
   attr(covars,"assign") <- assgn
   attr(covars,"contrasts") <- contr
 
@@ -447,12 +566,6 @@ dfuncEstim <- function (formula,
     }
   } 
 
-  # We are not allowing expansion terms in presence of covariates
-  if (!is.null(covars) & expansions > 0) {
-    expansions=0
-    if(warn) warning("Expansions not allowed when covariates are present. Expansions set to 0.")
-  }
-  
   # Minimum number of spline basis functions
   if(expansions < 2 & series == "bspline"){
     expansions <- 2
@@ -471,14 +584,13 @@ dfuncEstim <- function (formula,
   # This works when covars is NULL and must be called 
   # even when ncovars == 1 to cover case like dist ~ -1+x (no intercept)
   for(i in 1:ncol(mf)){
-    if(class(mf[,i]) == "factor"){
+    if(is.factor(mf[,i])){
       factor.names <- c(factor.names, names(mf)[i])
     }
   }
 
   
   vnames<-dimnames(covars)[[2]]
-
 
   # Stop and print error if dist vector contains NAs
   if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
@@ -488,9 +600,10 @@ dfuncEstim <- function (formula,
   
   # Perform optimization
   if(control$optimizer == "optim"){
-    fit <- optim(strt.lims$start, F.nLL, 
-                 lower = strt.lims$lowlimit, 
-                 upper = strt.lims$uplimit, 
+    fit <- optim(strt.lims$start, 
+                 F.nLL, 
+                 lower = units::drop_units(strt.lims$lowlimit), # safe 
+                 upper = units::drop_units(strt.lims$uplimit), 
                  hessian = TRUE,
                  control = list(trace = 0, 
                                 maxit = control$maxIters,
@@ -507,25 +620,26 @@ dfuncEstim <- function (formula,
                  pointSurvey = pointSurvey, 
                  for.optim = T)
   } else if(control$optimizer == "nlminb"){
-    fit <- nlminb(strt.lims$start, F.nLL, 
-                 lower = strt.lims$lowlimit, 
-                 upper = strt.lims$uplimit, 
-                 control = list(trace = 0,
-                                eval.max = control$evalMax,
-                                iter.max = control$maxIters,
-                                rel.tol = control$likeTol,
-                                x.tol = control$coefTol
-                                ), 
-                 dist = dist, 
-                 like = likelihood, 
-                 covars = covars,
-                 w.lo = w.lo, 
-                 w.hi = w.hi, 
-                 expansions = expansions, 
-                 series = series, 
-                 pointSurvey = pointSurvey, 
-                 for.optim = T 
-                 )
+    fit <- nlminb(start = strt.lims$start
+                , objective = F.nLL
+                , lower = strt.lims$lowlimit
+                , upper = strt.lims$uplimit
+                , control = list(trace = 0
+                              , eval.max = control$evalMax
+                              , iter.max = control$maxIters
+                              , rel.tol = control$likeTol
+                              ,  x.tol = control$coefTol
+                              )
+                , dist = dist
+                , like = likelihood
+                , covars = covars
+                , w.lo = w.lo
+                , w.hi = w.hi
+                , expansions = expansions
+                , series = series
+                , pointSurvey = pointSurvey
+                , for.optim = T 
+                )
     names(fit)[names(fit)=="evaluations"]<-"counts"
     fit$hessian <- secondDeriv(fit$par, 
                                F.nLL, 
@@ -547,17 +661,17 @@ dfuncEstim <- function (formula,
   if(!any(is.na(fit$hessian)) & !any(is.infinite(fit$hessian))){
     qrh <- qr(fit$hessian)
     if (qrh$rank < nrow(fit$hessian)) {
-      warning("Singular variance-covariance matrix.")
+      if (warn) warning("Singular variance-covariance matrix.")
       varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
     } else {
       varcovar <- tryCatch(solve(fit$hessian), error=function(e){NaN})
       if(length(varcovar) == 1 && is.nan(varcovar)){
-        warning("Singular variance-covariance matrix.")
+        if (warn) warning("Singular variance-covariance matrix.")
         varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
       }
     }
   } else {
-    warning("fit did not converge, or converged to (Inf,-Inf)")
+    if (warn) warning("fit did not converge, or converged to (Inf,-Inf)")
     varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
   }
   
@@ -582,12 +696,20 @@ dfuncEstim <- function (formula,
               fit = fit, 
               factor.names = factor.names, 
               pointSurvey = pointSurvey,
-              formula = formula)
+              formula = formula, 
+              control = control, 
+              outputUnits = outUnits)
   
-  ans$loglik <- F.nLL(ans$parameters, ans$dist, covars = ans$covars, 
-                      like = ans$like.form, w.lo = ans$w.lo, w.hi = ans$w.hi, 
-                      series = ans$series, expansions = ans$expansions, 
-                      pointSurvey = ans$pointSurvey, for.optim = F)
+  ans$loglik <- F.nLL(ans$parameters, 
+                      ans$dist, 
+                      covars = ans$covars, 
+                      like = ans$like.form, 
+                      w.lo = ans$w.lo, 
+                      w.hi = ans$w.hi, 
+                      series = ans$series, 
+                      expansions = ans$expansions, 
+                      pointSurvey = ans$pointSurvey, 
+                      for.optim = F)
   
   # Assemble results
   class(ans) <- "dfunc"
@@ -595,17 +717,15 @@ dfuncEstim <- function (formula,
   ans$x.scl <- gx$x.scl
   ans$g.x.scl <- gx$g.x.scl
   fuzz <- 1e-06
-  low.bound <- any(fit$par <= (strt.lims$lowlimit + fuzz))
-  high.bound <- any(fit$par >= (strt.lims$uplimit - fuzz))
+  low.bound <- any(fit$par <= strt.lims$lowlimit + fuzz)
+  high.bound <- any(fit$par >= strt.lims$uplimit - fuzz)
   if (fit$convergence != 0) {
-    if (warn) 
-      warning(fit$message)
+    if (warn) warning(fit$message)
   }
   else if (low.bound | high.bound) {
     ans$convergence <- -1
     ans$fit$message <- "One or more parameters at its boundary."
-    if (warn) 
-      warning(ans$fit$message)
+    if (warn) warning(ans$fit$message)
   }
   ans
   

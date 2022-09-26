@@ -4,11 +4,10 @@
 ^Rdistance\.Rproj$
 ^README\.md$
 ^\.Rproj\.user$
-ExampleDataSetAndProject
+ExampleDataSets
 CodeParkingLot
 distance_old
-TestingFolder
-Testing
+tests
 .tar.gz$
 .zip$
 ^data-raw$
@@ -20,3 +19,4 @@ README_files
 WorkshopScripts
 ^doc$
 ^Meta$
+RTestLibrary

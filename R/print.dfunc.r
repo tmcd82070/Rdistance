@@ -50,26 +50,41 @@ print.dfunc <- function( x, criterion="AICc", ... ){
 #
 
     is.smoothed <- class(x$fit) == "density"
-    
+
     callLine <- deparse(x$call)
     callLine <- paste(callLine, collapse = " ")
     callLine <- strwrap(paste0("Call: ",callLine),exdent=2)
 
     cat(paste0(callLine,"\n"))
-    if (length(coef.dfunc(x))) {
-        seCoef <- sqrt(diag(x$varcovar))
-        waldZ <- coef.dfunc(x) / seCoef
-        pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
-        coefMat <- cbind(format(coef.dfunc(x)), format(seCoef), format(waldZ), format(pWaldZ))
-        dimnames(coefMat)[[2]] <- c("Estimate", "SE", "z", "p(>|z|)")
-        cat("Coefficients:\n")
-        print.default(coefMat, print.gap = 2,
-            quote = FALSE)
+    if ( length(coef.dfunc(x)) & !is.smoothed ) {
+      if( x$convergence == 0 ) {
+        vcDiag <- diag(x$varcovar)
+        if( any(is.na(vcDiag)) | any(vcDiag < 0.0)) {
+          mess <- colorize("FAILURE", bg = "bgYellow")
+          mess <- paste(mess, "(singular variance-covariance matrix)")
+          seCoef <- rep(NA, length(diag(x$varcovar)))
+          waldZ <- rep(NA, length(diag(x$varcovar)))
+        } else {
+          mess <- colorize("Success")
+          seCoef <- sqrt(diag(x$varcovar))
+          waldZ <- coef.dfunc(x) / seCoef
+        }
+      } else {
+        mess <- colorize("FAILURE", col="white", bg = "bgRed")
+        mess <- paste( mess, "(Exit code=", x$convergence, ", ", x$fit$message, ")")
+        seCoef <- rep(NA, length(diag(x$varcovar)))
+        waldZ <- rep(NA, length(diag(x$varcovar)))
+      }
+      pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
+      coefMat <- cbind(format(coef.dfunc(x)), format(seCoef), format(waldZ), format(pWaldZ))
+      dimnames(coefMat)[[2]] <- c("Estimate", "SE", "z", "p(>|z|)")
+      cat("Coefficients:\n")
+      print.default(coefMat, print.gap = 2, quote = FALSE)
     } else if( is.smoothed ){
-        cat(paste(x$fit$call[["kernel"]], "kernel smooth\n"))
-        cat(paste(" Bandwidth method:", x$fit$call[["bw"]], "with adjustment factor", 
-                    format(x$fit$call[["adjust"]]),"\n"))
-        cat(paste(" Actual bandwidth =", format(x$fit$bw), "\n"))
+      cat(paste(x$fit$call[["kernel"]], "kernel smooth\n"))
+      cat(paste(" Bandwidth method:", x$fit$call[["bw"]], "with adjustment factor", 
+                  format(x$fit$call[["adjust"]]),"\n"))
+      cat(paste(" Actual bandwidth =", format(x$fit$bw), "\n"))
     } else {
       cat("No coefficients\n")
     }
@@ -77,15 +92,6 @@ print.dfunc <- function( x, criterion="AICc", ... ){
     cat("\n")
 
     if( !is.smoothed ){
-      if( x$convergence == 0 ) {
-        if(any(is.na(diag(x$varcov)))) {
-          mess <- "FAILURE (singular variance-covariance matrix)"
-        } else {
-          mess <- "Success"
-        }
-      } else {
-          mess <- paste( "FAILURE (Exit code=", x$convergence, ", ", x$fit$message, ")")
-      }
       cat(paste("Convergence: ", mess,  "\n", sep=""))
 
       if( x$expansions==0 ){
@@ -93,36 +99,68 @@ print.dfunc <- function( x, criterion="AICc", ... ){
       } else {
           mess <- paste( "with", x$expansions, "expansion(s) of", casefold( x$series, upper=TRUE ), "series")
       }
-      cat(paste("Function:", casefold(x$like.form, upper=TRUE), mess, "\n") )
+      cat(paste("Function:", colorize(casefold(x$like.form, upper=TRUE)), mess, "\n") )
     } 
     
-    cat(paste("Strip:", x$w.lo, "to", x$w.hi, "\n"))
+    cat(paste("Strip:", colorize(format(x$w.lo)), "to", 
+              colorize(format(x$w.hi)), "\n"))
     
     effDist <- effectiveDistance(x)
-    pDetect <- effDist / (x$w.hi - x$w.lo)
+    pDetect <- effDist / (x$w.hi - x$w.lo) 
+    pDetect <- units::drop_units(pDetect)  # units of pDetect should always be [1]
     if( is.null(x$covars) ){
       if(x$pointSurvey){
-        cat(paste("Effective detection radius (EDR):", format(effDist), "\n"))
-        cat(paste("Probability of detection:", format(pDetect^2), "\n"))
+        mess <- "Effective detection radius (EDR):"
+        pDetect <- pDetect^2
       } else {
-        cat(paste("Effective strip width (ESW):", format(effDist), "\n"))
-        cat(paste("Probability of detection:", format(pDetect), "\n"))
+        mess <- "Effective strip width (ESW):"
+      }
+      if( pDetect > 1 ){
+        cat(paste(mess, 
+                  colorize(format(effDist), col = "red"), 
+                  colorize("> (w.hi - w.lo)", col = "red"), "\n"))
+        cat(paste("Probability of detection:", 
+                  colorize(format(pDetect), col = "red"),
+                  colorize("> 1", col = "red"), "\n"))
+      } else {
+        cat(paste(mess, 
+                  colorize(format(effDist)), 
+                  "\n"))
+        cat(paste("Probability of detection:", 
+                  colorize(format(pDetect)),
+                  "\n"))
       }
     } else {
       if(x$pointSurvey){
-        cat(paste("Average effective detection radius (EDR):", format(mean(effDist)), "\n"))
-        cat(paste("Average probability of detection:", format(mean(pDetect^2)), "\n"))
+        cat(paste("Average effective detection radius (EDR):", 
+                  colorize(format(mean(effDist))), "\n"))
+        cat(paste("Average probability of detection:", 
+                  colorize(format(mean(pDetect^2))), "\n"))
       } else {
-        cat(paste("Average effective strip width (ESW):", format(mean(effDist)), "\n"))
-        cat(paste("Average probability of detection:", format(mean(pDetect)), "\n"))
+        cat(paste("Average effective strip width (ESW):", 
+                  colorize(format(mean(effDist))), "\n"))
+        cat(paste("Average probability of detection:", 
+                  colorize(format(mean(pDetect))), "\n"))
       }
     }
     
-    cat(paste("Scaling: g(", x$x.scl, ") = ", format(x$g.x.scl), "\n", sep=""))
-    cat(paste("Log likelihood:", format(x$loglik), "\n"))
+    cat(paste("Scaling: g(", 
+              colorize(format(x$x.scl)), ") = ", 
+              colorize(format(x$g.x.scl)), sep=""))
+    if(any(pDetect > 1.0)){
+      cat(colorize(" <- One or more P(detect)>1: Check scaling", col = "red"))
+      cat("\n")
+    } else {
+      cat("\n")
+    }
+    
+    cat(paste("Log likelihood:", 
+              colorize(format(x$loglik)), "\n"))
+    
     if( !is.smoothed ){
       aic <- AIC.dfunc(x,criterion=criterion) 
-      cat(paste0(attr(aic,"criterion"),": ", format(aic), "\n"))
+      cat(paste0(attr(aic,"criterion"),": ", 
+                 colorize(format(aic)), "\n"))
     }
 
 

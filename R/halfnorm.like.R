@@ -81,11 +81,9 @@
 #' hence \code{na.rm=TRUE} in the sum. 
 #' If \code{scale} = TRUE, the integral of the likelihood from
 #'  \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, 
-#'  the integral of the likelihood is something else.
+#'  the integral of the likelihood is something else. 
+#' Values are always greater than or equal to zero.
 #'  
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#'         
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{uniform.like}},
@@ -120,21 +118,19 @@
 halfnorm.like <- function(a, 
                           dist, 
                           covars = NULL, 
-                          w.lo = 0, 
+                          w.lo = units::set_units(0,"m"), 
                           w.hi = max(dist), 
                           series = "cosine", 
                           expansions = 0, 
                           scale = TRUE, 
                           pointSurvey = FALSE){
 
+  # rule is: parameter 'a' never has units.  None of its components do, even though they could (e.g., sigma = a[1])
+  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
   if(!is.null(covars)){
-    
     q <- ncol(covars)
-    # not necessary, in all half norm cases, no extra params hanging off the end 
-    # but, I'll leave it here so it's compatible with other likelihoods and 
-    # just in case we want to allow expansions with covariates later.
     beta <- a[1:q] 
     s <- drop( covars %*% matrix(beta,ncol=1) )
     sigma <- exp(s)
@@ -142,41 +138,41 @@ halfnorm.like <- function(a,
     sigma <- a[1]
   }
 
-  key <- exp(-dist^2/(2*sigma^2))
-  dfunc <- key
-  w <- w.hi - w.lo
+  key <- -(units::drop_units(dist*dist))/(2*sigma*sigma)  
+  # Above is safe. Units of sigma will scale to units of dist. 'key' is unit-less
+  key <- exp(key)
   
   # If there are expansion terms
   if(expansions > 0){
     
-    nexp <- expansions #nexp <- min(expansions,length(a)-1)  # should be equal. If not, fire warning next
-    
-    #if( length(a) != (expansions+1) ) {
-    #    warning("Wrong number of parameters in expansion. Should be (expansions+1). High terms ignored.")
-    #}
+    nexp <- expansions
+    w <- w.hi - w.lo  # 'w' has units here, we want this so conversions below happen
     
     if (series=="cosine"){
-      dscl = dist/w
+      dscl <- units::drop_units(dist/w)   # unit conversion here; drop units is safe
       exp.term <- cosine.expansion( dscl, nexp )
     } else if (series=="hermite"){
-      dscl = dist/sigma
+      dscl <- units::drop_units(dist/sigma) # unit conversion here; drop units is safe
       exp.term <- hermite.expansion( dscl, nexp )
     } else if (series == "simple") {
-      dscl = dist/w
+      dscl <- units::drop_units(dist/w)    # unit conversion here; drop units is safe
       exp.term <- simple.expansion( dscl, nexp )
     } else {
       stop( paste( "Unknown expansion series", series ))
     }
     
-    dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
+    expCoeffs <- a[(length(a)-(nexp-1)):(length(a))]
+    key <- key * (1 + c(exp.term %*% expCoeffs))
     
+    # without monotonicity restraints, function can go negative, 
+    # especially in a gap between datapoints. This makes no sense in distance
+    # sampling and screws up the convergence. 
+    key[ which(key < 0) ] <- 0
     
-  } #else if(length(a) > 1){
-  #warning("Wrong number of parameters in halfnorm. Only 1 needed if no expansions. High terms ignored.")
-  #}
+  } 
   
   if( scale ){
-    dfunc = dfunc / integration.constant(dist=dist, 
+    key = key / integration.constant(dist=dist, 
                                          density=halfnorm.like, 
                                          a=a,
                                          covars = covars, 
@@ -187,5 +183,6 @@ halfnorm.like <- function(a,
                                          pointSurvey = pointSurvey)   # scales underlying density to integrate to 1.0
 
   }
-  c(dfunc)
+
+  c(key)
 }

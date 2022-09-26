@@ -3,10 +3,15 @@
 #' @description Find the x coordinate that maximizes g(x).
 #' 
 #' @param fit An estimated 'dfunc' object produced by \code{dfuncEstim}.
+#' 
 #' @param covars Covariate values to calculate maximum for.
+#' 
 #' @return The value of x that maximizes g(x) in \code{fit}.
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#' 
+#' @author Trent McDonald
+#' 
 #' @seealso \code{\link{dfuncEstim}}
+#' 
 #' @examples \dontrun{
 #' # Fake data
 #' set.seed(22223333)
@@ -17,14 +22,23 @@
 #' F.maximize.g( fit )  # should be near 10.
 #' fit$x.scl            # same thing
 #' }
+#' 
 #' @keywords model
 #' @export
 #' @importFrom stats optim 
 
 F.maximize.g <- function( fit, covars = NULL ){
 
-g.neg <-  function(x, params, covars = NULL, like, w.lo, w.hi, series, expansions=0, pointSurvey = F){
-
+g.neg <-  function(x, 
+                   params, 
+                   covars = NULL, 
+                   like, 
+                   w.lo, 
+                   w.hi, 
+                   series, 
+                   expansions=0, 
+                   pointSurvey = F,
+                   correctUnits){
     f.like <- match.fun(paste( like, ".like", sep=""))
 
     if( x < w.lo ){
@@ -35,19 +49,57 @@ g.neg <-  function(x, params, covars = NULL, like, w.lo, w.hi, series, expansion
       x <- w.hi
     }
     
-    g.x <- f.like( a = params, dist = x, covars = covars, w.lo=w.lo, w.hi=w.hi, 
-                   series = series, expansions = expansions, pointSurvey = pointSurvey )
+    # above here, we needed x, w.lo, and w.hi to be unitless
+    # because they had to pass through optim(). Now, we need 
+    # them to have units because we are about to call the likelihood.
+    x <- units::set_units(x, correctUnits, mode = "standard")
+    w.lo <- units::set_units(w.lo, correctUnits, mode = "standard")
+    w.hi <- units::set_units(w.hi, correctUnits, mode = "standard")
+    
+    g.x <- f.like( a = params, 
+                   dist = x, 
+                   covars = covars, 
+                   w.lo=w.lo, 
+                   w.hi=w.hi, 
+                   series = series, 
+                   expansions = expansions, 
+                   pointSurvey = pointSurvey )
 
-    #print(c(x=x, params=params,gneg=-g.x*10000000000))
     -g.x * 10000000000
+    
 }
 
-x.start <- (fit$w.lo + fit$w.hi) / 10 + fit$w.lo
+# Strategy for handling units:  make sure everything is 
+# converted to the same units, then drop units because optim
+# does not propagate them.  w.lo and w.hi are PROBABLY already 
+# in the correct units, but make sure.
 
-x.max <- optim(par = x.start, fn = g.neg,  params = fit$parameters, 
-               method = "L-BFGS-B", w.lo=fit$w.lo, w.hi=fit$w.hi, like=fit$like.form,
-               expansions=fit$expansions, series=fit$series, lower=fit$w.lo, 
-               upper=fit$w.hi, covars = covars, pointSurvey = fit$pointSurvey)
+correctUnits <- fit$outputUnits
+
+wlo <- units::set_units(fit$w.lo, correctUnits, mode = "standard")
+whi <- units::set_units(fit$w.hi, correctUnits, mode = "standard")
+
+wlo <- units::drop_units(wlo)
+whi <- units::drop_units(whi)
+
+x.start <- (wlo + whi) / 10 + wlo
+
+x.max <- optim(par = x.start, 
+               fn = g.neg,  
+               method = "L-BFGS-B", 
+               lower=wlo, 
+               upper=whi, 
+               
+               params = fit$parameters, 
+               w.lo=wlo,
+               w.hi=whi,
+               like=fit$like.form,
+               expansions=fit$expansions, 
+               series=fit$series, 
+               covars = covars, 
+               pointSurvey = fit$pointSurvey,
+               correctUnits = correctUnits)
+
 
 if( x.max$convergence != 0 ){
     warning(paste("Maximum of g() could not be found. Message=", x.max$message))
@@ -56,8 +108,5 @@ if( x.max$convergence != 0 ){
     x.max <- x.max$par
 }
 
--g.neg(x = x.max, params = fit$parameters, covars = covars, w.lo = fit$w.lo, 
-       w.hi = fit$w.hi, like = fit$like.form, expansions = fit$expansions, 
-       series = fit$series, pointSurvey = fit$pointSurvey)/10000000000
-
+x.max
 }

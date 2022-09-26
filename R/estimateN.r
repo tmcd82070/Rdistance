@@ -76,10 +76,6 @@
 #' }
 #'         
 #'    
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-#'         Jason Carlisle, University of Wyoming and WEST Inc, \email{jcarlisle@west-inc.com}\cr
-#'         Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}
-#'     
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 #' 
 #' @keywords model
@@ -103,7 +99,7 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
   if (dfunc$pointSurvey) {
     tot.trans.len <- NULL  # no transect length
   } else {
-    tot.trans.len <- sum(siteData$length)  # total transect length
+    tot.trans.len <- units::set_units(sum(siteData$length), dfunc$outputUnits, mode = "standard")  # total transect length
   }
   
   
@@ -115,13 +111,17 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
     
   w <- dfunc$w.hi - dfunc$w.lo
   
-  
   if (dfunc$pointSurvey) {
     phat <- (esw / w)^2  # for points
   } else {
     phat <- esw / w  # for lines
   }
-  
+
+  # phat should be unit-less; check just to be sure, if so drop "1" units
+  onesUnit <- units::set_units(1, "1")
+  if( units(phat) == units(onesUnit) ){
+    phat <- units::drop_units(phat)
+  }
   
   nhat <- detectionData$groupsize / phat # inflated counts one per detection
   
@@ -215,22 +215,31 @@ estimateN <- function(dfunc, detectionData, siteData, area=1, bySite=FALSE){
     
     # not bySite
     if(dfunc$pointSurvey){
-      nhat.df <- sum(nhat) * area / (pi * w^2 * tot.sites)
+      dens <- sum(nhat) / (pi * w^2 * tot.sites)
     } else {
-      nhat.df <-  sum(nhat) * area / (2 * w * tot.trans.len)
+      dens <- sum(nhat) / (2 * w * tot.trans.len)
+    }
+    
+    nhat.df <- dens * area
+    
+    # nhat.df should be unitless
+    if( units(nhat.df) == units(onesUnit) ){
+      nhat.df <- units::drop_units(nhat.df)
     }
     
     nhat.df <- list(dfunc = dfunc,
-                  abundance = nhat.df,
-                  nhat.sampleArea = sum(nhat),
-                  n.sites = tot.sites,
-                  n.groups = n,
-                  observedCount = sum(detectionData$groupsize),
-                  area = area,
-                  w = w,
-                  tran.len = tot.trans.len,
-                  avg.group.size = mean(detectionData$groupsize),
-                  pDetection = phat)
+                    density = dens, 
+                    abundance = nhat.df,
+                    nhat.sampleArea = sum(nhat),
+                    n.sites = tot.sites,
+                    n.groups = n,
+                    observedCount = sum(detectionData$groupsize),
+                    area = area,
+                    w = w,
+                    tran.len = tot.trans.len,
+                    avg.group.size = mean(detectionData$groupsize),
+                    pDetection = phat, 
+                    esw = esw)
   }
     
   # some interesting tidbits:

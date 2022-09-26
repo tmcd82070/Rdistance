@@ -1,8 +1,8 @@
-#' @title Hazard rate likelihood function for distance analyses
+#' @title hazrate.like - Hazard rate likelihood 
 #' 
-#' @description This function computes likelihood contributions for 
-#' off-transect sighting distances, scaled appropriately, for use as 
-#' a distance likelihood.
+#' @description Computes the hazard rate likelihood of  
+#' off-transect distances, given parameters. Primarily used as 
+#' a minimization objective during distance function estimation.
 #' 
 #' @param a A vector of likelihood parameter values. Length and meaning 
 #' depend on \code{series} and \code{expansions}. If no expansion terms 
@@ -58,14 +58,18 @@
 #' transect data, FALSE if line transect data.
 #' 
 #' @details The hazard rate likelihood is 
-#' \deqn{f(x|a,b) = 1 - \exp(-(x/\sigma)^{-\beta})}{%
-#' f(x|a,b) = 1 - exp(-(x/Sigma)^(-Beta))} 
-#' where \eqn{\sigma}{Sigma} is a variance parameter, 
-#' and \eqn{\beta}{Beta}
-#'   is a slope parameter to be estimated. 
+#' \deqn{f(x|\sigma,k) = 1 - \exp(-(x/\sigma)^{-k})}{%
+#' f(x|Sigma,k) = 1 - exp(-(x/Sigma)^(-k))} 
+#' where \eqn{\sigma}{Sigma} determines location 
+#' (i.e., distance at which the function equals 1 - exp(-1) = 0.632), 
+#' and \eqn{k}{k} determines slope of the function 
+#' at \eqn{\sigma}{Sigma} (i.e., larger k equals steeper 
+#' slope at \eqn{\sigma}{Sigma}). For distance analysis, 
+#' the valid range for both \eqn{\sigma}{Sigma} and k is
+#' \eqn{\geq 0}{>=0}.  
 #'   
-#'   \bold{Expansion Terms}: If \code{expansions} = k 
-#'   (k > 0), the expansion function specified by 
+#'   \bold{Expansion Terms}: If \code{expansions} = e 
+#'   (e > 0), the expansion function specified by 
 #'   \code{series} is called (see for example
 #'   \code{\link{cosine.expansion}}). Assuming 
 #'   \eqn{h_{ij}(x)}{h_ij(x)} is the \eqn{j^{th}}{j-th} 
@@ -73,10 +77,10 @@
 #'   \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)} are 
 #'   (estimated) coefficients for the expansion terms, the 
 #'   likelihood contribution for the \eqn{i^{th}}{i-th} 
-#'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + 
-#'   \sum_{j=1}^{k} c_j h_{ij}(x)).}{%
-#'   f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + 
-#'   c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+#'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_e) = f(x|a,b)(1 + 
+#'   \sum_{j=1}^{e} c_j h_{ij}(x)).}{%
+#'   f(x|a,b,c_1,c_2,...,c_e) = f(x|a,b)(1 + c(1) h_i1(x) + 
+#'   c(2) h_i2(x) + ... + c(e) h_ik(x)). }
 #'   
 #' @return A numeric vector the same length and order as 
 #' \code{dist} containing the likelihood contribution for 
@@ -92,8 +96,6 @@
 #'   FALSE, the integral of the likelihood is
 #'   arbitrary.
 #'   
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
 #'         
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
@@ -119,73 +121,73 @@
 hazrate.like <- function(a, 
                          dist, 
                          covars = NULL, 
-                         w.lo = 0, 
+                         w.lo = units::set_units(0,"m"), 
                          w.hi = max(dist), 
                          series = "cosine", 
                          expansions = 0, 
                          scale = TRUE, 
                          pointSurvey = FALSE){
-	
-
-    dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
   
-    if(!is.null(covars)){
-      q <- ncol(covars)
-      beta <- a[1:q]
-      s <- drop( covars %*% beta )
-      # s <- 0
-      # for (i in 1:(ncol(covars)))
-      #   s <- s + a[i]*covars[,i]
-      s <- exp(s)
-    } else {
-      s <- a[1]
-    }
-	
-	beta = a[length(a) - expansions]
-	key = 1 - exp(-(dist/s)^(-beta))
-    dfunc <- key
+  # rule is: parameter 'a' never has units.
+  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
+  dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
+
+  # What's in a? : 
+  #   If no covariates: a = [Sigma, k, <expansion coef>]
+  #   If covariates:    a = [(Intercept), b1, ..., bp, k, <expansion coef>]
+  
+  if(!is.null(covars)){
+    q <- ncol(covars)
+    beta <- a[1:q]
+    s <- drop( covars %*% beta )
+    s <- exp(s)  # link function here
+  } else {
+    s <- a[1]
+  }
+  
+	K <- a[length(a) - expansions]
+	key <- -(( units::drop_units(dist)/s )^(-K))
+	key <- 1 - exp(key)
+	# Above is safe. Units of sigma will scale to units of dist. 'key' is unit-less
+	dfunc <- key
+
+  if(expansions > 0){
+
     w <- w.hi - w.lo
 
-
-    if(expansions > 0){
-
-        nexp <- expansions #nexp <- min(expansions,length(a)-2)  # should be equal. If not, fire warning next
-        
-        #if( length(a) != (expansions+2) ) {
-        #    warning("Wrong number of parameters in expansion. Should be (expansions+2). Higher terms ignored.")
-        #}
-
 		if (series=="cosine"){
-            dscl = dist/w
-            exp.term <- cosine.expansion( dscl, nexp )
+            dscl = units::drop_units(dist/w)  # unit conversion here; drop units is safe
+            exp.term <- cosine.expansion( dscl, expansions )
 		} else if (series=="hermite"){
-            dscl = dist/s
-            exp.term <- hermite.expansion( dscl, nexp )
+            dscl = units::drop_units(dist/s)
+            exp.term <- hermite.expansion( dscl, expansions )
 		} else if (series == "simple") {
-            dscl = dist/w
-            exp.term <- simple.expansion( dscl, nexp )
-        } else {
+            dscl = units::drop_units(dist/w)
+            exp.term <- simple.expansion( dscl, expansions )
+    } else {
             stop( paste( "Unknown expansion series", series ))
-        }
-
-        dfunc <- key * (1 + c(exp.term %*% a[(length(a)-(nexp-1)):(length(a))]))
-
-
-    }# else if(length(a) > 2){
-    #    warning("Wrong number of parameters in hazrate. Only 2 needed if no expansions. Higher terms ignored.")
-    #}
-
-    if( scale ){
-        dfunc = dfunc / integration.constant(dist=dist, 
-                                             density=hazrate.like, 
-                                             a=a, 
-                                             covars = covars, 
-                                             w.lo=w.lo, 
-                                             w.hi=w.hi, 
-                                             series=series,
-                                             expansions=expansions, 
-                                             pointSurvey = pointSurvey)
     }
+
+    expCoefs <- a[(length(a)-(expansions-1)):(length(a))]
+    key <- key * (1 + c(exp.term %*% expCoefs))
     
-    c(dfunc)
+    # without monotonicity restraints, function can go negative, 
+    # especially in a gap between datapoints. This makes no sense in distance
+    # sampling and screws up the convergence. 
+    key[ which(key < 0) ] <- 0
+  }
+
+  if( scale ){
+      key = key / integration.constant(dist = dist
+                                     , density = hazrate.like
+                                     , a = a
+                                     , covars = covars
+                                     , w.lo = w.lo
+                                     , w.hi = w.hi
+                                     , series = series
+                                     , expansions = expansions
+                                     , pointSurvey = pointSurvey)
+  }
+  
+  c(key)
 }

@@ -88,8 +88,23 @@ integration.constant <- function(dist,
                                  pointSurvey){
 
   density = match.fun(density)
-  seqx = seq(w.lo, w.hi, length=200) # for trapazoid rule when needed
-
+  
+  # We need w.lo, w.hi, and dist to have same units. 
+  # This is important because we occasionally drop units in integral calculations below. 
+  # I cannot think of a case where units(w.lo) != units(dist), 
+  # but just in case...
+  if( units(w.lo) != units(dist)){
+    w.lo <- units::set_units(w.lo, units(dist), mode = "standard")
+  }
+  if( units(w.hi) != units(dist)){
+    w.hi <- units::set_units(w.hi, units(dist), mode = "standard")
+  }
+  
+  # Now, we can safely compute sequence of x values for numerical integration.
+  # This is done below, in each case where its needed. 
+  
+  nTrapazoids <- 200 # number of evaluation points in numerical integration
+  
   if(!is.null(covars)){
     # Not sure following is best to do. 
     # It is much faster to de-dup and compute values on just 
@@ -108,98 +123,140 @@ integration.constant <- function(dist,
     unique.covars <- covars[!dupCovars,] 
     PkeyCol <- ncol(unique.covars)
     
-    # Remember that unique.covars now has extra column, zzzPkey hanging off the end
-    # don't include this colum in calculations below (or set a[last]=0)
+    # Remember that unique.covars now has extra column, zzzPkey 
+    # don't include this column in calculations below (or set a[last]=0)
     # covars and unique.covars now have Pkey, which we will use to 
     # merge later
 
-    #unique.covars <- unique(covars)
     seqy <- list()
     temp.scaler <- vector(length = nrow(unique.covars))
     scaler <- vector(length = nrow(covars), "numeric")
 
     if(pointSurvey){
+      seqx = seq(w.lo, w.hi, length=nTrapazoids) 
       for(i in 1:nrow(unique.covars)){
-        temp.covars <- matrix(as.numeric(unique.covars[i,-PkeyCol]),nrow=length(seqx),ncol=ncol(unique.covars)-1, byrow=TRUE)
-        seqy[[i]] <- seqx * density(a = a, dist = seqx, covars = temp.covars,
-                    scale = FALSE, w.lo = w.lo, w.hi = w.hi, 
-                    expansions = expansions, series=series)
-        temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
+        temp.covars <- matrix(as.numeric(unique.covars[i,-PkeyCol])
+                            , nrow = length(seqx)
+                            , ncol = ncol(unique.covars)-1
+                            , byrow=TRUE)
+        seqy[[i]] <- units::drop_units(seqx) * density(a = a
+                                  , dist = seqx
+                                  , covars = temp.covars
+                                  , scale = FALSE
+                                  , w.lo = w.lo
+                                  , w.hi = w.hi
+                                  , expansions = expansions
+                                  , series=series
+                                  )
+        temp.scaler[i] <- units::drop_units(seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
-    }
-    else if(identical(density, halfnorm.like) & expansions == 0){
+
+    } else if(identical(density, halfnorm.like) & expansions == 0){
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
-      sigma <- exp(s)
+      sigma <- exp(s)  # link function here
 
-      # Point is: temp.scaler should be itegral under distance function
+      # temp.scaler should be integral under distance function
       # We happen to know it for halfnorm (and some others below)
-      temp.scaler <- 2*(pnorm(w.hi,w.lo,sigma)-0.5) * sqrt(pi/2) * sigma
+      # Integrals are by defn unit-less; but, pnorm returns units. Drop apriori.
+      # We evaluate normal with mean w.lo, sd = sigma, from -Inf to w.hi, then
+      # subtract 0.5 from result for the area to left of mean (w.lo) 
+      temp.scaler <- (pnorm(units::drop_units(w.hi)
+                          , units::drop_units(w.lo)
+                          , sigma) - 0.5) * 
+                      sqrt(2*pi) * sigma
       
-      # We had these statements when Aidan was requiring the pracma package. 
-      # for(i in 1:nrow(unique.covars)){
-      #   temp.scaler[i] <- sqrt(pi/2) * sigma[i] * (erf(w.hi/(sqrt(2)*sigma[i])) - erf(w.lo/(sqrt(2)*sigma[i])))
-      # }
-    }
-    else if(identical(density, hazrate.like) & expansions == 0){
-      s <- as.matrix(unique.covars[,-PkeyCol]) %*% matrix(a[-length(a)],ncol=1)
-      sigma <- exp(s)
-      beta = a[length(a)]
+    } else if(identical(density, hazrate.like) & expansions == 0){
+      # Integral of hazrate involves incomplete gamma functions. 
+      # See wolfram.  Incomplete gammas are implemented in some packages, e.g., 
+      # expint.  You could convert to an exact integral using one of these 
+      # packages.  But, for now, numerically integrate.
+      seqx = seq(w.lo, w.hi, length=nTrapazoids) 
+      beta <- a[-length(a)]
+      K <- a[length(a)]
+      s <- as.matrix(unique.covars[,-PkeyCol]) %*% matrix(beta,ncol=1)
+      sigma <- exp(s)  # link function here
 
-      for(i in 1:nrow(unique.covars)){
-        seqy <- 1 - exp(-(seqx/sigma[i])^(-beta))
-        temp.scaler[i] <- (seqx[2] - seqx[1])*sum(seqy[-length(seqy)] + seqy[-1]) / 2
-          # integrate(f = function(x){1 - exp(-(x/sigma[i])^(-beta))},lower =  w.lo,
-          #                 upper = w.hi, stop.on.error = F)$value
-      }
-    }
-    else if(identical(density, negexp.like) & expansions == 0){
+      temp.scaler <- sapply(sigma 
+                      , FUN = function(s, Seqx, KK){ 
+                        seqy <- 1 - exp(-(Seqx/s)^(-KK))
+                        scaler <- (Seqx[2] - Seqx[1])*sum(seqy[-length(seqy)] + seqy[-1]) / 2
+                        scaler }
+                      , Seqx = units::drop_units(seqx)
+                      , KK = K)
+    } else if(identical(density, negexp.like) & expansions == 0){
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       beta <- exp(s)
-
-      temp.scaler <- unname((exp(-beta*w.lo) - exp(-beta*w.hi))/beta)
-      
-      # for(i in 1:nrow(unique.covars)){
-      #   temp.scaler[i] <- unname((exp(-beta[i]*w.lo) - exp(-beta[i]*w.hi))/beta[i])
-      # }
-
-    }
-    else {
-      # User defined likelihood case.  
+      temp.scaler <- unname((exp(-beta * units::drop_units(w.lo)) - 
+                               exp(-beta * units::drop_units(w.hi)))/beta)
+    } else {
+      # For the Uniform and User defined likelihood case.  
+      # We could do all likelihoods this way (i.e., numerical integration); but,
+      # the above special cases are faster and more accurate in some cases because
+      # we know the theoretical integral (i.e., for normal and exponential)
+      seqx = seq(w.lo, w.hi, length=nTrapazoids) 
       for(i in 1:nrow(unique.covars)){
-        temp.covars <- matrix(unlist(unique.covars[i,-PkeyCol]),nrow=length(seqx),
-                              ncol=ncol(unique.covars)-1, byrow=TRUE)
-        seqy[[i]] <- density(dist = seqx, covars = temp.covars, 
-                             scale = FALSE, w.lo = w.lo, w.hi = w.hi, 
-                             a = a, expansions = expansions, 
-                             series=series)
-        temp.scaler[i] <- (seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
+        temp.covars <- matrix(unlist(unique.covars[i,-PkeyCol])
+                            , nrow = length(seqx)
+                            , ncol = ncol(unique.covars)-1
+                            , byrow = TRUE
+                            )
+        seqy[[i]] <- density(dist = seqx
+                           , covars = temp.covars
+                           , scale = FALSE
+                           , w.lo = w.lo
+                           , w.hi = w.hi
+                           , a = a
+                           , expansions = expansions
+                           , series = series 
+                           )
+        temp.scaler[i] <- units::drop_units(seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
       }
     }
 
-    df <- data.frame(unique.covars,temp.scaler)
+    df <- data.frame(unique.covars, temp.scaler)
 
     z <- merge(covars, df, by.x="zzzPkey", by.y="zzzPkey", sort=F)
     scaler <- z$temp.scaler
     if(pointSurvey){
-      scaler <- scaler/dist
+      scaler <- scaler/units::drop_units(dist)
     }
-  }
-  else if(pointSurvey){
-    seqy <- seqx * density( dist = seqx, scale = FALSE, 
+  } else if( pointSurvey ){
+    # This case is POINTS - NO Covariates
+    seqx = seq(w.lo, w.hi, length=nTrapazoids) 
+    seqy <- units::drop_units(seqx) * density( dist = seqx, scale = FALSE, 
                             w.lo = w.lo, w.hi = w.hi, a = a, 
                             expansions = expansions, series=series)
 
     #   trapezoid rule
-    scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*dist)
-  }
-  else{
+    scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*units::drop_units(dist))
+  } else {
+    # This case is LINES - NO Covariates
+    # Density should return unit-less numbers (height of density function)
+    seqx = seq(w.lo, w.hi, length=nTrapazoids) 
     seqy <- density( dist = seqx, scale = FALSE, w.lo = w.lo, 
                      w.hi = w.hi, a = a, expansions = expansions, 
                      series=series)
 
     #   trapezoid rule
-    scaler <- (seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
+    scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
   }
-  #print(scaler)
+  
+  # there are cases where the guess at parameters is so bad, that the integration
+  # constant is 0 (consider pnorm(100,0,2e30)). But, we don't want to return 0
+  # because it goes in denominator of likelihood and results in Inf, which is 
+  # not informative.  nlminb guesses NaN after that sometimes. We want to return 
+  # the smallest possible number that does not result in log(x) = -Inf.
+  # Because of the negative applied in nLL function we actually mant to return
+  # the largest possible numbers such that when we sum them and others we don't get Inf
+
+  if( any(indZeros <- is.na(scaler) | 
+               is.infinite(scaler) | 
+               is.nan(scaler) |
+               (scaler <= .Machine$double.xmin)) ){
+    scaler[ indZeros ] <- .Machine$double.xmax / sum(indZeros)
+  }
+  
+  # cat(paste("\tscaler = \n\t", paste(scaler, collapse = ", "), "\n"))
+  
   scaler
 }

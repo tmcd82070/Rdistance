@@ -23,7 +23,6 @@
 #' @details The default print method for class 'dfunc' is called, then the abundance estimates 
 #'   contained in \code{obj} are printed.
 #' @return No value is returned.
-#' @author Trent McDonald, WEST Inc., \email{tmcdonald@west-inc.com}
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 #' @examples
 #' # Load example sparrow data (line transect survey type)
@@ -58,16 +57,50 @@ print.abund <- function( x,
   #
 
   print.dfunc( x, criterion=criterion )
+
+  hasCI <- all(!is.null(x$density.ci))
   
-  cat( paste( "Abundance estimate: ", format(x$n.hat), "; ",
-          paste(x$alpha*100, "% CI=(", sep=""), format(x$ci[1]), 
-          "to", format(x$ci[2]),
-          ")\n"))
-  if(!is.na(x$nItersConverged)){
-    if(x$nItersConverged < length(x$B)) {
-      cat(paste("CI based on", x$nItersConverged, "of", length(x$B), 
+  # --- Density printout ----
+  if( hasCI ){
+    mess <- c("Density in sampled area:", paste0(x$alpha*100, "% CI:"))
+    mess <- format(mess, justify = "right")
+    mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
+    ci <- paste( colorize(format(x$density.ci[1])), 
+                 "to", 
+                 colorize(format(x$density.ci[2])) )
+    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+    mess <- paste(mess, c(ptEst, ci))
+  } else {
+    mess <- c("Density in sampled area:")
+    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+    mess <- paste(mess, ptEst)
+  }
+  cat(paste0(mess, "\n"))
+
+  # ---- Abundance printout ----
+  cat("\n")  # blank line between for readability
+  if( hasCI ){
+    mess <- c(paste0( "Abundance in ", format(x$area), " study area:"), 
+                      paste0(x$alpha*100, "% CI:"))
+    mess <- format(mess, justify = "right")
+    mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
+    ci <- paste( colorize(format(x$n.hat.ci[1])), 
+                 "to", 
+                 colorize(format(x$n.hat.ci[2])) )
+    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+    mess <- paste(mess, c(ptEst, ci))
+  } else {
+    mess <- paste0( "Abundance in ", format(x$area), " study area:")
+    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+    mess <- paste(mess, ptEst)
+  }
+  cat(paste0(mess, "\n"))
+  
+  if(!is.null(x$nItersConverged)){
+    if(x$nItersConverged < nrow(x$B)) {
+      cat(paste("CI based on", x$nItersConverged, "of", nrow(x$B), 
                 "successful bootstrap iterations\n"))
-      convRatio <- x$nItersConverged / length(x$B)
+      convRatio <- x$nItersConverged / nrow(x$B)
       if((1.0-convRatio) > maxBSFailPropForWarning) {
         warning("The proportion of non-convergent bootstrap iterations is high.", immediate. = TRUE)
         cat(paste0("The proportion of non-convergent bootstrap iterations exceeds ",
@@ -77,6 +110,6 @@ print.abund <- function( x,
       }
     }
   }
-  cat( "\n" )
+  # cat( "\n" )
 
 }
