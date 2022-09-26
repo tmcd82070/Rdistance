@@ -461,6 +461,15 @@ dfuncEstim <- function (formula,
   } else{
     data <- NULL
   }
+
+  if( likelihood == "uniform" ){
+    .Deprecated(new = "logistic.like"
+                , package = "Rdistance"
+                , msg = paste("'unform.like' been re-named and is deprecated.\n"
+                       , "Using likelihood = 'logistic' instead.")
+                , old = "uniform.like")
+    likelihood <- "logistic"
+  }  
   
 
   # (jdc) The double-observer method hasn't been checked since updating to version 2.x
@@ -557,12 +566,6 @@ dfuncEstim <- function (formula,
     }
   } 
 
-  # We are not allowing expansion terms in presence of covariates
-  if (!is.null(covars) & expansions > 0) {
-    expansions=0
-    if(warn) warning("Expansions not allowed when covariates are present. Expansions set to 0.")
-  }
-  
   # Minimum number of spline basis functions
   if(expansions < 2 & series == "bspline"){
     expansions <- 2
