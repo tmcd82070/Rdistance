@@ -171,37 +171,6 @@ F.start.limits <- function( like
       nms <- c(nms, paste( "a", 1:(np-ncovars), sep=""))
     }
     
-  } else if( like == "uniform" ){
-    if( ncovars > 1 ){
-      start <- c(log(medDist)                          # Threshold 
-                 , rep(zero, ncovars-1)                # Covars
-                 , log(w)                              # Knee
-                 , rep(zero, expan))                   # any expansions
-      low   <- c(log(dMin)
-                 , rep(negInf, ncovars-1)
-                 , log(0.01*w)
-                 , rep(negInf, expan))
-      high  <- c(log(dMax)
-                 , rep(posInf, ncovars-1)
-                 , log(20000*w)
-                 , rep( posInf, expan))
-      nms <- c(colnames(covars), "Knee")
-    } else {
-      start <- c(medDist
-                 , 1*w
-                 , rep(zero, expan))
-      low   <- c(dMin
-                 , 0.01 * w
-                 , rep(negInf, expan))
-      high  <- c(dMax, 
-                 20000 * w, 
-                 rep( posInf, expan))
-      nms <- c("Threshold", "Knee")
-    }
-    if(expan > 0){
-      nms <- c(nms, paste( "a", 1:expan, sep=""))
-    }
-    
   } else if( like == "negexp" ){
     if( ncovars > 1 ){
       start <- c(zero
@@ -248,12 +217,12 @@ F.start.limits <- function( like
     high  <- c(posInf, posInf)
     
   } else {
-    #   Assume this is a user-defined likelihood
+    #   This is for the logistic and all user-defined likelihoods
     fn <- match.fun( paste(like, ".start.limits", sep="") )
-    ans <- fn(dist, expan, w.lo, w.hi)
+    ans <- fn(dist, covars, expan, w.lo, w.hi)
     start <- ans$start
     low <- ans$lowlimit
-    high <- ans$highlimit
+    high <- ans$uplimit
     nms <- ans$names
   }
   
