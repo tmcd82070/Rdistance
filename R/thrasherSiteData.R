@@ -1,15 +1,16 @@
 #' @name thrasherSiteData
 #' 
-#' @title Sage Thrasher site data 
-#' Point transect data collected in central Wyoming from 120 points
-#' surveyed for Sage Thrashers by the Wyoming Cooperative Fish & Wildlife Research Unit in 2013.
-#' See package vignettes for tutorials of the basic analysis. 
+#' @title thrasherSiteData - Sage Thrasher site data. 
 #' 
+#' @description Point transect data collected in central 
+#' Wyoming from 120 points surveyed for Sage Thrashers by the Wyoming 
+#' Cooperative Fish & Wildlife Research Unit in 2013.
+#' See package vignettes for tutorials of the basic analysis.
 #' 
 #' @docType data
 #' 
 #' @format A data.frame containing 120 rows and 6 columns.  Each row represents
-#' a site (point) surveyed.  Column descriptions: 
+#' a surveyed site (point).  Column descriptions: 
 #' \enumerate{ 
 #' \item \code{siteID}: Factor (120 levels), the site or point surveyed.  
 #' \item \code{observer}: Factor (six levels), identity of the observer who surveyed
@@ -25,8 +26,8 @@
 #' 
 #' @seealso \code{\link{thrasherDetectionData}}
 #' 
-#' @source The Sage Thrasher data are a subset of the data collected 
-#' by Jason Carlisle and various field technicians for his Ph.D. from the 
+#' @source The Sage Thrasher data are a subset of data collected 
+#' by Jason Carlisle and field technicians for his Ph.D. from the 
 #' Department of Ecology, University of Wyoming, in 2017.  This portion of 
 #' Jason's work was funded by the Wyoming Game and Fish Department through agreements 
 #' with the University of Wyoming's  Cooperative Fish & Wildlife
