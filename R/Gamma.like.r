@@ -1,6 +1,8 @@
-#' @title Gamma distance function for distance analyses
+#' @title Gamma.like - Gamma distance function 
 #' 
-#' @description Computes the gamma likelihood, scaled appropriately, for use as a likelihood in estimating a distance function.
+#' @description Computes the gamma likelihood, 
+#' scaled appropriately, for use as a likelihood 
+#' in estimating a distance function.
 #' 
 #' @param a A vector of likelihood parameter values. Length and meaning depend on \code{series} and \code{expansions}. If no expansion terms were called for
 #'   (i.e., \code{expansions = 0}), the distance likelihoods contain one or two canonical parameters (see Details). If one or more expansions are called for,
@@ -67,33 +69,37 @@
 #' @keywords models
 #' @export
 #' @importFrom stats dgamma
-
 Gamma.like <- function(a, 
                        dist, 
                        covars = NULL, 
-                       w.lo = 0, 
+                       w.lo = units::set_units(0,"m"), 
                        w.hi = max(dist),
                        series = "cosine", 
                        expansions = 0, 
                        scale = TRUE,
                        pointSurvey = FALSE){
-    if(!is.null(covars)){
-      s <- 0
-      for (i in 1:(ncol(as.matrix(covars))))
-        s <- s + a[i]*covars[,i]
-      r <- exp(s)
-    } else {r <- a[1]}
-    
-    lam <- a[length(a)]
-    
 
-    if( any(r <= 1) ) warning("Shape parameter of gamma likelihood invalid (<= 1).")
-    if( lam < 0 ) warning("Scale parameter of gamma likelihood invalid (< 0).")
+  # What's in a? : 
+  #   If no covariates: a = [Shape, Scale, <expansion coef>]
+  #   If covariates:    a = [(Intercept), b1, ..., bp, Shape, <expansion coef>]
+  
+  if(!is.null(covars)){
+    q <- ncol(covars)
+    beta <- a[1:q] 
+    s <- drop( covars %*% matrix(beta,ncol=1) )      
+    lam <- exp(s)  # link function here
+  } else {
+    lam <- a[1]
+  }
 
-    dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
-    eta <- 0  # when have no covariates
+  r <- a[length(a) - expansions]
+  
+  if( any(lam < 0) ) warning("Scale parameter of gamma likelihood invalid (< 0).")
+  if( r <= 1 ) warning("Shape parameter of gamma likelihood invalid (<= 1).")
 
+  dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
 
+  zero <- .Machine$double.xmin
     # This was all part of Becker and Quan's code
     #bb <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
     #J <- dim(X.)[2]
@@ -128,31 +134,68 @@ Gamma.like <- function(a,
     #loglik <- (r - 1) * log(v1) - v1 - lgamma(r) - log(b) - eta # - log(pgamma(w1, r))  # this last term is meant to be integration constant, but it's off, and we use numerical integration below
     #like <- exp(loglik)
 
-    #   In the following, I use the built in R function  ## THIS ALSO WORKS
-    #   Note: I think Quan is missing an extra 1/lam in front of his density equation.
-    b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
-    like <- dgamma( dist, shape=r, scale=lam*b )
-    
-    # By default we want g(x.scl) = 1
-    x.scl <- lam * b * (r - 1) # Mode of gamma distribution
-    g.at.x0 <- 1
-    f.at.x0 <- dgamma( x.scl, shape=r, scale=lam*b )
-    scaler <- g.at.x0 / f.at.x0
-    like <- like * scaler
-    
-    if( scale ){
-       # here we want likelihood to integrate to 1.0 - for fitting
-       like = like / integration.constant(dist=dist,
-                                            density=Gamma.like,
-                                            a=a, 
-                                            covars = covars,
-                                            w.lo=w.lo, 
-                                            w.hi=w.hi, 
-                                            expansions = expansions,
-                                            pointSurvey = pointSurvey,
-                                            series = series)
-    } 
+  # Note: Mode of Gamma distribution is lam * b * (r - 1) 
 
-    like
+  #   In the following, I use the built in R function  ## THIS ALSO WORKS
+  #   Note: I think Quan is missing an extra 1/lam in front of his density equation.
+  b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
+  key <- dgamma( units::drop_units(dist), shape=r, scale=lam*b )
+    
+    # print(b)
+    # # By default we want g(x.scl) = 1
+    # x.scl <- lam * b * (r - 1) # Mode of gamma distribution
+    # g.at.x0 <- 1
+    # f.at.x0 <- dgamma( x.scl, shape=r, scale=lam*b )
+    # scaler <- g.at.x0 / f.at.x0
+    # like <- like * scaler
+    
+  if(expansions > 0){
+    
+    w <- w.hi - w.lo
+    
+    if (series=="cosine"){
+      dscl = units::drop_units(dist/w)  # unit conversion here; drop units is safe
+      exp.term <- cosine.expansion( dscl, expansions )
+    } else if (series=="hermite"){
+      dscl = units::drop_units(dist/w)
+      exp.term <- hermite.expansion( dscl, expansions )
+    } else if (series == "simple") {
+      dscl = units::drop_units(dist/w)
+      exp.term <- simple.expansion( dscl, expansions )
+    } else {
+      stop( paste( "Unknown expansion series", series ))
+    }
+    
+    expCoefs <- a[(length(a)-(expansions-1)):(length(a))]
+    key <- key * (1 + c(exp.term %*% expCoefs))
+    
+    # without monotonicity restraints, function can go negative, 
+    # especially in a gap between datapoints. This makes no sense in distance
+    # sampling and screws up the convergence. 
+    key[ which(key < 0) ] <- 0
+  }
+  
+  if( scale ){
+    # for fitting, likelihood must integrate to 1.0 
+    # in the future, when we know the integral, we should compute it 
+    # here instead of calling a separate numberical integration routine. 
+    # For example, in the Gamma case without covars or expansions, we know
+    #   gammaIntegral <- diff(pgamma(q = c(w.lo, w.hi)
+    #                      , shape = r
+    #                      , scale = lam * b))
+    # But, you have to remember all cases (Points, Lines) X expansions X covars
+    key = key / integration.constant(dist=dist,
+                                          density=Gamma.like,
+                                          a=a, 
+                                          covars = covars,
+                                          w.lo=w.lo, 
+                                          w.hi=w.hi, 
+                                          expansions = expansions,
+                                          pointSurvey = pointSurvey,
+                                          series = series)
+
+  } 
+
+  key
 
 }
