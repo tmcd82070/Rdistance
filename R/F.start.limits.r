@@ -116,15 +116,15 @@ F.start.limits <- function( like
     if( ncovars > 1 ){  
       start <- c(log(0.8 * medDist)   # Sigma 
                  , rep(0, ncovars-1)    # any covars
-                 , log(1)               # k
+                 , 1               # k
                  , rep(0, expan))        # any expansions
       low   <- c(negInf
                  , rep(negInf, ncovars-1)
-                 , log(0.01)
+                 , 0.01
                  , rep(negInf, expan))
       high  <- c(posInf
                  , rep( posInf, ncovars-1)
-                 , log( 100 )
+                 , 100 
                  , rep( posInf, expan))
       nms <- c(colnames(covars), "k")
     } else {
@@ -193,31 +193,9 @@ F.start.limits <- function( like
       nms <- c(nms, paste( "a", 1:expan, sep=""))
     }
   
-  } else if( like == "Gamma" ){
-    d <- dist[ w.lo <= dist & dist <= w.hi ]
-    d <- d[ d > zero ] # even though 0 is legit, can't take log of it
-    s <- units::drop_units( log( mean(d, na.rm=TRUE) ) - mean( log(d), na.rm=TRUE ) )
-    s2 <- (s-3)^2 + 24*s
-    if( s2 < 0 ) s2 <- 0
-    r <- (3 - s + sqrt( s2 )) / (12*s)
-    if( r <= 1 ) r <- 1.01
-    b <- ( (r-1) / exp(1) )^(r-1) / gamma(r)
-    lam <- mean(d,na.rm=TRUE) / (r * b)
-    #r <- units::as_units(r, distUnits)
-    
-    if( ncovars > 1 ){
-      start <- c(log(r), rep(0, ncovars-1), log(lam))
-      low   <- c(log(1.0001), rep(negInf, ncovars-1), zero)
-      nms <- colnames(covars)
-    } else {
-      start <- c(r, lam)
-      low   <- c(1.0001, zero)
-      nms <- c("Shape", "Scale")
-    }
-    high  <- c(posInf, posInf)
-    
-  } else {
-    #   This is for the logistic and all user-defined likelihoods
+  }  else {
+    #   This is for logistic, Gamma, and all user-defined likelihoods
+    # Eventually, all start limit functions should be their own routine
     fn <- match.fun( paste(like, ".start.limits", sep="") )
     ans <- fn(dist, covars, expan, w.lo, w.hi)
     start <- ans$start

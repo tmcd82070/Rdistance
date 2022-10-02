@@ -370,10 +370,6 @@
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
 #'    abundance of biological populations}. Oxford University Press, Oxford, UK.
 #'     
-#' @author Trent McDonald, McDonald Data Sciences, \email{trent@mcdonalddatasciences.com}\cr
-#'         Jason Carlisle, Wyoming Game and Fish Department, \email{jason.carlisle@wyo.gov}\cr
-#'         Aidan McDonald, Viridium Inc., \email{aidan@mcdcentral.org}
-#'         
 #' @seealso \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 #' See likelihood-specific help files (e.g., \code{\link{halfnorm.like}}) for
 #' details on each built-in likelihood.  See package vignettes for information on custom,
@@ -427,11 +423,11 @@ dfuncEstim <- function (formula,
                         siteData, 
                         likelihood = "halfnorm", 
                         pointSurvey = FALSE, 
-                        w.lo = 0, 
+                        w.lo = units::set_units(0,"m"), 
                         w.hi = NULL, 
                         expansions = 0, 
                         series = "cosine", 
-                        x.scl = 0, 
+                        x.scl = units::set_units(0,"m"), 
                         g.x.scl = 1, 
                         observer = "both", 
                         warn = TRUE, 
@@ -574,8 +570,20 @@ dfuncEstim <- function (formula,
   
   
   # The Gamma doesn't work with covariates
-  if (!is.null(covars) & likelihood=="Gamma") {
-    stop("The Gamma likelihood does not allow covariates in the detection function.")
+  # if (!is.null(covars) & likelihood=="Gamma") {
+  #   stop("The Gamma likelihood does not allow covariates in the detection function.")
+  # }
+  # Override x.scl for Gamma likelihood
+  if( !is.character(x.scl) ){
+    if( inherits(x.scl, "units") ){ # this if needed cause drop units does not work on plain vector
+      isZero <- units::drop_units(x.scl) == 0 
+    } else {
+      isZero <- x.scl == 0
+    }
+    if( isZero & likelihood == "Gamma" ){
+      x.scl <- "max"
+      # warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
+    }
   }
   
   
@@ -713,9 +721,18 @@ dfuncEstim <- function (formula,
   
   # Assemble results
   class(ans) <- "dfunc"
-  gx <- F.gx.estim(ans)
-  ans$x.scl <- gx$x.scl
-  ans$g.x.scl <- gx$g.x.scl
+  if( ans$like.form != "Gamma" ){
+    # not absolutely necessary. Could estimate these later in print and plot methods.
+    # but this saves a little time.
+    gx <- F.gx.estim(ans)
+    ans$x.scl <- gx$x.scl
+    ans$g.x.scl <- gx$g.x.scl
+  } else {
+    # Special case of Gamma
+    ans$x.scl <- x.scl
+    ans$g.x.scl <- g.x.scl
+  }
+  
   fuzz <- 1e-06
   low.bound <- any(fit$par <= strt.lims$lowlimit + fuzz)
   high.bound <- any(fit$par >= strt.lims$uplimit - fuzz)

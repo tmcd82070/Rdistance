@@ -111,7 +111,7 @@ integration.constant <- function(dist,
     # unique combinations of covariates IF there are large number
     # of duplicated covariates.  This is common when using 
     # factors.  But, if using continuous covariates, this is 
-    # inefficient.  Regardless, this code only computes valuse 
+    # inefficient.  Regardless, this code only computes values 
     # of the scaling constant for unique combinations of X, 
     # then merges them into the covar array.  The non-de-dupped
     # way to do these calculations is something like 
@@ -133,6 +133,7 @@ integration.constant <- function(dist,
     scaler <- vector(length = nrow(covars), "numeric")
 
     if(pointSurvey){
+      # This case is POINTS, COVARS, all Likelihoods
       seqx = seq(w.lo, w.hi, length=nTrapazoids) 
       for(i in 1:nrow(unique.covars)){
         temp.covars <- matrix(as.numeric(unique.covars[i,-PkeyCol])
@@ -152,6 +153,8 @@ integration.constant <- function(dist,
       }
 
     } else if(identical(density, halfnorm.like) & expansions == 0){
+      # this case is LINES, COVARS, HALFNORM, NO EXPANSIONS
+      # Made this a case because I think it's faster, because we know integral
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       sigma <- exp(s)  # link function here
 
@@ -166,6 +169,8 @@ integration.constant <- function(dist,
                       sqrt(2*pi) * sigma
       
     } else if(identical(density, hazrate.like) & expansions == 0){
+      # This case is LINES, HAZRATE, COVARS, NO EXPANSIONS
+      #
       # Integral of hazrate involves incomplete gamma functions. 
       # See wolfram.  Incomplete gammas are implemented in some packages, e.g., 
       # expint.  You could convert to an exact integral using one of these 
@@ -184,33 +189,59 @@ integration.constant <- function(dist,
                       , Seqx = units::drop_units(seqx)
                       , KK = K)
     } else if(identical(density, negexp.like) & expansions == 0){
+      # This case is LINES, NEGEXP, COVARS, NO EXPANSIONS
       s <- as.matrix(unique.covars) %*% matrix(c(a,0),ncol=1)
       beta <- exp(s)
       temp.scaler <- unname((exp(-beta * units::drop_units(w.lo)) - 
                                exp(-beta * units::drop_units(w.hi)))/beta)
     } else {
-      # For the Uniform and User defined likelihood case.  
+      # For case is for LINES, COVARS, LIKE in {Logistic, User, Gamma} 
+      # and ALL LIKELIHOODS with expansions > 0
+      #
       # We could do all likelihoods this way (i.e., numerical integration); but,
-      # the above special cases are faster and more accurate in some cases because
+      # the above special cases are faster (I think) and more accurate in some cases because
       # we know the theoretical integral (i.e., for normal and exponential)
       seqx = seq(w.lo, w.hi, length=nTrapazoids) 
-      for(i in 1:nrow(unique.covars)){
-        temp.covars <- matrix(unlist(unique.covars[i,-PkeyCol])
-                            , nrow = length(seqx)
-                            , ncol = ncol(unique.covars)-1
-                            , byrow = TRUE
-                            )
-        seqy[[i]] <- density(dist = seqx
-                           , covars = temp.covars
-                           , scale = FALSE
-                           , w.lo = w.lo
-                           , w.hi = w.hi
-                           , a = a
-                           , expansions = expansions
-                           , series = series 
-                           )
-        temp.scaler[i] <- units::drop_units(seqx[2] - seqx[1]) * sum(seqy[[i]][-length(seqy[[i]])] + seqy[[i]][-1]) / 2
+
+      # function to apply density to each row of covariates
+      likeApply <- function(covs
+                          , Seqx
+                          , W.lo 
+                          , W.hi 
+                          , A 
+                          , Expansions 
+                          , Series  
+                          ){
+        # Matrix of constant covariates for this case
+        temp.covars <- matrix(covs
+                              , nrow = length(Seqx)
+                              , ncol = length(covs)
+                              , byrow = TRUE
+        )
+        seqy <- density(dist = Seqx
+                             , covars = temp.covars
+                             , scale = FALSE
+                             , w.lo = W.lo
+                             , w.hi = W.hi
+                             , a = A
+                             , expansions = Expansions
+                             , series = Series 
+        )        
+        scaler <- units::drop_units(Seqx[2] - Seqx[1])*sum(seqy[-length(seqy)] + seqy[-1]) / 2
+        scaler
       }
+     
+      temp.scaler <- apply(X = unique.covars[, -PkeyCol, drop = FALSE] 
+                         , MARGIN = 1
+                         , FUN = likeApply
+                         , Seqx = seqx
+                         , W.lo = w.lo 
+                         , W.hi = w.hi
+                         , A = a
+                         , Expansions = expansions 
+                         , Series = series
+                         )
+      
     }
 
     df <- data.frame(unique.covars, temp.scaler)
@@ -233,9 +264,14 @@ integration.constant <- function(dist,
     # This case is LINES - NO Covariates
     # Density should return unit-less numbers (height of density function)
     seqx = seq(w.lo, w.hi, length=nTrapazoids) 
-    seqy <- density( dist = seqx, scale = FALSE, w.lo = w.lo, 
-                     w.hi = w.hi, a = a, expansions = expansions, 
-                     series=series)
+    seqy <- density( dist = seqx
+                   , scale = FALSE
+                   , w.lo = w.lo
+                   , w.hi = w.hi
+                   , a = a
+                   , expansions = expansions
+                   , series=series
+                   )
 
     #   trapezoid rule
     scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2

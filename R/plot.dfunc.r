@@ -21,8 +21,13 @@
 #'   an algorithm to compute the number of bars, or a function to compute the
 #'   number of bars.  See \code{\link{hist}} for all options.
 #'   
-#' @param newdata Matrix containing covariates value to use for generating the 
-#' distance plotted function(s). Each row is a set of covariate values and produces one line.
+#' @param newdata Data frame similar to the \code{newdata} parameter 
+#' to \code{\link{lm}} containing new values for covariates in the distance function.
+#' One distance function is computed and plotted for each row in the data frame. 
+#' If \code{newdata} is NULL, the routine computes the mean of all numeric covariates
+#' in the distance function and the mode of all factor covariates in 
+#' the distance function. The new mean and mode vector is used to predict 
+#' and plot a distance function.  
 #'   
 #' @param legend Logical scalar for whether to include a legend. 
 #'   If TRUE, a legend will be included on the plot detailing
@@ -41,13 +46,16 @@
 #' the distance function. Values of NULL or a number strictly less than 0 
 #' mean solid fill using colors from parameter \code{col}.  If 
 #' \code{density = 0}, bars are not filled and only the borders are rendered. 
+#' Values strictly greater than 0 produce shading lines using colors 
+#' from \code{col}.
 #' 
 #' @param col A vector of bar fill colors or line colors when bars are 
 #' drawn and \code{density != 0}, replicated
-#' to the correct length. A value of 0 is the background color.
-#' 
+#' to the correct length. Also used for the bar borders when
+#' \code{border = TRUE}.
+#'  
 #' @param border The color of bar borders when bars are plotted. A 
-#' value of NA means no borders. If there are shading lines 
+#' value of NA or FALSE means no borders. If there are shading lines 
 #' (i.e., \code{density>0}), \code{border = TRUE} uses the same 
 #' color for the border as for the shading lines.
 #' 
@@ -106,23 +114,16 @@
 #'   
 #'   
 #' @return The input distance function is returned, with two additional
-#'   components. These additional components can be used to add lines or
-#'   text.  These additional components are:
-#'   
-#'   \item{xscl.plot}{Scaling factor for horizontal coordinates.  Due to the way
-#'   \code{barplot} works, the x-axis has been scaled.  The internal coordinates
-#'   of the bars are 1, 2, \ldots, \code{nbars}. To plot something at a distance
-#'   coordinate of x, x must be divided by this value.  For example, to draw a
-#'   vertical line at a value of 10 on the x-axis, the correct call is
-#'   \code{abline(v=10/obj$xscl.plot)}.  }
-#'   
-#'   \item{yscl}{Scaling factor for vertical coordinates.  The histogram and
-#'   distance function plotted by this routine are scaled so that height of the
-#'   distance function at \code{x.scl} is \code{g.x.scl}.  Usually, this means the
-#'   distance curve is scaled so that the y-intercept is 1, or that g(0) = 1. 
-#'   To add a plot feature at a real coordinate of \emph{y}, \emph{y} must be divided by this
-#'   value.  For example, to draw a horizontal line at y-axis
-#'   coordinate of 1.0, the correct call is \code{abline(h=1/obj$yscl)}.  }
+#'   components than can be used to reconstruct the plotted bars.  To 
+#'   obtain values of the plotted distance functions, use \code{predict}
+#'   with \code{type = "distances"}. 
+#'   The additional components are:
+#'   \item{barHeights}{A vector containing the scaled bar heights drawn 
+#'   on the plot.}
+#'   \item{barWidths}{A vector or scaler of the bar widths drawn on 
+#'   the plot, with measurement units.  }
+#'   Re-plot the bars with \code{barplot( return$barHeights, 
+#'   width = return$barWidths )}.
 #'   
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
 #'   \code{\link{print.abund}}
@@ -164,18 +165,18 @@ plot.dfunc <- function( x,
                         legend = TRUE, 
                         vertLines=TRUE,
                         plotBars=TRUE,
-                        density = NULL, 
+                        density = 0, 
                         xlab = NULL,
                         ylab = NULL,
-                        border = "blue",
-                        col = 0,
+                        border = TRUE,
+                        col = "blue",
                         col.dfunc=NULL,
                         lty.dfunc=NULL,
                         lwd.dfunc=NULL,
                         ... ){
 
   # a constant used later
-  zero <- units::as_units(0, x$outputUnits)
+  # zero <- units::as_units(0, x$outputUnits)
   
   d <- x$dist
   whi <- x$w.hi
@@ -204,38 +205,29 @@ plot.dfunc <- function( x,
     cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
   }
 
-  # Figure out scaling
-  if( is.null( x$g.x.scl ) ){
-    #   Assume g0 = 1
-    g.at.x0 <- 1
-    x0 <- zero
-    warning("g0 unspecified.  Assumed 1.")
-  } else {
-    g.at.x0 <- x$g.x.scl
-    x0 <- x$x.scl
-  }
-  
   like <- match.fun( paste( x$like.form, ".like", sep=""))
   
   x.seq <- seq( x$w.lo, x$w.hi, length=200)
   
-  # Work out predicted lines ----
-  
-  # Function returning mode (=most frequent values) of a FACTOR. 
-  getmode <- function(v) {
-    uniqv <- table(v)
-    factor(names(uniqv)[which.max(uniqv)], levels = levels(v))
-  }
+  # Work out covariates to use when missing ----
   
 
   # Fixup new data ----
   if(missing(newdata) || is.null(newdata)){
+    
+    # Function returning mode (=most frequent values) of a FACTOR.
+    # only needed in this case.
+    getmode <- function(v) {
+      uniqv <- table(v)
+      factor(names(uniqv)[which.max(uniqv)], levels = levels(v))
+    }
+    
     # Note: x$model.frame has all distances, even those < w.lo and > w.hi,
     # and x$model.frame[,1] is the response (i.e., distances).
     # x$covars has ONLY covariates for distances between w.lo and w.hi
     # x$model.frame has the original factors un-expanded to indicator variables.
     # x$covars has all factors expanded into indicators using specified contrasts.
-    
+
     covNames <- labels(terms(x$model.frame)) # Intercept not included here
     newdata <- matrix(NA, nrow = 1, ncol = length(covNames))
     colnames(newdata) <- covNames
@@ -251,58 +243,19 @@ plot.dfunc <- function( x,
         newdata[,nm] <- mean(x$model.frame[inStrip, nm]) # Use mean
       }
     }
-  } 
-  
-  # Predict params ----
-  params <- predict.dfunc(object = x
-                        , newdata = newdata
-                        , type="parameters")
-  
+  }
+
   if(is.null(x$covars)){
-    # If model has no covariates, there is only one line regardless of newdata.
+    # If model has no covariates, there is only one value of params regardless of newdata.
     params <- params[1,,drop = FALSE]
   }
   
-  # Predict distance function lines ----
-  # Use covars= NULL here because we evaluated covariates in predict.dfunc above.
-  # After next apply, y is length(x.seq) x nrow(parms).  each column is a unscaled distance 
-  # function (f(x))
-  y <- apply(X = params
-           , MARGIN = 1
-           , FUN = like
-           , dist = x.seq - x$w.lo
-           , series = x$series
-           , covars = NULL
-           , expansions = x$expansions
-           , w.lo = zero
-           , w.hi = x$w.hi - x$w.lo
-           , pointSurvey = FALSE
-           , scale = TRUE
-           )  
-  
-  y <- t(y)  # now, each row of y is a dfunc
-
-  f.at.x0 <- apply(X = params
-                 , MARGIN = 1
-                 , FUN = like
-                 , dist = x0 - x$w.lo
-                 , series = x$series
-                 , covars = NULL
-                 , expansions = x$expansions
-                 , w.lo = zero
-                 , w.hi = x$w.hi - x$w.lo
-                 , pointSurvey = FALSE 
-                 , scale = TRUE
-                 )
-  
-  scaler <- g.at.x0 / f.at.x0 # a length n vector, n = nrow(params) 
-
-  # Did you know that 'scaler' is ESW?  Only applies for lines. Makes sense. 1/f(0) = ESW in 
-  # the old formulas.
-  
-  y <- y * scaler  # length(scalar) == nrow(y), so this works right
-
-  y <- t(y) # for some reason, we go back to columns b.c. we plot by columns below. Could change this.
+  # Predict distance functions ----
+  y <- predict.dfunc(object = x
+                    , newdata = newdata
+                    , distances = x.seq
+                    , type = "distances"
+                    )
 
   if( x$pointSurvey ){
     # ybarhgts <- cnts$density * scaler[1]  # not sure this is right
@@ -310,6 +263,7 @@ plot.dfunc <- function( x,
     y <- y * units::drop_units(x.seq - x$w.lo)
     scaler <- units::drop_units(x.seq[2]-x.seq[1]) * colSums(y[-nrow(y),,drop = FALSE]+y[-1,,drop = FALSE]) / 2
   }
+  scaler <- attr(y, "scaler")
   ybarhgts <-  cnts$density * mean(scaler)
 
   # after here, y is a matrix, columns are distance functions.
@@ -377,9 +331,14 @@ plot.dfunc <- function( x,
                        "; Adjust ", format(x$fit$call[["adjust"]])), 
             side=3, cex=.75, line=0.8)
     } else if( x$expansions == 0 ){
-      title(main=paste( x$like.form, ", ", x$expansions, " expansions", sep=""))
+      title(main=paste( x$like.form, sep=""))
     } else {
-      title(main=paste( x$like.form, ", ", x$series, " expansion, ", x$expansions, " expansions", sep=""))
+      if( x$expansions == 1 ){
+        expText <- "expansion"
+      } else {
+        expText <- "expansions"
+      }
+      title(main=paste0( x$like.form, ", ", x$expansions, " ", x$series, " ", expText, sep=""))
     }
   }
   
@@ -483,7 +442,7 @@ plot.dfunc <- function( x,
   }
   
   # Clean up ----
-  x$yscl <- scaler   # this is g(x) / f(x) = ESW if lines. One for each row in newdata.  Might want this later.
+  # x$yscl <- scaler   # this is g(x) / f(x) = ESW if lines. One for each row in newdata.  Might want this later.
   x$barHeights <- ybarhgts  # scaled to mean scaler.
   x$barWidths <- xscl
   

@@ -92,84 +92,86 @@ ESW <- function( obj, newdata ){
   # Issue error if the input detection function was fit to point-transect data
 
   if(obj$pointSurvey) stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
-  
-  like <- match.fun(paste( obj$like.form, ".like", sep=""))
-  
+
+  #   
+  # like <- match.fun(paste( obj$like.form, ".like", sep=""))
+  # 
+  # 
+  # # figure out scaling 
+  # if( is.null( obj$g.x.scl ) ){
+  #   #   Assume g0 = 1
+  #   g.at.x0 <- 1
+  #   x0 <- 0
+  #   warning("g0 unspecified.  Assumed 1.")
+  # } else {
+  #   g.at.x0 <- obj$g.x.scl
+  #   x0 <- obj$x.scl
+  # }
+  # 
+  # zero <- units::set_units(x = 0
+  #                          , value = obj$outputUnits
+  #                          , mode = "standard")
+  # 
+  # if(  !is.null(obj$covars) ){
+  #   # covariate case; eventually will return a vector
+  #   if(missing(newdata)){
+  #     newdata <- NULL  # in this case, predict.dfunc will use obj$covars, but gotta have something to pass
+  #   }
+  #   params <- predict(obj, newdata, type="parameters")
+  # } else {
+  #   # no covariates; eventually will return a scaler
+  #   params <- matrix( obj$parameters, nrow = 1)
+  # }
+  # 
+  # y <- apply(X = params
+  #            , MARGIN = 1
+  #            , FUN = like
+  #            , dist = x - obj$w.lo
+  #            , series = obj$series
+  #            , covars = NULL
+  #            , expansions = obj$expansions
+  #            , w.lo = zero
+  #            , w.hi = obj$w.hi - obj$w.lo
+  #            , pointSurvey = FALSE
+  #            , scale = FALSE
+  #            )    
+  # y <- t(y)
+  # 
+  # # at this point, y is either 1 X length(x) (no covars) or n X length(x) (covars).
+  # # Each row is a unscaled distance function (does not integrate to one b.c., scale = F).
+  # 
+  # f.at.x0 <- apply(X = params
+  #                  , MARGIN = 1
+  #                  , FUN = like
+  #                  , dist= x0 - obj$w.lo
+  #                  , series = obj$series
+  #                  , covars = NULL
+  #                  , expansions=obj$expansions
+  #                  , w.lo = zero
+  #                  , w.hi=obj$w.hi - obj$w.lo
+  #                  , pointSurvey = FALSE
+  #                  , scale = FALSE
+  # )
+  #   
+  # # If g.at.x0 = 1, we don't need to rescale b.c. scale = FALSE above; i.e. y[,1] = 1
+  # # but, I will rescale even in this case, 
+  # # just in case there are cases I have not thought about (e.g., 
+  # # when like() does not have maximum at 1.0)
+  # 
+  # scaler <- g.at.x0 / f.at.x0 # a length n vector 
+  # 
+  # y <- y * scaler  # length(scalar) == nrow(y), so this works right
+
   seq.length = 200
-
-  # Can't evaluate hazrate at 0
-  if( (obj$like.form == "hazrate") & (obj$x.scl == obj$w.lo) ){
-    x <- seq( obj$w.lo + 1e-6*(obj$w.hi - obj$w.lo), obj$w.hi, length=seq.length)
-  } else {
-    x <- seq( obj$w.lo, obj$w.hi, length=seq.length)
-  }
-
-  # figure out scaling 
-  if( is.null( obj$g.x.scl ) ){
-    #   Assume g0 = 1
-    g.at.x0 <- 1
-    x0 <- 0
-    warning("g0 unspecified.  Assumed 1.")
-  } else {
-    g.at.x0 <- obj$g.x.scl
-    x0 <- obj$x.scl
-  }
   
-  zero <- units::set_units(x = 0
-                           , value = obj$outputUnits
-                           , mode = "standard")
+  x.seq <- seq( obj$w.lo, obj$w.hi, length=seq.length)
+  dx <- x.seq[3] - x.seq[2]
   
-  if(  !is.null(obj$covars) ){
-    # covariate case; eventually will return a vector
-    if(missing(newdata)){
-      newdata <- NULL  # in this case, predict.dfunc will use obj$covars, but gotta have something to pass
-    }
-    params <- predict(obj, newdata, type="parameters")
-  } else {
-    # no covariates; eventually will return a scaler
-    params <- matrix( obj$parameters, nrow = 1)
-  }
-
-  y <- apply(X = params
-             , MARGIN = 1
-             , FUN = like
-             , dist = x - obj$w.lo
-             , series = obj$series
-             , covars = NULL
-             , expansions = obj$expansions
-             , w.lo = zero
-             , w.hi = obj$w.hi - obj$w.lo
-             , pointSurvey = FALSE
-             , scale = FALSE
-             )    
-  y <- t(y)
-
-  # at this point, y is either 1 X length(x) (no covars) or n X length(x) (covars).
-  # Each row is a unscaled distance function (does not integrate to one b.c., scale = F).
-  
-  f.at.x0 <- apply(X = params
-                   , MARGIN = 1
-                   , FUN = like
-                   , dist= x0 - obj$w.lo
-                   , series = obj$series
-                   , covars = NULL
-                   , expansions=obj$expansions
-                   , w.lo = zero
-                   , w.hi=obj$w.hi - obj$w.lo
-                   , pointSurvey = FALSE
-                   , scale = FALSE
+  y <- predict.dfunc(object = obj
+                     , newdata = newdata
+                     , distance = x.seq
+                     , type = "distances"
   )
-    
-  # If g.at.x0 = 1, we don't need to rescale b.c. scale = FALSE above; i.e. y[,1] = 1
-  # but, I will rescale even in this case, 
-  # just in case there are cases I have not thought about (e.g., 
-  # when like() does not have maximum at 1.0)
-  
-  scaler <- g.at.x0 / f.at.x0 # a length n vector 
-  
-  y <- y * scaler  # length(scalar) == nrow(y), so this works right
-
-  dx <- x[3]-x[2]
   
   # Eventually, will get all the numerical integration 
   # into one routine (or use R built-in integrate())
@@ -181,9 +183,9 @@ ESW <- function( obj, newdata ){
   
   # Trapezoid rule. (dx/2)*(f(x1) + 2f(x_2) + ... + 2f(x_n-1) + f(n)) 
   # Faster than above, maybe.
-  ends <- c(1,ncol(y))
-  esw <- (dx/2) * (rowSums( y[,ends,drop=FALSE] ) + 
-                   2*rowSums(y[,-ends, drop=FALSE] ))
+  ends <- c(1,nrow(y))
+  esw <- (dx/2) * (colSums( y[ends, ,drop=FALSE] ) + 
+                   2*colSums(y[-ends, ,drop=FALSE] ))
 
   esw
   
