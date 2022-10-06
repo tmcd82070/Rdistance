@@ -20,3 +20,4 @@ WorkshopScripts
 ^doc$
 ^Meta$
 RTestLibrary
+^README\.Rmd$
