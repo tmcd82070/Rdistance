@@ -176,7 +176,7 @@ plot.dfunc <- function( x,
                         ... ){
 
   # a constant used later
-  # zero <- units::as_units(0, x$outputUnits)
+  zero <- units::as_units(0, x$outputUnits)
   
   d <- x$dist
   whi <- x$w.hi
@@ -247,11 +247,11 @@ plot.dfunc <- function( x,
 
   if(is.null(x$covars)){
     # If model has no covariates, there is only one value of params regardless of newdata.
-    params <- params[1,,drop = FALSE]
+    newdata <- newdata[1,,drop = FALSE]
   }
   
   # Predict distance functions ----
-  y <- predict.dfunc(object = x
+  y <- predict(object = x
                     , newdata = newdata
                     , distances = x.seq
                     , type = "distances"
@@ -262,8 +262,10 @@ plot.dfunc <- function( x,
     # } else {
     y <- y * units::drop_units(x.seq - x$w.lo)
     scaler <- units::drop_units(x.seq[2]-x.seq[1]) * colSums(y[-nrow(y),,drop = FALSE]+y[-1,,drop = FALSE]) / 2
+  } else {
+    # line transects here
+    scaler <- attr(y, "scaler")
   }
-  scaler <- attr(y, "scaler")
   ybarhgts <-  cnts$density * mean(scaler)
 
   # after here, y is a matrix, columns are distance functions.
@@ -273,7 +275,7 @@ plot.dfunc <- function( x,
   }
   
   y.finite <- y[ y < Inf ]
-  y.lims <- c(0, max( g.at.x0, ybarhgts, y.finite, na.rm=TRUE ))
+  y.lims <- c(0, max( x$g.x.scl, ybarhgts, y.finite, na.rm=TRUE ))
   
   if( include.zero ){
     x.limits <- c(zero , max(x.seq))
