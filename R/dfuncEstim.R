@@ -497,7 +497,7 @@ dfuncEstim <- function (formula,
     stop(paste("Distance measurement units are required.", 
                "Assign units by attaching 'units' package then:\n", 
                paste0("units(",dfName,"$", respName, ")"), "<- '<units of measurment>',\n", 
-               "Popular choices are 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
+               "for example 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
   } else if( control$requireUnits ){
     # if we are here, dist has units
     # set units for output by converting dist units; w.lo, w.hi, and x.scl will all be converted later
