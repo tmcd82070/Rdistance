@@ -6,35 +6,65 @@
 #' 
 #' @param newdata A data frame containing new values of 
 #' the covariates at which predictions are to be computed. If \code{newdata}
-#' is NULL, predictions are made at values of all observations .  
+#' is NULL, predictions are made at values of the observed
+#' covariates and results in one prediction (either parameters or 
+#' distance function, see parameter \code{type}) for every observed distance. 
+#' If \code{newdata} is not NULL and the model does not contains covariates, 
+#' this routine returns one prediction (either parameters or 
+#' distance function) for each row in \code{newdata}, but 
+#' columns and values in \code{newdata} are ignored. 
 #' 
 #' @param type The type of predictions desired. If 
 #' \code{type} = "parameters", return 
-#' predicted canonical parameters of the likelihood function(s).  If 
-#' type == "dfuncs", return the scaled distance function at distances   
-#' specified in \code{distances} for all observations in \code{newdata}.
+#' predicted parameters of the likelihood function for all observations 
+#' in \code{newdata} (or all distance observations if \code{newdata} is NULL).  
+#' If \code{type} is anything other than "parameters", return the 
+#' scaled distance function evaluated at distances   
+#' specified in \code{distances} for all observations in \code{newdata}
+#' (or all distance observations if \code{newdata} is NULL).
 #' 
 #' @param distances The vector of distances at which to predict scaled distance 
 #' functions if \code{type == "dfuncs"}.  Distances outside the observation 
 #' strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
-#' \code{distances} is NULL, this routine uses a sequen e of 200 evenly 
+#' \code{distances} is NULL, this routine uses a sequence of 200 evenly 
 #' spaced distances from 
 #' \code{object$w.lo} to \code{object$w.hi}. 
 #'
 #' @param \dots Included for compatibility with generic \code{predict} methods.
 #' 
-#' @return A matrix of predicted parameters of the likelihood used to estimate
-#' the distance function
-#' in \code{dfunc}. The extent of the first dimension (rows) in 
-#' the returned matrix is equal to either the number of detection distances 
-#' in \code{detectionData} or number of rows in \code{newdata}. 
-#' The returned matrix's second dimension (columns) is 
-#' the number of canonical parameters in the likelihood 
-#' plus the number of expansion terms.  Without expansion terms, the number 
-#' of columns in the returned matrix 
-#' is either 1 or 2 depending on the likelihood (e.g., \code{halfnorm} has 
-#' one parameter, \code{hazrate} has two). See the help 
-#' for each likelihoods to interpret the returned parameter values.
+#' @return A matrix containing one of two types of predictions: 
+#' \itemize{
+#'   \item \bold{If \code{type} is "parameters"}, the returned matrix 
+#'   contains predicted likelihood parameters. The extent of the first dimension (rows) in 
+#'   the returned matrix is equal to either the number of detection distances 
+#'   in \code{detectionData} (if \code{newdata} is NULL)
+#'   or number of rows in \code{newdata}. 
+#'   The returned matrix's second dimension (columns) is 
+#'   the number of parameters in the likelihood 
+#'   plus the number of expansion terms.  Without expansion terms, the number 
+#'   of columns in the returned matrix 
+#'   is either 1 or 2 depending on the likelihood (e.g., \code{halfnorm} has 
+#'   one parameter, \code{hazrate} has two). See the help 
+#'   for each likelihoods to interpret the returned parameter values.
+#'   
+#'   \item \bold{If \code{type} is not "parameters"}, the returned matrix 
+#'   contains scaled distance functions.  The extent of the first 
+#'   dimension (rows) is the number of distances specified in \code{distance}
+#'   (200 by default).
+#'   The extent of the second dimension (columns) is the number of 
+#'   observed distances in \code{detectionData} 
+#'   (if \code{newdata} is NULL) or number of 
+#'   rows in \code{newdata}. Each 
+#'   column contains one distance function.  
+#'   }
+#'   
+#'   The returned matrix has additional attributes containing the distance 
+#'   at which distance functions are scaled and ESW's.  
+#'   \code{attr(<return>, "x0")} is the vector of distances at which each 
+#'   distance function in \code{<return>} is scaled. 
+#'   \code{attr(<return>, "scaler")} is a vector of effective strip widths 
+#'   corresponding to each 
+#'   distance function in \code{<return>}. 
 #' 
 #' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
 #' \code{\link{uniform.like}}, \code{\link{hazrate.like}}, \code{\link{Gamma.like}}
@@ -43,13 +73,6 @@
 #' 
 #' @importFrom stats terms as.formula delete.response model.frame model.matrix coef
 #' 
-
-# Extra Roxygen comments when we get around implmenting other types of
-# predictions 
-# Type = "inflation" predicts the inflation factor for all
-# observations.  Inflation factors use likelihood parameters to compute
-# effective sampling distances (ESW or EDR) and inverts them.
-# type = "function" predicts the actual distance functions
 predict.dfunc <- function(object
                         , newdata = NULL
                         , type = c("parameters")
