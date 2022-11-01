@@ -404,7 +404,7 @@ plot.dfunc <- function( x,
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
     mess <- "g(x) > 1 should not happen"
     text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
-    mess <- paste0("Check g(", format(x0), ")= ", round(g.at.x0,2), " assumption")
+    mess <- paste0("Check g(", format(x$x.scl), ")= ", round(x$g.x.scl,2), " assumption")
     text( mean(x.seq), mean(y.lims), paste("\n\n\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
   } 
   
