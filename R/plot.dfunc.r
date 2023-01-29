@@ -43,21 +43,29 @@
 #' 
 #' @param density If \code{plotBars=TRUE}, a vector giving the density of 
 #' shading lines, in lines per inch, for the bars underneath 
-#' the distance function. Values of NULL or a number strictly less than 0 
-#' mean solid fill using colors from parameter \code{col}.  If 
-#' \code{density = 0}, bars are not filled and only the borders are rendered. 
-#' Values strictly greater than 0 produce shading lines using colors 
-#' from \code{col}.
+#' the distance function, repeated as necessary to exceed the number 
+#' of bars. Values of NULL or a number strictly less than 0 
+#' mean solid fill using colors from parameter \code{col}. 
+#' If \code{density = 0}, bars are not filled and only the borders are rendered. 
+#' If \code{density} >0, bars are shaded with colors and angles from 
+#' parameters \code{col} and \code{angle}.
+#' 
+#' @param angle When \code{density} is >0, the slope of bar shading lines, 
+#' given as an angle in degrees (counter-clockwise), repeated as necessary
+#' to exceed the number of bars.
 #' 
 #' @param col A vector of bar fill colors or line colors when bars are 
-#' drawn and \code{density != 0}, replicated
-#' to the correct length. Also used for the bar borders when
+#' drawn and \code{density != 0}, repeated as necessary to exceed the number
+#' of bars. Also used for the bar borders when
 #' \code{border = TRUE}.
 #'  
-#' @param border The color of bar borders when bars are plotted. A 
-#' value of NA or FALSE means no borders. If there are shading lines 
+#' @param border The color of bar borders when bars are plotted, 
+#' repeated as necessary to exceed the number of bars. A 
+#' value of NA or FALSE means no borders. If bars are shaded with lines 
 #' (i.e., \code{density>0}), \code{border = TRUE} uses the same 
-#' color for the border as for the shading lines.
+#' color for the border as for the shading lines.  Otherwise, fill color
+#' or shaded line color are specified in \code{col} while 
+#' border color is specified in \code{border}.  
 #' 
 #' @param vertLines Logical scalar specifying whether to plot vertical 
 #'  lines at \code{w.lo} and \code{w.hi} from 0 to the  
@@ -89,12 +97,13 @@
 #' to the required length. Default is 2 for all lines.  
 #' 
 #' @param \dots When bars are plotted, this routine 
-#'  uses \code{graphics::barplot} for setting up the 
-#'  plotting region and plotting bars. When bars are not plotted,
+#'  uses \code{graphics::barplot} to set up the 
+#'  plotting region and plot bars. When bars are not plotted,
 #'  this routine sets up the plot with \code{graphics::plot}.
 #'  \dots can be any other 
 #'  argument to \code{barplot} or \code{plot} EXCEPT  
-#'  \code{width}, \code{ylim}, \code{xlim}, and \code{space}.
+#'  \code{width}, \code{ylim}, \code{xlim}, 
+#'  \code{density}, \code{angle}, and \code{space}.
 #'   
 #' @details If \code{plotBars} is TRUE, a scaled histogram is plotted
 #'  and the estimated distance function
@@ -165,7 +174,8 @@ plot.dfunc <- function( x,
                         legend = TRUE, 
                         vertLines=TRUE,
                         plotBars=TRUE,
-                        density = 0, 
+                        density = -1,
+                        angle = 45,
                         xlab = NULL,
                         ylab = NULL,
                         border = TRUE,
@@ -199,9 +209,11 @@ plot.dfunc <- function( x,
     # do the hist again, this time specifying breaks exactly
     brks <- seq(x$w.lo, x$w.hi, by=xscl)
     brks <- c(brks, brks[length(brks)] + xscl )   # make sure last bin goes outside range of data
-    cnts <- hist( xInStrip, plot=FALSE, 
-                  breaks=units::drop_units(brks), include.lowest=TRUE, 
-                  warn.unused = FALSE)
+    cnts <- hist( xInStrip
+                  , plot=FALSE
+                  , breaks=units::drop_units(brks)
+                  , include.lowest=TRUE
+                  , warn.unused = FALSE)
     cnts$breaks <- units::as_units(cnts$breaks, x$outputUnits)
     cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
   }
@@ -299,7 +311,19 @@ plot.dfunc <- function( x,
   if(plotBars){
     if(x$w.lo != zero){
       ybarhgts <- c(NA,ybarhgts)
-      xscl <- c(x$w.lo, rep(xscl,length(ybarhgts)-1))  
+      xscl <- c(x$w.lo, rep(xscl,length(ybarhgts)-1))
+      # the following deal with density is because barplot draws the border
+      # of the NA box when density >= 0.  Makes no sense, but there it is.
+      # This produces a line to 0 when w.lo > 0
+      if( density > 0 ){
+        warning("'density' of bars cannot be positive when w.lo > 0. Set to 0 or negative.")
+        density <- -1
+      }
+      if( density == 0 ){
+        # bars are supposed to be empty when density = 0, so reset to fill with white
+        density = -1
+        col = "white"
+      }
     }
     bar.mids <- barplot( ybarhgts, 
                          width = xscl, 
@@ -307,6 +331,7 @@ plot.dfunc <- function( x,
                          xlim = x.limits,
                          space = 0, 
                          density = density,
+                         angle = angle,
                          col = col,
                          border = border,
                          xlab = xlab,
