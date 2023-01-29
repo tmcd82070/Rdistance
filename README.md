@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <img src="README_files/RdistanceTopBanner.PNG" width="100%" />
 
 <!-- badges: start -->
@@ -16,75 +14,55 @@ Downloads](http://cranlogs.r-pkg.org/badges/grand-total/Rdistance)](http://www.r
 [![codecov](https://codecov.io/gh/tmcd82070/Rdistance/branch/master/graph/badge.svg)](https://codecov.io/gh/tmcd82070/Rdistance)
 <!-- badges: end -->
 
-# Simplified Distance-Sampling Analysis in R
+# Simplified Distance-Sampling in R
 
-The **Rdistance** package contains routines for distance-sampling
-analyses. Distance-sampling is a popular method for estimating density
-and abundance of organisms in ecology. Abundance studies in ecology
-often count target organisms along sampling routes (transects) or at a
-series of fixed observation stations. Typically, the chances of
-observing organisms declines as distance from the observer increases.
-Objects far away are typically harder to see than objects nearby .
+**Rdistance** analyzes line- and point-transect distance-sampling data.
+If you are unfamiliar with distance-sampling, check out our primer,
+[Distance Sampling for the Average
+Joe](https://github.com/tmcd82070/Rdistance/wiki/avgJoeIntro.Rmd). For
+those ready to take on an analysis, the best place to start is one of
+our vignettes:
 
-Distance-sampling studies are designed to correct for this decline in
-detection probabilities associated with distance. The key feature of
-distance-sampling studies is that observers on transects or at fixed
-points measure the distance between themselves and the objects they
-count. Assuming all objects at the observer’s location are counted and
-that objects are randomly located in space, distance-sampling analyses
-estimate the decline in probability of detection as distance from the
-observer increases. As detection probabilities decline, observers miss
-as many objects as they observe and this “break even” distance is called
-the *effective sampling distance*. Unbiased estimates of density divide
-the number of organisms seen by the effective area sampled which is
-calculated using the effective sampling distance.
+- \[Beginner Line Transects with
+  Covariates\]{Rdistance-beginnerLineTransectCovar.Rmd}
+- \[Beginner Point Transects with
+  Covariates\]{Rdistance-beginnerPointTransectCovar.Rmd}
 
 <img src="README_files/RdistanceSeparator.PNG" width="100%" />
 
-## General Features of **`Rdistance`**
+## Features
 
-**Rdistance** contains a set of functions to conduct distance-sampling
-analyses from data collected on point or line transects. The primary
-routines fit models (likelihood functions) to observed distances. Other
-routines use the fitted likelihoods to estimate effective sampling
-distances and probability of detection. From probability of detection,
-density and abundance in the study area is estimated without observation
-bias.
-
-The likelihoods, or distance models, in **Rdistance** are specified
-using regression-like formula (similar to `lm`, `glm`, etc.).
-Likelihoods can be functions of detection or transect-level covariates.
-Abundance routines accept fitted likelihood objects and perform
-automated bootstrapping to estimate confidence intervals. Overall (study
-area) and site-level (transect or point) abundance estimates are
-available. A large suite of classical, parametric detection functions
-are included along with some uncommon parametric functions (e.g., Gamma,
-negative exponential) and non-parametric smoothed distance functions.
-Custom (user-defined) detection functions are easily implemented (see
-vignette). The help files and vignettes have been vetted by multiple
-authors and tested in workshop settings. Plot methods for distance
-function objects are included.
-
-**Rdistance Resources:** The best place to learn about `Rdistance` is at
-a workshop, processing a vignette, or the package’s [GitHub
-Wiki](https://github.com/tmcd82070/Rdistance/wiki).
+- Line-transect and point-transects
+- Likelihood functions:
+  - half-normal (`halfnorm`)
+  - hazard rate (`hazrate`)
+  - negative exponential (`negexp`)
+  - Gamma (`Gamma`)
+  - logistic (`logistic`)
+- Non-parametric smoothed distance functions (`smu`)
+- Built-in key functions: `sine`, `cosine`, and `hermite`
+- Expansion terms
+- Standard methods: `print`, `plot`, `predict`, etc.
+- Observation and transect-level distance function covariates
+- Standard R formula model specification (e.g.,
+  `distance ~ elevation + observer`)
+- Measurement unit control and automatic conversion
+- Automated bootstrap confidence intervals
+- Overall (study area) and site-level (transect or point) abundance
+  estimates
+- Custom (user-defined) detection functions
+- Help and vignettes reviewed and edited by multiple authors
 
 <img src="README_files/RdistanceSeparator.PNG" width="100%" />
-<!-- <img src="README_files/RdistanceSeparator.PNG" width="4032" /> -->
+
+## Current Release
+
+The current release is
+[here](https://github.com/tmcd82070/Rdistance/releases).
 
 ## Installation
 
-You can install the development version of Rdistance from
-[GitHub](https://github.com/) with:
-
-**Stable version:**
-
-``` r
-install.packages("Rdistance")
-```
-
-**Development version:** Directly from GitHub using the `devtools`
-package:
+Install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 if( !require("devtools") ){
@@ -93,23 +71,35 @@ if( !require("devtools") ){
 devtools::install_github("tmcd82070/Rdistance")
 ```
 
+Install the stable version directly from CRAN:
+
+``` r
+install.packages("Rdistance")
+```
+
 <img src="README_files/RdistanceSeparator.PNG" width="100%" />
 
 ## Examples
 
-These examples show the basic workflow of a distance-sampling analysis
-in `Rdistance`:
+Examples show the basic workflow of distance-sampling analysis in
+`Rdistance` are on our [Examples wiki page](examples.md)
 
 ### Line Transects - No Covariates
 
 ``` r
+if( !require("units") ){
+  install.packages("units")
+}
+#> Loading required package: units
+#> udunits database from C:/Users/trent/AppData/Local/R/win-library/4.2/units/share/udunits/udunits2.xml
 library(Rdistance)
 #> Rdistance (version 2.2.0)
+library(units)
 
 # Example data
-data("sparrowDetectionData")
+data("sparrowDetectionData")  # access example data
 data("sparrowSiteData")
-head(sparrowDetectionData)
+head(sparrowDetectionData)  # inspect data
 #>   siteID groupsize sightdist sightangle     dist
 #> 1     A1         1        65         15 16.8 [m]
 #> 2     A1         1        70         10 12.2 [m]
@@ -128,33 +118,42 @@ head(sparrowSiteData)
 ```
 
 ``` r
+# Set upper (right) truncation distance
+whi <- set_units(150, "m")
+# Fit hazard rate likelihood
 dfuncFit <- dfuncEstim(dist ~ 1
                    , detectionData = sparrowDetectionData
-                   , likelihood = "hazrate")
+                   , likelihood = "hazrate"
+                   , w.hi = whi)
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = sparrowDetectionData
          , siteData = sparrowSiteData
-         , area = units::set_units(2500, "hectares"), ci=NULL)
+         , area = set_units(2500, "hectares"))
+#> Computing bootstrap confidence interval on N...
+#>   |                                                                              |                                                                      |   0%  |                                                                              |                                                                      |   1%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |===                                                                   |   4%  |                                                                              |===                                                                   |   5%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |=====                                                                 |   7%  |                                                                              |=====                                                                 |   8%  |                                                                              |======                                                                |   8%  |                                                                              |======                                                                |   9%  |                                                                              |=======                                                               |   9%  |                                                                              |=======                                                               |  10%  |                                                                              |=======                                                               |  11%  |                                                                              |========                                                              |  11%  |                                                                              |========                                                              |  12%  |                                                                              |=========                                                             |  12%  |                                                                              |=========                                                             |  13%  |                                                                              |==========                                                            |  14%  |                                                                              |==========                                                            |  15%  |                                                                              |===========                                                           |  15%  |                                                                              |===========                                                           |  16%  |                                                                              |============                                                          |  16%  |                                                                              |============                                                          |  17%  |                                                                              |============                                                          |  18%  |                                                                              |=============                                                         |  18%  |                                                                              |=============                                                         |  19%  |                                                                              |==============                                                        |  19%  |                                                                              |==============                                                        |  20%  |                                                                              |==============                                                        |  21%  |                                                                              |===============                                                       |  21%  |                                                                              |===============                                                       |  22%  |                                                                              |================                                                      |  22%  |                                                                              |================                                                      |  23%  |                                                                              |=================                                                     |  24%  |                                                                              |=================                                                     |  25%  |                                                                              |==================                                                    |  25%  |                                                                              |==================                                                    |  26%  |                                                                              |===================                                                   |  26%  |                                                                              |===================                                                   |  27%  |                                                                              |===================                                                   |  28%  |                                                                              |====================                                                  |  28%  |                                                                              |====================                                                  |  29%  |                                                                              |=====================                                                 |  29%  |                                                                              |=====================                                                 |  30%  |                                                                              |=====================                                                 |  31%  |                                                                              |======================                                                |  31%  |                                                                              |======================                                                |  32%  |                                                                              |=======================                                               |  32%  |                                                                              |=======================                                               |  33%  |                                                                              |========================                                              |  34%  |                                                                              |========================                                              |  35%  |                                                                              |=========================                                             |  35%  |                                                                              |=========================                                             |  36%  |                                                                              |==========================                                            |  36%  |                                                                              |==========================                                            |  37%  |                                                                              |==========================                                            |  38%  |                                                                              |===========================                                           |  38%  |                                                                              |===========================                                           |  39%  |                                                                              |============================                                          |  39%  |                                                                              |============================                                          |  40%  |                                                                              |============================                                          |  41%  |                                                                              |=============================                                         |  41%  |                                                                              |=============================                                         |  42%  |                                                                              |==============================                                        |  42%  |                                                                              |==============================                                        |  43%  |                                                                              |===============================                                       |  44%  |                                                                              |===============================                                       |  45%  |                                                                              |================================                                      |  45%  |                                                                              |================================                                      |  46%  |                                                                              |=================================                                     |  46%  |                                                                              |=================================                                     |  47%  |                                                                              |=================================                                     |  48%  |                                                                              |==================================                                    |  48%  |                                                                              |==================================                                    |  49%  |                                                                              |===================================                                   |  49%  |                                                                              |===================================                                   |  50%  |                                                                              |===================================                                   |  51%  |                                                                              |====================================                                  |  51%  |                                                                              |====================================                                  |  52%  |                                                                              |=====================================                                 |  52%  |                                                                              |=====================================                                 |  53%  |                                                                              |=====================================                                 |  54%  |                                                                              |======================================                                |  54%  |                                                                              |======================================                                |  55%  |                                                                              |=======================================                               |  55%  |                                                                              |=======================================                               |  56%  |                                                                              |========================================                              |  57%  |                                                                              |========================================                              |  58%  |                                                                              |=========================================                             |  58%  |                                                                              |=========================================                             |  59%  |                                                                              |==========================================                            |  59%  |                                                                              |==========================================                            |  60%  |                                                                              |==========================================                            |  61%  |                                                                              |===========================================                           |  61%  |                                                                              |===========================================                           |  62%  |                                                                              |============================================                          |  62%  |                                                                              |============================================                          |  63%  |                                                                              |============================================                          |  64%  |                                                                              |=============================================                         |  64%  |                                                                              |=============================================                         |  65%  |                                                                              |==============================================                        |  65%  |                                                                              |==============================================                        |  66%  |                                                                              |===============================================                       |  67%  |                                                                              |===============================================                       |  68%  |                                                                              |================================================                      |  68%  |                                                                              |================================================                      |  69%  |                                                                              |=================================================                     |  69%  |                                                                              |=================================================                     |  70%  |                                                                              |=================================================                     |  71%  |                                                                              |==================================================                    |  71%  |                                                                              |==================================================                    |  72%  |                                                                              |===================================================                   |  72%  |                                                                              |===================================================                   |  73%  |                                                                              |===================================================                   |  74%  |                                                                              |====================================================                  |  74%  |                                                                              |====================================================                  |  75%  |                                                                              |=====================================================                 |  75%  |                                                                              |=====================================================                 |  76%  |                                                                              |======================================================                |  77%  |                                                                              |======================================================                |  78%  |                                                                              |=======================================================               |  78%  |                                                                              |=======================================================               |  79%  |                                                                              |========================================================              |  79%  |                                                                              |========================================================              |  80%  |                                                                              |========================================================              |  81%  |                                                                              |=========================================================             |  81%  |                                                                              |=========================================================             |  82%  |                                                                              |==========================================================            |  82%  |                                                                              |==========================================================            |  83%  |                                                                              |==========================================================            |  84%  |                                                                              |===========================================================           |  84%  |                                                                              |===========================================================           |  85%  |                                                                              |============================================================          |  85%  |                                                                              |============================================================          |  86%  |                                                                              |=============================================================         |  87%  |                                                                              |=============================================================         |  88%  |                                                                              |==============================================================        |  88%  |                                                                              |==============================================================        |  89%  |                                                                              |===============================================================       |  89%  |                                                                              |===============================================================       |  90%  |                                                                              |===============================================================       |  91%  |                                                                              |================================================================      |  91%  |                                                                              |================================================================      |  92%  |                                                                              |=================================================================     |  92%  |                                                                              |=================================================================     |  93%  |                                                                              |==================================================================    |  94%  |                                                                              |==================================================================    |  95%  |                                                                              |===================================================================   |  95%  |                                                                              |===================================================================   |  96%  |                                                                              |====================================================================  |  97%  |                                                                              |====================================================================  |  98%  |                                                                              |===================================================================== |  98%  |                                                                              |===================================================================== |  99%  |                                                                              |======================================================================|  99%  |                                                                              |======================================================================| 100%
 print(dfuncFit)
 #> Call: dfuncEstim(formula = dist ~ 1, detectionData =
-#>    sparrowDetectionData, likelihood = "hazrate")
+#>    sparrowDetectionData, likelihood = "hazrate", w.hi = whi)
 #> Coefficients:
-#>        Estimate   SE         z          p(>|z|)     
-#> Sigma  47.093869  4.6896446  10.042098  9.953452e-24
-#> k       2.820973  0.3242217   8.700751  3.296944e-18
+#>        Estimate   SE         z         p(>|z|)     
+#> Sigma  43.584314  4.7041265  9.265124  1.948512e-20
+#> k       2.405927  0.3096911  7.768797  7.923512e-15
 #> 
 #> Convergence: Success
 #> Function: HAZRATE  
-#> Strip: 0 [m] to 207 [m] 
-#> Effective strip width (ESW): 63.88011 [m] 
-#> Probability of detection: 0.3085995 
+#> Strip: 0 [m] to 150 [m] 
+#> Effective strip width (ESW): 61.11514 [m] 
+#>                      95% CI: 47.57195 [m] to 71.65096 [m]
+#> Probability of detection: 0.4074342 
 #> Scaling: g(0 [m]) = 1
-#> Log likelihood: 1665.103 
-#> AICc: 3334.241
+#> Log likelihood: 1631.795 
+#> AICc: 3267.625
 #> 
-#> Density in sampled area: 8.131553e-05 [1/m^2]
+#> Density in sampled area: 8.022199e-05 [1/m^2]
+#>                  95% CI: 6.247695e-05 [1/m^2] to 0.0001107768 [1/m^2]
 #> 
-#> Abundance in 2.5e+07 [m^2] study area: 2032.888
+#> Abundance in 2.5e+07 [m^2] study area: 2005.55
+#>                                95% CI: 1561.924 to 2769.419
 plot(dfuncFit)
 ```
 
@@ -166,33 +165,35 @@ plot(dfuncFit)
 dfuncFit <- dfuncEstim(dist ~ bare
                    , detectionData = sparrowDetectionData
                    , siteData = sparrowSiteData
-                   , likelihood = "hazrate")
+                   , likelihood = "hazrate"
+                   , w.hi = whi)
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = sparrowDetectionData
          , siteData = sparrowSiteData
-         , area = units::set_units(2500, "hectares"), ci=NULL)
+         , area = set_units(2500, "hectares")
+         , ci=NULL)
 print(dfuncFit)
 #> Call: dfuncEstim(formula = dist ~ bare, detectionData =
 #>    sparrowDetectionData, siteData = sparrowSiteData, likelihood =
-#>    "hazrate")
+#>    "hazrate", w.hi = whi)
 #> Coefficients:
-#>              Estimate    SE           z          p(>|z|)     
-#> (Intercept)  3.17045651  0.231511298  13.694608  1.093486e-42
-#> bare         0.01270951  0.003592534   3.537756  4.035434e-04
-#> k            2.99762083  0.356404409   8.410729  4.074708e-17
+#>              Estimate    SE          z          p(>|z|)     
+#> (Intercept)  3.06257745  0.27481293  11.144226  7.640549e-29
+#> bare         0.01324778  0.00423315   3.129532  1.750852e-03
+#> k            2.54796690  0.34648791   7.353696  1.927993e-13
 #> 
 #> Convergence: Success
 #> Function: HAZRATE  
-#> Strip: 0 [m] to 207 [m] 
-#> Average effective strip width (ESW): 65.86774 [m] 
-#> Average probability of detection: 0.3182017 
+#> Strip: 0 [m] to 150 [m] 
+#> Average effective strip width (ESW): 62.78353 [m] 
+#> Average probability of detection: 0.4185569 
 #> Scaling: g(0 [m]) = 1
-#> Log likelihood: 1659.073 
-#> AICc: 3324.214
+#> Log likelihood: 1626.919 
+#> AICc: 3259.908
 #> 
-#> Density in sampled area: 8.135213e-05 [1/m^2]
+#> Density in sampled area: 7.873774e-05 [1/m^2]
 #> 
-#> Abundance in 2.5e+07 [m^2] study area: 2033.803
+#> Abundance in 2.5e+07 [m^2] study area: 1968.443
 plot(dfuncFit, newdata = data.frame(bare = c(30, 40, 50)), lty = 1)
 ```
 
@@ -202,9 +203,9 @@ plot(dfuncFit, newdata = data.frame(bare = c(30, 40, 50)), lty = 1)
 
 ``` r
 # Example data
-data("thrasherDetectionData")
+data("thrasherDetectionData")  # access example data
 data("thrasherSiteData")
-head(thrasherDetectionData)
+head(thrasherDetectionData)  # inspect example data
 #>   siteID groupsize    dist
 #> 1  C1X01         1  11 [m]
 #> 2  C1X01         1 183 [m]
@@ -230,7 +231,7 @@ dfuncFit <- dfuncEstim(dist ~ 1
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = thrasherDetectionData
          , siteData = thrasherSiteData
-         , area = units::set_units(100, "acres"), ci=NULL)
+         , area = set_units(100, "acres"), ci=NULL)
 print(dfuncFit)
 #> Call: dfuncEstim(formula = dist ~ 1, detectionData =
 #>    thrasherDetectionData, likelihood = "hazrate", pointSurvey = TRUE)
@@ -248,9 +249,9 @@ print(dfuncFit)
 #> Log likelihood: 999.0199 
 #> AICc: 2002.103
 #> 
-#> Density in sampled area: 3.694821e-05 [1/m^2]
+#> Density in sampled area: 3.638267e-05 [1/m^2]
 #> 
-#> Abundance in 404687.3 [m^2] study area: 14.95247
+#> Abundance in 404687.3 [m^2] study area: 14.7236
 plot(dfuncFit)
 ```
 
@@ -267,7 +268,7 @@ dfuncFit <- dfuncEstim(dist ~ bare + shrub
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = thrasherDetectionData
          , siteData = thrasherSiteData
-         , area = units::set_units(100, "acres"), ci=NULL)
+         , area = set_units(100, "acres"), ci=NULL)
 print(dfuncFit)
 #> Call: dfuncEstim(formula = dist ~ bare + shrub, detectionData =
 #>    thrasherDetectionData, siteData = thrasherSiteData, likelihood =
@@ -288,12 +289,11 @@ print(dfuncFit)
 #> Log likelihood: 994.7526 
 #> AICc: 1997.718
 #> 
-#> Density in sampled area: 3.704634e-05 [1/m^2]
+#> Density in sampled area: 3.65881e-05 [1/m^2]
 #> 
-#> Abundance in 404687.3 [m^2] study area: 14.99218
+#> Abundance in 404687.3 [m^2] study area: 14.80674
 plot(dfuncFit, newdata = data.frame(bare = c(30, 35, 40)
-                                  , shrub = 20)
-     , lty = 1)
+                                  , shrub = 20), lty = 1)
 ```
 
 <img src="README_files/README-pointHazrateExampleCovars-1.png" width="100%" />
@@ -304,64 +304,4 @@ plot(dfuncFit, newdata = data.frame(bare = c(30, 35, 40)
 
 # RECENT CHANGES
 
-**Version 2.2.0: Major Update** (Fall 2022)
-
-New features:
-
--   Measurement units on all distances are **required**
--   Allowed expansions and covariates in the same distance function
--   Renamed “uniform” likelihood to “logistic”. Uniform is deprecated.
--   Added covariates to Gamma likelihood estimation
--   Added color to printed output in RStudio
--   Reformatted output of abundance results
--   Updated starting values for faster estimation
--   Bug fixes:
-    -   Fixed issue with contrasts in model.matrix
-    -   Fixed issue with no observations during bootstrapping
-    -   Fixed issues with changing scale locations (i.e., x.scl and
-        g.x.sxl)
-    -   Fixed ESW for w.lo \> 0
-    -   Restricted likelihood values to be positive
--   Substantial documentation updates
--   Substantial testing facilities added.
-
-**Version 2.1.3: Bug Fixes**
-
--   Fixed scaling error in the Gamma likelihood causing mode to be less
-    than 1.0
--   Fixed inverted plots that occured when w.lo \> 0 (left-trunctation)
--   Fixed bug in `autoDistSamp` when `bySite=TRUE`
--   Fixed bug causing bootstrap failure of point transect surveys when
-    `siteData` contained only one column
-
-**Version 2.1.2: A Major Update**
-
-New features included:
-
--   Point transect analysis (v1.3.2 only allowed line transects)
--   Covariates in the detection function (v1.3.2 did not allow
-    covariates).  
--   Non-parametric (smoothed) distance functions
--   Enhanced plotting abilities
--   Enhanced vignettes
--   Many bug fixes
-
-<img src="README_files/RdistanceSeparator.PNG" width="100%" />
-
-## Past Workshops
-
--   *Distance Sampling: Conventional and Hierarchical Methods for
-    Abundance in R*
-    -   Full-day workshop, 10/29/2017, The Society for Marine Mammalogy,
-        Halifax, Nova Scotia
--   *Distance Sampling: Conventional and Hierarchical Methods for
-    Abundance in R*
-    -   Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque,
-        NM
-
-<img src="README_files/RdistanceSeparator.PNG" width="100%" />
-
-## Contact
-
-Questions or interested in a future workshop? Contact the maintainer:
-Trent McDonald (<trent@mcdonalddatasciences.com>)
+See our [NEWS](NEWS.Rmd) file for recent changes.

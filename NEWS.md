@@ -1,19 +1,33 @@
-Changes in version 2.2.0 (2022-05-06)
+Changes in version 2.2.0 (2023-01-15)
 ==============
-* ~~BIG CHANGE~~: Require measurement units on all distance inputs and parameters. 
-Measurement units are converted to appropriate values internally, and output 
-reports units. (e.g., units on strip width, study area size, etc.)
-* Added density calculation to abundEstim, with bootstrapping. 
-* ~~Change in default parameter~~: Changed default value for 'area' parameter 
-to abundEstim from 1 to NULL, but NULL results in assignment of 1 square output 
+* ~~BIG CHANGE~~: Measurement units are now required on all distances
+(e.g., off-transect distances, strip widths, study area size, etc.),
+and it is possible to specify output units.
+Unit convertion is internal and automatic. 
+* Added density calculation to `abundEstim`, with bootstrapping.
+* Added bootstrap confidence intervals for effective sampling distances (ESW and EDR). 
+* Allowed expansions and covariates in the same distance function.
+* Renamed `uniform` likelihood to `logistic`. Uniform deprecated.
+* Added covariates to Gamma likelihood estimation.
+* ~~Change in default parameter~~: Changed default value of `area` in
+`abundEstim` from 1 to NULL, but NULL translates to 1 square output 
 unit.  
 * Added color to print methods.  Results are in green, if the R terminal 
-allows it (i.e., in Rstudio, but not R gui). 
+allows it (i.e., in Rstudio, but not R gui).  Errors are in red.
 * Reformatted default output to include density and abundance when 
-printing an 'abund' object.
-* Fixed bug in F.gx.estim that occasionally popped up when sighting 
-function is monotonically decreassing.
-* Updated and clarified documentation of several routines. 
+printing an `abund` object.
+* Fixed bug in `F.gx.estim` that occasionally popped up when sighting 
+function was monotonically decreassing.
+* Updated starting values for faster estimation.
+* Bug fixes:
+  + Fixed issue with contrasts in `model.matrix`
+  + Fixed issue with no observations during bootstrapping
+  + Fixed issues with changing scale locations (i.e., `x.scl` and `g.x.sxl`)
+  + Fixed `ESW` for `w.lo` > 0
+  + Restricted likelihood values to be positive
+* Substantial documentation updates
+* Substantial testing facilities added. 
+
 
 Changes in version 2.1.5 (2020-06-17)
 ==============

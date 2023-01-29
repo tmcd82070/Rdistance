@@ -44,8 +44,13 @@ Description: Distance-sampling analyses estimate density and
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki
 BugReports: https://github.com/tmcd82070/Rdistance/issues
-Suggests: knitr, rmarkdown, testthat, devtools
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    devtools
 VignetteBuilder: knitr
 Imports: graphics, stats, utils, units
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Encoding: UTF-8
+Config/testthat/edition: 3

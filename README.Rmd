@@ -2,8 +2,6 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE
@@ -29,91 +27,56 @@ includeFigure("RdistanceTopBanner.PNG")
 [![codecov](https://codecov.io/gh/tmcd82070/Rdistance/branch/master/graph/badge.svg)](https://codecov.io/gh/tmcd82070/Rdistance)
 <!-- badges: end -->
 
-# Simplified Distance-Sampling Analysis in R
+# Simplified Distance-Sampling in R
 
-The **Rdistance** package contains routines for
-  distance-sampling analyses. 
-  Distance-sampling is a popular method for estimating density and 
-  abundance of organisms in ecology. Abundance studies in ecology
-  often count target organisms along sampling routes 
-  (transects) or at a series of fixed observation stations.
-  Typically, the chances of observing organisms 
-  declines as distance from the observer increases. 
-  Objects far away are typically harder to see than 
-  objects nearby .  
+**Rdistance** analyzes line- and point-transect distance-sampling data. 
+If you are unfamiliar with 
+distance-sampling, check out our primer, [Distance Sampling 
+for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/avgJoeIntro.Rmd). 
+For those ready to take on 
+an analysis, the best place to start is one of our vignettes:
 
-  Distance-sampling studies are designed to correct for 
-  this decline in 
-  detection probabilities associated with distance. The key feature 
-  of distance-sampling
-  studies is that observers on transects or 
-  at fixed points measure the distance between themselves and the objects 
-  they count. Assuming all objects at the observer's 
-  location are counted and that objects are randomly located in space, 
-  distance-sampling analyses estimate the decline in 
-  probability of detection as distance from the observer increases. 
-  As detection probabilities decline, observers miss as many objects 
-  as they observe and this "break even" distance is called 
-  the *effective sampling distance*. 
-  Unbiased estimates of density 
-  divide the number of organisms seen by the effective 
-  area sampled which is calculated using the effective sampling distance. 
-  
-
-
+* [Beginner Line Transects with Covariates]{Rdistance-beginnerLineTransectCovar.Rmd}
+* [Beginner Point Transects with Covariates]{Rdistance-beginnerPointTransectCovar.Rmd}
 
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
 ```
 
-## General Features of **`Rdistance`**   
+## Features
 
-**Rdistance** contains a set of
-  functions to conduct 
-  distance-sampling analyses from data collected on point or line transects. 
-  The primary routines fit models (likelihood functions) to observed 
-  distances. Other routines use the fitted likelihoods
-  to estimate effective sampling distances and probability of detection. 
-  From probability of detection, density and abundance in the study area 
-  is estimated without observation bias. 
-  
-The likelihoods, or distance models, in **Rdistance** are 
-  specified  using regression-like formula (similar 
-  to `lm`, `glm`, etc.). Likelihoods can be functions of 
-  detection or transect-level covariates. Abundance routines accept fitted likelihood
-  objects and perform automated bootstrapping to estimate confidence intervals. 
-  Overall (study area) and site-level (transect or point) 
-  abundance estimates are available. A large suite of classical, 
-  parametric detection functions are 
-  included along with some uncommon parametric 
-  functions (e.g., Gamma, negative exponential) and non-parametric
-  smoothed distance functions. Custom (user-defined) detection functions
-  are easily implemented (see vignette). 
-  The help files and vignettes have been 
-  vetted by multiple authors and tested in workshop 
-  settings. Plot methods for distance function objects are included. 
-  
-  
-**Rdistance Resources:** The best place to learn about `Rdistance` is at a workshop, 
-processing a vignette, or the package's [GitHub Wiki](https://github.com/tmcd82070/Rdistance/wiki).
+* Line-transect and point-transects 
+* Likelihood functions: 
+  + half-normal (`halfnorm`) 
+  + hazard rate (`hazrate`) 
+  + negative exponential (`negexp`)
+  + Gamma (`Gamma`)
+  + logistic (`logistic`)
+* Non-parametric smoothed distance functions (`smu`)
+* Built-in key functions: `sine`, `cosine`, and `hermite`
+* Expansion terms
+* Standard methods: `print`, `plot`, `predict`, etc.
+* Observation and transect-level distance function covariates
+* Standard R formula model specification (e.g., `distance ~ elevation + observer`)
+* Measurement unit control and automatic conversion
+* Automated bootstrap confidence intervals 
+* Overall (study area) and site-level (transect or point) abundance estimates
+* Custom (user-defined) detection functions
+* Help and vignettes reviewed and edited by multiple authors
 
+    
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
 ```
-<!-- <img src="README_files/RdistanceSeparator.PNG" width="4032" /> -->
+
+
+## Current Release
+The current release is [here](https://github.com/tmcd82070/Rdistance/releases).
 
 
 ## Installation
 
-You can install the development version of Rdistance from [GitHub](https://github.com/) with:
-
-**Stable version:** 
-``` r
-install.packages("Rdistance")
-```
-
-**Development version:** Directly from GitHub using the `devtools` package:
-
+Install the development version from [GitHub](https://github.com/) with:
 ``` r
 if( !require("devtools") ){
   install.packages("devtools")
@@ -121,35 +84,51 @@ if( !require("devtools") ){
 devtools::install_github("tmcd82070/Rdistance")
 ```
 
+Install the stable version directly from CRAN:
+
+``` r
+install.packages("Rdistance")
+```
+
+
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
 ```
 
 ## Examples 
 
-These examples show the basic workflow of a distance-sampling analysis in 
-`Rdistance`:
+
+Examples show the basic workflow of distance-sampling analysis in 
+`Rdistance` are on our [Examples wiki page](examples.md)
 
 ### Line Transects - No Covariates
 
 ```{r sparrowData, echo=TRUE}
+if( !require("units") ){
+  install.packages("units")
+}
 library(Rdistance)
+library(units)
 
 # Example data
-data("sparrowDetectionData")
+data("sparrowDetectionData")  # access example data
 data("sparrowSiteData")
-head(sparrowDetectionData)
+head(sparrowDetectionData)  # inspect data
 head(sparrowSiteData)
 ```
 
 ```{r lineHazrateExample, echo=TRUE}
+# Set upper (right) truncation distance
+whi <- set_units(150, "m")
+# Fit hazard rate likelihood
 dfuncFit <- dfuncEstim(dist ~ 1
                    , detectionData = sparrowDetectionData
-                   , likelihood = "hazrate")
+                   , likelihood = "hazrate"
+                   , w.hi = whi)
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = sparrowDetectionData
          , siteData = sparrowSiteData
-         , area = units::set_units(2500, "hectares"), ci=NULL)
+         , area = set_units(2500, "hectares"))
 print(dfuncFit)
 plot(dfuncFit)
 ```
@@ -161,11 +140,13 @@ plot(dfuncFit)
 dfuncFit <- dfuncEstim(dist ~ bare
                    , detectionData = sparrowDetectionData
                    , siteData = sparrowSiteData
-                   , likelihood = "hazrate")
+                   , likelihood = "hazrate"
+                   , w.hi = whi)
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = sparrowDetectionData
          , siteData = sparrowSiteData
-         , area = units::set_units(2500, "hectares"), ci=NULL)
+         , area = set_units(2500, "hectares")
+         , ci=NULL)
 print(dfuncFit)
 plot(dfuncFit, newdata = data.frame(bare = c(30, 40, 50)), lty = 1)
 ```
@@ -174,9 +155,9 @@ plot(dfuncFit, newdata = data.frame(bare = c(30, 40, 50)), lty = 1)
 
 ```{r thrasherData, echo=TRUE}
 # Example data
-data("thrasherDetectionData")
+data("thrasherDetectionData")  # access example data
 data("thrasherSiteData")
-head(thrasherDetectionData)
+head(thrasherDetectionData)  # inspect example data
 head(thrasherSiteData)
 ```
 
@@ -188,7 +169,7 @@ dfuncFit <- dfuncEstim(dist ~ 1
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = thrasherDetectionData
          , siteData = thrasherSiteData
-         , area = units::set_units(100, "acres"), ci=NULL)
+         , area = set_units(100, "acres"), ci=NULL)
 print(dfuncFit)
 plot(dfuncFit)
 ```
@@ -204,11 +185,10 @@ dfuncFit <- dfuncEstim(dist ~ bare + shrub
 dfuncFit <- abundEstim(dfuncFit
          , detectionData = thrasherDetectionData
          , siteData = thrasherSiteData
-         , area = units::set_units(100, "acres"), ci=NULL)
+         , area = set_units(100, "acres"), ci=NULL)
 print(dfuncFit)
 plot(dfuncFit, newdata = data.frame(bare = c(30, 35, 40)
-                                  , shrub = 20)
-     , lty = 1)
+                                  , shrub = 20), lty = 1)
 ```
 
 <!-- github CI examples for auto rendering of Rmd <https://github.com/r-lib/actions/tree/v1/examples>. -->
@@ -220,64 +200,6 @@ includeFigure("RdistanceSeparator.PNG")
 
 # RECENT CHANGES
 
-**Version 2.2.0: Major Update** (Fall 2022)
-
-New features:
-
-* Measurement units on all distances are **required** 
-* Allowed expansions and covariates in the same distance function
-* Renamed "uniform" likelihood to "logistic". Uniform is deprecated.
-* Added covariates to Gamma likelihood estimation
-* Added color to printed output in RStudio
-* Reformatted output of abundance results
-* Updated starting values for faster estimation
-* Bug fixes:
-  * Fixed issue with contrasts in model.matrix
-  * Fixed issue with no observations during bootstrapping
-  * Fixed issues with changing scale locations (i.e., x.scl and g.x.sxl)
-  * Fixed ESW for w.lo > 0
-  * Restricted likelihood values to be positive
-* Substantial documentation updates
-* Substantial testing facilities added. 
+See our [NEWS](NEWS.Rmd) file for recent changes.
 
 
-**Version 2.1.3: Bug Fixes**
-
-* Fixed scaling error in the Gamma likelihood causing mode to be less than 1.0
-* Fixed inverted plots that occured when w.lo > 0 (left-trunctation)
-* Fixed bug in `autoDistSamp` when `bySite=TRUE`
-* Fixed bug causing bootstrap failure of point transect surveys 
-when `siteData` contained only one column 
-
-
-
-**Version 2.1.2: A Major Update**
-
-New features included:
-
-* Point transect analysis (v1.3.2 only allowed line transects)
-* Covariates in the detection function (v1.3.2 did not allow covariates).  
-* Non-parametric (smoothed) distance functions
-* Enhanced plotting abilities
-* Enhanced vignettes
-* Many bug fixes
-
-```{r}
-includeFigure("RdistanceSeparator.PNG")
-```
-
-
-## Past Workshops
-
-* *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
-    * Full-day workshop, 10/29/2017, The Society for Marine Mammalogy, Halifax, Nova Scotia
-* *Distance Sampling: Conventional and Hierarchical Methods for Abundance in R*
-    * Full-day workshop, 9/23/2017, The Wildlife Society, Albuquerque, NM
- 
-```{r}
-includeFigure("RdistanceSeparator.PNG")
-```
-
-## Contact
-
-Questions or interested in a future workshop? Contact the maintainer: Trent McDonald (trent@mcdonalddatasciences.com) 
