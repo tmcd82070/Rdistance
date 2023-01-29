@@ -33,7 +33,10 @@
 #' 
 #' @export
 #' @importFrom graphics lines
-lines.dfunc <- function(x, newdata = NULL,  ...) {
+lines.dfunc <- function(x
+                        , newdata = NULL
+                        ,  ...) {
+  
   x.seq <- seq(x$w.lo, x$w.hi, length = 200)
   g.at.x0 <- x$g.x.scl
   x0 <- x$x.scl
@@ -62,18 +65,30 @@ lines.dfunc <- function(x, newdata = NULL,  ...) {
       params <- matrix(x$parameters,1)
     }
     
-    y <- apply(params, 1, like, dist= x.seq - x$w.lo, 
-               series=x$series, covars = NULL, 
-               expansions=x$expansions, 
-               w.lo = x$w.lo, w.hi=x$w.hi, 
-               pointSurvey = FALSE )  
+    like <- match.fun( paste( x$like.form, ".like", sep=""))
+    
+    y <- apply(params
+               , 1
+               , like
+               , dist = x.seq - x$w.lo
+               , series = x$series
+               , covars = NULL
+               , expansions = x$expansions
+               , w.lo = x$w.lo
+               , w.hi = x$w.hi
+               , pointSurvey = FALSE )  
     y <- t(y)  # now, each row of y is a dfunc
     
-    f.at.x0 <- apply(params, 1, like, dist= x0 - x$w.lo, 
-                     series=x$series, covars = NULL, 
-                     expansions=x$expansions, 
-                     w.lo=x$w.lo, w.hi=x$w.hi, 
-                     pointSurvey = FALSE )
+    f.at.x0 <- apply(params
+                     , 1
+                     , like
+                     , dist = x0 - x$w.lo
+                     , series = x$series
+                     , covars = NULL
+                     , expansions = x$expansions
+                     , w.lo = x$w.lo
+                     , w.hi = x$w.hi
+                     , pointSurvey = FALSE )
   }
   
   scaler <- g.at.x0 / f.at.x0 # a length n vector 
@@ -87,11 +102,6 @@ lines.dfunc <- function(x, newdata = NULL,  ...) {
     y <- y * units::drop_units(x.seq - x$w.lo) / yscl
   }
   
-  # if(plot.axes){
-  #   yMax <- max(y*1.2)
-  #   plot(1,1,type="n",ylim=c(0,yMax), xlim=range(x.seq), xlab="",ylab="",bty="n")
-  #   title( xlab="Distance", ylab="Observation density" )
-  # } 
   lines(x.seq, y , ...)
   
   invisible(data.frame(x = x.seq, y))
