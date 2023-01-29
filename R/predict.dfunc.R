@@ -21,7 +21,9 @@
 #' If \code{type} is anything other than "parameters", return the 
 #' scaled distance function evaluated at distances   
 #' specified in \code{distances} for all observations in \code{newdata}
-#' (or all distance observations if \code{newdata} is NULL).
+#' (or all distance observations if \code{newdata} is NULL). If \code{object}
+#' is a smoothed distance function, it does not have parameters and this 
+#' routine always produces the scaled distance function. 
 #' 
 #' @param distances The vector of distances at which to predict scaled distance 
 #' functions if \code{type == "dfuncs"}.  Distances outside the observation 
@@ -79,22 +81,23 @@ predict.dfunc <- function(object
                         , distances = NULL
                         , ...) {
   
+  is.smoothed <- class(object$fit) == "density"
+  
   if (!inherits(object, "dfunc")){ 
-    stop("object is not a 'dfunc' object")
+    stop("Object is not a 'dfunc' object")
   }
   
   hasCovars <- !is.null(object$covars)
   
   if (missing(newdata) || is.null(newdata)) {
-    n <- length(object$dist)
+    n <- nrow(object$detections)
   } else {
     n <- nrow(newdata)
   }
   
-    
   # PARAMETER prediction ----
-  # We always need parameters
-  if(hasCovars){
+  # We always need parameters, except for smoothed dfuncs
+  if( hasCovars & !is.smoothed){
     # X is the covariate matrix for predictions 
     if (missing(newdata) || is.null(newdata)) {
       # Case: Use original covars
@@ -118,6 +121,7 @@ predict.dfunc <- function(object
     beta <- BETA[1:ncol(X)]   # could be extra parameters tacked on. e.g., knee for logistc or expansion terms
     params <- X %*% beta
     params <- exp(params)  # All link functions are exp...thus far
+    
     if(ncol(X)<length(BETA)){
       extraParams <- matrix(BETA[(ncol(X)+1):length(BETA)]
                           , nrow = n
@@ -125,23 +129,17 @@ predict.dfunc <- function(object
                           , byrow = TRUE)
       params <- cbind(params, extraParams)
     }
-  } else {
+  } else if( !is.smoothed ){
     params <- coef(object) 
     params <- matrix(params, nrow=n, ncol=length(params), byrow=TRUE)
   }
     
-  if( type == "parameters" ){
+  if( type == "parameters" & !is.smoothed ){
     return(params)
   }
 
   # DISTANCE function prediction ----
-  
-  # After next apply, y is length(x.seq) x nrow(parms).  
-  # Each column is a unscaled distance function (f(x))
-  
-  like <- match.fun( paste( object$like.form, ".like", sep=""))
-  zero <- units::as_units(0, object$outputUnits)
-  
+
   if( is.null(distances) ){
     distances <- seq( object$w.lo, object$w.hi, length = 200)
   } else {
@@ -149,32 +147,46 @@ predict.dfunc <- function(object
     distances <- units::set_units(distances, object$outputUnits, mode = "standard")
   }
   
-  if( !hasCovars ){
-    # cut the params down because everything is constant without covars
-    params <- params[1, , drop = FALSE]
-    X <- matrix(1, nrow = 1, ncol = 1) 
-  }
-  
-  y <- apply(X = params
-             , MARGIN = 1
-             , FUN = like
-             , dist = distances - object$w.lo
-             , series = object$series
-             , covars = NULL
-             , expansions = object$expansions
-             , w.lo = zero
-             , w.hi = object$w.hi - object$w.lo
-             , pointSurvey = FALSE
-             , scale = TRUE
-  )  
+  if( is.smoothed ){
+    # unscaled distance function is already stored
+    # no covariates.  
+    y <- approx( object$fit$x, object$fit$y, xout = distances )$y
+    y <- matrix( y, ncol = 1) 
+  } else {
+    # After next apply, y is length(x.seq) x nrow(parms).  
+    # Each column is a unscaled distance function (f(x))
     
-  y <- t(y)  # now, each row of y is a dfunc
+    like <- match.fun( paste( object$like.form, ".like", sep=""))
+    zero <- units::as_units(0, object$outputUnits)
+    
+    
+    if( !hasCovars ){
+      # cut the params down because everything is constant without covars
+      params <- params[1, , drop = FALSE]
+      X <- matrix(1, nrow = 1, ncol = 1) 
+    }
+    
+    y <- apply(X = params
+               , MARGIN = 1
+               , FUN = like
+               , dist = distances - object$w.lo
+               , series = object$series
+               , covars = NULL
+               , expansions = object$expansions
+               , w.lo = zero
+               , w.hi = object$w.hi - object$w.lo
+               , pointSurvey = FALSE
+               , scale = TRUE
+    )  
+      
+    y <- t(y)  # now, each row of y is a dfunc
+  }
     
   # At this point, we have unscaled distance functions in rows of y.
   
   # SCALE distance functions ----
     
-  if( object$like.form == "Gamma" ){
+  if( object$like.form == "Gamma" & !is.smoothed ){
     # This is a pesky special case of scaling. We need different x.scl for 
     # every distance function b.c. only x.scl = max is allowed.  For all other 
     # distance functions there is only one x.scl.
@@ -207,47 +219,58 @@ predict.dfunc <- function(object
     # x0 is a distance, needs units
     x0 <- units::set_units(x0, object$outputUnits, mode = "standard")
     
-  } else {
+  } else if( !is.smoothed ){
     # Case:  All likelihoods except Gamma
     x0 <- rep(object$x.scl, nrow(params))
   } 
   
   # Now that we know x0 (either a scaler or a vector), compute f(x0)
-  
-  likeAtX0 <- function(i, params, x0, like, fit ){
-    fx0 <- like(
-        a = params[i,]
-      , dist = x0[i] - fit$w.lo
-      , series = fit$series
-      , covars = NULL
-      , expansions = fit$expansions
-      , w.lo = zero
-      , w.hi = fit$w.hi - fit$w.lo
-      , pointSurvey = FALSE 
-      , scale = TRUE
-    ) 
-    fx0
+  if( !is.smoothed ){
+    likeAtX0 <- function(i, params, x0, like, fit ){
+      fx0 <- like(
+          a = params[i,]
+        , dist = x0[i] - fit$w.lo
+        , series = fit$series
+        , covars = NULL
+        , expansions = fit$expansions
+        , w.lo = zero
+        , w.hi = fit$w.hi - fit$w.lo
+        , pointSurvey = FALSE 
+        , scale = TRUE
+      ) 
+      fx0
+    }
+    
+    f.at.x0 <- sapply(1:nrow(params)
+                      , FUN = likeAtX0
+                      , params = params
+                      , x0 = x0
+                      , like = like
+                      , fit = object
+                )
+    
+    y <- t(y) # for some reason, we go back to columns. Each column is a dfunc, only now scaled.
+    
+  } else {
+    # Case: smoothed distance function.  No covars. 
+    # This is so simple we handle everything here
+    x0 <- object$x.scl
+    f.at.x0 <- approx(distances, y, xout = x0)$y 
   }
-  
-  f.at.x0 <- sapply(1:nrow(params)
-                    , FUN = likeAtX0
-                    , params = params
-                    , x0 = x0
-                    , like = like
-                    , fit = object
-              )
+    
 
   scaler <- object$g.x.scl / f.at.x0 # a length n vector, n = nrow(params) 
   
   # Did you know that 'scaler' is ESW?  At least for lines. Makes sense. 1/f(0) = ESW in 
   # the old formulas.
+  # For smoothed distance functions, we extended the range of dist by approx 2, and scaler
+  # is twice too big. i.e., esw for smu's is approx scaler / 2.
   
   y <- y * scaler  # length(scalar) == nrow(y), so this works right
   
-  y <- t(y) # for some reason, we go back to columns. Each column is a dfunc, only now scaled.
-
   attr(y, "x0") <- x0
-  attr(y, "scaler") <- scaler
+  attr(y, "scaler") <- ifelse(is.smoothed, scaler / 2, scaler) 
+
   
   return( y )  
 }

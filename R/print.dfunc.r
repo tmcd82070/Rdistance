@@ -123,9 +123,21 @@ print.dfunc <- function( x, criterion="AICc", ... ){
                   colorize(format(pDetect), col = "red"),
                   colorize("> 1", col = "red"), "\n"))
       } else {
-        cat(paste(mess, 
-                  colorize(format(effDist)), 
-                  "\n"))
+        cat(paste(mess 
+                  , colorize(format(effDist))
+                  , "\n"))
+        if( all(!is.null(x$effDistance.ci)) ){
+          ciMess <- paste0(
+                         paste(rep(" ", nchar(mess) - 7), collapse = "")
+                       , x$alpha*100
+                       , "% CI: "
+                       , colorize(format(x$effDistance.ci[1]))
+                       , " to " 
+                       , colorize(format(x$effDistance.ci[2])) 
+                       , "\n"
+                       ) 
+          cat(ciMess)
+        }
         cat(paste("Probability of detection:", 
                   colorize(format(pDetect)),
                   "\n"))

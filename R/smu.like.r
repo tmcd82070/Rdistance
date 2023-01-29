@@ -85,7 +85,7 @@
 #' dfunc <- dfuncSmu(d~1)
 #' 
 #' L <- smu.like(a=dfunc$parameters, 
-#'        dist=dfunc$dist, 
+#'        dist=dfunc$detections$dist, 
 #'        w.lo=dfunc$w.lo, 
 #'        w.hi=dfunc$w.hi, 
 #'        scale=TRUE)

@@ -325,8 +325,8 @@
 #' 
 #' 
 #' # Compare smoothed and half-normal detection function
-#' dfuncSmu <- dfuncSmu(dist~1, sparrowDetectionData, w.hi=150)
-#' dfuncHn  <- dfuncEstim(formula=dist~1,sparrowDetectionData,w.hi=150)
+#' dfuncSmu <- dfuncSmu(dist~1, sparrowDetectionData, w.hi=units::set_units(150, "m"))
+#' dfuncHn  <- dfuncEstim(formula=dist~1,sparrowDetectionData,w.hi=units::set_units(150, "m"))
 #' 
 #' # Print and plot results
 #' dfuncSmu
@@ -344,12 +344,25 @@
 #' @export
 #' @importFrom stats model.response is.empty.model model.matrix contrasts
 
-dfuncSmu <- function (formula, detectionData, siteData, bw="SJ-dpi", 
-                        adjust=1, kernel="gaussian",
-                        pointSurvey = FALSE, w.lo=0, w.hi=NULL, 
-                        x.scl="max", g.x.scl=1, 
-                        observer="both", warn=TRUE, transectID=NULL, 
-                        pointID="point", length="length"){
+dfuncSmu <- function (formula
+                    , detectionData
+                    , siteData
+                    , bw = "SJ-dpi"
+                    , adjust = 1
+                    , kernel = "gaussian"
+                    , pointSurvey = FALSE
+                    , w.lo = units::set_units(0,"m")
+                    , w.hi = NULL
+                    , x.scl = "max"
+                    , g.x.scl = 1
+                    , observer = "both"
+                    , warn = TRUE
+                    , transectID = NULL
+                    , pointID = "point"
+                    , outputUnits = NULL
+                    , length = "length"
+                    , control = RdistanceControls()
+                    ){
   
   cl <- match.call()
   
@@ -373,6 +386,7 @@ dfuncSmu <- function (formula, detectionData, siteData, bw="SJ-dpi",
   }
   
   
+  
   # (jdc) The double-observer method hasn't been checked since updating to version 2.x
   # It's likely that an error would be raised if a user did try the double-observer option,
   # but I'm adding a warning here, just in case
@@ -386,15 +400,63 @@ dfuncSmu <- function (formula, detectionData, siteData, bw="SJ-dpi",
   mt <- attr(mf, "terms")
   dist <- model.response(mf,"any")
   
+  groupSize <- model.offset(mf)
+  if( is.null(groupSize) ){
+    # no groupsize specified, assume 1
+    groupSize <- rep(1, length(dist) )
+  }
+  
+  # Check for measurement units 
+  if( !inherits(dist, "units") & control$requireUnits ){
+    dfName <- deparse(substitute(detectionData))
+    respName <- as.character(attr(mt, "variables"))[attr(mt, "response") + 1]
+    stop(paste("Distance measurement units are required.", 
+               "Assign units by attaching 'units' package then:\n", 
+               paste0("units(",dfName,"$", respName, ")"), "<- '<units of measurment>',\n", 
+               "for example 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
+  } else if( control$requireUnits ){
+    # if we are here, dist has units
+    # set units for output by converting dist units; w.lo, w.hi, and x.scl will all be converted later
+    if( !is.null(outputUnits) ){
+      dist <-  units::set_units(dist, outputUnits, mode = "standard")
+    }
+    outUnits <- units(dist)
+  }
+  
+  if( !inherits(w.lo, "units") & control$requireUnits ){
+    if( w.lo[1] != 0 ){
+      stop(paste("Units of minimum distance are required.",
+                 "Assign units by attaching 'units' package then:\n", 
+                 "units(w.lo) <- '<units>' or", 
+                 paste0("units::as_units(", w.lo,", <units>) in function call\n"), 
+                 "See units::valid_udunits() for valid symbolic units."))
+    }
+    # if we are here, w.lo is 0, it has no units, and we require units
+    w.lo <- units::set_units(w.lo, outUnits, mode = "standard")  # assign units to 0
+  } else if( control$requireUnits ){
+    # if we are here, w.lo has units and we require units, convert to the output units
+    w.lo <-  units::set_units(w.lo, outUnits, mode = "standard")
+  }
+  
+  if(is.null(w.hi)){
+    w.hi <- max(dist, na.rm=TRUE)  # units flow through max automatically
+  } else if( !inherits(w.hi, "units") & control$requireUnits ){
+    stop(paste("Max distance measurement units are required.",
+               "Assign units by attaching 'units' package then:\n", 
+               "units(w.hi) <- '<units>' or", 
+               paste0("units::as_units(", w.hi,", <units>) in function call\n"), 
+               "See units::valid_udunits() for valid symbolic units."))
+  } else if( control$requireUnits ){
+    # if we are here, w.hi has units and we require them, convert to output units
+    w.hi <-  units::set_units(w.hi, outUnits, mode = "standard")
+  }
+  
   # (tlm) Add this back in when we allow strata (factors) in the smoothed dfuncs
   # covars <- if (!is.empty.model(mt)){
   #   model.matrix(mt, mf, contrasts)
   # }
 
-  if(is.null(w.hi)){
-    w.hi <- max(dist, na.rm=TRUE)
-  }
-  
+
   ncovars <- 0
   
   # (tlm) Add this back in when we allow strata (factors) in the smoothed dfuncs
@@ -438,7 +500,7 @@ dfuncSmu <- function (formula, detectionData, siteData, bw="SJ-dpi",
   #   to double the number of points at exactly w.lo
   reflectedDist <- c(-dist[dist>w.lo]+2*w.lo,dist)
   dsmu <- stats::density(reflectedDist, bw=bw, adjust=adjust, kernel=kernel,
-                  from=w.lo, to=w.hi)
+                  from=units::drop_units(w.lo), to=units::drop_units(w.hi))
 
     
   # Make sure none of the y-values are < 0
@@ -459,10 +521,11 @@ dfuncSmu <- function (formula, detectionData, siteData, bw="SJ-dpi",
 
   ans <- list(parameters = param.df,
               like.form = "smu",
+              expansions = 0,
               covars = NULL,
               w.lo = w.lo, 
               w.hi = w.hi, 
-              dist = dist, 
+              detections = data.frame(dist, groupSize), 
               fit = dsmu,
               covars = NULL, 
               #factor.names = factor.names, 
@@ -471,6 +534,7 @@ dfuncSmu <- function (formula, detectionData, siteData, bw="SJ-dpi",
               call.g.x.scl = g.x.scl, 
               call.observer = observer, 
               pointSurvey = pointSurvey,
+              outputUnits = outUnits,
               formula = formula)
   
 
