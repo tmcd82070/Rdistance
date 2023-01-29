@@ -106,7 +106,7 @@
 #' plot(dfunc)
 #' 
 #' # evaluate the log Likelihood
-#' L <- halfnorm.like(dfunc$parameters, dfunc$dist, covars=dfunc$covars, 
+#' L <- halfnorm.like(dfunc$parameters, dfunc$detections$dist, covars=dfunc$covars, 
 #'     w.lo=dfunc$w.lo, w.hi=dfunc$w.hi, 
 #'     series=dfunc$series, expansions=dfunc$expansions, 
 #'     scale=TRUE)
@@ -124,7 +124,7 @@ halfnorm.like <- function(a,
                           expansions = 0, 
                           scale = TRUE, 
                           pointSurvey = FALSE){
-
+  
   # rule is: parameter 'a' never has units.  None of its components do, even though they could (e.g., sigma = a[1])
   # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
   dist[ (dist < w.lo) | (dist > w.hi) ] <- NA

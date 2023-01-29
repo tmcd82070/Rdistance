@@ -58,7 +58,7 @@
 #' distance function and equal in length to the number of rows in \code{newdata}. 
 #' If \code{newdata} is missing or NULL and covariates are present
 #' in \code{obj}, an ESW vector with length equal to 
-#' the number of detections in \code{obj$dist} is returned. 
+#' the number of detections in \code{obj$detections} is returned. 
 #' 
 #' If \code{obj} does not contain covariates, \code{newdata} is ignored and 
 #' a scalar equal to the (constant) effective strip width for all 

@@ -134,7 +134,7 @@ F.gx.estim <- function( fit, x.scl=NULL, g.x.scl=NULL, observer=NULL ){
 #
 
   #   Will need measurement units later ----
-  distUnits <- units(fit$dist)
+  distUnits <- units(fit$detections$dist)
   
   #   Compute x (the point to evaluate g() at) ----
   if( is.null( x.scl ) ){

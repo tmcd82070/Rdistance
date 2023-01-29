@@ -150,7 +150,7 @@
 #' lty.dfunc = 2, lwd.dfunc=4, vertLines=FALSE)
 #' 
 #' plot(dfunc, plotBars=FALSE, cex.axis=1.5, col.axis="blue") 
-#' rug(dfunc$dist)
+#' rug(dfunc$detections$dist)
 #' 
 #' @keywords models
 #' @export
@@ -178,7 +178,8 @@ plot.dfunc <- function( x,
   # a constant used later
   zero <- units::as_units(0, x$outputUnits)
   
-  d <- x$dist
+  is.smoothed <- class(x$fit) == "density"
+  d <- x$detections$dist
   whi <- x$w.hi
   wlo <- x$w.lo
   xInStrip <- d[(d < whi) & (d > wlo)]
@@ -213,7 +214,7 @@ plot.dfunc <- function( x,
   
 
   # Fixup new data ----
-  if(missing(newdata) || is.null(newdata)){
+  if((missing(newdata) || is.null(newdata)) & !is.smoothed ){
     
     # Function returning mode (=most frequent values) of a FACTOR.
     # only needed in this case.
@@ -232,7 +233,7 @@ plot.dfunc <- function( x,
     newdata <- matrix(NA, nrow = 1, ncol = length(covNames))
     colnames(newdata) <- covNames
     newdata <- data.frame(newdata)
-    origDist <- model.response(x$model.frame) # because x$dist is missing out of strip obs
+    origDist <- model.response(x$model.frame) # because x$detections$dist is missing out of strip obs
     inStrip <- (x$w.lo <= origDist) & (origDist <= x$w.hi)
     factor.names <- attr(terms(x$model.frame), "dataClasses")
     factor.names <- names(factor.names)[ factor.names == "factor" ]

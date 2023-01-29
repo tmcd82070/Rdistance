@@ -8,8 +8,21 @@
 #' is the name of the vector containing distances (off-transect or 
 #' radial).  The right-hand side (after \code{~})
 #' contains the names of covariate vectors to fit in the detection
-#' function. If covariates do not appear in \code{data}, they must 
-#' be found in the parent frame (similar to \code{lm}, \code{glm}, etc.)
+#' function. Covariates can be either detection level and appear in \code{detectionData} 
+#' or transect level and appear in  \code{siteData}. Regular R scoping 
+#' rules apply.  
+#' 
+#' \bold{Group Sizes:} Non-unity group sizes are specified using \code{offset}.
+#' That is, when group sizes are not all 1, they must 
+#' be entered as a column in \code{detectionData} and specified 
+#' using \code{offset()} as part of \code{formula}.  For example, 
+#' \code{d ~ habitat + offset(groupSize)} specifies that 
+#' distances appear in variable \code{d}, one covariate 
+#' named \code{habitat} is to be fitted, and column \code{groupSize} 
+#' contains the number of individuals 
+#' associated with each detection.  If an offset is not specified, 
+#' all group sizes are assumed to be 1.
+#'   
 #' 
 #' @param detectionData A data frame containing detection distances 
 #' (either perpendicular for line-transect or radial for point-transect
@@ -33,12 +46,6 @@
 #'   specify the site (transect or point) so that this 
 #'   data frame can be merged with \code{siteData}.    
 #'  
-#'   \item If abundance will be estimated, this data frame 
-#'   must also contain column \code{groupsize}. \code{groupsize}
-#'   contains the number of individuals 
-#'   associated with each detection.  This column is not 
-#'   required to estimate a distance function only.   
-#'   
 #'   \item In a later release, \code{Rdistance} will allow detection-level 
 #'   covariates.  When that happens, detection-level 
 #'   covariates will appear in this data frame. 
@@ -210,11 +217,7 @@
 #'          Neither \code{detectionData} nor \code{siteData}  
 #'          are required if all variables specified in \code{formula} 
 #'          are within the scope of this routine (e.g., in the global working
-#'          environment). Scoping rules here work the same as for other modeling 
-#'          routines in R such as \code{lm} and \code{glm}. Like other modeling 
-#'          routines, it is possible to mix and match the location of variables in 
-#'          the model.  Some variables can be in the \code{.GlobalEnv} while others 
-#'          are in either \code{detectionData} or \code{siteData}. 
+#'          environment). Regular R scoping rules apply. 
 #'    }
 #'     
 #' }
@@ -258,50 +261,49 @@
 #'  
 #' 
 #' @section Likelihood functions:
-#' Given a specified sighting function (e.g., "halfnorm"), 
-#' maximum likelihood is used to estimate the parameter(s) of 
-#' the function (e.g., standard error) that best fit the distance data.
-#' 
-#' When plotted (see Examples), histogram bins are plotted 
-#' behind the detection 
-#' function for visualization; however, the function is fit to 
-#' the actual data, not to the bins.
-#' 
+#' \code{Rdistance} uses maximum likelihood to estimate the parameter(s) of 
+#' distance functions. Distance functions are fit to individual 
+#' distance observations despite plot methods that draw histogram 
+#' bins. 
 #' 
 #' @section Measurement Units: 
 #' As of \code{Rdistance} version 3.0.0, measurement units are 
 #' require on all distances.  This includes off-transect 
 #' distances, radial 
-#' distances, and truncation distances (\code{w.lo} and \code{w.hi}). 
+#' distances, truncation distances (\code{w.lo} and \code{w.hi}), 
+#' transect lengths, and study size area. 
 #' This requirement 
 #' ensures that internal calculations and results 
 #' (e.g., ESW and abundance) are correct 
-#' and that the units on outputs numbers are clear.   
+#' and that the units of output are clear.   
 #' Input distances can have variable units. For example, 
-#' distances can be in specified in "m", \code{w.hi} in "in", 
+#' input distances can be in specified in "m", \code{w.hi} in "in", 
 #' and \code{w.lo} in "km".  Internally, all distances are 
 #' converted to the units specified by \code{outputUnits} 
 #' (or the units of input distances if 
-#' \code{outputUnits} is NULL) prior to application, and 
+#' \code{outputUnits} is NULL), and 
 #' all output is reported 
 #' in units of \code{outputUnits}. In 
 #' other words, specifying \code{w.hi = units::set_units(100, "m")} 
 #' yields the same results as \code{w.hi = units::set_units(328.08, "ft")}.
 #'   
-#' Measurement units should be assigned using  
+#' Measurement units can be assigned using  
 #' \code{units()<-} after attaching the \code{units} 
 #' package or \code{units::set_units}. 
 #' \code{units::valid_udunits()}
-#' retrieves a list of all valid symbolic units. 
+#' produces a list of all valid symbolic units. 
 #' 
-#' Units are required on the following: \code{dist$dist}; 
+#' In \code{dfuncEstim}, units are required on the following: 
+#' \code{detectionData$dist}; 
 #' \code{w.lo} (unless it is zero); \code{w.hi} (unless it is NULL); 
-#' and \code{x.scl}. 
+#' and \code{x.scl}. In addition, in \code{abundEstim}, units are 
+#' required on \code{siteData$length} and \code{area}. All units are 
+#' 1-dimensonal except those on \code{area}, which are 2-dimensional. 
 #' 
 #' If measurements are truly unit-less, or measurement units are unknown, 
-#' setting \code{RdistanceControls(requireUnits = FALSE)} suppresses 
-#' all unit checks and conversions.  In this case, users are on their own 
-#' and must check that inputs and output are scaled correctly.   
+#' set \code{RdistanceControls(requireUnits = FALSE)}.  This suppresses 
+#' all unit checks and conversions.  Users are on their own 
+#' to make sure inputs are scaled correctly and that output units are known. 
 #'  
 #' @return  An object of class 'dfunc'.  Objects of class 'dfunc' 
 #' are lists containing the following components:
@@ -323,48 +325,83 @@
 #'   \item{convergence}{The convergence code. This code 
 #'     is returned by \code{optim}.  Values other than 0 indicate suspect 
 #'     convergence.}
+#'     
 #'   \item{like.form}{The name of the likelihood. This is 
 #'     the value of the argument \code{likelihood}. }
+#'     
 #'   \item{w.lo}{Left-truncation value used during the fit.}
+#'   
 #'   \item{w.hi}{Right-truncation value used during the fit.}
-#'   \item{dist}{The input vector of observed distances.}
-#'   \item{covars}{A \code{model.matrix} containing the covariates
+#'   
+#'   \item{detections}{A data frame of detections within the strip 
+#'   or circle used in the fit.  One column is 
+#'   named 'dist' and it contains the vector of observed distances. 
+#'   A second column is named 'groupSize' and contains
+#'   a vector of group sizes associated with values in 'dist'. Group 
+#'   sizes are only used in \code{abundEstim}.  This data frame 
+#'   only contains distances between \code{w.lo} and \code{w.hi}. 
+#'   Another component of the returned object, i.e., \code{model.frame} 
+#'   contains all observations 
+#'   in the input data, including those outside the strip.}
+#'   
+#'   \item{covars}{Either NULL if no covariates are included in the 
+#'   detection function, or a \code{model.matrix} containing the covariates
 #'     used in the fit. }
+#'     
+#'   \item{model.frame}{A \code{model.frame} object containing observed distances 
+#'   (the 'response') and any covariates in the fit.  This component does not 
+#'   contain group sizes (i.e., no offset values). This component does contain
+#'   'terms' and 'contrasts' attributes. }
+#'     
 #'   \item{expansions}{The number of expansion terms used 
 #'   during estimation.}
+#'   
 #'   \item{series}{The type of expansion used during estimation.}
+#'   
 #'   \item{call}{The original call of this function.}
+#'   
 #'   \item{call.x.scl}{The \emph{input} or user requested 
-#'     distance at which 
-#'     the distance function is scaled. }
+#'     distance at which the distance function is scaled. }
+#'     
 #'   \item{call.g.x.scl}{The \code{input} value specifying the 
 #'     height of the distance function at a distance 
 #'     of \code{call.x.scl}.  }
+#'     
 #'   \item{call.observer}{The value of input parameter \code{observer}.
 #'     The input \code{observer} parameter is only applicable when 
 #'     \code{g.x.scl} is a data frame.}
+#'     
+#'   \item{fit}{The fitted object returned by \code{optim}.  
+#'     See documentation for \code{optim}.}
+#'     
+#'   \item{factor.names}{The names of any factors in \code{formula}. }
+#'   
+#'   \item{pointSurvey}{The input value of \code{pointSurvey}. 
+#'     This is TRUE if distances are radial from a point. FALSE 
+#'     if distances are perpendicular off-transect. }
+#'     
+#'   \item{formula}{The formula specified for the detection function.}
+#'   
+#'   \item{control}{A list containing values of the 'control' parameters 
+#'   set by \code{RdistanceControls}.}
+#'   
+#'   \item{outputUnits}{The measurement units used for output.  All 
+#'     distance measurements are converted to these units internally. }
+#'     
 #'   \item{x.scl}{The \emph{actual} distance at which 
 #'     the distance function is scaled to some value.  
 #'     i.e., this is the actual \emph{x} at 
 #'     which g(\emph{x}) = \code{g.x.scl}.
 #'     Note that \code{call.x.scl} = \code{x.scl} unless 
 #'     \code{call.x.scl} == "max", in which case \code{x.scl} is the 
-#'     distance at which \emph{g}() is maximized. }. 
+#'     distance at which \emph{g}() is maximized. } 
+#'     
 #'   \item{g.x.scl}{The \emph{actual} height of the distance function 
-#'     at a distance of \code{x.scl}. 
-#'     Note that \code{g.x.scl} = \code{call.g.x.scl} unless \code{call.g.x.scl}
+#'     at a distance of \code{x.scl}. Note that \code{g.x.scl} = 
+#'     \code{call.g.x.scl} unless \code{call.g.x.scl}
 #'     is a multiple observer data frame, in which case \code{g.x.scl} is the 
 #'     actual height of the distance function at \code{x.scl} computed 
-#'     from the multiple observer data frame.   }.
-#'   \item{fit}{The fitted object returned by \code{optim}.  
-#'     See documentation for \code{optim}.}
-#'   \item{factor.names}{The names of any factors in \code{formula}}
-#'   \item{pointSurvey}{The input value of \code{pointSurvey}. 
-#'     This is TRUE if distances are radial from a point. FALSE 
-#'     if distances are perpendicular off-transect. }
-#'   \item{formula}{The formula specified for the detection function.}
-#'   \item{outputUnits}{The measurement units used for output.  All 
-#'     distance measurements are converted to these units internally. }
+#'     from the multiple observer data frame.   }
 #'     
 #' @references Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
@@ -418,24 +455,27 @@
 #' @importFrom stats model.matrix contrasts optim
 #' @import units
 
-dfuncEstim <- function (formula, 
-                        detectionData, 
-                        siteData, 
-                        likelihood = "halfnorm", 
-                        pointSurvey = FALSE, 
-                        w.lo = units::set_units(0,"m"), 
-                        w.hi = NULL, 
-                        expansions = 0, 
-                        series = "cosine", 
-                        x.scl = units::set_units(0,"m"), 
-                        g.x.scl = 1, 
-                        observer = "both", 
-                        warn = TRUE, 
-                        transectID = NULL, 
-                        pointID = "point", 
-                        length = "length",
-                        outputUnits = NULL,
-                        control = RdistanceControls()){
+dfuncEstim <- function (formula 
+                        , detectionData 
+                        , siteData 
+                        , likelihood = "halfnorm"
+                        , pointSurvey = FALSE 
+                        , w.lo = units::set_units(0,"m")
+                        , w.hi = NULL 
+                        , expansions = 0 
+                        , series = "cosine" 
+                        , x.scl = units::set_units(0,"m")
+                        , g.x.scl = 1 
+                        , observer = "both" 
+                        , warn = TRUE 
+                        , transectID = NULL 
+                        , pointID = "point" 
+                        , length = "length"
+                        , outputUnits = NULL
+                        , control = RdistanceControls()){
+  
+  # To-do: remove control = RdistanceControls.  Put all options in 
+  # 'options(<name> = <value>)' in onAttach function.
   
   cl <- match.call()
   
@@ -473,7 +513,7 @@ dfuncEstim <- function (formula,
   # but I'm adding a warning here, just in case
   if(observer != "both") {
     stop("The double-observer routines have not been tested in Rdistance 
-          versions >2.x, so they have been disables for the time being.
+          versions >2.x, so they have been disabled for the time being.
           Contact the Rdistance authors if you need double observer analyses
           and can help.")
   }
@@ -485,6 +525,11 @@ dfuncEstim <- function (formula,
     model.matrix(object = mt, 
                  data = mf, 
                  contrasts.arg = control$contrasts )
+  }
+  groupSize <- model.offset(mf)
+  if( is.null(groupSize) ){
+    # no groupsize specified, assume 1
+    groupSize <- rep(1, length(dist) )
   }
   
   contr <- attr(covars,"contrasts")
@@ -541,12 +586,12 @@ dfuncEstim <- function (formula,
   # Truncate for w.lo and w.hi
   ind <- (w.lo <= dist) & (dist <= w.hi)
   dist <- dist[ind]
+  groupSize <- groupSize[ind]
   covars <- covars[ind,,drop=FALSE]  # covars looses "extra" attributes here
   
   attr(covars,"assign") <- assgn
   attr(covars,"contrasts") <- contr
 
-  
   # Eventually, I'd like to use a constant
   # column for covars to allow intercept only 
   # models.  That is, report a beta coefficient 
@@ -570,10 +615,6 @@ dfuncEstim <- function (formula,
   }
   
   
-  # The Gamma doesn't work with covariates
-  # if (!is.null(covars) & likelihood=="Gamma") {
-  #   stop("The Gamma likelihood does not allow covariates in the detection function.")
-  # }
   # Override x.scl for Gamma likelihood
   if( !is.character(x.scl) ){
     if( inherits(x.scl, "units") ){ # this if needed cause drop units does not work on plain vector
@@ -693,7 +734,7 @@ dfuncEstim <- function (formula,
               like.form = likelihood, 
               w.lo = w.lo, 
               w.hi = w.hi, 
-              dist = dist, 
+              detections = data.frame(dist, groupSize), 
               covars = covars, 
               model.frame = mf,
               expansions = expansions, 
@@ -709,16 +750,16 @@ dfuncEstim <- function (formula,
               control = control, 
               outputUnits = outUnits)
   
-  ans$loglik <- F.nLL(ans$parameters, 
-                      ans$dist, 
-                      covars = ans$covars, 
-                      like = ans$like.form, 
-                      w.lo = ans$w.lo, 
-                      w.hi = ans$w.hi, 
-                      series = ans$series, 
-                      expansions = ans$expansions, 
-                      pointSurvey = ans$pointSurvey, 
-                      for.optim = F)
+  ans$loglik <- F.nLL(ans$parameters 
+                      , ans$detections$dist
+                      , covars = ans$covars
+                      , like = ans$like.form
+                      , w.lo = ans$w.lo
+                      , w.hi = ans$w.hi
+                      , series = ans$series
+                      , expansions = ans$expansions
+                      , pointSurvey = ans$pointSurvey
+                      , for.optim = F)
   
   # Assemble results
   class(ans) <- "dfunc"

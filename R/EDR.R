@@ -23,7 +23,7 @@
 #' a vector with length equal to the number of rows in \code{newdata}. 
 #' If \code{newdata} is missing or NULL and covariates are present
 #' in \code{obj}, returned value is a vector with length equal to 
-#' the number of detections in \code{obj$dist}. In either of the 
+#' the number of detections in \code{obj$detections}. In either of the 
 #' above cases, elements in the returned vector are 
 #' the effective detection radii for the corresponding set of 
 #' covariates.  
@@ -122,7 +122,7 @@ EDR <- function(obj, newdata){
     
   } else {
     # this returns (Integral xg(x)dx)/dist
-    integral <- integration.constant(dist = obj$dist
+    integral <- integration.constant(dist = obj$detections$dist
                                    , density = like
                                    , a = obj$parameters
                                    , covars = obj$covars
@@ -132,13 +132,13 @@ EDR <- function(obj, newdata){
                                    , pointSurvey = obj$pointSurvey
                                    , series = obj$series
                                    )
-    # obj$dist is in denominator of integration.constant for point surveys. 
+    # obj$detections$dist is in denominator of integration.constant for point surveys. 
     # multiply here to remove it. vector inside root should be constant.
-    rho <- sqrt(2 * integral * units::drop_units(obj$dist))[1]
+    rho <- sqrt(2 * integral * units::drop_units(obj$detections$dist))[1]
     
-    # multiplying by obj$dist in above line was a trick because we called 
+    # multiplying by obj$detections$dist in above line was a trick because we called 
     # integration.constant (because computations are complicated). But what about units? 
-    # rho should have same units as obj$dist, but one cannot take root of vectors with units. 
+    # rho should have same units as obj$detections$dist, but one cannot take root of vectors with units. 
     # So, add back the units. 
     rho <- units::set_units(rho, obj$outputUnits, mode = "standard")
   

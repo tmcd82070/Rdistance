@@ -24,7 +24,7 @@
 #' a vector with length equal to the number of rows in \code{newdata}. 
 #' If \code{newdata} is missing or NULL and covariates are present
 #' in \code{obj}, returned value is a vector with length equal to 
-#' the number of detections in \code{obj$dist}. In either of the 
+#' the number of detections in \code{obj$detections}. In either of the 
 #' above cases, elements in the returned vector are 
 #' the effective sampling distances for the corresponding set of 
 #' covariates.  
