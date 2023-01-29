@@ -315,14 +315,14 @@ plot.dfunc <- function( x,
       # the following deal with density is because barplot draws the border
       # of the NA box when density >= 0.  Makes no sense, but there it is.
       # This produces a line to 0 when w.lo > 0
-      if( density > 0 ){
+      if( any(density > 0) ){
         warning("'density' of bars cannot be positive when w.lo > 0. Set to 0 or negative.")
-        density <- -1
+        density[ density > 0 ] <- -1
       }
-      if( density == 0 ){
-        # bars are supposed to be empty when density = 0, so reset to fill with white
-        density = -1
-        col = "white"
+      if( any(density == 0) ){
+        # bars are supposed to be empty when density = 0, so reset to fill with background
+        col[density == 0] = par()$bg
+        density[density == 0] = -1
       }
     }
     bar.mids <- barplot( ybarhgts, 
