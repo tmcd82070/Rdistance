@@ -7,21 +7,24 @@
 #'   
 #' @param dfunc An estimated 'dfunc' object produced by \code{dfuncEstim}.
 #' 
-#  Inherit 'detectionData' and 'siteData' documentation
 #' @inheritParams dfuncEstim 
 #' 
-#'     
-#' @param area Total study area size. If \code{area} is NULL (the default), 
-#'   area is set to 1 square unit of the output units. The default
-#'   is mostly for the case when interest lies in density. If \code{area}
-#'   is not NULL, it must have measurement units. 
-#'   The units on \code{area} must be convertible
-#'   to squared output units (if output units are "m", but be convertable 
-#'   to "m^2"). Hence, units on \code{area} must be two-dimensional.
-#'   Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and 
-#'   others all work.  If the \code{units}
-#'   package can convert \code{area} to the squared output units, 
-#'   it can be used. 
+#' @param area A scalar containing total area of 
+#' inference. Commonly, this is study area size.  
+#' If \code{area} is NULL (the default), 
+#' area is set to 1 square unit of the output units. The default
+#' produces abundance estimates that equal density estimates
+#' (density estimates are always produced). 
+#' If \code{area} is not NULL, it must have measurement units 
+#' assigned by the \code{units} package. 
+#' The units on \code{area} must be convertible
+#' to squared output units. Units 
+#' on \code{area} must be two-dimensional. 
+#' For example, if output units are "foo", 
+#' units on area must be convertible to "foo^2" by the \code{units}
+#' package. 
+#' Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and many
+#' others are acceptable.  
 #'   
 #' @param ci A scalar indicating the confidence level of confidence intervals. 
 #'   Confidence intervals are computed using the bias corrected bootstrap
@@ -39,6 +42,7 @@
 #'   progress bar if running this within another function. Otherwise, 
 #'   it is handy to see progress of the bootstrap iterations.
 #'   
+#  DEFUNCT BYSITE PARAM:
 #' @param bySite A logical scalar indicating whether to compute site-level
 #'   estimates of abundance. The default (\code{bySite=FALSE}) returns only one
 #'   overall abundance estimate. This routine does not calculate confidence
@@ -46,15 +50,26 @@
 #'   \code{NULL} if \code{bySite = TRUE}. See \code{\link{estimateN}}.
 #'   
 #' @details The abundance estimate for line transect surveys (if no covariates
-#'    are included in the detection function) is \deqn{N =
-#'   \frac{n.indiv(area)}{2(ESW)(tot.trans.len)}}{N = n.indiv*area /
-#'   (2*ESW*tot.trans.len)} where \code{n.indiv} is either \code{avg.group.size * n} or
-#'   \code{sum(group.sizes)}, and \code{ESW} is the effective strip width
+#'    are included in the detection function) is 
+#'    \deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
+#'          N = n*A / (2*ESW*L)} 
+#'    where \emph{n} is total number of sighted individuals 
+#'   (i.e., \code{sum(group.sizes)}), \emph{L} is the total length of 
+#'   surveyed transect,
+#'   and \emph{ESW} is effective strip width
 #'   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
+#'   
+#'   The abundance estimate for point transect surveys (if no covariates are
+#'   included) is 
+#'    \deqn{N =\frac{n(A)}{\pi ESR^2 P}}{%
+#'          N = n*A / ((3.1415)*ESR^2*(P))} 
+#'    where \emph{n} is total number of sighted individuals,
+#'    \emph{P} is the total number of surveyed points, 
+#'    and \emph{ESR} is effective search radius 
+#'    computed from the estimated distance function (i.e., \code{ESR(dfunc)}).
 #'
 #'  Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
-#'     suppresses all intermediate output.  This is good when calling 
-#'     \code{abundEstim} from within other functions or during simulations.
+#'     suppresses all intermediate output.  
 #'     
 #' @section Bootstrap Confidence Intervals:
 #' 
@@ -83,11 +98,8 @@
 #'   of distances on the iteration which pushes parameters to their 
 #'   bounds. When an iteration fails to produce a valid 
 #'   distance function, \code{Rdistance} 
-#'   uses the last convergent distance function to estimate 
-#'   abundance on the iteration rather than ignore these 
-#'   non-convergent iterations and continue. This approach includes 
-#'   all variation associated with counts, but may not include 
-#'   all the variation associated with distance function estimation.  
+#'   simply skips the intration, effectively ignoring these 
+#'   non-convergent iterations. 
 #'   If the proportion of non-convergent iterations is small 
 #'   (less than 20% by default), the resulting confidence interval 
 #'   on abundance is 
@@ -98,75 +110,99 @@
 #'   turned off by setting \code{maxBSFailPropForWarning} in the 
 #'   print method to 1.0, or by modifying the code in \code{RdistanceControls()}
 #'   to re-set the default threshold and storing the modified 
-#'   function in your \code{.GlobalEnv}.  
+#'   function in your \code{.GlobalEnv}.  Additional iterations may be needed 
+#'   to achieve an adequate number. Check number of convergent iterations by 
+#'   counting non-NA rows in output data frame 'B'.  
 #'   
 #'   
-#' @return If \code{bySite} is FALSE, an 'abundance estimate' object, a list of
+#' @return An 'abundance estimate' object, which is a list of
 #'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
 #'   object (see \code{dfuncEstim}), plus the following: 
 #'   
 #'   \item{density}{Estimated density on the sampled area. The \emph{effectively}
 #'   sampled area is 2*L*ESW (not 2*L*w.hi). Density has squared units of the 
 #'   requested output units.  E.g., if \code{outputUnits} = "km" in the call 
-#'   to \code{dfuncEstim}}, units on density are 1/km^2. There exists no flexibility
-#'   to have differring distance and density units (e.g., "m" and "ha", or "km" and 
+#'   to \code{dfuncEstim}}, units on density are 1/km^2. No flexibility exists
+#'   to have obtain different distance and density units (e.g., "m" and "ha", or "km" and 
 #'   "acre").  To convert density to other units, use 
 #'   \code{units::set_units(x$density, "<units>")}. 
+#'   
 #'  \item{abundance}{Estimated abundance in the study area (if \code{area} >
 #'  1) or estimated density in the study area (if \code{area} = 1).}
+#'  
 #'   \item{n}{The number of detections
 #'  (not individuals, unless all group sizes = 1) used in the estimate of
 #'  abundance.}
+#'  
 #'   \item{area}{Total area of inference. Study area size}
-#'   \item{esw}{Effective strip width for line-transects, effective
+#'   
+#'   \item{effDistance}{Effective strip width for line-transects, effective
 #'   radius for point-transects.  Both derived from \code{dfunc}. 
-#'   See \code{\link{ESW}}} or \code{\link{EDR}} for formulas.
+#'   See \code{\link{ESW}} or \code{\link{EDR}} for formulas.}
+#'   
 #'   \item{n.sites}{Total number of transects for line-transects, 
 #'   total number of points for point-transects.}
+#'   
 #'   \item{tran.len}{Total transect length. NULL for point-transects.}
+#'   
 #'   \item{avg.group.size}{Average group size}
-#'   \item{ci}{The bias corrected bootstrap confidence interval for
-#'   \code{n.hat}.  The names of this component give the quantiles of the
-#'   bootstrap distribution used to compute the bias corrected interval.} 
-#'   \item{B}{A vector or length \code{R} containing all bootstrap estimated
-#'   population sizes. If a particular iteration did not converge, the
-#'   corresponding entry in \code{B} will be \code{NA}. The bootstrap
-#'   distribution of \code{n.hat} can be plotted with \code{hist(x$B)}, where
-#'   \code{x} is an 'abundance estimate' object. The confidence interval in
-#'   \code{ci} can be reproduced with \code{quantile(x$B[!is.na(x$B)],
-#'   p=names(x$ci) )}.}
+#'   
+#'   \item{n.hat.ci}{The bias corrected bootstrap confidence interval for
+#'   abundance (i.e., \code{n.hat}).  The names of this component 
+#'   give the quantiles of the bootstrap distribution used during computation of
+#'   the bias corrected interval.} 
+#'   
+#'   \item{density.ci}{The bias corrected bootstrap confidence interval for
+#'   density (i.e., \code{density}).
+#'   }
+#'
+#'   \item{effDistance.ci}{The bias corrected bootstrap confidence interval for
+#'   effective sampling distance (i.e., \code{effDistance}).
+#'   }
+#'   
+#'   \item{B}{A data frame containing bootstrap density and effective distance 
+#'   values.  Number of rows is always \code{R}, the number of bootstrap 
+#'   requested iterations.  If a particular iteration did not converge, the
+#'   corresponding row in \code{B} is all \code{NA} (e.g., use 'na.rm = TRUE' 
+#'   when computing summaries). One column of the data frame 
+#'   contains bootstrap values of \code{density}.  Another column contains bootstrap 
+#'   values of \code{effDistance}. Bootstrap abundance values are 'B$density' * area.}
+#'   
 #'   \item{nItersConverged}{The number of bootstrap iterations that converged.  }
+#'   
 #'   \item{alpha}{The (scalar) confidence level of the
 #'   confidence interval for \code{n.hat}.} 
+#'
+#   MOVE THIS DOCUMENTATION TO BYSITE ROUTINE
+#
+#   If \code{bySite} is TRUE, a data frame containing site-level 
+#   estimated abundance.  The data frame is an exact copy of \code{siteData}
+#   with the following columns tacked onto the end:
+#    
+#   \item{effDist}{The effective sampling distance at the site.  For line-
+#   transects, this is ESW at the site.  For points, this is EDR. } 
+#   \item{pDetection}{Average probability of detection at the site. 
+#   If only site-level covariates appear in the distance function, 
+#   pDetection is constant within a site. When detection-level 
+#   covariates are present, pDetection is the average at the site.}
+#   \item{observedCount}{The total number of individuals detected at a site.}
+#   \item{abundance}{Estimated abundance at the site. This is the sum
+#   of inflated group sizes at the site. i.e., each group size 
+#   at the site is divided by its pDetection, and then summed.    }
+#   \item{density}{Estimated density at the site. This is abundance 
+#   at the site divided by the sampled area at the site.  E.g., for 
+#   line transects, this is abundance divided by \eqn{2*w*length}. For 
+#   points, this is abundance divided by \eqn{pi*w^2}.}
+#   \item{effArea}{The effective area sampled at the site. This could be used
+#   as an offset in a subsequent linear model. For 
+#   line transects, this is \eqn{2*ESW*length}. For 
+#   points, this is \eqn{pi*EDR^2}.}
+#   
 #'   
-#'   If \code{bySite} is TRUE, a data frame containing site-level 
-#'   estimated abundance.  The data frame is an exact copy of \code{siteData}
-#'   with the following columns tacked onto the end:
-#'    
-#'   \item{effDist}{The effective sampling distance at the site.  For line-
-#'   transects, this is ESW at the site.  For points, this is EDR. } 
-#'   \item{pDetection}{Average probability of detection at the site. 
-#'   If only site-level covariates appear in the distance function, 
-#'   pDetection is constant within a site. When detection-level 
-#'   covariates are present, pDetection is the average at the site.}
-#'   \item{observedCount}{The total number of individuals detected at a site.}
-#'   \item{abundance}{Estimated abundance at the site. This is the sum
-#'   of inflated group sizes at the site. i.e., each group size 
-#'   at the site is divided by its pDetection, and then summed.    }
-#'   \item{density}{Estimated density at the site. This is abundance 
-#'   at the site divided by the sampled area at the site.  E.g., for 
-#'   line transects, this is abundance divided by \eqn{2*w*length}. For 
-#'   points, this is abundance divided by \eqn{pi*w^2}.}
-#'   \item{effArea}{The effective area sampled at the site. This could be used
-#'   as an offset in a subsequent linear model. For 
-#'   line transects, this is \eqn{2*ESW*length}. For 
-#'   points, this is \eqn{pi*EDR^2}.}
-#'   
-#'   
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr 
-#'   Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}\cr 
-#'   Jason Carlisle, University of Wyoming and WEST Inc., 
-#'   \email{jcarlisle@west-inc.com}
+#' @author Trent McDonald, \email{trent@mcdonalddatasciences.com}\cr 
+#'   Aidan McDonald, \email{aidan@mcdcentral.org}\cr 
+#'   Jason Carlisle, Wyoming Game and Fish Department, 
+#'   \email{jason.carlisle@wyo.gov}
 #'   
 #' @references Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
 #'   monte-carlo methods in biology}, London: Chapman and Hall.
@@ -214,10 +250,8 @@ abundEstim <- function(dfunc,
                        control = RdistanceControls()){
   
   # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
-  if(!("dist" %in% names(detectionData))) stop("There is no column named 'dist' in your detectionData.")
   if(!("siteID" %in% names(detectionData))) stop("There is no column named 'siteID' in your detectionData.")
-  if(!("groupsize" %in% names(detectionData))) stop("There is no column named 'groupsize' in your detectionData.")
-  
+
   if(!("siteID" %in% names(siteData))) stop("There is no column named 'siteID' in your siteData.")
   if(!dfunc$pointSurvey){
     if(!("length" %in% names(siteData))) stop("There is no column named 'length' in your siteData.") 
@@ -225,8 +259,7 @@ abundEstim <- function(dfunc,
   
   if(any(is.na(detectionData$dist))) stop("Please remove rows for which detectionData$dist is NA.")
   if(any(is.na(detectionData$siteID))) stop("Please remove rows for which detectionData$siteID is NA.")
-  if(any(is.na(detectionData$groupsize))) stop("Please remove rows for which detectionData$groupsize is NA.")
-  
+
   if(any(is.na(siteData$siteID))) stop("Please remove NA's from siteData$siteID.")
   if(!dfunc$pointSurvey){
     if(any(is.na(siteData$length))) stop("Please remove NA's from siteData$length.") 
@@ -237,39 +270,7 @@ abundEstim <- function(dfunc,
     stop("Site IDs must be unique.")
   }
   
-  # ---- Measurement units check. ----
-  if( !dfunc$pointSurvey ){
-    if( !inherits(siteData$length, "units") & control$requireUnits ){
-      dfName <- deparse(substitute(siteData))
-      stop(paste("Transect length measurement units are required.", 
-                 "Assign units to transect length by attaching 'units' package then:\n", 
-                 paste0("units(",dfName,"$length)"), "<- '<units of measurment>',\n", 
-                 "For example, 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
-    } else if( control$requireUnits ){
-      # if we are here, length has units. convert them to units used during estimation.
-      # Input dfunc must have a $outputUnits component.
-      siteData$length <-  units::set_units(siteData$length, dfunc$outputUnits, mode = "standard")
-    }
-  }
-  
-  if( !inherits(area, "units") & control$requireUnits ){
-    if( !is.null(area) ){
-      # If we are here, area did not come with units, we require units, and it's not null: ERROR
-      stop(paste("Study area measurement units are required.", 
-                 "Assign units to area by attaching 'units' package then:\n", 
-                 "units(area) <- '<units of measurment>'.", 
-                 "For example, '<units of measure>' = 'm^2' (sq meters), 'ha' (hectares), 'km^2', or 'acre'.\nSee units::valid_udunits()"))
-    }
-    # if we are here, area is NULL: Report abundance in 1 square unit of measure
-    area <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
-  } else if( control$requireUnits ){
-    # if we are here, area has units and it is not null (because you cannot 
-    # assign units to NULL) but it could be NA)
-    # Convert area units to square of outputUnits.
-    # This converts units like "hectare" to "m^2". If cannot convert, and error is thrown here
-    squareOutputUnits <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
-    area <- units::set_units(area, squareOutputUnits, mode = "standard")
-  }
+
   
   # ---- Check CI - bySite combination ----
   # (jdc) this function isn't setup to generate bootstrap CIs of site-level abundance
@@ -303,17 +304,26 @@ abundEstim <- function(dfunc,
   if (bySite) {
     
     # Estimate abundance
-    abund <- estimateN(dfunc=dfunc, detectionData=detectionData, 
-                       siteData=siteData, area=area, bySite=bySite)
-    
-    ans <- abund
+    # THIS SHOULD CALL THE NEW PREDICT METHOD
+    # abund <- estimateN(dfunc=dfunc, detectionData=detectionData, 
+    #                    siteData=siteData, area=area, bySite=bySite)
+    # 
+    # ans <- abund
     
   } else {
     # Overall abundance, possibly with bootstrap
     
     # Estimate abundance
-    abund <- estimateN(dfunc=dfunc, detectionData=detectionData, 
-                       siteData=siteData, area=area, bySite=bySite)
+    if( dfunc$pointSurvey ){
+      totSurveyedUnits <- nrow(siteData)
+    } else {
+      totSurveyedUnits <- sum(siteData$length)
+    }
+    abund <- estimateN(dfunc = dfunc
+                      , surveyedUnits = totSurveyedUnits
+                      , area = area
+                      , control = control
+                      )
     
     # store output returned by this function
     # (will be added to in later sections)
@@ -326,16 +336,15 @@ abundEstim <- function(dfunc,
     ans$n.hat <- abund$abundance
     ans$n <- abund$n.groups
     ans$area <- abund$area
-    ans$tran.len <- abund$tran.len
+    ans$surveyedUnits <- abund$surveyedUnits
     ans$avg.group.size <- abund$avg.group.size
     # Note: could call effectiveDistance(dfunc) here, but that does the 
     # integration over and is slightly less efficient
     if(dfunc$pointSurvey){
-      ans$esw <- sqrt(abund$w^2 * abund$pDetection)  # for points
+      ans$effDistance <- sqrt(abund$w^2 * abund$pDetection)  # for points
     } else {
-      ans$esw <- abund$pDetection * abund$w  # for lines
+      ans$effDistance <- abund$pDetection * abund$w  # for lines
     }
-    
     
     if (!is.null(ci)) {
       # Compute bootstrap CI by resampling transects
@@ -343,7 +352,7 @@ abundEstim <- function(dfunc,
       g.x.scl.orig <- dfunc$call.g.x.scl  # g(0) or g(x) estimate
       
       B <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
-      B <- data.frame(density = B, abundance = B)
+      B <- data.frame(density = B, effDistance = B)
       
       # now including utils as import,
       if(showProgress){
@@ -435,16 +444,24 @@ abundEstim <- function(dfunc,
           # because number of unique siteIDs is never computed in estimateN. 
           # Number of sites in estiamteN is nrow(newSiteData)
           
-          # Estimate abundance
-          # (jdc) this function isn't setup to generate bootstrap CIs of site-level abundance, so this is always bySite=FALSE
-          # (jdc) so bySite=TRUE and !is.null(ci) is perhaps misleading
-          abund.bs <- estimateN(dfunc = dfunc.bs,
-                                detectionData = new.detectionData,
-                                siteData = new.siteData, 
-                                area = area, 
-                                bySite = FALSE)
+          # Estimate Bootstrap abundance
+          if( dfunc$pointSurvey ){
+            totSurveyedUnits <- nrow(new.siteData)
+          } else {
+            totSurveyedUnits <- sum(new.siteData$length)
+          }
+          abund.bs <- estimateN(dfunc = dfunc.bs
+                             , surveyedUnits = totSurveyedUnits
+                             , area = area
+                             , control = control
+                             )
+          if(dfunc$pointSurvey){
+            efd <- abund.bs$w * sqrt(abund.bs$pDetection)  # for points
+          } else {
+            efd <- abund.bs$w * abund.bs$pDetection # for lines
+          }
           
-          B$abundance[i] <- abund.bs$abundance
+          B$effDistance[i] <- efd
           B$density[i] <- abund.bs$density
 
           if (plot.bs ) {
@@ -473,9 +490,9 @@ abundEstim <- function(dfunc,
 
       # Density units do not get assigned to B. Assign them now      
       B$density <- units::set_units(B$density, units(ans$density), mode = "standard")
-
-      # Calculate CI from bootstrap replicates using bias-corrected bootstrap method in Manly text
-      # Abundance first
+      B$effDistance <- units::set_units(B$effDistance, units(ans$effDistance), mode = "standard")
+      
+      # function to calculate CI from bootstrap replicates using bias-corrected bootstrap method in Manly text
       bcCI <- function(x.bs, x, ci){
         p <- mean(x.bs > x, na.rm = TRUE)
         z.0 <- qnorm(1 - p)
@@ -486,10 +503,16 @@ abundEstim <- function(dfunc,
         names(ans) <- paste0(100*c( (1 - ci)/2, 1 - (1-ci)/2 ), "%")
         ans
       }
-      ans$n.hat.ci <- bcCI(B$abundance, ans$n.hat, ci)
+      
+      # abundance estimates are unitless, counts
+      abundEsts <- units::drop_units(B$density * ans$area)
+
+      ans$n.hat.ci <- bcCI(abundEsts, ans$n.hat, ci)
       ans$density.ci <- bcCI(B$density, ans$density, ci)
+      ans$effDistance.ci <- bcCI(B$effDistance, ans$effDistance, ci)
       ans$B <- B
       ans$nItersConverged <- convergedCount
+      
       if (!(dfunc$like.form=="smu") && (convergedCount < R) && showProgress){
         cat(paste( R - convergedCount, "of", R, "iterations did not converge.\n"))
       }
@@ -497,8 +520,9 @@ abundEstim <- function(dfunc,
     } else {
       # Don't compute CI if ci is null
       ans$B <- NULL
-      ans$density.ci <- c(NULL, NULL)
-      ans$n.hat.ci <- c(NULL, NULL)
+      ans$density.ci <- NULL
+      ans$n.hat.ci <- NULL
+      ans$effDistance.ci <- NULL
       ans$nItersConverged <- NULL
     }  # end else
     

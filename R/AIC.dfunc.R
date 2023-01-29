@@ -64,11 +64,11 @@ AIC.dfunc=function (object, ..., criterion="AICc")
     k <- 2
     n <- Inf
   } else if( criterion == "BIC"){
-    k <- log(length(object$dist))
+    k <- log(nrow(object$detections))
     n <- Inf
   } else {
     k <- 2
-    n <- length(object$dist)
+    n <- nrow(object$detections)
     criterion <- "AICc"
   }
     
