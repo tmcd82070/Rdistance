@@ -1,6 +1,6 @@
 # test_print.dfunc.r
 library(Rdistance)
-context("print.dfunc")
+# context("print.dfunc")
 
 data(sparrowDetectionData)
 dfunc <- dfuncEstim(formula=dist~1,

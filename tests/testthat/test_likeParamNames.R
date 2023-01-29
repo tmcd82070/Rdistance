@@ -1,6 +1,6 @@
 # test_likeParamNames.R
 library(Rdistance)
-context("likeParamNames")
+# context("likeParamNames")
 
 test_that("input=halfnorm outputs=halfnorm sigma", {
   expect_equal(likeParamNames("halfnorm"), c("Sigma"))

@@ -59,7 +59,7 @@ test_abundEstim <- function( abundParams,
     )
     
     
-    context(testContext)
+    # context(testContext)
     
     # cat(crayon::green(paste("i=",i,testParams)))
     # cat("\n")
@@ -81,13 +81,23 @@ test_abundEstim <- function( abundParams,
       newComponents <- c( "density", "n.hat", "n", "area", 
                           "avg.group.size", "esw" )
     } else {
-      newComponents <- c( "density", "n.hat", "n", "area", "tran.len", 
-                          "avg.group.size", "esw" )
+      newComponents <- c( "density"
+                          , "n.hat"
+                          , "n"
+                          , "area"
+                          , "surveyedUnits"
+                          , "avg.group.size"
+                          , "effDistance" )
     }
     
     if(!is.null(ciParam)){
       newComponents <- c(newComponents, 
-                         c("n.hat.ci", "density.ci", "B", "nItersConverged", "alpha" ))
+                         c("n.hat.ci"
+                           , "density.ci"
+                           , "effDistance.ci"
+                           , "B"
+                           , "nItersConverged"
+                           , "alpha" ))
     }
     
     test_that("abundComponents", {
@@ -118,11 +128,11 @@ test_abundEstim <- function( abundParams,
 
     if( !distFunc$pointSurvey ){
       test_that("tran.lenIsUnits", {
-        expect_s3_class(abundEst$tran.len, "units")
+        expect_s3_class(abundEst$surveyedUnits, "units")
       })
     
       test_that("tran.lenUnits", {
-        expect_equal(units(abundEst$tran.len), abundEst$outputUnits)
+        expect_equal(units(abundEst$surveyedUnits), abundEst$outputUnits)
       })
     }
 

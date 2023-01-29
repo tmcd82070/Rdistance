@@ -1,6 +1,6 @@
 # F.start.limits.r
 library(Rdistance)
-context("F.start.limits")
+# context("F.start.limits")
 
 test_that("F.start.limits(uniform) returns type=list", {
   expect_type(F.start.limits("uniform", 1, 0, 1000), "list")

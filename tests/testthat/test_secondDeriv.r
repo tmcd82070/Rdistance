@@ -1,6 +1,6 @@
 #test_secondDeriv.r
 library(Rdistance)
-context("secondDeriv")
+# context("secondDeriv")
 
 func <- function(x){-x*x} # second derivative should be -2
 

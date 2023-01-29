@@ -1,5 +1,5 @@
 library(Rdistance)
-context("Halfnorm distance function")
+# context("Halfnorm distance function")
 
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)

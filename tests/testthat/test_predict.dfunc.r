@@ -1,6 +1,6 @@
 # test_predict.dfunc.r
 library(Rdistance)
-context("predict.dfunc")
+# context("predict.dfunc")
 
 data("sparrowDetectionData")
 data("sparrowSiteData")

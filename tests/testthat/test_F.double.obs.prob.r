@@ -1,6 +1,6 @@
 # test_F.double.obs.prob.r
 library(Rdistance)
-context("F.double.obs.prob")
+# context("F.double.obs.prob")
 
 set.seed(538392)
 obsrv <- data.frame( obsby.1=rbinom(100,1,.75), obsby.2=rbinom(100,1,.5) )

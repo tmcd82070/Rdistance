@@ -2,7 +2,7 @@
 
 require(Rdistance)
 
-context("Test the line-transect workflow no covars")
+# context("Test the line-transect workflow no covars")
 
 ## load example data and assign variables needed for testing
 data(sparrowDetectionData)

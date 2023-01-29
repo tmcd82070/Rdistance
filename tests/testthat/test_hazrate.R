@@ -1,5 +1,5 @@
 library(Rdistance)
-context("Hazrate distance function")
+# context("Hazrate distance function")
 
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)

@@ -6,7 +6,7 @@ data(sparrowDetectionData)
 data(sparrowSiteData)
 
 # --------------------------------------------------------
-context("bySite with site-level covs")
+# context("bySite with site-level covs")
 
 # Fit detection function with site-level covar
 dfunc <- dfuncEstim(dist ~ observer,
@@ -36,7 +36,7 @@ test_that("abundance correct", {
 
 
 # --------------------------------------------------------
-context("bySite with detection-level covars")
+# context("bySite with detection-level covars")
 
 # groupsize is detection-level covariate
 dfunc <- dfuncEstim(dist ~ groupsize,

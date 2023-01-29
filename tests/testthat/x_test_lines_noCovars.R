@@ -13,7 +13,7 @@ fit <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteD
                   area=10000, ci=NULL, plot.bs=FALSE)
 
 # -------------------------------------------------
-context("Transects, no covariates, bySite=FALSE")
+# context("Transects, no covariates, bySite=FALSE")
 
 test_that("Parameter correct",{
   expect_equal(round(sparrow.dfunc$parameters,4), c(Sigma = 46.3587))
@@ -38,7 +38,7 @@ test_that("Abundance estimate is correct", {
 
 
 # -------------------------------------------------
-context("Transects, no covariates, bySite=TRUE")
+# context("Transects, no covariates, bySite=TRUE")
 
 fitSite <- abundEstim(dfunc=sparrow.dfunc, detectionData=sparrowDetectionData, siteData=sparrowSiteData,
                       area=10000, ci=NULL, bySite=TRUE)
@@ -62,7 +62,7 @@ test_that("Abundance bySite is correct", {
 
 
 # -------------------------------------------------
-context("Transects, no covariates, autoDistSamp")
+# context("Transects, no covariates, autoDistSamp")
 
 tmp <- capture.output(
       auto <- autoDistSamp(formula=dist~1, detectionData=sparrowDetectionData, siteData=sparrowSiteData,

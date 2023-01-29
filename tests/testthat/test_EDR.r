@@ -1,6 +1,6 @@
 # test_EDR.R
 library(Rdistance)
-context("EDR")
+# context("EDR")
 
 # point transect survey detection function
 data(thrasherDetectionData)

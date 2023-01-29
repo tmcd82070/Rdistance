@@ -6,7 +6,7 @@ data(sparrowDetectionData)
 data(sparrowSiteData)
 
 # --------------------------------------------------------
-context("abundEstim error catch")
+# context("abundEstim error catch")
 
 # Fit detection function with site-level covar
 dfunc <- dfuncEstim(dist ~ 1,

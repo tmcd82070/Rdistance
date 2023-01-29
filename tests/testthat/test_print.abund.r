@@ -1,6 +1,6 @@
 # test_print.abund.r
 library(Rdistance)
-context("print.abund")
+# context("print.abund")
 
 data(sparrowDetectionData)
 data(sparrowSiteData)

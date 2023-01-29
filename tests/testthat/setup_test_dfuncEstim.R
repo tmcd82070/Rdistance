@@ -61,7 +61,7 @@ test_dfuncEstim <- function( detectParams,
     )
     
     
-    context(testParams)
+    # context(testParams)
     
     # cat(crayon::green(paste("i=",i,testParams)))
     # cat("\n")

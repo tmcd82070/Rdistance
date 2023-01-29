@@ -1,5 +1,5 @@
 library(Rdistance)
-context("dfuncEstim")
+# context("dfuncEstim")
 
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)

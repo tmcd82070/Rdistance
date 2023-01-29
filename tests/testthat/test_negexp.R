@@ -1,5 +1,5 @@
 library(Rdistance)
-context("Negexp distance function")
+# context("Negexp distance function")
 
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)

@@ -10,7 +10,7 @@ testData <- data.frame(distance.radial = c(3, 9, 27), angle.degrees = c(30, 45, 
 ## catch testing
 testDataNA <- data.frame(distance.radial = c(3, NA, 27), angle.degrees = c(NA, 45, 60))
 ## Context
-context("testing perpDists()")
+# context("testing perpDists()")
 
 test_that("perpDists() operates appropriatly", {
   

@@ -1,6 +1,6 @@
 # test_simple.expansion.r
 library(Rdistance)
-context("simple.expansion")
+# context("simple.expansion")
 
 set.seed(883839)
 x <- rnorm(1000) * 100

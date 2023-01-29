@@ -1,6 +1,6 @@
 # test_effectiveDistance.R
 library(Rdistance)
-context("effectiveDistance")
+# context("effectiveDistance")
 
 # effectiveDistance is a wrapper for ESW.R and EDR.R
 # test will check that effectiveDistance properly routes objects 

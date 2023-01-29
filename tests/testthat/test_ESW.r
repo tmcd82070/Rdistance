@@ -1,6 +1,6 @@
 # test_ESW.r
 library(Rdistance)
-context("ESW")
+# context("ESW")
 
 # point transect survey detection function
 data(thrasherDetectionData)

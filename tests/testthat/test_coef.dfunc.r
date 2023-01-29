@@ -1,6 +1,6 @@
 # test_coef.dfunc.r
 library(Rdistance)
-context("coef.dfunc")
+# context("coef.dfunc")
 
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)

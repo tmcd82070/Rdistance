@@ -1,6 +1,6 @@
 # test_getDfuncModelFrame.r
 library(Rdistance)
-context("getDfuncModelFrame")
+# context("getDfuncModelFrame")
 
 # generate data for testing function
 dist <- c(1,2,3,4,5,6,7,8,9,10,11,12) 

@@ -24,7 +24,7 @@
 
 # The first required dataset is a detection data.frame
 # Each row is a detection, and the siteID, groupsize, and dist columns are required (as named)
-context("Test the lines_points_Covars() function")
+# context("Test the lines_points_Covars() function")
 
 test_that("lines_points_Covars() operates as it should", {
 data(thrasherDetectionData)

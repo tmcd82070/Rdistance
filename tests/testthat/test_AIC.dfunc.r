@@ -1,6 +1,6 @@
 # test_AIC.dfunc.r
 library(Rdistance)
-context("AIC.dfunc")
+# context("AIC.dfunc")
 
 data(sparrowDetectionData)
    

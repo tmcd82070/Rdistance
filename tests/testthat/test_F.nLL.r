@@ -1,6 +1,6 @@
 # test_F.nLL.r
 library(Rdistance)
-context("F.nLL")
+# context("F.nLL")
 
 data(sparrowDetectionData)
 data(sparrowSiteData)

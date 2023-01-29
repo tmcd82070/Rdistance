@@ -1,6 +1,6 @@
 # test_cosine.expansion.r
 library(Rdistance)
-context("cosine.expansion")
+# context("cosine.expansion")
 
 set.seed(33328)
 x <- rnorm(1000) * 100

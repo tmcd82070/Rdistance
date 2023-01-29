@@ -15,7 +15,7 @@ fit.zBare <- abundEstim(dfunc=sparrow.dfunc.zBare,
                   area=10000, ci=NULL, plot.bs=FALSE)
 
 # -------------------------------------------------
-context("Transects, one covariate, bySite=FALSE")
+# context("Transects, one covariate, bySite=FALSE")
 
 
 test_that("Coefficients are correct", {
@@ -53,7 +53,7 @@ test_that("Abundance is correct",{
 
 # -------------------------------------------------------------
 
-context("Transects, two covariates, bySite=FALSE")
+# context("Transects, two covariates, bySite=FALSE")
 
 sparrow.dfunc <- dfuncEstim(formula=dist~zBare + observer, 
                             detectionData=sparrowDetectionData, 
@@ -125,7 +125,7 @@ test_that("Bootstrap CI correct",{
 
 
 # ---------------------------------------------
-context("Transects, two covariates, bySite=TRUE")
+# context("Transects, two covariates, bySite=TRUE")
 
 fitBy <- abundEstim(dfunc=sparrow.dfunc, 
                     detectionData=sparrowDetectionData, 
@@ -183,7 +183,7 @@ tmp <- capture_output(
 
 
 # ==============================================================
-context("Comparison to Distance")
+# context("Comparison to Distance")
 
 # Compare to Distance
 require(Distance)

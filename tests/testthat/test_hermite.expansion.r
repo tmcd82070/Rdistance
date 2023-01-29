@@ -1,6 +1,6 @@
 # test_hermite.expansion.r
 library(Rdistance)
-context("hermite.expansion")
+# context("hermite.expansion")
 
 set.seed(83828233)
 x <- rnorm(1000) * 100

@@ -1,6 +1,6 @@
 # test_F.gx.estim.r
 library(Rdistance)
-context("F.gx.estim.r")
+# context("F.gx.estim.r")
 
 data(sparrowDetectionData)
 data(sparrowSiteData)

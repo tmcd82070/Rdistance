@@ -1,6 +1,6 @@
 # test_smu.like.r
 library(Rdistance)
-context("smu.like")
+# context("smu.like")
 
 set.seed(238642)
 d <- abs(rnorm(100))

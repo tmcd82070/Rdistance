@@ -6,7 +6,7 @@ library(Rdistance)
 data("sparrowDetectionData")
 data("sparrowSiteData")
 
-context("Measurement Units same as input")
+# context("Measurement Units same as input")
 
 tmp <- units::as_units(150, "m")
 x.scl <- units::as_units(10, "ft")
@@ -48,7 +48,7 @@ test_that("dfuncEstim produced correct ESW with units", {
 
 # ------------------------------------------------
 
-context("Measurement Units different from input")
+# context("Measurement Units different from input")
 
 dfunc_line <- dfuncEstim(formula = dist ~ 1,
                          detectionData = sparrowDetectionData,
@@ -87,7 +87,7 @@ test_that("dfuncEstim produced correct ESW with units", {
 
 # ------------------------------------------------
 
-context("Internal unit conversions produce same result")
+# context("Internal unit conversions produce same result")
 
 names(sigma_m) <- NULL  # must do this because conversion in next line removes names
 units(sigma_ft) <- "m"
