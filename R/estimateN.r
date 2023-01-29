@@ -148,8 +148,9 @@ estimateN <- function(dfunc
   }
 
   # phat should be unit-less; check just to be sure, if so drop "1" units
-  onesUnit <- units::set_units(1, "1")
-  if( units(phat) == units(onesUnit) ){
+  # Odd: sometimes phat has units "1", sometimes "m/m". Either way, test and remove.
+  
+  if( isUnitless(phat)  ){
     phat <- units::drop_units(phat)
   }
   
@@ -257,7 +258,7 @@ estimateN <- function(dfunc
     nhat.df <- dens * area
     
     # nhat.df should be unitless
-    if( units(nhat.df) == units(onesUnit) ){
+    if( isUnitless(nhat.df) ){
       nhat.df <- units::drop_units(nhat.df)
     } else {
       warning(paste("Strange measurement units detected because abundance is not unitless.\n", 
