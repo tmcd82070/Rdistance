@@ -37,6 +37,12 @@ lines.dfunc <- function(x
                         , newdata = NULL
                         ,  ...) {
   
+  # This code is a repeat of predict( type = "dfunc" ). 
+  # change all this to 
+  #   x.seq <- seq(x$w.lo, x$w.hi, length = 200)
+  #   dline <- predict(x, newdata = newdata, distances = x.seq)
+  #   lines(x.seq, c(dline))
+  # 
   x.seq <- seq(x$w.lo, x$w.hi, length = 200)
   g.at.x0 <- x$g.x.scl
   x0 <- x$x.scl
@@ -66,6 +72,7 @@ lines.dfunc <- function(x
     }
     
     like <- match.fun( paste( x$like.form, ".like", sep=""))
+    zero <- units::set_units(0, "m")
     
     y <- apply(params
                , 1
@@ -74,8 +81,8 @@ lines.dfunc <- function(x
                , series = x$series
                , covars = NULL
                , expansions = x$expansions
-               , w.lo = x$w.lo
-               , w.hi = x$w.hi
+               , w.lo = zero
+               , w.hi = x$w.hi - x$w.lo
                , pointSurvey = FALSE )  
     y <- t(y)  # now, each row of y is a dfunc
     
@@ -86,8 +93,8 @@ lines.dfunc <- function(x
                      , series = x$series
                      , covars = NULL
                      , expansions = x$expansions
-                     , w.lo = x$w.lo
-                     , w.hi = x$w.hi
+                     , w.lo = zero
+                     , w.hi = x$w.hi - x$w.lo
                      , pointSurvey = FALSE )
   }
   
