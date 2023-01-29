@@ -5,7 +5,7 @@
 
 # The set of parameters to test
 testInputs <- expand.grid(
-  likelihood = c( "uniform", "halfnorm", "hazrate", "negexp"),
+  likelihood = c( "hazrate" ),
   pointSurvey = TRUE,
   w.lo = c(0, 50), 
   w.hi = c(NA, 100), 
