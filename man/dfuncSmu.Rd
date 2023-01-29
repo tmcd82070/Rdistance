@@ -22,7 +22,8 @@ dfuncSmu(
   transectID = NULL,
   pointID = "point",
   outputUnits = NULL,
-  length = "length"
+  length = "length",
+  control = RdistanceControls()
 )
 }
 \arguments{

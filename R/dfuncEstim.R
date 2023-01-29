@@ -645,9 +645,14 @@ dfuncEstim <- function (formula
   # Stop and print error if dist vector contains NAs
   if(any(is.na(dist))) stop("Please remove detections for which dist is NA.")
   
-  strt.lims <- F.start.limits(likelihood, expansions, w.lo, w.hi, 
-                              dist, covars, pointSurvey)
-  
+  strt.lims <- F.start.limits(likelihood
+                              , expansions
+                              , w.lo
+                              , w.hi
+                              , dist
+                              , covars
+                              , pointSurvey)
+
   # Perform optimization
   if(control$optimizer == "optim"){
     fit <- optim(strt.lims$start, 
@@ -775,17 +780,30 @@ dfuncEstim <- function (formula
     ans$g.x.scl <- g.x.scl
   }
   
+  # ---- Check parameter boundaries ----
   fuzz <- 1e-06
-  low.bound <- any(fit$par <= strt.lims$lowlimit + fuzz)
-  high.bound <- any(fit$par >= strt.lims$uplimit - fuzz)
+  low.bound <- fit$par <= (strt.lims$lowlimit + fuzz)
+  high.bound <- fit$par >= (strt.lims$uplimit - fuzz)
   if (fit$convergence != 0) {
     if (warn) warning(fit$message)
   }
-  else if (low.bound | high.bound) {
+  if (any(low.bound)) {
     ans$convergence <- -1
-    ans$fit$message <- "One or more parameters at its boundary."
+    messL <- paste(paste(strt.lims$names[low.bound], "parameter at lower boundary.")
+                   , collapse = "; ")
+    ans$fit$message <- messL
+    if (warn) warning(ans$fit$message)
+  } else {
+    messL <- NULL
+  }
+  if (any(high.bound)) {
+    ans$convergence <- -1
+    messH <- paste(paste(strt.lims$names[high.bound], "parameter at upper boundary.")
+                   , collapse = "; ")
+    ans$fit$message <- c(messL, messH)
     if (warn) warning(ans$fit$message)
   }
+  
   ans
   
 }  # end function

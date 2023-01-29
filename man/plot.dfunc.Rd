@@ -12,7 +12,8 @@
   legend = TRUE,
   vertLines = TRUE,
   plotBars = TRUE,
-  density = 0,
+  density = -1,
+  angle = 45,
   xlab = NULL,
   ylab = NULL,
   border = TRUE,
@@ -61,24 +62,32 @@ is plotted, only the distance function line(s).}
 
 \item{density}{If \code{plotBars=TRUE}, a vector giving the density of 
 shading lines, in lines per inch, for the bars underneath 
-the distance function. Values of NULL or a number strictly less than 0 
-mean solid fill using colors from parameter \code{col}.  If 
-\code{density = 0}, bars are not filled and only the borders are rendered. 
-Values strictly greater than 0 produce shading lines using colors 
-from \code{col}.}
+the distance function, repeated as necessary to exceed the number 
+of bars. Values of NULL or a number strictly less than 0 
+mean solid fill using colors from parameter \code{col}. 
+If \code{density = 0}, bars are not filled and only the borders are rendered. 
+If \code{density} >0, bars are shaded with colors and angles from 
+parameters \code{col} and \code{angle}.}
+
+\item{angle}{When \code{density} is >0, the slope of bar shading lines, 
+given as an angle in degrees (counter-clockwise), repeated as necessary
+to exceed the number of bars.}
 
 \item{xlab}{Label for the x-axis}
 
 \item{ylab}{Label for the y-axis}
 
-\item{border}{The color of bar borders when bars are plotted. A 
-value of NA or FALSE means no borders. If there are shading lines 
+\item{border}{The color of bar borders when bars are plotted, 
+repeated as necessary to exceed the number of bars. A 
+value of NA or FALSE means no borders. If bars are shaded with lines 
 (i.e., \code{density>0}), \code{border = TRUE} uses the same 
-color for the border as for the shading lines.}
+color for the border as for the shading lines.  Otherwise, fill color
+or shaded line color are specified in \code{col} while 
+border color is specified in \code{border}.}
 
 \item{col}{A vector of bar fill colors or line colors when bars are 
-drawn and \code{density != 0}, replicated
-to the correct length. Also used for the bar borders when
+drawn and \code{density != 0}, repeated as necessary to exceed the number
+of bars. Also used for the bar borders when
 \code{border = TRUE}.}
 
 \item{col.dfunc}{Color of the distance function(s).
@@ -107,12 +116,13 @@ by specifying \code{lty.dfunc = c(1,2)}. Etc.}
 to the required length. Default is 2 for all lines.}
 
 \item{\dots}{When bars are plotted, this routine 
-uses \code{graphics::barplot} for setting up the 
-plotting region and plotting bars. When bars are not plotted,
+uses \code{graphics::barplot} to set up the 
+plotting region and plot bars. When bars are not plotted,
 this routine sets up the plot with \code{graphics::plot}.
 \dots can be any other 
 argument to \code{barplot} or \code{plot} EXCEPT  
-\code{width}, \code{ylim}, \code{xlim}, and \code{space}.}
+\code{width}, \code{ylim}, \code{xlim}, 
+\code{density}, \code{angle}, and \code{space}.}
 }
 \value{
 The input distance function is returned, with two additional

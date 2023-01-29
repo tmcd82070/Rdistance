@@ -1,24 +1,30 @@
 Changes in version 2.2.0 (2023-01-15)
 ==============
+Version 2.2.0 represents a substantial change and upgrade 
+from prior versions. 
+
 * ~~BIG CHANGE~~: Measurement units are now required on all distances
 (e.g., off-transect distances, strip widths, study area size, etc.),
 and it is possible to specify output units.
-Unit convertion is internal and automatic. 
-* Added density calculation to `abundEstim`, with bootstrapping.
-* Added bootstrap confidence intervals for effective sampling distances (ESW and EDR). 
-* Allowed expansions and covariates in the same distance function.
-* Renamed `uniform` likelihood to `logistic`. Uniform deprecated.
+Unit conversion makes use of the `units` package, is internal, and automatic. 
+* Added calculation of target density (number per unit area) 
+to `abundEstim`, and it is included in bootstrapping.
+* ~~User Requested~~: Added computation of bootstrap confidence intervals for effective sampling distances (ESW and EDR). 
+* Allowed expansion terms and covariates in the same distance function.
+* Renamed `uniform` likelihood to `logistic`. Uniform is now deprecated.
 * Added covariates to Gamma likelihood estimation.
 * ~~Change in default parameter~~: Changed default value of `area` in
 `abundEstim` from 1 to NULL, but NULL translates to 1 square output 
 unit.  
 * Added color to print methods.  Results are in green, if the R terminal 
 allows it (i.e., in Rstudio, but not R gui).  Errors are in red.
-* Reformatted default output to include density and abundance when 
+* Reformatted default output to include target density and abundance when 
 printing an `abund` object.
 * Fixed bug in `F.gx.estim` that occasionally popped up when sighting 
-function was monotonically decreassing.
+function was monotonically decreasing.
 * Updated starting values for faster estimation.
+* Warning messages now report which parameters are at their boundary, 
+and which boundary (lower or upper).
 * Bug fixes:
   + Fixed issue with contrasts in `model.matrix`
   + Fixed issue with no observations during bootstrapping

@@ -9,16 +9,21 @@ This is where you are:
 2.    [DONE] Testing methods for Point surveys (start with x_test_points_noCovars.R maybe)
 3.    Test methods for all the options in controls$ esp $requireunits
 4.    Test methods for by.site = T in abundEstim
-5.    Test methods that compare to past values, not just for presence of output
+5.    [DELAY] Test methods that compare to past values, not just for presence of output
 6.    [DONE] Test file for different units to check equality. e.g., set w.hi = "100 m" then w.hi = 100 m in ft and check that answers are same.
 
- 
-## Changes anticipated:
-1.    Include one numerical integration routine.  Maybe use R::integrate().
+## Need To Do:
+1.    Remove requirement of no missing values from `abundEstim`. Missing distances 
+in detection data frame are okay. But, we stop when missing distances show up 
+in `abundEstim`. 
+2.    Include one numerical integration routine.  Maybe use R::integrate().
 Call this routine from integration.constant() and ESW().  Upgrade to 
 Simpson's alternate composite formula. https://en.wikipedia.org/wiki/Simpson's_rule
 
 (dx/48) * (17f(x_0) + 59f(x_1) + 43f(x_2) + 49f(x_3) + 48f(x_4) + 48f(x_5) + ...
           + 48f(x_n-4) + 49f(x_n-3) + 43f(x_n-2) + 59f(x_n-1) + 17f(x_n))
 
-2. Consolidate the help using @inherit methods
+3.    In addition to the above, you know the integral of several likelihoods. 
+Integral of halfnormal is 0.5*sigma*sqrt(pi).  I think you can work out integral 
+of negative exponential. Use numerical integration for the others. 
+4.    Consolidate the help using @inherit methods
