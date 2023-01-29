@@ -219,15 +219,22 @@
 #' data(sparrowSiteData)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1,
-#'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=units::as_units(100, "m"), pointSurvey=FALSE)
+#' dfunc <- dfuncEstim(formula=dist~1
+#'                     , detectionData=sparrowDetectionData
+#'                     , likelihood="halfnorm"
+#'                     , w.hi=units::set_units(100, "m")
+#'                     , pointSurvey=FALSE)
 #' 
 #' # Estimate abundance given a detection function
 #' # Note, a person should do more than R=20 iterations
-#' fit <- abundEstim(dfunc, detectionData=sparrowDetectionData,
-#'                   siteData=sparrowSiteData, area=10000, R=20, ci=0.95,
-#'                   plot.bs=TRUE, bySite=FALSE)
+#' fit <- abundEstim(dfunc
+#'                 , detectionData=sparrowDetectionData
+#'                 , siteData=sparrowSiteData
+#'                 , R=20
+#'                 , ci=0.95
+#'                 , area=units::set_units(10000, "m^2")
+#'                 , plot.bs=TRUE
+#'                 , bySite=FALSE)
 #' 
 #' # Print results
 #' fit
