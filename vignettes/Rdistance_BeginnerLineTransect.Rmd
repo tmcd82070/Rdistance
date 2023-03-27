@@ -1,0 +1,1326 @@
+---
+title: "Beginner Line-Transect Analysis in Rdistance"
+author: "Trent McDonald, Jason Carlisle, and Abigail Hoffman"
+date: "March 26, 2023"
+output: pdf_document
+vignette: >
+  \VignetteIndexEntry{Rdistance: Beginner Line Transect Tutorial}
+  \VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# Introduction
+
+This tutorial is a beginner's guide to analyzing line-transect data in `Rdistance`.  We assume the reader has some familiarity with Program R, but not necessarily with distance-sampling analysis.  This beginning tutorial focuses on input data requirements, fitting a detection function, and estimating abundance (or density).  We use one of the example data sets included in `Rdistance`; in particular, the line transect surveys for sparrows. This tutorial covers line-transect analyses.  Point-transect
+analyses are covered in an separate vignette. 
+This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
+
+
+# 1: Install and load Rdistance
+
+If you haven't already done so, install the latest version of `Rdistance`.  In the R console, issue `install.packages("Rdistance")`.  You can  install the development version of `Rdistance` with the command `devtools::install_github("tmcd82070/Rdistance")`.  After the package is installed, it is loaded into the current session using the following:
+
+
+```{r}
+require(Rdistance)
+```
+
+```{r setup, include=FALSE}
+data("sparrowDetectionData")
+data("sparrowSiteData")
+```
+
+# 2: Input data
+
+`Rdistance` generally requires two input data sets.
+Data sets can be prepared using any method that results in an R `data.frame`.
+One relatively easy method of data preparation is to format distance and transect 
+information on separate sheets in `Excel`, export each sheet to CSV format, and 
+read each into R using `read.csv`.
+In this tutorial, we make use of the sparrow data sets which are already 
+contained within `Rdistance`.
+
+## *Detection* Data
+
+The first data set required by `Rdistance` is the *detection* data frame. The detection 
+data frame contains one row for each detected target group, while columns contain information 
+on each detection.
+`Rdistance` looks for the following information in the *detection* data frame:
+
+* **Detection Distance** = The perpendicular distance (also known as off-transect distance) from the 
+transect to the detected group. Note that this column must have units assigned (e.g., "m" or "ft").  
+Measurement units can be assigned using the `units()<-` or `units::set_units` functions. For example,  
+`units(sparrowDetectionData$dist) <- "m"` (see `help(dfuncEstim)` for details). 
+Distances are required to estimate a distance function (function `dfuncEstim`) and 
+to estimate abundance (function `abundEstim`). 
+* **Site ID** = The ID of the transect on which the detection was made. Transect IDs are required to 
+estimate abundance (function `abundEstim`), but not to estimate a distance function (function `dfuncEstim`). 
+* **Group Sizes** = The number of individuals in the group associated with each detection.  Group sizes are 
+required to estimate abundance (function `abundEstim`), but not to estimate a distance function (function `dfuncEstim`). 
+
+The specific columns in the *detection* data frame that contain 
+distances and group sizes are specified in the formula argument of 
+function `dfuncEstim`.  The column(s) containing the transect IDs 
+is specified in argument `transectID` to function `dfuncEstim`. 
+If `transectID` is NULL, the set of common columns from the *detection* and
+*site* data frames are assumed to form the transect IDs. 
+See the **Inpute data frames** section of `help(dfuncEstim)` for additional 
+details.  
+
+Line-transect distance-sampling analysis is performed on perpendicular 
+distances from detected groups to the transect, not from groups to the observer.
+Commonly, observers record straight-line sighting distance and sighting 
+angle instead of perpendicular distance. `Rdistance` provides a utility function 
+named `perpDists` that computes perpendicular distances from sighting distance and 
+angle.  See `help(perpDists)` for details.
+
+The first six rows of the sparrow  *detection* data set are: 
+```{r detectionDataDisplay}
+head(sparrowDetectionData)
+```
+
+
+We will use `siteID`, `groupsize`, and `dist` in this tutorial.  Column `dist` was computed 
+using function `perpDist`.  Details on the study and other columns are in `help(sparrowDetectionData)`. 
+
+
+## *Site* Data
+
+The second data set required by `Rdistance` is the **site** data frame. 
+We use the term 'site' because it covers both continuous transects and 
+point transects.  In this tutorial, a 'site' is one transect. 
+The *site* data frame contains one row for each surveyed site regardless 
+whether the site was "positive" (with detections) and "zero" (without detections).  
+
+`Rdistance` looks for the following information in the *transect* data frame: 
+
+* **Site IDs** = The ID of every surveyed transect in the study area.
+* **Length** = The length of each transect.  The length column in the *transect* 
+data frame must have assigned measurement units (e.g., "m" or "ft"). 
+Again, measurement units can be assigned using `units()<-` or `units::set_units`. 
+
+Note that a `site` data frame is not required if 
+a distance function but not abundance is required. 
+In addition to site IDs and length, the *site* data set can contain 
+transect level covariates (i.e., covariates that are constant over 
+detections on the same transect).  
+
+The first six rows of the sparrow  *site* data set are: 
+```{r siteDataDisplay}
+head(sparrowSiteData)
+```
+We will use `siteID` and `length` in this tutorial.  See vignette 'Rdistance_BeginnerLineTransectCovar' for 
+an analysis that includes covariates in the distance function. 
+
+# 3: Fit a detection function
+
+After input data are prepared, it is generally a good idea to inspect a 
+histogram of the perpendicular 
+distances. We 
+suggest checking the minimum, maximum, and measurement units of the distance 
+measurements in the following histogram. Note the automatic inclusion of 
+measurement units in the x-axis label. 
+
+```{r rawDistanceHistogram, fig.width=6, fig.height=4}
+hist(sparrowDetectionData$dist
+     , col="grey"
+     , main=""
+     , xlab = "Distance")
+rug(sparrowDetectionData$dist,quiet = TRUE)
+```
+
+```{r rawDistanceSummary}
+summary(sparrowDetectionData$dist)
+```
+
+
+Next, we fit a detection function to perpendicular distances
+function `dfuncEstim` and plot it. Function `dfuncEstim` uses maximum 
+likelihood to estimate parameters of the distance function fitted 
+to individual distances.  Histogram bin sizes in this and subsequent plots 
+are for visual purposes only and do not matter for estimation. 
+In this tutorial, we proceed using the half-normal distance function. 
+See `help(autoDistSamp)` for a function that automates the process of fitting
+different detection functions, assessing their fit (by AICc), and estimating 
+abundance using the best-fitting function.  
+
+Many analysts advocate dropping a small proportion of large distances 
+to improve distance function estimation stability and thereby 
+reduce variance. This is called right-truncation.  Large but rare distances 
+add variance to final estimates and can unduly influence (i.e., bias) 
+distance functions, especially in small (e.g., n < 100)
+data sets. Analysts typically drop between 1% and 5% of the largest distances 
+depending on histogram shape and personal preference. The 95-th quantile of 
+the sparrow detection distances is 
+`r round(quantile(sparrowDetectionData$dist, p=0.95), 2)`, 
+while the 99-th quantile is 
+`r round(quantile(sparrowDetectionData$dist, p=0.99), 2)`. 
+We will right-truncate the sparrow detection distances at 
+150 meters, which is a nice round number just above the 
+99-th quantile. In `Rdistance`, we right-truncate by 
+specifying a value for parameter `w.hi`. 
+Parameter `w.hi` must have measurement units because 
+it is a distance. 
+
+```{r dfuncEstimation}
+rightTruncDistance <- units::set_units(150, "m")
+dfuncSparrow<- dfuncEstim(formula = dist~1
+                          , detectionData = sparrowDetectionData
+                          , likelihood = "halfnorm"
+                          , w.hi = rightTruncDistance)
+```
+
+```{r dfuncPrintout}
+dfuncSparrow
+```
+
+In this printout, the estimated parameter of the 
+half-normal distance function is 
+`r round(dfuncSparrow$parameters, 2)`. When a half-normal distance 
+function is estimated, this parameter is the standard deviation of a 
+normal distribution if it were fitted to positive data only and if we 
+required the mean 
+to be zero.  Approximately 
+`r round(100*2*(pnorm(1) - pnorm(0)), 0)`% of distances will be between 
+0 and this parameter. 
+Approximately 
+`r round(100*2*(pnorm(2) - pnorm(0)), 0)`% of distances will be between 
+0 and twice this parameter. In the sparrow detection data, 
+`r round(100*mean(sparrowDetectionData$dist <= units::set_units(dfuncSparrow$parameters, "m")), 1)`% 
+of observed distances are between 0 and `r round(dfuncSparrow$parameters, 2)` meters. 
+`r round(100*mean(sparrowDetectionData$dist <= units::set_units(2*dfuncSparrow$parameters, "m")), 1)`% 
+of observed distances are between 0 and `r round(2*dfuncSparrow$parameters, 2)` meters. 
+
+Effective strip width (ESW) is the key piece of information we need to estimate 
+abundance in cases when the distance function does not contain covariates. 
+In `Rdistance`,  ESW appears in the default printouts or it can be 
+calculated separately using the `ESW` function. 
+
+```{r eswPrintout}
+ESW(dfuncSparrow)
+```
+
+We interpret ESW as the distance at which the same number of targets are missed 
+between 0 and the ESW as were sighted between ESW and infinity. 
+A survey with imperfect detection and ESW equal to *X* effectively covers 
+the same area as a study with perfect detection out to a distance of *X*.  
+See the help documentation for `ESW` for details.
+
+A visual picture of the distance function is obtained using the `plot` method.
+
+```{r dfuncPlot, fig.width=6, fig.height=4}
+plot(dfuncSparrow)
+```
+
+In this plot, the histogram of distances is blue and the estimated distance 
+function is red.  ESW is area under the red curve.  See `help(plot.dfunc)`
+for ways to modify the plot (e.g., more bins, change colors, line types, etc). 
+
+
+# 4: Estimate abundance from the detection function
+
+```{r studyAreaSize, include=FALSE}
+saSize <- units::set_units(72 * 500 * 500, "m^2")
+units(saSize) <- "ha"
+set.seed(8927342)
+```
+
+Abundance estimation requires additional information 
+contained in the *site* data set, described earlier. 
+Note that we did not use the *site* data set to estimate 
+the half-normal sparrow detection function because we are not including
+covariates. Here, we estimate abundance on the `r saSize` `r format(units(saSize)[1])` study area using 
+function `abundEstim`.  
+
+In `Rdistance`, confidence intervals for true abundance are 
+calculated using a bias-corrected bootstrapping method (see `help(abundEstim)`). 
+As a result, confidence intervals will vary slightly between runs due to 
+simulation error. 
+
+
+```
+fit <- abundEstim(dfuncSparrow
+                , detectionData = sparrowDetectionData
+                , siteData = sparrowSiteData
+                , area = saSize
+                , ci = 0.95
+                )
+```
+
+```{r abundEstim, include=FALSE}
+# To save vignette build time, we run it with ci=NULL and insert values from 
+# a separate run with R=500
+fit <- abundEstim(dfuncSparrow
+                , detectionData = sparrowDetectionData
+                , siteData = sparrowSiteData
+                , area = saSize
+                , ci = NULL
+                )
+fit$n.hat.ci <- c(1096.746, 1712.861 )
+fit$density.ci <- units::set_units(c(6.093035e-05, 9.515893e-05), "1/m^2")
+fit$effDistance.ci <- units::set_units(c(56.74188, 68.64928 ), "m")
+fit$nItersConverged <- 500
+fit$alpha <- 0.95
+B.d <- c(
+  7.50137188433137e-05,
+ 8.43347214393881e-05,
+ 8.3004813648968e-05,
+ 8.30574119662597e-05,
+ 7.75529261428019e-05,
+ 8.61375599193993e-05,
+ 8.84534504964901e-05,
+ 8.22481606959512e-05,
+ 6.58051679413358e-05,
+ 6.67437590445212e-05,
+ 8.01071599974174e-05,
+ 7.71193307612457e-05,
+ 7.78528880487548e-05,
+ 9.20859857730947e-05,
+ 7.25670859173611e-05,
+ 7.99172943312935e-05,
+ 7.74096110241625e-05,
+ 6.94808626938252e-05,
+ 7.85530949097478e-05,
+ 8.16842009326362e-05,
+ 8.72258067677253e-05,
+ 8.48033394092851e-05,
+ 7.52949366506375e-05,
+ 6.8261767968255e-05,
+ 8.44024763577981e-05,
+ 6.65978294259036e-05,
+ 8.67071604221208e-05,
+ 8.50441802182658e-05,
+ 9.3449384304856e-05,
+ 8.5830532590378e-05,
+ 7.93822456775088e-05,
+ 7.99295586128775e-05,
+ 8.55455975794069e-05,
+ 6.59780437573223e-05,
+ 6.95148925528279e-05,
+ 6.64104186232913e-05,
+ 8.99732656566874e-05,
+ 7.83936032852472e-05,
+ 7.126671028491e-05,
+ 7.33270232398668e-05,
+ 7.86101576990456e-05,
+ 6.12333883666283e-05,
+ 7.85237325825188e-05,
+ 9.00248564445211e-05,
+ 6.223860364965e-05,
+ 8.12035849307741e-05,
+ 8.58004163911808e-05,
+ 7.37564010148744e-05,
+ 6.37377386898956e-05,
+ 8.42253337522908e-05,
+ 7.85681020227412e-05,
+ 7.8508476400103e-05,
+ 8.70336211371986e-05,
+ 7.90015208683611e-05,
+ 9.13054821575994e-05,
+ 7.66300939413248e-05,
+ 8.89121631991901e-05,
+ 6.09141053910946e-05,
+ 7.138842184022e-05,
+ 8.05333914549628e-05,
+ 7.59867840370544e-05,
+ 7.73505029026135e-05,
+ 8.62258594749418e-05,
+ 7.43295478783773e-05,
+ 6.93463652666442e-05,
+ 8.28048840756638e-05,
+ 7.60947192184349e-05,
+ 8.29209262220412e-05,
+ 8.1063798360582e-05,
+ 7.8981531624543e-05,
+ 9.03225834697198e-05,
+ 6.96788517291111e-05,
+ 6.71457510476755e-05,
+ 8.02603601068503e-05,
+ 7.58527294323357e-05,
+ 9.47398106486988e-05,
+ 7.02662179084741e-05,
+ 7.4925677963841e-05,
+ 9.48419121754247e-05,
+ 7.17148210393331e-05,
+ 6.88514043943029e-05,
+ 8.96941665111361e-05,
+ 8.16147700334564e-05,
+ 9.50277418300234e-05,
+ 8.09109924656362e-05,
+ 6.52074086930461e-05,
+ 8.87989246996696e-05,
+ 6.81046912450867e-05,
+ 7.46468401045782e-05,
+ 7.82245142261297e-05,
+ 7.9442308363511e-05,
+ 8.37453160330935e-05,
+ 7.81791124387514e-05,
+ 9.50160986790125e-05,
+ 8.11463459428931e-05,
+ 9.33098307396156e-05,
+ 7.88369623477011e-05,
+ 7.72217002087808e-05,
+ 6.90406268243319e-05,
+ 8.14104241877436e-05,
+ 7.62600818356258e-05,
+ 9.27203639468852e-05,
+ 0.000101366566021641,
+ 9.49925633013401e-05,
+ 6.4031282015253e-05,
+ 9.16660061710715e-05,
+ 9.36113667475428e-05,
+ 7.69146035354448e-05,
+ 5.85283622427637e-05,
+ 6.47507560037617e-05,
+ 9.10034765591936e-05,
+ 7.4845541183305e-05,
+ 8.22197644161631e-05,
+ 6.73010024081521e-05,
+ 8.12593891055835e-05,
+ 8.49024605209267e-05,
+ 8.3218627990161e-05,
+ 6.82420912431735e-05,
+ 6.01254090839119e-05,
+ 8.91862038045304e-05,
+ 8.38340671503772e-05,
+ 8.24387410571178e-05,
+ 6.75705119982979e-05,
+ 8.31711455902866e-05,
+ 9.04331030455207e-05,
+ 7.23815500589336e-05,
+ 8.17633866294452e-05,
+ 7.22317815234245e-05,
+ 8.11218073439192e-05,
+ 8.06453470331954e-05,
+ 8.31275728073189e-05,
+ 8.26125502852067e-05,
+ 7.68830261259972e-05,
+ 8.40601777379482e-05,
+ 9.17123776013606e-05,
+ 6.67719634574819e-05,
+ 9.01339670524065e-05,
+ 9.07665167885917e-05,
+ 7.0475499941713e-05,
+ 9.15193128552761e-05,
+ 8.36359329869826e-05,
+ 8.18334031361552e-05,
+ 9.29232158654071e-05,
+ 7.92020089389543e-05,
+ 7.67886415768581e-05,
+ 7.63513458666471e-05,
+ 8.20676247196128e-05,
+ 7.31924606548849e-05,
+ 8.03106757713804e-05,
+ 9.03628298925533e-05,
+ 8.7507066998769e-05,
+ 6.77600577706094e-05,
+ 8.59377553857602e-05,
+ 8.23366991163594e-05,
+ 8.24366588969859e-05,
+ 7.19246443482041e-05,
+ 6.97497135746583e-05,
+ 9.2654153925126e-05,
+ 8.3565210588451e-05,
+ 6.76808041276883e-05,
+ 8.32970667609412e-05,
+ 7.19665511501976e-05,
+ 6.8240988456887e-05,
+ 7.78176633523618e-05,
+ 6.70256872249567e-05,
+ 8.24243575980304e-05,
+ 8.89172741922277e-05,
+ 6.78878636688264e-05,
+ 8.07982062071614e-05,
+ 7.30953333899651e-05,
+ 6.87440743836007e-05,
+ 7.67822527870196e-05,
+ 9.03324029474524e-05,
+ 8.84898928908736e-05,
+ 8.43421664885054e-05,
+ 9.17352292260351e-05,
+ 8.66852715516207e-05,
+ 0.000100459805157458,
+ 7.80491141094928e-05,
+ 7.97793655459217e-05,
+ 7.35356227917036e-05,
+ 9.36257889255177e-05,
+ 8.29115020713867e-05,
+ 8.69290368524124e-05,
+ 6.59021514034388e-05,
+ 0.000111477665566896,
+ 7.81175760897364e-05,
+ 9.49015748865105e-05,
+ 8.57852619101049e-05,
+ 8.65840264901733e-05,
+ 6.87335397340461e-05,
+ 8.76372780023303e-05,
+ 8.10546119028889e-05,
+ 8.513728768591e-05,
+ 8.93419676665577e-05,
+ 7.37265770896166e-05,
+ 7.79274474706571e-05,
+ 9.01136247411229e-05,
+ 7.2927073663325e-05,
+ 6.80138303203983e-05,
+ 7.74448471766028e-05,
+ 8.17302194200294e-05,
+ 7.05664137340936e-05,
+ 8.55428474544882e-05,
+ 8.68944961436739e-05,
+ 7.74715401727047e-05,
+ 8.67138702574138e-05,
+ 7.91026265099421e-05,
+ 5.68894991754916e-05,
+ 6.11630827773506e-05,
+ 8.48131294311535e-05,
+ 5.27567846957466e-05,
+ 8.21958019476654e-05,
+ 7.54037032384351e-05,
+ 8.80929394415102e-05,
+ 6.21857435750578e-05,
+ 7.11749896137341e-05,
+ 6.85909612692602e-05,
+ 8.7991269967325e-05,
+ 6.40660131168423e-05,
+ 7.79247257254502e-05,
+ 6.91397645531562e-05,
+ 8.02019290026864e-05,
+ 8.16400947708052e-05,
+ 8.59132212241818e-05,
+ 6.84532034364706e-05,
+ 8.23113285221613e-05,
+ 7.46684931612242e-05,
+ 6.99137458818622e-05,
+ 8.03784976531874e-05,
+ 8.11309280817699e-05,
+ 7.45689839285833e-05,
+ 6.28273031588446e-05,
+ 7.44043703307675e-05,
+ 8.48194610733797e-05,
+ 7.23720695397904e-05,
+ 6.60639068459992e-05,
+ 6.33451259759787e-05,
+ 6.6814716548122e-05,
+ 8.26617839042645e-05,
+ 7.74727562111899e-05,
+ 8.35459119748275e-05,
+ 6.97763559654973e-05,
+ 8.71658584162765e-05,
+ 8.94633732618376e-05,
+ 8.22929680749613e-05,
+ 7.24277295122673e-05,
+ 7.55345540183732e-05,
+ 7.37674649947992e-05,
+ 6.04433025455664e-05,
+ 8.09556199464491e-05,
+ 9.65953609654485e-05,
+ 7.74553946326385e-05,
+ 8.58185925993032e-05,
+ 5.46485723930075e-05,
+ 7.62222052320248e-05,
+ 6.41286846148587e-05,
+ 7.53617371151802e-05,
+ 8.5306952539354e-05,
+ 7.20037368092107e-05,
+ 7.42353190530703e-05,
+ 9.09834394478152e-05,
+ 8.29105322748003e-05,
+ 9.27638603026145e-05,
+ 8.48487695725458e-05,
+ 8.30112669068738e-05,
+ 7.55920540125169e-05,
+ 9.65101369221863e-05,
+ 7.73407403420029e-05,
+ 9.46397432776255e-05,
+ 7.16576780378751e-05,
+ 7.94283631666411e-05,
+ 9.14525104378982e-05,
+ 7.5232092644061e-05,
+ 7.68791934266862e-05,
+ 8.79342612352671e-05,
+ 7.4039084909164e-05,
+ 8.17251678140884e-05,
+ 7.08236453609404e-05,
+ 6.19379789783719e-05,
+ 9.03974750799962e-05,
+ 7.62579078657965e-05,
+ 8.18260560853901e-05,
+ 8.31703735924448e-05,
+ 9.30990603975775e-05,
+ 7.79103438195823e-05,
+ 8.54060950969733e-05,
+ 8.31809330560195e-05,
+ 6.74732216122881e-05,
+ 8.46727751311654e-05,
+ 8.64471155287203e-05,
+ 9.05878770996692e-05,
+ 9.27975253193816e-05,
+ 7.09227648172415e-05,
+ 6.81862063661307e-05,
+ 6.72712238077812e-05,
+ 8.79294331451236e-05,
+ 6.9882818371452e-05,
+ 7.68133724234552e-05,
+ 7.02849875710976e-05,
+ 7.65453343898468e-05,
+ 7.91513722766087e-05,
+ 8.2671445411293e-05,
+ 8.02924189620128e-05,
+ 0.00010329465897486,
+ 7.07121653991906e-05,
+ 8.24643199332883e-05,
+ 8.62849491932281e-05,
+ 7.79143734810874e-05,
+ 6.95764745990686e-05,
+ 8.93569788190005e-05,
+ 8.39519224131647e-05,
+ 0.000102059308353896,
+ 8.74393645227021e-05,
+ 7.10902667269483e-05,
+ 7.81158661396892e-05,
+ 8.05556378420021e-05,
+ 7.31822482650854e-05,
+ 8.04893002115141e-05,
+ 8.66167782839534e-05,
+ 9.64562505689498e-05,
+ 7.54489710914022e-05,
+ 8.34129636698797e-05,
+ 6.96089481580396e-05,
+ 8.11695827195369e-05,
+ 8.71738457013176e-05,
+ 6.13640901241609e-05,
+ 9.21833790942034e-05,
+ 8.16328595611759e-05,
+ 7.56711578803834e-05,
+ 5.54862788383722e-05,
+ 8.70368916695485e-05,
+ 6.5755784227525e-05,
+ 7.23626729011443e-05,
+ 8.06785389894017e-05,
+ 8.20866098466469e-05,
+ 8.11160122900296e-05,
+ 9.16520413446332e-05,
+ 7.69318758610704e-05,
+ 7.20070557166778e-05,
+ 8.1872403504268e-05,
+ 9.56595215320193e-05,
+ 8.54611640785841e-05,
+ 8.39498093022601e-05,
+ 7.45219128681301e-05,
+ 8.41682197761883e-05,
+ 8.21443259052225e-05,
+ 8.34045871354621e-05,
+ 8.64598083905607e-05,
+ 7.12548110620476e-05,
+ 8.35835568673204e-05,
+ 6.71923363692674e-05,
+ 6.59318141824138e-05,
+ 7.51888786534244e-05,
+ 6.57966189028976e-05,
+ 0.000102312465750009,
+ 6.84644264540984e-05,
+ 7.57780129342852e-05,
+ 7.82152890557535e-05,
+ 7.35359493799039e-05,
+ 7.3991925051887e-05,
+ 7.58252588390663e-05,
+ 7.38941114376531e-05,
+ 9.30401226247852e-05,
+ 6.77379757934891e-05,
+ 6.17947967802833e-05,
+ 6.17072824348268e-05,
+ 7.58146081767849e-05,
+ 8.07440673869553e-05,
+ 7.75986954946803e-05,
+ 7.40324276887752e-05,
+ 8.02893016536534e-05,
+ 7.16803016208762e-05,
+ 7.93184818815635e-05,
+ 6.88200778304726e-05,
+ 7.7777723950668e-05,
+ 7.80247566339e-05,
+ 8.61579125950465e-05,
+ 7.09915132471656e-05,
+ 8.54192542487584e-05,
+ 0.000106298607557477,
+ 8.44472834865039e-05,
+ 8.49205072994571e-05,
+ 7.29307757927849e-05,
+ 8.75462792676369e-05,
+ 7.7748673556219e-05,
+ 7.27590132805854e-05,
+ 9.20474156050328e-05,
+ 8.81402350273368e-05,
+ 7.93425174384949e-05,
+ 6.93680498539348e-05,
+ 6.7149897863783e-05,
+ 7.89403885061566e-05,
+ 8.20444937348379e-05,
+ 7.68516173141335e-05,
+ 8.6759419072768e-05,
+ 8.6744410635288e-05,
+ 9.40171155990974e-05,
+ 7.02071355406035e-05,
+ 8.28003265934759e-05,
+ 5.95123341517016e-05,
+ 7.01744566102316e-05,
+ 7.78696462524023e-05,
+ 6.4600029600688e-05,
+ 9.87553291575599e-05,
+ 7.75785256228268e-05,
+ 7.79732305441935e-05,
+ 8.01791271353297e-05,
+ 7.54095351085508e-05,
+ 8.14553940036661e-05,
+ 8.11219408061733e-05,
+ 8.21971289048878e-05,
+ 6.72552005738625e-05,
+ 7.28991918450878e-05,
+ 8.09371117112722e-05,
+ 7.70577583777349e-05,
+ 8.51582582574377e-05,
+ 6.76392352388478e-05,
+ 7.83916878730383e-05,
+ 8.17492331617106e-05,
+ 7.74193427013614e-05,
+ 8.38317104439405e-05,
+ 8.17749661436458e-05,
+ 7.5710604214489e-05,
+ 9.09786021012732e-05,
+ 7.35745502952666e-05,
+ 6.88360116022659e-05,
+ 7.92343255534022e-05,
+ 6.36366213441967e-05,
+ 7.33162840234424e-05,
+ 6.67767745144828e-05,
+ 8.96199840274605e-05,
+ 7.7850788256059e-05,
+ 7.09914542565516e-05,
+ 8.85944819304766e-05,
+ 7.14049584450252e-05,
+ 8.57091269461083e-05,
+ 6.71163762039528e-05,
+ 6.96737469755008e-05,
+ 7.81383686995435e-05,
+ 7.8124798014508e-05,
+ 8.33602700528157e-05,
+ 6.53452335871752e-05,
+ 6.54585547228417e-05,
+ 7.22096192462198e-05,
+ 7.86815416545329e-05,
+ 8.25221000308851e-05,
+ 9.15944323134478e-05,
+ 7.56496763140781e-05,
+ 8.90529149879135e-05,
+ 9.65739295022482e-05,
+ 7.89260683055599e-05,
+ 7.67995456795651e-05,
+ 6.46263655126998e-05,
+ 7.57987242436907e-05,
+ 7.78488089928202e-05,
+ 8.07790481336426e-05,
+ 8.62731957382119e-05,
+ 7.52470323155136e-05,
+ 9.52298129877061e-05,
+ 8.54553474794818e-05,
+ 6.78736181396701e-05,
+ 8.95300196249006e-05,
+ 8.08107354869297e-05,
+ 7.99813760091105e-05,
+ 9.66869958106437e-05,
+ 8.78851002251736e-05,
+ 7.87567703808094e-05,
+ 8.18533039474669e-05,
+ 7.30645044213668e-05,
+ 7.33892094021725e-05,
+ 6.9057197019409e-05,
+ 7.72323187917046e-05,
+ 6.48724980714735e-05,
+ 7.81703946680864e-05,
+ 7.25707500104541e-05,
+ 9.24434971828986e-05,
+ 8.6629062620943e-05,
+ 8.39036405677228e-05,
+ 9.17079363732379e-05,
+ 7.97772543869055e-05,
+ 8.4537054694259e-05,
+ 9.6244637010757e-05,
+ 6.81077310578782e-05,
+ 8.12551522470877e-05,
+ 9.44790604035381e-05,
+ 7.6572825079788e-05,
+ 6.07402709147548e-05,
+ 6.51148781849317e-05,
+ 7.10801462704943e-05,
+ 8.08547310946282e-05,
+ 9.47516210747304e-05,
+ 7.48404650750676e-05,
+ 8.81953380206627e-05,
+ 8.89846608131644e-05,
+ 7.04272078245333e-05,
+ 7.77076092793214e-05,
+ 5.45200893755928e-05,
+ 8.44481180602173e-05,
+ 7.81173666810925e-05
+)
+
+B.esw <- c(
+  63.5069019686859,
+ 58.7934986765436,
+ 61.2414281758529,
+ 58.3598995859792,
+ 62.5021190470209,
+ 62.238947981898,
+ 59.5102718926467,
+ 63.4934833561487,
+ 62.0518640264478,
+ 68.6705903135608,
+ 63.1099087237463,
+ 58.8914170005863,
+ 59.4069162482916,
+ 58.8218350620001,
+ 60.0976469701087,
+ 61.869517553328,
+ 66.0268284969904,
+ 63.3667690221275,
+ 59.7614193283924,
+ 60.8712843542748,
+ 61.1439839993172,
+ 61.9079394345782,
+ 60.3183543103255,
+ 61.853396826548,
+ 61.8728554845267,
+ 62.3560529461119,
+ 61.8300851395819,
+ 58.9562845572825,
+ 61.3820107406855,
+ 63.2706729372474,
+ 62.1115655456006,
+ 66.7254195555394,
+ 60.7213531897155,
+ 64.4153684767038,
+ 65.1339247102611,
+ 61.0680619039676,
+ 60.6661689280102,
+ 59.3514978619866,
+ 60.8044529628144,
+ 61.9371476707844,
+ 65.3718175781153,
+ 63.962925638151,
+ 61.3756412990149,
+ 61.0942379384903,
+ 62.9298608419004,
+ 63.112977147118,
+ 60.8647654856719,
+ 64.9661127811854,
+ 72.9987896246998,
+ 62.8274941863646,
+ 62.2248566915085,
+ 61.5644775565533,
+ 60.4810970761629,
+ 64.1689474926891,
+ 63.4317516298732,
+ 61.6235995461261,
+ 59.8280848541192,
+ 66.122251191538,
+ 62.840878050951,
+ 60.1889742211213,
+ 63.7903325380702,
+ 62.1270111405208,
+ 60.0812283820851,
+ 62.0360441133868,
+ 66.0933462872917,
+ 61.3892935190681,
+ 62.6047239258986,
+ 57.6184805869643,
+ 61.8511467546398,
+ 65.0644370043087,
+ 59.2013870375492,
+ 64.1833513504037,
+ 65.3636130419131,
+ 61.9511576524541,
+ 60.7903123014768,
+ 61.1323437001846,
+ 61.8678840504086,
+ 66.5474273521743,
+ 58.1376815630847,
+ 61.9738623067443,
+ 65.559866622886,
+ 59.616164910327,
+ 61.2634207993277,
+ 59.6317091992217,
+ 64.0278335203439,
+ 67.5195942611855,
+ 57.4018462437664,
+ 69.7455625032686,
+ 66.0517652006164,
+ 63.9185816551843,
+ 60.4911369589912,
+ 59.5389849521943,
+ 61.8238450471021,
+ 57.3002314359075,
+ 63.6709713374243,
+ 57.1572501102932,
+ 57.9606863122332,
+ 60.2522058592115,
+ 63.9719954731075,
+ 60.2229730000092,
+ 60.2834682518604,
+ 57.6704188228313,
+ 54.8065873551392,
+ 59.0689514642453,
+ 65.2892683697899,
+ 64.091370895289,
+ 62.7594725311946,
+ 62.4791045479548,
+ 66.4445192017943,
+ 63.4913221842889,
+ 58.91105827835,
+ 62.9073323393053,
+ 65.0357278470996,
+ 63.5618731476668,
+ 62.0441123439389,
+ 59.7090403898829,
+ 61.4178728314939,
+ 64.9240882693313,
+ 66.9896112000927,
+ 57.6197737954157,
+ 62.7893774907377,
+ 61.8304228917155,
+ 62.2806192949868,
+ 60.7849695910162,
+ 61.8935106031337,
+ 63.7056143085732,
+ 63.1904680035111,
+ 66.9142201866626,
+ 63.5190209203842,
+ 61.4831917245315,
+ 58.4777222159326,
+ 62.7090622147665,
+ 66.4790574545666,
+ 63.4466102362956,
+ 55.8812249124808,
+ 64.8974975266775,
+ 59.7875480811317,
+ 57.5346769600681,
+ 64.6402729930719,
+ 61.3106778892039,
+ 56.2955797248792,
+ 62.6272378221028,
+ 63.373709508919,
+ 63.4804324427299,
+ 61.3154919353631,
+ 63.1219317713396,
+ 60.0791794864417,
+ 62.8100514873918,
+ 62.4311629896114,
+ 58.5602141163437,
+ 57.9318290317713,
+ 62.7213160648074,
+ 56.2422571038458,
+ 64.9433640115382,
+ 63.0113412400119,
+ 64.6896181405165,
+ 63.1225212568817,
+ 59.060732739995,
+ 62.3265746194762,
+ 61.9739156250434,
+ 59.8593840695618,
+ 64.4589578734614,
+ 64.1110291472994,
+ 60.5046866032689,
+ 63.2013081327096,
+ 63.1892499391198,
+ 62.0114475953072,
+ 65.876608579684,
+ 59.991705877656,
+ 63.8435649752072,
+ 67.4805636774349,
+ 58.4264064712296,
+ 60.4249765890599,
+ 58.700991432437,
+ 60.5997133332789,
+ 59.6523524102032,
+ 57.0390373813394,
+ 55.8542902040911,
+ 62.6386211383567,
+ 59.7132962425824,
+ 67.6165106577869,
+ 59.4862217810001,
+ 62.3154392042997,
+ 61.0331800243375,
+ 61.7497965966571,
+ 54.0716182665361,
+ 60.8057781329967,
+ 56.0522251691374,
+ 66.8659275893105,
+ 61.2763782261582,
+ 63.4495346520165,
+ 60.856903077153,
+ 63.743031338634,
+ 63.29645958149,
+ 63.2712478291847,
+ 61.0363342181223,
+ 61.1323614915359,
+ 57.7974013174562,
+ 62.8481728814835,
+ 68.4092890498823,
+ 64.3827354935692,
+ 63.3860473190651,
+ 68.0997559783003,
+ 56.1771755156067,
+ 56.4221900737117,
+ 59.5200650565578,
+ 57.3405639427922,
+ 61.8043812777117,
+ 66.4055376216999,
+ 69.0322009698595,
+ 61.2457585197467,
+ 68.1850162584347,
+ 60.9993305020768,
+ 63.1784472683646,
+ 61.9610761990457,
+ 67.0035674919208,
+ 62.2487699625969,
+ 61.1515623462217,
+ 60.2963857383322,
+ 66.3378255214498,
+ 59.5303845564108,
+ 61.8714542264448,
+ 59.2255081525645,
+ 62.2651571829281,
+ 57.0666273236861,
+ 65.7383405610274,
+ 57.0327867224318,
+ 62.6844785182594,
+ 61.5838201951149,
+ 62.8968654946623,
+ 60.2592501340734,
+ 62.3956172211474,
+ 66.7614911599778,
+ 61.6003241873824,
+ 60.2587076884319,
+ 65.0573261656512,
+ 68.5363308641802,
+ 67.9698001893354,
+ 60.9064088674762,
+ 62.1676504688132,
+ 61.3118757134644,
+ 59.8473328234959,
+ 63.0984194696961,
+ 62.9387607807541,
+ 60.8566863280449,
+ 58.0581535645386,
+ 60.5968034403941,
+ 63.8044999017556,
+ 66.0860448484125,
+ 65.2585857874137,
+ 62.1053582333577,
+ 59.3828839581942,
+ 64.7325975507471,
+ 59.5571537158092,
+ 68.111975468521,
+ 63.0466612836399,
+ 67.1393087416915,
+ 64.8722956241957,
+ 59.9143558522178,
+ 64.2327774217459,
+ 66.7921064606546,
+ 59.5346438817964,
+ 62.4836846829667,
+ 62.5842384805533,
+ 62.6932420027177,
+ 63.5790534759414,
+ 64.6746401160016,
+ 58.5718553309635,
+ 61.9552728028951,
+ 59.4359177782116,
+ 62.4109285240641,
+ 65.9224350390517,
+ 60.1405032367573,
+ 67.937909627117,
+ 58.714051067581,
+ 61.4411004525609,
+ 64.342892605082,
+ 60.5008784526728,
+ 61.1848389227814,
+ 67.9443114345536,
+ 59.1523404551981,
+ 64.2920572435058,
+ 63.6512815416418,
+ 63.6244186252803,
+ 62.358905995002,
+ 66.3155418570756,
+ 60.4952920608329,
+ 60.1099292386233,
+ 62.9879513449228,
+ 61.6753403219931,
+ 58.3208200277276,
+ 61.3278038234969,
+ 60.9151780537529,
+ 65.9951084481368,
+ 62.329321815901,
+ 69.7838418676344,
+ 62.0762938881296,
+ 64.3935105204387,
+ 61.8381910615029,
+ 65.6059177138886,
+ 62.417622391516,
+ 67.2059661310064,
+ 58.8003643449916,
+ 61.7534431946704,
+ 60.3720576939882,
+ 64.4239294587873,
+ 62.4849362966463,
+ 63.5813216836394,
+ 64.1730116871655,
+ 64.4774133349257,
+ 60.462851913576,
+ 62.7012311044285,
+ 57.1563086936267,
+ 60.5181281400184,
+ 59.5877791172405,
+ 60.9849077314198,
+ 66.034415305329,
+ 64.7166659044919,
+ 58.6689436957821,
+ 62.5359979207418,
+ 57.3086528366179,
+ 63.6927911148569,
+ 63.106364494152,
+ 69.8345721310783,
+ 59.2038962693706,
+ 60.0651613908548,
+ 63.6003527450843,
+ 56.047703148165,
+ 61.7602604364046,
+ 64.6070316066389,
+ 66.5830277645057,
+ 57.2873297226858,
+ 65.0555358442083,
+ 63.9141675476565,
+ 62.8351047000292,
+ 61.5880661291808,
+ 61.4688884518055,
+ 57.5849451943148,
+ 62.1040072700926,
+ 61.529464181791,
+ 56.1510597643878,
+ 58.5119194888374,
+ 58.5061068838514,
+ 62.8682521335482,
+ 60.757669838533,
+ 59.4048444091546,
+ 60.8684768533978,
+ 57.6174011598497,
+ 63.9346521889965,
+ 62.3739559224189,
+ 58.9895398132226,
+ 64.9048886638478,
+ 64.039224076871,
+ 65.5755963362941,
+ 67.1260429534346,
+ 56.0646356146551,
+ 67.1476043884542,
+ 60.8502510498642,
+ 62.3279675732579,
+ 64.5942568234265,
+ 60.6297390960597,
+ 61.9113540305621,
+ 60.8979513042362,
+ 63.741914651945,
+ 69.0979542970849,
+ 61.3589956472915,
+ 68.4234024838413,
+ 57.7065568920221,
+ 62.0960653971082,
+ 64.0761057969472,
+ 61.9098073158049,
+ 59.8529997967281,
+ 67.2352701574128,
+ 59.359851848447,
+ 71.0387003765368,
+ 59.4643268673367,
+ 61.4121321665846,
+ 64.481083492208,
+ 66.3224816315818,
+ 62.2745362415964,
+ 60.1032227579684,
+ 63.3202395797231,
+ 56.7524217377733,
+ 65.3206940019989,
+ 62.189329917726,
+ 59.4865454091088,
+ 65.6657857543081,
+ 59.7518133871352,
+ 58.7762847914894,
+ 61.0923673549899,
+ 63.6700422740245,
+ 64.1185719193437,
+ 61.7554599394934,
+ 63.6510993546999,
+ 61.2652472112313,
+ 59.871821410972,
+ 58.2810525603932,
+ 57.6136231381966,
+ 64.0960490034161,
+ 61.2249329562896,
+ 66.5128227577703,
+ 64.323816769402,
+ 61.356099683455,
+ 66.8644344459935,
+ 58.6466240968759,
+ 62.3024644323888,
+ 64.3026953467976,
+ 67.2106205371043,
+ 64.4628176544732,
+ 61.0422708408781,
+ 63.0052863666467,
+ 59.1396703981719,
+ 66.0832828765914,
+ 64.2058634271533,
+ 62.1195601309992,
+ 62.7235133111513,
+ 57.898736498934,
+ 67.5561222463384,
+ 63.9594455091883,
+ 57.5948317951758,
+ 53.1018601768472,
+ 61.134384266526,
+ 64.8799480544672,
+ 66.7747352964336,
+ 63.3543355884144,
+ 64.9379134307146,
+ 62.9515457457255,
+ 63.2792524435592,
+ 67.0036969094641,
+ 64.7877898241709,
+ 65.1008116793569,
+ 59.8204872416448,
+ 62.6197898467725,
+ 65.1486865346637,
+ 61.6103081636246,
+ 67.3000259394501,
+ 63.5223416505896,
+ 64.1505963085948,
+ 64.7860791881352,
+ 68.6104816409155,
+ 64.8890566539837,
+ 59.4807733971089,
+ 62.7011642212011,
+ 60.8951897576828,
+ 65.0113446580761,
+ 61.7821030052359,
+ 63.9559315117101,
+ 57.0146251286444,
+ 64.6253774912594,
+ 58.6417886818303,
+ 63.1352814744923,
+ 65.9900264278898,
+ 60.945094324965,
+ 64.2582596875529,
+ 65.9641708998313,
+ 61.9077479385578,
+ 62.241111946005,
+ 58.5993773882699,
+ 64.4174537262498,
+ 56.7341004699364,
+ 61.598121640694,
+ 64.2534055299193,
+ 56.4677141447814,
+ 61.3573593094607,
+ 61.9935987694003,
+ 61.0503794050862,
+ 63.3718847697138,
+ 59.2541649956204,
+ 59.5577669427829,
+ 64.8209571613285,
+ 59.9921679718687,
+ 70.7947773715002,
+ 62.0422478779872,
+ 65.084933488616,
+ 62.7191125053814,
+ 62.773990277065,
+ 62.8011242810224,
+ 59.96191448098,
+ 64.061582592016,
+ 53.3093326731487,
+ 60.9335473935414,
+ 62.5958248226742,
+ 55.4143430634711,
+ 64.6443173101198,
+ 60.1671248368637,
+ 57.4789327112338,
+ 63.8462650920183,
+ 67.2261297461784,
+ 66.3357525169111,
+ 64.0904077239721,
+ 64.2441620189811,
+ 61.5644700023929,
+ 65.3241382717913,
+ 65.3536685526225,
+ 58.5306870390724,
+ 61.9236690737002,
+ 62.020238289932,
+ 69.5462298409969,
+ 64.3064129822668,
+ 62.5838926297575
+)
+
+fit$B <- data.frame(
+  density = B.d
+  , effDistance = B.esw
+  )
+units(fit$B[,1]) <- "1/m^2"
+units(fit$B[,2]) <- "m"
+
+d <- fit$density
+d.ci <- fit$density.ci
+units(d) <- "1/ha"
+units(d.ci) <- "1/ha"
+```
+
+```{r}
+fit
+```
+
+
+The estimated number of sparrows on 
+the `r saSize` ha study area is 
+`r round(fit$n.hat)` (after rounding)
+with `r 100*fit$alpha`% confidence interval from 
+`r round(fit$n.hat.ci[1])` to 
+`r round(fit$n.hat.ci[2])` individuals (after rounding). 
+We also estimated a density of 
+`r round(fit$density, 6)` individuals per square meter, which converts to
+`r round(d, 4)` per hectare 
+(`r 100*fit$alpha`% CI: `r round(d.ci[1],4)` [1/ha] to `r round(d.ci[2],4)` [1/ha])
+The observer's effective strip width was 
+`r round(fit$effDistance, 1)` [m]
+(`r 100*fit$alpha`% CI: `r round(fit$effDistance.ci[1],2)` [m] to `r round(fit$effDistance.ci[2],2)` [m]). 
+
+A final remark. `Rdistance` stores the density and ESW values from all bootstrap 
+iterations in the `$B` component of 
+abundance objects. Users can append bootstrap iterations from multiple abundance objects 
+by 'rbind-ing' the `$B` components.  Users can compute confidence intervals 
+using different methods (e.g., percentile)
+or the variance of other quantities that depend on density or ESW. 
+Users could plot the full bootstrap distribution of density (or ESW). The 
+first six lines of the bootstrap iteration results are:
+
+```{r bootstrapPrintout}
+# Convert to hectares for readability
+units(fit$B$density) <- "1/ha"
+
+head(fit$B)
+```
+
+The full bootstrap distribution of sparrow density is,
+
+```{r bootPlot, fig.width=6, fig.height=4}
+hist(fit$B$density
+     , n = 30
+     , xlab = "Density"
+     , main = NULL)
+```
+
