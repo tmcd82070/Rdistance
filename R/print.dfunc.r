@@ -166,7 +166,7 @@ print.dfunc <- function( x, criterion="AICc", ... ){
       cat("\n")
     }
     
-    cat(paste("Log likelihood:", 
+    cat(paste("Negative log likelihood:", 
               colorize(format(x$loglik)), "\n"))
     
     if( !is.smoothed ){

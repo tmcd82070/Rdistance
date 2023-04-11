@@ -119,6 +119,8 @@
 #'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
 #'   object (see \code{dfuncEstim}), plus the following: 
 #'   
+#'   NOTE: THESE OUTPUT OBJECT DESCRIPTIONS NEED TO BE UPDATED. 
+#'   
 #'   \item{density}{Estimated density on the sampled area. The \emph{effectively}
 #'   sampled area is 2*L*ESW (not 2*L*w.hi). Density has squared units of the 
 #'   requested output units.  E.g., if \code{outputUnits} = "km" in the call 
@@ -255,6 +257,10 @@ abundEstim <- function(dfunc,
                        bySite=FALSE,
                        showProgress=TRUE, 
                        control = RdistanceControls()){
+  
+  
+  # ALL THESE DATA CHECKS NEED TO BE CHECKED.  $DIST IS PROBLEMATIC. 
+  # DON'T NEED REQUIRED 'LENGTH' ANY MORE. 
   
   # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
   if(!("siteID" %in% names(detectionData))) stop("There is no column named 'siteID' in your detectionData.")

@@ -220,9 +220,20 @@ for ways to modify the plot (e.g., more bins, change colors, line types, etc).
 # 4: Estimate abundance from the detection function
 
 ```{r studyAreaSize, include=FALSE}
-saSize <- units::set_units(72 * 500 * 500, "m^2")
-units(saSize) <- "ha"
+saSize <- units::set_units(4105, "km^2")
+#units(saSize) <- "ha"
 set.seed(8927342)
+
+Here!!!
+  # 1. Figure out how to format units. 
+  # 2. Report abundance by km^2 - This means you need to multiply 
+  #    the n.hat.ci numbers by a conversion factor, or re-run the 
+  #    bootstrapping with A = 4105 km^2
+  # 3. Format the big numbers nicely, with formatC
+  # 4. Add section of Advanced Remarks at the end.  Say that 
+  #    the estimator is biased but the bias corrected bootstrap takes
+  #    care of it.  Remove bias from the final histogram.  Or, 
+  #    don't do any of this and erase the Final remarks part.
 ```
 
 Abundance estimation requires additional information 

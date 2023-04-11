@@ -1,100 +1,117 @@
 ---
 title: "Beginner Line-Transect Analysis in Rdistance"
 author: "Jason D. Carlisle, Abigail S. Hoffman, and Trent L. McDonald"
-date: "May 23, 2018"
+date: "March 26, 2023"
 output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{Rdistance: Beginner Line Transect Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
+  \VignetteIndexEntry{Rdistance: Beginner Line Transect Tutorial}
+  \VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 # Introduction
-This tutorial is meant to be a beginner's guide to analyzing line-transect data using `Rdistance`.  It is assumed that you have some familiarity with Program R, but not necessarily with distance-sampling analysis.  This beginning tutorial focuses on input data requirements, fitting a detection function, and estimating abundance (or density).  Here, we make use of the example datasets already contained within `Rdistance` (i.e., line transect surveys of sparrows), so you can complete this tutorial without having any data of your own.  This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
+This tutorial is a beginner's guide to analyzing line-transect data in `Rdistance`.  We assume the reader has some familiarity with Program R, but not necessarily with distance-sampling analysis.  This beginning tutorial focuses on input data requirements, fitting a detection function, and estimating abundance (or density).  We use one of the example data sets included in `Rdistance`; in particular, the line transect surveys for sparrows. This tutorial covers line-transect analyses.  Point-transect
+analyses are covered in an separate vignette. 
+This tutorial is current as of version `r packageVersion("Rdistance")` of `Rdistance`.
 
 
 # 1: Install and load Rdistance
 
-If you haven't already done so, install the latest version of `Rdistance`.  In the R console, issue `install.packages("Rdistance")`.  You install the latest release of `Rdistance` with the command `devtools::install_github("tmcd82070/Rdistance")`.  After the package is installed, it is loaded into the current session using the following:
+If you haven't already done so, install the latest version of `Rdistance`.  In the R console, issue `install.packages("Rdistance")`.  You can  install the development version of `Rdistance` with the command `devtools::install_github("tmcd82070/Rdistance")`.  After the package is installed, it is loaded into the current session using the following:
 ```{r}
 require(Rdistance)
 ```
 
-# 2: Read in input data
+# 2: Input data
 
-`Rdistance` requires two input datasets for every analysis.  These can be prepared using any method that results in an `R` data.frame.  A common method is to format data into tables on separate sheets in `Excel`, export each sheet to CSV format, and read each into R using `read.csv`.  In the following sections, we make use of the sparrow example datasets which are already contained within `Rdistance`.
+`Rdistance` generally requires two input data sets.  
+Data sets can be prepared using any method that results in an R `data.frame`.  
+One relatively easy method of data preparation is to format distance and transect 
+information on separate sheets in `Excel`, export each sheet to CSV format, and 
+read each into R using `read.csv`.  
+In this tutorial, we make use of the sparrow data sets which are already 
+contained within `Rdistance`.
 
 ## *Detection* Data
 
-The first dataset required in an `Rdistance` analysis is the *detection* data.frame that contains one row for each detection, and a minimum of three required columns.  The required *detection* columns are:
+The first data set required by `Rdistance` is the *detection* data frame. The detection 
+data frame contains one row for each detected target group, while columns contain information 
+on the detection.   
+`Rdistance` looks for the following information in the *detection* data frame:
 
-* `siteID` = Factor, the site or transect where the detection was made.
-* `dist` = Numeric, the perpendicular distance (also known as off-transect distance) from the transect to the detected group.
-* `groupsize` = Numeric, the number of individuals in the group associated with each detection.  Note that this column is required to estimate 
-abundance (function `abundEstim`), but not for estimating the 
-distance function (function `dfuncEstim`). 
+* **Detection Distance** = The perpendicular distance (also known as off-transect distance) from the 
+transect to the detected group. Note that this column must have units assigned (e.g., "m" or "ft"; see below). 
+Distances are required to estimate a distance function (function `dfuncEstim`) and 
+to estimate abundance (function `abundEstim`). 
+* **Site ID** = The ID of the transect on which the detection was made. Transect IDs are required to 
+estimate abundance (function `abundEstim`), but not to estimate a distance function (function `dfuncEstim`). 
+* **Group Sizes** = The number of individuals in the group associated with each detection.  Group sizes are 
+required to estimate abundance (function `abundEstim`), but not to estimate a distance function (function `dfuncEstim`). 
 
-Which column contains perpendicular distances (hence, the name of 
-`dist` column) is specified on the 
-left-hand side of the formula argument to 
-function `dfuncEstim`.  The column(s) containing site or transect ID's 
-can be specified in argument `transectID` to function `dfuncEstim`. 
-If unspecified, 
-`transectID` is the set of common columns in the *detection* and
-*transect* data frames.  See `help(dfuncEstim)` for additional 
+The specific columns in the *detection* data frame that contain 
+distances and group sizes are specified in the formula argument of 
+function `dfuncEstim`.  The column(s) containing the transect IDs 
+is specified in argument `transectID` to function `dfuncEstim`. 
+If `transectID` is NULL, the set of common columns from the *detection* and
+*site* data frames are assumed to form the transect IDs.  
+See the **Inpute data frames** section of `help(dfuncEstim)` for additional 
 details.  
 
-If observers recorded straight-line sighting distance and sighting 
-angle instead of perpendicular distance (as is common in line transect 
-surveys), you can use the `perpDists` function (detailed in Section 3) 
-to calculate the perpendicular distances based on the sighting 
-distances and sighting angles.
+Line-transect distance-sampling analysis is performed on perpendicular 
+distances from detected groups to the transect, not from groups to the observer.  
+Commonly, observers record straight-line sighting distance and sighting 
+angle instead of perpendicular distance. `Rdistance` provides a utility function 
+named `perpDists` that computs perpendicular distances from sighting distance and 
+angle.  See `help(perpDists)` for details.
 
-## *Transect* Data
+The first six rows of the sparrow  *detection* data set are: 
+```{r detectionDataDisplay}
+head(sparrowDetectionData)
+```
 
-The second dataset required by `Rdistance` is the transect or site data.frame. The *transect* data frame contains one row for each "positive" (with detections) and "zero" (without detections) transects.  At a minimum 
-the *transect* data frame must contain the following information: 
 
-* `siteID` = Factor, the site or transect surveyed.
-* `length` = Numeric, the length of the transect.  Use the same units as the detection distances.
+We will use `siteID`, `groupsize`, and `dist` in this tutorial.  Column `dist` is the 
+output from function `perpDist`.  Details on the study and other columns are in `help(sparrowDetectionData)`. 
 
-In addition, the *transect* data set can contain transect (or site) level 
-covariates.  The sparrow data set contains the following covariate columns:
 
-* `observer` = Factor (five levels), identity of the observer who surveyed the transect.
-* `bare` = Number, the mean bare ground cover (\%) within 100 m of each transect.
-* `herb` = Number, the mean herbaceous cover (\%) within 100 m of each transect.
-* `shrub` = Number, the mean shrub cover (\%) within 100 m of each transect.
-* `height` = Number, the mean shrub height (cm) within 100 m of each transect.
-* `shrubclass` = Factor (two levels), class is "Low"" when shrub cover is < 10\%, "High" otherwise.
+## *Site* Data
+
+The second data set required by `Rdistance` is the **site** data frame. 
+We use the term 'site' because it covers both continuous transects and 
+point transects.  In this tutorial, a 'site' is one transect. 
+The *site* data frame contains one row for each surveyed site regardless 
+whether the site was "positive" (with detections) and "zero" (without detections).  
+
+`Rdistance` looks for the following information in the *transect* data frame: 
+
+* **Site IDs** = The ID of every surveyed transect in the study area.
+* **Length** = The length of each transect.  The length column in the *transect* 
+data frame must have assigned measurement units (e.g., "m" or "ft"). 
+
+Note that a `site` data frame is not required if 
+only a distance function, not abundance, is to be estimated. 
+In addition to site IDs and length, the *site* data set can contain 
+transect level covariates that are to be included in the detection function.  
+
+The first six rows of the sparrow  *site* data set are: 
+```{r siteDataDisplay}
+head(sparrowSiteData)
+```
+We will use `siteID` and `length` in this tutorial.  See vignette 'Rdistance_BeginnerLineTransectCovar' for 
+an analysis that includes covariates in the distance function. 
 
 # 3: Fit a detection function
 
-After prepping the input data, the first step is to explore your data and fit a detection function.  First, load the example dataset of sparrow detections and their distances from the package using `data(sparrowDetectionData)` and transect characteristices using `data(sparrowSiteData)`.  Be sure that you have installed and loaded `Rdistance` prior to issuing the following commands:
+After input data are prepared, it is generally a good idea to plot the
+distance data to make sure its general characteristics are correct. We 
+suggest checking the minimum, maximum, and measurement units of the distance 
+measurements in the following histogram.
 
-```{r}
-data(sparrowDetectionData)
-head(sparrowDetectionData)
-data(sparrowSiteData)
-head(sparrowSiteData)
-```
-
-Line-transect distance-sampling analysis is done on perpendicular distances (i.e., the distance from each detected group to the transect, not to the observer).  We have provided the perpendicular distances (named `dist`) in the example data, but observers originally recorded sighting distances and sighting angles.  Here we use the `perpDists` function to (re)calculate the perpendicular distances (`dist`) and remove the `sightdist` and `sightangle` columns.  See the help documentation for `perpDists` for details.
-
-
-```{r}
-sparrowDetectionData$dist<- perpDists(sightDist="sightdist",
-                    sightAngle="sightangle", 
-                    data = sparrowDetectionData)
-sparrowDetectionData <- sparrowDetectionData[,
-                    -which(names(sparrowDetectionData) 
-                    %in% c("sightdist", "sightangle"))]
-```
-
-Explore the distribution of distances.
 ```{r, fig.width=6, fig.height=4}
-hist(sparrowDetectionData$dist, col="grey", main="", 
-     xlab="distance (m)")
+hist(sparrowDetectionData$dist
+     , col="grey"
+     , main=""
+     , xlab = paste("Distance", format(units(sparrowDetectionData$dist))[1]))
 rug(sparrowDetectionData$dist,quiet = TRUE)
 summary(sparrowDetectionData$dist)
 ```

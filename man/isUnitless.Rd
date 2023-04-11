@@ -20,7 +20,8 @@ returns TRUE.
 Tests whether a 'units' object is 
 unitless.  If something is unitless, sometimes it is 
 better to remove it's units before calculations. 
-Unitless objects sometimes have units '[1]' and 
+Unitless objects such as ratios sometimes get assigned
+units of '[1]', which is preferable, and 
 sometimes they have units like '[m/m]'.  The 
 \code{units} package should convert '[m/m]' to 
 '[1]', but it does not always.
@@ -31,6 +32,5 @@ b <- a / a
 isUnitless(a)
 isUnitless(b)
 isUnitless(3)
-isUnitless(units::unitless)
 
 }
