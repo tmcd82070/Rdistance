@@ -176,6 +176,5 @@ print.dfunc <- function( x, criterion="AICc", ... ){
     }
 
 
-    cat("\n")
     invisible(x)
 }

@@ -19,31 +19,37 @@
 #' bootstrap iterations may be a bad idea (i.e., validity of the CI is 
 #' questionable). 
 #' 
-#' @param \dots Included for compatibility to other print methods.  Ignored here.
+#' @param \dots Included for compatibility to other print methods.  
+#' Ignored here.
+#' 
 #' @details The default print method for class 'dfunc' is called, then the abundance estimates 
 #'   contained in \code{obj} are printed.
+#'   
 #' @return No value is returned.
+#' 
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
+#' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1,
-#'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#' dfunc <- dfuncEstim(formula=dist ~ 1 + offset(groupsize)
+#'                   , detectionData=sparrowDetectionData)
 #' 
 #' # Estimate abundance given a detection function
-#' # Note, area=10000 converts to density per hectare (for distances measured in meters)
-#' # Note, a person should do more than R=20 iterations
-#' fit <- abundEstim(dfunc, detectionData=sparrowDetectionData,
-#'                   siteData=sparrowSiteData, area=10000, R=20, ci=0.95,
-#'                   plot.bs=TRUE, bySite=FALSE)
+#' # Note: a person should do more than R=20 bootstrap iterations
+#' fit <- abundEstim(dfunc
+#'                 , detectionData = sparrowDetectionData
+#'                 , siteData = sparrowSiteData
+#'                 , area = units::set_units(4105, "km^2")
+#'                 , R=20
+#'                 , ci=0.95)
 #' 
 #' # Print results
 #' print(fit)
-#' fit
+#' 
 #' @keywords models
 #' @export
 
@@ -57,10 +63,30 @@ print.abund <- function( x,
   #
 
   print.dfunc( x, criterion=criterion )
-
+  cat("\n")
   hasCI <- all(!is.null(x$density.ci))
   
-  # --- Density printout ----
+  # ---- Groupsize printout ----
+  gS <- x$detections$groupSize
+  if( diff(range(gS)) > 0){
+    mess <- format(c("Average group size:",  "Range:"), justify = "right")
+    mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
+    avgGs <- c(colorize( format( mean(gS) ))
+             , paste(colorize(format( min(gS) ))
+                            , "to"
+                            , colorize(format( max(gS) ))))
+  } else {
+    mess <- "Average group size:"
+    avgGs <- colorize( format( mean(gS) ))
+  }
+  mess <- paste(mess, avgGs)
+  cat(paste(mess, "\n"))
+  
+  if(hasCI){
+    cat("\n")
+  }
+  
+  # ---- Density printout ----
   if( hasCI ){
     mess <- c("Density in sampled area:", paste0(x$alpha*100, "% CI:"))
     mess <- format(mess, justify = "right")
@@ -78,7 +104,9 @@ print.abund <- function( x,
   cat(paste0(mess, "\n"))
 
   # ---- Abundance printout ----
-  cat("\n")  # blank line between for readability
+  if(hasCI){
+    cat("\n")  # blank line between for readability
+  }
   if( hasCI ){
     mess <- c(paste0( "Abundance in ", format(x$area), " study area:"), 
                       paste0(x$alpha*100, "% CI:"))
