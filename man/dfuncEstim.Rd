@@ -359,18 +359,21 @@ are required.
          \emph{Detection level} covariates are not currently allowed.
   
       \item \bold{Detection data only required:}\cr
-         The \code{detectionData} data frame alone can be 
-         specified if no covariates 
-         are included in the distance function (i.e., right-hand side of 
-         \code{formula} is "~1"). Note that this routine (\code{dfuncEstim})
-         does not need to know about sites where zero targets were detected, hence
-         \code{siteData} can be missing when no covariates are involved.
+         Only \code{detectionData} is required when 
+         no covariates are included in the distance function (i.e., the right-hand side of 
+         \code{formula} is "~1" or "~offset(groupSize)"). Note that \code{dfuncEstim}
+         does not need to know transect IDs (or group sizes)  
+         in order to estimate a distance function. Group sizes and 
+         transect IDs are required to estimate abundance 
+         (in function \code{abundEstim}).
   
       \item \bold{Neither detection data nor site data required}\cr
          Neither \code{detectionData} nor \code{siteData}  
          are required if all variables specified in \code{formula} 
-         are within the scope of this routine (e.g., in the global working
-         environment). Regular R scoping rules apply. 
+         are within the scope of \code{dfuncEstim} (e.g., in the global working
+         environment). Regular R scoping rules apply when the call 
+         to \code{dfuncEstim} is embedded 
+         in a function. 
    }
     
 }
@@ -402,7 +405,8 @@ Duplicate site IDs are not allowed in \code{siteData}.
 If the same site is surveyed in
 multiple years, specify another transect ID column (e.g., \code{transectID =
 c("year","transectID")}).  Duplicate site ID's are allowed in 
-\code{detectionData}.  
+\code{detectionData} because multiple detections can occur on a single transect
+or site.   
 
 To help envision the relationship between data frames, bear in 
 mind that during bootstrap estimation of variance

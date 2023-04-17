@@ -28,7 +28,8 @@ than 1 will kill the warning, but ignoring a large number of non-convergent
 bootstrap iterations may be a bad idea (i.e., validity of the CI is 
 questionable).}
 
-\item{\dots}{Included for compatibility to other print methods.  Ignored here.}
+\item{\dots}{Included for compatibility to other print methods.
+Ignored here.}
 }
 \value{
 No value is returned.
@@ -47,20 +48,21 @@ data(sparrowDetectionData)
 data(sparrowSiteData)
 
 # Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist~1,
-                    detectionData=sparrowDetectionData,
-                    likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+dfunc <- dfuncEstim(formula=dist ~ 1 + offset(groupsize)
+                  , detectionData=sparrowDetectionData)
 
 # Estimate abundance given a detection function
-# Note, area=10000 converts to density per hectare (for distances measured in meters)
-# Note, a person should do more than R=20 iterations
-fit <- abundEstim(dfunc, detectionData=sparrowDetectionData,
-                  siteData=sparrowSiteData, area=10000, R=20, ci=0.95,
-                  plot.bs=TRUE, bySite=FALSE)
+# Note: a person should do more than R=20 bootstrap iterations
+fit <- abundEstim(dfunc
+                , detectionData = sparrowDetectionData
+                , siteData = sparrowSiteData
+                , area = units::set_units(4105, "km^2")
+                , R=20
+                , ci=0.95)
 
 # Print results
 print(fit)
-fit
+
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
