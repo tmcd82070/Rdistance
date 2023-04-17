@@ -21,3 +21,4 @@ WorkshopScripts
 ^Meta$
 RTestLibrary
 ^README\.Rmd$
+^wiki/
