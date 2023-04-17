@@ -19,23 +19,38 @@ this routine returns one prediction (either parameters or
 distance function) for each row in \code{newdata}, but 
 columns and values in \code{newdata} are ignored.}
 
-\item{type}{The type of predictions desired. If 
-\code{type} = "parameters", return 
-predicted parameters of the likelihood function for all observations 
-in \code{newdata} (or all distance observations if \code{newdata} is NULL).  
-If \code{type} is anything other than "parameters", return the 
-scaled distance function evaluated at distances   
-specified in \code{distances} for all observations in \code{newdata}
-(or all distance observations if \code{newdata} is NULL). If \code{object}
-is a smoothed distance function, it does not have parameters and this 
-routine always produces the scaled distance function.}
+\item{type}{The type of predictions desired. 
+\itemize{
+  \item \bold{If \code{type} = "parameters"}: Return 
+    predicted parameters of the likelihood function, one value for each observation
+    (row) in \code{newdata}.  If \code{newdata} is NULL, return one predicted parameter
+    value for every detection in \code{object$detections}.
+  \item \bold{If \code{type} is not "parameters"}: Return  
+    scaled distance functions. Distance functions are evaluated at the distances   
+    specified in \code{distances}. The number of distance functions returned 
+    depends on \code{newdata} and whether \code{object} contains covariates:
+    \itemize{
+      \item If \code{object} does NOT contain covariates, the distance 
+      function does not vary (by covariate) and only one distance function
+      will be returned, even if \code{newdata} is specified.
+      \item If \code{object} contains covariates, one distance function 
+      will be returned for each observation (row) in \code{newdata}. 
+      If \code{newdata} is NULL, one distance function will be returned 
+      for every detection in \code{object$detections}. 
+    }
+ }
+ If \code{object} is a smoothed distance function, it does not have parameters
+ and this routine will always return a scaled distance function. That is, 
+ \code{type} = "parameters" when \code{object} is smoothed 
+ does not make sense and the smoothed distance function estimate will be returned.}
 
-\item{distances}{The vector of distances at which to predict scaled distance 
-functions if \code{type == "dfuncs"}.  Distances outside the observation 
+\item{distances}{A vector of distances when distance functions 
+are requested.  \code{distances} must have measurement units. 
+Any distances outside the observation 
 strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
 \code{distances} is NULL, this routine uses a sequence of 200 evenly 
-spaced distances from 
-\code{object$w.lo} to \code{object$w.hi}.}
+spaced distances between 
+\code{object$w.lo} and \code{object$w.hi}, inclusive}
 
 \item{\dots}{Included for compatibility with generic \code{predict} methods.}
 }
@@ -45,7 +60,7 @@ A matrix containing one of two types of predictions:
   \item \bold{If \code{type} is "parameters"}, the returned matrix 
   contains predicted likelihood parameters. The extent of the first dimension (rows) in 
   the returned matrix is equal to either the number of detection distances 
-  in \code{detectionData} (if \code{newdata} is NULL)
+  in \code{object$detections} 
   or number of rows in \code{newdata}. 
   The returned matrix's second dimension (columns) is 
   the number of parameters in the likelihood 
@@ -57,25 +72,65 @@ A matrix containing one of two types of predictions:
   
   \item \bold{If \code{type} is not "parameters"}, the returned matrix 
   contains scaled distance functions.  The extent of the first 
-  dimension (rows) is the number of distances specified in \code{distance}
-  (200 by default).
-  The extent of the second dimension (columns) is the number of 
-  observed distances in \code{detectionData} 
-  (if \code{newdata} is NULL) or number of 
-  rows in \code{newdata}. Each 
-  column contains one distance function.  
-  }
+  dimension (rows) is either the number of distances specified in \code{distance}
+  or 200 if \code{distances} is not specified.
+  The extent of the second dimension (columns) is: 
+    \itemize{
+      \item 1: if \code{object} does NOT contain covariates.
+      \item the number of detections: if \code{object} contains covariates and \code{newdata} is NULL.
+      \item the number of rows in \code{newdata}: if \code{object} contains covariates 
+      and \code{newdata} is specified.
+    }
+  All distance functions in columns of the return are scaled 
+  to \code{object$g.x.scale} at \code{object$x.scl}.
   
-  The returned matrix has additional attributes containing the distance 
-  at which distance functions are scaled and ESW's.  
-  \code{attr(<return>, "x0")} is the vector of distances at which each 
-  distance function in \code{<return>} is scaled. 
-  \code{attr(<return>, "scaler")} is a vector of effective strip widths 
+  When \code{type} is not "parameters", the returned matrix has 
+  additional attributes containing the distances 
+  at which the functions are scaled and ESW's.  
+  \code{attr(return, "x0")} is the vector of distances at which each 
+  distance function in \code{<return>} is scaled. i.e., the vector of 
+  \code{x.scl}.
+  \code{attr(return, "scaler")} is a vector scaling factors  
   corresponding to each 
-  distance function in \code{<return>}.
+  distance function in \code{return}. i.e., the vector of 
+  \code{1/f(x.scl)} where \code{f()} is the unscaled distance function. 
+  If \code{object} contains line transects, \code{attr(return, "scaler")}
+  is a vector of ESW corresponding to each distance function.
+}
 }
 \description{
 Predict likelihood parameters for distance function objects
+}
+\examples{
+# No covariates
+dfuncObs <- dfuncEstim(formula = dist ~ 1
+                     , detectionData = sparrowDetectionData
+                     , w.hi = units::as_units(100, "m"))
+predict(dfuncObs)
+predict(dfuncObs, newdata = data.frame(x = 1:5)) # values in newdata ignored
+
+predict(dfuncObs, type = "dfunc") # one function
+predict(dfuncObs, newdata = data.frame(x = 1:5), type = "dfunc") # same
+
+d <- units::set_units(c(0, 20, 40), "ft")
+predict(dfuncObs, distances = d, type = "dfunc") 
+d <- units::set_units(c(0.000,  6.096, 12.192), "m")
+predict(dfuncObs, distances = d, type = "dfunc") # same 
+
+# Covariates
+dfuncObs <- dfuncEstim(formula = dist ~ observer
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , w.hi = units::as_units(100, "m"))
+predict(dfuncObs)  # 356 X 1
+
+Observers <- data.frame(observer = levels(sparrowSiteData$observer))
+predict(dfuncObs, newdata = Observers) # 5 X 1
+
+predict(dfuncObs, type = "dfunc") # 200 X 356
+predict(dfuncObs, newdata = Observers, type = "dfunc") # 200 X 5
+predict(dfuncObs, newdata = Observers, distances = d, type = "dfunc") # 3 X 5
+
 }
 \seealso{
 \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
