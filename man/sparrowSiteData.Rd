@@ -33,9 +33,12 @@ with the University of Wyoming's  Cooperative Fish & Wildlife
 Research Unit (2012).
 }
 \description{
-Line transect data from 72 transects located in central Wyoming, each 500 meters long,
-surveyed for Brewer's Sparrows by Dr. Jason Carlisle of the Wyoming Cooperative Fish & Wildlife
-Research Unit in 2012. 
+Site data from line transect surveys for 
+Brewer's sparrow on 72 transects 
+located on a 4105 km^2 study 
+area in central Wyoming. Data were collected by 
+Dr. Jason Carlisle of the Wyoming Cooperative Fish & Wildlife
+Research Unit in 2012. Each transect was 500 meters long.
 See the package vignettes for tutorials of the basic analysis.
 }
 \references{
