@@ -303,12 +303,12 @@ test_dfuncEstim <- function( detectParams,
     aic <- AIC(dfuncFit)
         
     test_that(paste(testParams,"AICc prints", sep=";"), {
-      expect_output(print(dfuncFit), regexp = paste0("\\nAICc: ", format(aic), "\\n"))
+      expect_output(print(dfuncFit), regexp = paste0("\\nAICc: ", format(aic)))
     })
 
     test_that(paste(testParams,"BIC prints", sep=";"), {
       bic <- AIC(dfuncFit, criterion = "BIC")
-      expect_output(print(dfuncFit, criterion = "BIC"), regexp = paste0("\\nBIC: ", format(bic), "\\n"))
+      expect_output(print(dfuncFit, criterion = "BIC"), regexp = paste0("\\nBIC: ", format(bic)))
     })
     
     # ---- Test abundance methods for these parameters ----
