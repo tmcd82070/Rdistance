@@ -217,6 +217,9 @@ The abundance estimate for line transect surveys (if no covariates
   method used here resamples the units of replication (sites), 
   refits the distance function, and estimates abundance using 
   the resampled counts and re-estimated distance function. 
+  The original data frames, \code{detectionData} and \code{siteData}, 
+  are needed here for bootstrapping because they contain the transect 
+  and detection information.
   If a double-observer data
   frame is included in \code{dfunc}, rows of the double-observer data frame
   are re-sampled each bootstrap iteration. 

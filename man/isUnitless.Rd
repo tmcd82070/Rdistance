@@ -17,14 +17,15 @@ If \code{obj} does not have units, this routine
 returns TRUE.
 }
 \description{
-Tests whether a 'units' object is 
-unitless.  If something is unitless, sometimes it is 
-better to remove it's units before calculations. 
-Unitless objects such as ratios sometimes get assigned
-units of '[1]', which is preferable, and 
-sometimes they have units like '[m/m]'.  The 
-\code{units} package should convert '[m/m]' to 
-'[1]', but it does not always.
+Tests whether a 'units' object is actually 
+unitless.  
+Unitless objects, such as ratios, should be assigned
+units of '[1]'.  Often they are, but  
+sometimes unitless ratios are assigned units like '[m/m]'.
+The \code{units} package should always convert '[m/m]' to 
+'[1]', but it does not always. 
+Sometimes units like '[m/m]' mess things up, so it is 
+better to remove them before calculations.
 }
 \examples{
 a <- units::set_units(2, "m")
