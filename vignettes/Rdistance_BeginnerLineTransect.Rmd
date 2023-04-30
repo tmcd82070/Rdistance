@@ -381,3 +381,7 @@ units(fit$effDistance.ci) <- "km"
 ```{r}
 fit
 ```
+
+# Additional Reading
+
+View the full set of vignettes, as well as other teaching and tutorial materials, on the `Rdistance` wiki, [https://github.com/tmcd82070/Rdistance/wiki](https://github.com/tmcd82070/Rdistance/wiki). 
