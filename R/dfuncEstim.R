@@ -12,15 +12,15 @@
 #' or transect level and appear in  \code{siteData}. Regular R scoping 
 #' rules apply.  
 #' 
-#' \bold{Group Sizes:} Non-unity group sizes are specified using \code{offset}.
-#' That is, when group sizes are not all 1, they must 
+#' \bold{Group Sizes:} Non-unity group sizes are specified using \code{groupsize()}
+#' in the formula. That is, when group sizes are not all 1, they must 
 #' be entered as a column in \code{detectionData} and specified 
-#' using \code{offset()} as part of \code{formula}.  For example, 
-#' \code{d ~ habitat + offset(groupSize)} specifies that 
+#' using \code{groupsize()} as part of \code{formula}.  For example, 
+#' \code{d ~ habitat + groupsize(number)} specifies that 
 #' distances appear in variable \code{d}, one covariate 
-#' named \code{habitat} is to be fitted, and column \code{groupSize} 
+#' named \code{habitat} is to be fitted, and column \code{number} 
 #' contains the number of individuals 
-#' associated with each detection.  If an offset is not specified, 
+#' associated with each detection.  If group sizes are not specified, 
 #' all group sizes are assumed to be 1.
 #'   
 #' 
@@ -521,21 +521,34 @@ dfuncEstim <- function (formula
           Contact the Rdistance authors if you need double observer analyses
           and can help.")
   }
-  
-  mf <- Rdistance:::getDfuncModelFrame(formula, data)
-  mt <- attr(mf, "terms")
+
+  gsSpecial <- "groupsize"  
+  mf <- getDfuncModelFrame(formula, data)
+  mt <- terms(formula(mf), specials = gsSpecial)
+  if( attr(mt, "response") == 0 ){
+    stop("Formula must have a response on LHS of '~'.")
+  }
   dist <- model.response(mf,"any")
-  covars <- if (!is.empty.model(mt)){
-    model.matrix(object = mt, 
+  gsLoc <- attr(mt, "specials")[[gsSpecial]] # this is location in mf
+  if( !is.null(gsLoc) ){
+    # groupsize specified in formula
+    if( length(gsLoc) > 1 ){
+      stop("Only one groupsize variable allowed.")
+    }
+    gsLabel <- labels(mt)[gsLoc - 1]
+    formula2 <- update(mt, as.formula(paste0("~. -", gsLabel))) 
+    mt2 <- terms(formula2)
+    groupSize <- mf[[gsLoc]]
+  } else {
+    groupSize <- rep(1, length(dist) )
+    mt2 <- mt
+  }
+  covars <- if (!is.empty.model(mt2)){
+    model.matrix(object = mt2, 
                  data = mf, 
                  contrasts.arg = control$contrasts )
   }
-  groupSize <- model.offset(mf)
-  if( is.null(groupSize) ){
-    # no groupsize specified, assume 1
-    groupSize <- rep(1, length(dist) )
-  }
-  
+
   contr <- attr(covars,"contrasts")
   assgn <- attr(covars,"assign")
 
