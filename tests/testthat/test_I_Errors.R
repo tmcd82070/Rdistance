@@ -24,7 +24,7 @@ test_that("Covariate not found", {
 
 test_that("Groupsize not found", {
   expect_error(
-    dfuncEstim(dist ~ sightangle + offset(grp),
+    dfuncEstim(dist ~ sightangle + groupsize(grp),
                likelihood="halfnorm", 
                detectionData=sparrowDetectionData,
                siteData=sparrowSiteData),
@@ -34,7 +34,7 @@ test_that("Groupsize not found", {
 # Probably don't need a "success" in this file cause tested else where
 test_that("All vars found", {
   expect_s3_class(
-    dfuncEstim(dist ~ sightangle + offset(groupsize),
+    dfuncEstim(dist ~ sightangle + groupsize(groupsize),
                likelihood="halfnorm", 
                detectionData=sparrowDetectionData,
                siteData=sparrowSiteData),

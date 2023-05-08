@@ -7,8 +7,8 @@
 testInputs <- expand.grid(
   likelihood = c( "halfnorm" ),
   pointSurvey = TRUE,
-  w.lo = c(0, 50), 
-  w.hi = c(NA, 100), 
+  w.lo = c(0, 20), 
+  w.hi = c(NA, 200), 
   expansions = 0,
   series = c('simple'),
   x.scl = c(0, 60, "max"),

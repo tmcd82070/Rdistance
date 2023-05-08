@@ -78,8 +78,13 @@ test_abundEstim <- function( abundParams,
     
     # Check added components of output
     if(distFunc$pointSurvey){
-      newComponents <- c( "density", "n.hat", "n", "area", 
-                          "avg.group.size", "esw" )
+      newComponents <- c( "density"
+                        , "n.hat"
+                        , "n"
+                        , "area"
+                        , "surveyedUnits"
+                        , "avg.group.size"
+                        , "effDistance" )
     } else {
       newComponents <- c( "density"
                           , "n.hat"
