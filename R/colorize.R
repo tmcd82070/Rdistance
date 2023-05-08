@@ -30,11 +30,7 @@
 #' the initial part of the string from character 1 to the character 
 #' before the [ in the last pair of []. 
 #' 
-#' @seealso \code{\link{crayon::style}}
-#' 
-#' @examples 
-#' outStr <- colorized("Failure", col="white", bg = "bgRed") 
-#' cat(outStr)
+#' @seealso \code{crayon::style}
 #' 
 #' 
 # Do not export. In Rdistance namespace only

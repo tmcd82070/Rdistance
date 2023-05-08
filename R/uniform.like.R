@@ -1,5 +1,4 @@
 #' @title uniform.like - Uniform distance likelihood
-#' @aliases "uniform.like-deprecated"
 #' 
 #' @description Compute uniform-like distribution for 
 #' distance functions.  This function was present in \code{Rdistance}

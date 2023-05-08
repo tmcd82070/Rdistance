@@ -2,7 +2,7 @@ Package: Rdistance
 Type: Package
 Title: Distance-Sampling Analyses for Density and Abundance Estimation
 Version: 2.2.0
-Date: 2022-06-06
+Date: 2023-04-30
 Maintainer: Trent McDonald <trent@mcdonalddatasciences.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdonalddatasciences.com"), 
   person("Jason", "Carlisle", role="aut", email="jason.carlisle@wyo.gov"), 
@@ -50,7 +50,8 @@ Suggests:
     testthat (>= 3.0.0),
     devtools
 VignetteBuilder: knitr
-Imports: graphics, stats, utils, units
+Depends: R (>= 3.5.0)
+Imports: graphics, stats, utils, units, crayon
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Config/testthat/edition: 3

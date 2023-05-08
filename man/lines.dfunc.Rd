@@ -20,12 +20,6 @@ and plot a distance function.}
 
 \item{\dots}{Parameters to \code{lines} used to control attributes like 
 color, line width, line type, etc.}
-
-\item{yscl}{A scalar for point survey detection functions.  For point 
-surveys, the observation density line produced by this routine 
-is multiplied by \code{yscl}.  This is necessary for bootstrapped 
-point survey detection densities to plot on top of the observed 
-histogram of radial distances. Ignored for line transect surveys.}
 }
 \value{
 A data frame containing the x and y coordinates of the 
@@ -39,10 +33,32 @@ function line methods add distance functions to existing plots.
 set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]
+x <- units::set_units(x, "mi")
 dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
-plot(dfunc, nbins = 40)
-lines(dfunc, col="blue", lwd=3)
+plot(dfunc, nbins = 40, col="lightgrey", border=NA, vertLines=FALSE)
+lines(dfunc, col="grey", lwd=15)
+lines(dfunc, col="black", lwd=5, lty = 2)
 
+# Multiple lines 
+data(sparrowDetectionData)
+data(sparrowSiteData)
+dfuncObs <- dfuncEstim(formula = dist ~ observer 
+                     , likelihood = "halfnorm"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData)
+plot(dfuncObs
+   , vertLines = FALSE
+   , lty = 0
+   , col = c("grey","lightgrey")
+   , border=NA
+   , main="Detection by observer"
+   , legend = FALSE)
+y <- lines(dfuncObs
+   , newdata = data.frame(observer = levels(sparrowSiteData$observer))
+   , col = palette.colors(length(levels(sparrowSiteData$observer)))
+   , lty = 1
+   , lwd = 4)
+head(y) # values returned, same as predict method
 
 }
 \seealso{

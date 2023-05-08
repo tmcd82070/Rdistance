@@ -1,7 +1,5 @@
 #' @title logistic.like - Logistic distance function likelihood
 #' 
-#' @aliases uniform.like 
-#' 
 #' @description Computes a two parameter logistic distance function.
 #' 
 #' @param a A vector of likelihood parameter values. Length and meaning 
@@ -126,15 +124,16 @@
 #'          \code{\link{Gamma.like}}
 #'          
 #' @examples 
-#' x <- seq(0, 100, length=100)
+#' x <- units::set_units(seq(0, 100, length=100), "m")
 #' 
 #' # Plots showing effects of changes in Threshold
-#' plot(x, uniform.like(c(20, 20), x), type="l", col="red")
-#' plot(x, uniform.like(c(40, 20), x), type="l", col="blue")
+#' plot(x, logistic.like(c(20, 20), x), type="l", col="red")
+#' lines(x, logistic.like(c(40, 20), x), type="l", col="blue")
 #' 
 #' # Plots showing effects of changes in Knee
-#' plot(x, uniform.like(c(50, 100), x), type="l", col="red")
-#' plot(x, uniform.like(c(50, 1), x), type="l", col="blue")
+#' plot(x, logistic.like(c(50, 100), x), type="l", col="red")
+#' lines(x, logistic.like(c(50, 1), x), type="l", col="blue")
+#' lines(x, logistic.like(c(50, .1), x), type="l", col="orange")
 #' 
 #'          
 #' @keywords models

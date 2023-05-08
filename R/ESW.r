@@ -76,10 +76,8 @@
 #' # Load example sparrow data (line transect survey type)
 #' data(sparrowDetectionData)
 #' 
-#' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1,
-#'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#' dfunc <- dfuncEstim(formula=dist~1
+#'                   , detectionData = sparrowDetectionData)
 #' 
 #' # Compute effective strip width (ESW)
 #' ESW(dfunc)
@@ -93,84 +91,15 @@ ESW <- function( obj, newdata ){
 
   if(obj$pointSurvey) stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
 
-  #   
-  # like <- match.fun(paste( obj$like.form, ".like", sep=""))
-  # 
-  # 
-  # # figure out scaling 
-  # if( is.null( obj$g.x.scl ) ){
-  #   #   Assume g0 = 1
-  #   g.at.x0 <- 1
-  #   x0 <- 0
-  #   warning("g0 unspecified.  Assumed 1.")
-  # } else {
-  #   g.at.x0 <- obj$g.x.scl
-  #   x0 <- obj$x.scl
-  # }
-  # 
-  # zero <- units::set_units(x = 0
-  #                          , value = obj$outputUnits
-  #                          , mode = "standard")
-  # 
-  # if(  !is.null(obj$covars) ){
-  #   # covariate case; eventually will return a vector
-  #   if(missing(newdata)){
-  #     newdata <- NULL  # in this case, predict.dfunc will use obj$covars, but gotta have something to pass
-  #   }
-  #   params <- predict(obj, newdata, type="parameters")
-  # } else {
-  #   # no covariates; eventually will return a scaler
-  #   params <- matrix( obj$parameters, nrow = 1)
-  # }
-  # 
-  # y <- apply(X = params
-  #            , MARGIN = 1
-  #            , FUN = like
-  #            , dist = x - obj$w.lo
-  #            , series = obj$series
-  #            , covars = NULL
-  #            , expansions = obj$expansions
-  #            , w.lo = zero
-  #            , w.hi = obj$w.hi - obj$w.lo
-  #            , pointSurvey = FALSE
-  #            , scale = FALSE
-  #            )    
-  # y <- t(y)
-  # 
-  # # at this point, y is either 1 X length(x) (no covars) or n X length(x) (covars).
-  # # Each row is a unscaled distance function (does not integrate to one b.c., scale = F).
-  # 
-  # f.at.x0 <- apply(X = params
-  #                  , MARGIN = 1
-  #                  , FUN = like
-  #                  , dist= x0 - obj$w.lo
-  #                  , series = obj$series
-  #                  , covars = NULL
-  #                  , expansions=obj$expansions
-  #                  , w.lo = zero
-  #                  , w.hi=obj$w.hi - obj$w.lo
-  #                  , pointSurvey = FALSE
-  #                  , scale = FALSE
-  # )
-  #   
-  # # If g.at.x0 = 1, we don't need to rescale b.c. scale = FALSE above; i.e. y[,1] = 1
-  # # but, I will rescale even in this case, 
-  # # just in case there are cases I have not thought about (e.g., 
-  # # when like() does not have maximum at 1.0)
-  # 
-  # scaler <- g.at.x0 / f.at.x0 # a length n vector 
-  # 
-  # y <- y * scaler  # length(scalar) == nrow(y), so this works right
-
   seq.length = 200
   
   x.seq <- seq( obj$w.lo, obj$w.hi, length=seq.length)
   dx <- x.seq[3] - x.seq[2]
   
-  y <- predict.dfunc(object = obj
+  y <- stats::predict(object = obj
                      , newdata = newdata
-                     , distance = x.seq
-                     , type = "distances"
+                     , distances = x.seq
+                     , type = "dfuncs"
   )
   
   # Eventually, will get all the numerical integration 

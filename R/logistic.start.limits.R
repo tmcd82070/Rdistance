@@ -20,7 +20,7 @@
 #' 
 logistic.start.limits <- function(dist
                                 , covars
-                                , expan
+                                , expansions
                                 , w.lo
                                 , w.hi
                                 ){
@@ -45,15 +45,15 @@ logistic.start.limits <- function(dist
   distHist <- data.frame(counts = distHist$counts
                          , dist = distHist$mids
                          , n = max(distHist$counts))
-  distFit <- stats::glm(counts / n ~ dist
-                        , family = binomial
-                        , weights = n
-                        , data = distHist)
-  coefFit <- coefficients(distFit)
+  distFit <- stats::glm(distHist$counts / distHist$n ~ distHist$dist
+                        , family = stats::binomial
+                        , weights = distHist$n
+                        )
+  coefFit <- stats::coefficients(distFit)
   varCoefFit <- diag(summary(distFit)$cov.scaled) 
   covCoefFit <- summary(distFit)$cov.scaled[1,2]
-  beta0 <- coefFit["(Intercept)"]
-  beta1 <- coefFit["dist"]
+  beta0 <- coefFit[1]
+  beta1 <- coefFit[2]
   a.start <- -beta0 / beta1
   b.start <- -beta1
   # var.a <- (a.start^2) * ( (varCoefFit["(Intercept)"] / (beta0^2)) -
@@ -67,49 +67,55 @@ logistic.start.limits <- function(dist
   # }
   
   a.low <- max(1e-7, 0.5 * quantile(d, p = 0.00)) 
-  a.high <- quantile(d, p = 1.00) + 0.5 * sd(d)
+  a.high <- quantile(d, p = 1.00) + 0.5 * stats::sd(d)
   if( a.start <= 0 ){
-    a.start <- median(d)
+    a.start <- stats::median(d)
   } 
   if(b.start <= 0){
     b.start <- 1
     b.low <- 1e-7
     b.high <- 1e7
   } else {
-    b.low <- max(1e-7, b.start - 1000*sqrt(varCoefFit["dist"]))
-    b.high <- min(1e7, b.start + 1000*sqrt(varCoefFit["dist"]))
+    sdb2 <- varCoefFit[2]
+    if(sdb2 <= 0){
+      sdb2 <- 1
+    } else {
+      sdb2 <- sqrt(sdb2)
+    }
+    b.low <- max(1e-7, b.start - 1000*sdb2)
+    b.high <- min(1e7, b.start + 1000*sdb2)
   }
   
   if( ncovars > 1 ){
     start <- c(log(a.start)                          # Threshold 
                , rep(zero, ncovars-1)                # Covars
                , b.start                             # Knee (no link fn)
-               , rep(zero, expan))                   # any expansions
+               , rep(zero, expansions))                   # any expansions
     low   <- c(log(a.low)
                , rep(negInf, ncovars-1)
                , b.low
-               , rep(negInf, expan))
+               , rep(negInf, expansions))
     high  <- c(log(a.high)
                , rep( posInf, ncovars-1)
                , b.high
-               , rep( posInf, expan))
+               , rep( posInf, expansions))
     nms <- c(colnames(covars), "Knee")
   } else {
     start <- c( a.start
                , b.start
-               , rep(zero, expan))
+               , rep(zero, expansions))
     low   <- c(a.low
                , b.low 
-               , rep(negInf, expan))
+               , rep(negInf, expansions))
     high  <- c(a.high
                , b.high
-               , rep( posInf, expan))
+               , rep( posInf, expansions))
     nms <- c("Threshold", "Knee")
     
   }
 
-  if(expan > 0){
-    nms <- c(nms, paste( "a", 1:expan, sep=""))
+  if(expansions > 0){
+    nms <- c(nms, paste( "a", 1:expansions, sep=""))
   }
 
   list( start=start, lowlimit=low, uplimit=high, names=nms )

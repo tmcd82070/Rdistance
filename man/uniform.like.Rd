@@ -2,7 +2,6 @@
 % Please edit documentation in R/uniform.like.R
 \name{uniform.like}
 \alias{uniform.like}
-\alias{"uniform.like-deprecated"}
 \title{uniform.like - Uniform distance likelihood}
 \usage{
 uniform.like(

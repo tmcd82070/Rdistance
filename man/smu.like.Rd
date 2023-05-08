@@ -94,7 +94,7 @@ set to \code{NA} and hence not included.
 \examples{
  
 set.seed(238642)
-d <- abs(rnorm(100))
+d <- units::set_units(abs(rnorm(100)), "in")
 dfunc <- dfuncSmu(d~1)
 
 L <- smu.like(a=dfunc$parameters, 

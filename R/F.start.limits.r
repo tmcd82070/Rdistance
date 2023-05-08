@@ -28,6 +28,7 @@
 #'  
 #' @seealso \code{\link{dfuncEstim}}
 #' @examples 
+#'   data(sparrowDetectionData)
 #'   dist <- sparrowDetectionData$dist
 #'   units(dist) <- "m"
 #'   wl <- units::as_units(0, "m")
@@ -101,7 +102,7 @@ F.start.limits <- function( like
   dMin <- max( min(dist), w.lo )
   dMax <- min( max(dist), w.hi )
   w <- w.hi - w.lo
-  medDist <- median(dist)
+  medDist <- stats::median(dist)
   if( inherits(dist, "units") ){
     # Only time dist will not have units is when user overrides requirement
     # otherwise this always runs

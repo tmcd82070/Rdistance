@@ -2,7 +2,6 @@
 % Please edit documentation in R/logistic.like.R
 \name{logistic.like}
 \alias{logistic.like}
-\alias{uniform.like}
 \title{logistic.like - Logistic distance function likelihood}
 \usage{
 logistic.like(
@@ -139,15 +138,16 @@ c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 }
 
 \examples{
-x <- seq(0, 100, length=100)
+x <- units::set_units(seq(0, 100, length=100), "m")
 
 # Plots showing effects of changes in Threshold
-plot(x, uniform.like(c(20, 20), x), type="l", col="red")
-plot(x, uniform.like(c(40, 20), x), type="l", col="blue")
+plot(x, logistic.like(c(20, 20), x), type="l", col="red")
+lines(x, logistic.like(c(40, 20), x), type="l", col="blue")
 
 # Plots showing effects of changes in Knee
-plot(x, uniform.like(c(50, 100), x), type="l", col="red")
-plot(x, uniform.like(c(50, 1), x), type="l", col="blue")
+plot(x, logistic.like(c(50, 100), x), type="l", col="red")
+lines(x, logistic.like(c(50, 1), x), type="l", col="blue")
+lines(x, logistic.like(c(50, .1), x), type="l", col="orange")
 
          
 }

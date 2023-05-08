@@ -35,15 +35,15 @@ function. Covariates can be either detection level and appear in \code{detection
 or transect level and appear in  \code{siteData}. Regular R scoping 
 rules apply.  
 
-\bold{Group Sizes:} Non-unity group sizes are specified using \code{offset}.
-That is, when group sizes are not all 1, they must 
+\bold{Group Sizes:} Non-unity group sizes are specified using \code{groupsize()}
+in the formula. That is, when group sizes are not all 1, they must 
 be entered as a column in \code{detectionData} and specified 
-using \code{offset()} as part of \code{formula}.  For example, 
-\code{d ~ habitat + offset(groupSize)} specifies that 
+using \code{groupsize()} as part of \code{formula}.  For example, 
+\code{d ~ habitat + groupsize(number)} specifies that 
 distances appear in variable \code{d}, one covariate 
-named \code{habitat} is to be fitted, and column \code{groupSize} 
+named \code{habitat} is to be fitted, and column \code{number} 
 contains the number of individuals 
-associated with each detection.  If an offset is not specified, 
+associated with each detection.  If group sizes are not specified, 
 all group sizes are assumed to be 1.}
 
 \item{detectionData}{A data frame containing detection distances 
@@ -471,37 +471,51 @@ to make sure inputs are scaled correctly and that output units are known.
 data(sparrowDetectionData)
 data(sparrowSiteData)
 
+# Half-normal
+dfunc <- dfuncEstim(formula = dist ~ 1
+                  , detectionData = sparrowDetectionData)
 
-# Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist~1,
-                    detectionData=sparrowDetectionData,
-                    likelihood="halfnorm", 
-                    w.hi=units::as_units(100, "m"))
+# Half-normal function with truncation
+dfunc <- dfuncEstim(formula = dist ~ 1
+                  , detectionData = sparrowDetectionData
+                  , w.hi = units::set_units(100, "m"))
 
-# Fit a second half-normal detection function, now including
-# a categorical covariate for observer who surveyed the site (factor, 5 levels)
+# Half-normal function, truncation, group sizes
+dfunc <- dfuncEstim(formula = dist ~ groupsize(groupsize)
+                  , detectionData = sparrowDetectionData
+                  , w.hi = units::set_units(100, "m"))
+                  
+# Half-normal function with factor covariate 
 # Increase maximum iterations
-dfuncObs <- dfuncEstim(formula=dist~observer,
-                       detectionData=sparrowDetectionData,
-                       siteData=sparrowSiteData,
-                       likelihood="halfnorm", w.hi=100, pointSurvey=FALSE,
-                       control=RdistanceControls(maxIter=1000))
+dfuncObs <- dfuncEstim(formula = dist ~ observer
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , w.hi = units::set_units(100, "m")
+                     , control=RdistanceControls(maxIter=1000))
 
-# Print results
-# And plot the detection function for each observer
-dfuncObs
-plot(dfuncObs,
-     newdata=data.frame(observer=levels(sparrowSiteData$observer)))
-     
-# Show some plotting options
-plot(dfuncObs, 
-   newdata=data.frame(observer=levels(sparrowSiteData$observer)), 
-   vertLines = FALSE, lty=c(1,1), 
-   col.dfunc=heat.colors(length(levels(sparrowSiteData$observer))), 
-   col=c("grey","lightgrey"), border=NA, 
-   xlab="Distance (m)",
-   main="Showing plot options")
+# Hazard-rate function with covariate, truncation, and variable group sizes
+dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                     , likelihood = "hazrate"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , w.hi = units::set_units(100, "m"))
+                     
+# Left and right truncation
+dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                     , likelihood = "hazrate"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , w.lo = units::set_units(20, "m")
+                     , x.scl = units::set_units(20, "m")
+                     , w.hi = units::set_units(100, "m"))
 
+# Specify intercept
+dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                     , likelihood = "hazrate"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , g.x.scl = 0.8)
+                     
 
 }
 \references{

@@ -4,7 +4,7 @@
 \alias{Gamma.start.limits}
 \title{Gamma.start.limits - Start and limit values for Gamma parameters.}
 \usage{
-Gamma.start.limits(dist, covars, expan, w.lo, w.hi)
+Gamma.start.limits(dist, covars, expansions, w.lo, w.hi)
 }
 \arguments{
 \item{dist}{A numeric vector containing observed distances with measurement
@@ -12,6 +12,10 @@ units.}
 
 \item{covars}{Data frame containing values of covariates at 
 each observation in \code{dist}.}
+
+\item{expansions}{A scalar specifying the number of terms 
+in \code{series}. Depending on the series, this could be 0 through 5.
+The default of 0 equates to no expansion terms of any type.}
 
 \item{w.lo}{Scalar value of the lowest observable distance, with measurement
 units.  

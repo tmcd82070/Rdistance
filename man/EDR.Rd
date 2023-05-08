@@ -47,9 +47,11 @@ The point-transect equivalent to Effective Strip Width (ESW).
 data(thrasherDetectionData)
 
 # Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist~1,
-                    detectionData=thrasherDetectionData,
-                    likelihood="halfnorm", w.hi=175, pointSurvey=TRUE)
+dfunc <- dfuncEstim(formula=dist~1
+                  , detectionData=thrasherDetectionData
+                  , likelihood="halfnorm"
+                  , w.hi=units::set_units(175, "m")
+                  , pointSurvey=TRUE)
 
 # Compute effective detection radius (EDR)
 EDR(dfunc)

@@ -78,10 +78,8 @@ Effective strip width (ESW) of a distance function is its
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)
 
-# Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist~1,
-                    detectionData=sparrowDetectionData,
-                    likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+dfunc <- dfuncEstim(formula=dist~1
+                  , detectionData = sparrowDetectionData)
 
 # Compute effective strip width (ESW)
 ESW(dfunc)

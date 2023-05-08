@@ -39,12 +39,6 @@ In addition, for Rdistance results, we want to only colorize
 numbers, not the reporting units.  Everything between the last set 
 of square brackets (\code{[...]}) is NOT colorized.
 }
-\examples{
-outStr <- colorized("Failure", col="white", bg = "bgRed") 
-cat(outStr)
-
-
-}
 \seealso{
-\code{\link{crayon::style}}
+\code{crayon::style}
 }

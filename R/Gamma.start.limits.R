@@ -10,7 +10,7 @@
 #' @export
 Gamma.start.limits <- function (dist
                                 , covars
-                                , expan
+                                , expansions
                                 , w.lo
                                 , w.hi
                                 ){
@@ -37,9 +37,9 @@ Gamma.start.limits <- function (dist
   posInf <- -negInf
   zero <- .Machine$double.xmin
   
-  expanStart <- rep(0, expan)
-  expanLow <- rep(negInf, expan)
-  expanHigh <- rep(posInf, expan)
+  expanStart <- rep(0, expansions)
+  expanLow <- rep(negInf, expansions)
+  expanHigh <- rep(posInf, expansions)
   
   ncovars <- ncol(covars)
   if( !is.null(covars) ){
@@ -54,8 +54,8 @@ Gamma.start.limits <- function (dist
     high  <- c(posInf, posInf, expanHigh)
   }
   
-  if(expan > 0){
-    nms <- c(nms, paste( "a", 1:expan, sep=""))
+  if(expansions > 0){
+    nms <- c(nms, paste( "a", 1:expansions, sep=""))
   }
   
   list( start=start, lowlimit=low, uplimit=high, names=nms )

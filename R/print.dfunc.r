@@ -33,8 +33,7 @@
 #' 
 #' # Fit half-normal detection function
 #' dfunc <- dfuncEstim(formula=dist~1,
-#'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+#'                     detectionData=sparrowDetectionData)
 #' 
 #' # Print results
 #' dfunc

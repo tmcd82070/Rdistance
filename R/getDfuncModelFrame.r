@@ -20,8 +20,6 @@
 #' 
 getDfuncModelFrame <- function(formula, data) {
 
-  groupsize <- function(x){x}
-  
   mf <- match.call(expand.dots = FALSE)
   m <- match(c("formula", "data"), names(mf), 0L)
   mf <- mf[c(1L, m)]

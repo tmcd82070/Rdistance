@@ -102,12 +102,15 @@ A matrix containing one of two types of predictions:
 Predict likelihood parameters for distance function objects
 }
 \examples{
+data(sparrowDetectionData)
+data(sparrowSiteData)
 # No covariates
 dfuncObs <- dfuncEstim(formula = dist ~ 1
                      , detectionData = sparrowDetectionData
                      , w.hi = units::as_units(100, "m"))
 predict(dfuncObs)
-predict(dfuncObs, newdata = data.frame(x = 1:5)) # values in newdata ignored
+# values in newdata ignored because no covariates
+predict(dfuncObs, newdata = data.frame(x = 1:5)) 
 
 predict(dfuncObs, type = "dfunc") # one function
 predict(dfuncObs, newdata = data.frame(x = 1:5), type = "dfunc") # same

@@ -20,14 +20,14 @@
 #' 
 uniform.start.limits <- function(dist
                                 , covars
-                                , expan
+                                , expansions
                                 , w.lo
                                 , w.hi
                                 ){
 
   x <- logistic.start.limits(dist = dist
                              , covars = covars
-                             , expan = expan
+                             , expansions = expansions
                              , w.lo = w.lo
                              , w.hi = w.hi)
   x

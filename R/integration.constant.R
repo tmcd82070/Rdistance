@@ -63,13 +63,18 @@
 #'
 #' @examples
 #' # Can put any number for first argument (1 used here)
-#' scl <- integration.constant(dist=1, density=uniform.like, covars = NULL,
-#'                             pointSurvey = FALSE, w.lo=0, w.hi = 100,
-#'                             expansions = 0, a=c(75,25))
+#' scl <- integration.constant(dist=units::set_units(1,"m")
+#'                           , density=logistic.like
+#'                           , covars = NULL
+#'                           , pointSurvey = FALSE
+#'                           , w.lo = units::set_units(0,"m")
+#'                           , w.hi = units::set_units(100,"m")
+#'                           , expansions = 0
+#'                           , a=c(75,25))
 #' print(scl) # Should be 75.1
 #'
-#' x <- seq(0,100,length=200)
-#' y <- uniform.like( c(75,25), x, scale=FALSE ) / scl
+#' x <- units::set_units(seq(0,100,length=200), "m")
+#' y <- logistic.like( c(75,25), x, scale=FALSE ) / scl
 #' int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapezoid rule, should be 1.0
 #' print(int.y) # Should be 1
 #'

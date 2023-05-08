@@ -41,15 +41,13 @@
 #'   time series model selection.} 
 #'   World Scientific. ISBN 981023242X
 #'   
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
 #' @seealso \code{\link{coef}}, \code{\link{dfuncEstim}}
-#' @examples # Load the example dataset of sparrow detections from package
+#' 
+#' @examples 
 #'   data(sparrowDetectionData)
-#'   
-#'   # Fit detection function to perpendicular, off-transect distances
 #'   dfunc <- dfuncEstim(dist~1,
 #'                       detectionData=sparrowDetectionData, 
-#'                       w.hi=150)
+#'                       w.hi=units::set_units(150, "m"))
 #'   
 #'   # Compute fit statistics
 #'   AIC(dfunc)  # AICc

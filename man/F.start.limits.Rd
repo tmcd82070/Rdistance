@@ -53,6 +53,7 @@ The number of parameters to be fitted is
   This is the length of all vectors returned in the output list.
 }
 \examples{
+  data(sparrowDetectionData)
   dist <- sparrowDetectionData$dist
   units(dist) <- "m"
   wl <- units::as_units(0, "m")

@@ -107,31 +107,28 @@
 #' 
 #' @seealso \code{\link{dfuncEstim}}
 #' 
-#' @examples \dontrun{
-#'   # NOTE, this example is out of date as of version 2.0.x
-#'   # Non-double observer example
+#' @examples 
 #'   set.seed(555574)
 #'   x <- rnorm(1000) * 100
 #'   x <- x[ 0 < x & x < 100 ]
-#'   un.dfunc <- dfuncEstim( x, likelihood="uniform", w.hi = 100)    
+#'   x <- units::set_units(x, "m")
+#'   un.dfunc <- dfuncEstim( x ~ 1
+#'                        , likelihood = "logistic")    
 #'   F.gx.estim(un.dfunc)
-#'   gam.dfunc <- dfuncEstim( x, likelihood="Gamma", w.hi = 100)    
+#'   
+#'   x <- rgamma(1000, shape = 5)
+#'   x <- units::set_units(x, "m")
+#'   gam.dfunc <- dfuncEstim( x ~ 1
+#'                          , likelihood="Gamma")    
 #'   F.gx.estim(gam.dfunc)
 #'   
-#'   # Double observer example
-#'   dbl.obs <- data.frame(obsby.1=rbinom(50,1,0.8), obsby.2=rbinom(50,1,0.7))
-#'   F.gx.estim(un.dfunc, x.scl=0, g.x.scl=dbl.obs, observer="both" )
-#'   # a warning about x.scl < $w.lo is issued.
-#'   F.gx.estim(un.dfunc, x.scl="max", g.x.scl=dbl.obs, observer="both" )
-#'   F.gx.estim(un.dfunc, x.scl="max", g.x.scl=dbl.obs, observer=1 )
-#'   }
 #' @keywords model
 #' @export
 
-F.gx.estim <- function( fit, x.scl=NULL, g.x.scl=NULL, observer=NULL ){
-#
-#   Estimate g0 or gx for the distance function in fit.
-#
+F.gx.estim <- function( fit
+                      , x.scl=NULL
+                      , g.x.scl=NULL
+                      , observer=NULL ){
 
   #   Will need measurement units later ----
   distUnits <- units(fit$detections$dist)

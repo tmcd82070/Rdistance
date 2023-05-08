@@ -43,9 +43,11 @@
 #' data(thrasherDetectionData)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1,
-#'                     detectionData=thrasherDetectionData,
-#'                     likelihood="halfnorm", w.hi=175, pointSurvey=TRUE)
+#' dfunc <- dfuncEstim(formula=dist~1
+#'                   , detectionData=thrasherDetectionData
+#'                   , likelihood="halfnorm"
+#'                   , w.hi=units::set_units(175, "m")
+#'                   , pointSurvey=TRUE)
 #' 
 #' # Compute effective detection radius (EDR)
 #' EDR(dfunc)
@@ -122,6 +124,7 @@ EDR <- function(obj, newdata){
     
   } else {
     # this returns (Integral xg(x)dx)/dist
+    # integral is nrow(obj$detections) long vector
     integral <- integration.constant(dist = obj$detections$dist
                                    , density = like
                                    , a = obj$parameters

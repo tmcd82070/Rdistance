@@ -421,37 +421,51 @@
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
 #' 
+#' # Half-normal
+#' dfunc <- dfuncEstim(formula = dist ~ 1
+#'                   , detectionData = sparrowDetectionData)
 #' 
-#' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1,
-#'                     detectionData=sparrowDetectionData,
-#'                     likelihood="halfnorm", 
-#'                     w.hi=units::as_units(100, "m"))
+#' # Half-normal function with truncation
+#' dfunc <- dfuncEstim(formula = dist ~ 1
+#'                   , detectionData = sparrowDetectionData
+#'                   , w.hi = units::set_units(100, "m"))
 #' 
-#' # Fit a second half-normal detection function, now including
-#' # a categorical covariate for observer who surveyed the site (factor, 5 levels)
+#' # Half-normal function, truncation, group sizes
+#' dfunc <- dfuncEstim(formula = dist ~ groupsize(groupsize)
+#'                   , detectionData = sparrowDetectionData
+#'                   , w.hi = units::set_units(100, "m"))
+#'                   
+#' # Half-normal function with factor covariate 
 #' # Increase maximum iterations
-#' dfuncObs <- dfuncEstim(formula=dist~observer,
-#'                        detectionData=sparrowDetectionData,
-#'                        siteData=sparrowSiteData,
-#'                        likelihood="halfnorm", w.hi=100, pointSurvey=FALSE,
-#'                        control=RdistanceControls(maxIter=1000))
+#' dfuncObs <- dfuncEstim(formula = dist ~ observer
+#'                      , detectionData = sparrowDetectionData
+#'                      , siteData = sparrowSiteData
+#'                      , w.hi = units::set_units(100, "m")
+#'                      , control=RdistanceControls(maxIter=1000))
 #' 
-#' # Print results
-#' # And plot the detection function for each observer
-#' dfuncObs
-#' plot(dfuncObs,
-#'      newdata=data.frame(observer=levels(sparrowSiteData$observer)))
-#'      
-#' # Show some plotting options
-#' plot(dfuncObs, 
-#'    newdata=data.frame(observer=levels(sparrowSiteData$observer)), 
-#'    vertLines = FALSE, lty=c(1,1), 
-#'    col.dfunc=heat.colors(length(levels(sparrowSiteData$observer))), 
-#'    col=c("grey","lightgrey"), border=NA, 
-#'    xlab="Distance (m)",
-#'    main="Showing plot options")
-#' 
+#' # Hazard-rate function with covariate, truncation, and variable group sizes
+#' dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+#'                      , likelihood = "hazrate"
+#'                      , detectionData = sparrowDetectionData
+#'                      , siteData = sparrowSiteData
+#'                      , w.hi = units::set_units(100, "m"))
+#'                      
+#' # Left and right truncation
+#' dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+#'                      , likelihood = "hazrate"
+#'                      , detectionData = sparrowDetectionData
+#'                      , siteData = sparrowSiteData
+#'                      , w.lo = units::set_units(20, "m")
+#'                      , x.scl = units::set_units(20, "m")
+#'                      , w.hi = units::set_units(100, "m"))
+#'
+#' # Specify intercept
+#' dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+#'                      , likelihood = "hazrate"
+#'                      , detectionData = sparrowDetectionData
+#'                      , siteData = sparrowSiteData
+#'                      , g.x.scl = 0.8)
+#'                      
 #'
 #' @keywords model
 #' @export
@@ -522,29 +536,26 @@ dfuncEstim <- function (formula
           and can help.")
   }
 
-  gsSpecial <- "groupsize"  
+  # Much easier to convert "groupsize" to "offset" in formula because 
+  # model.frame and others treat offset correctly.
+  formulaChar <- as.character(formula) # [1] = "~"; [2] = LHS; [3] = RHS
+  formulaChar[3] <- gsub( "groupsize\\(", "offset(", formulaChar[3] )
+  formula <- formula( paste(formulaChar[c(2,1,3)], collapse = " ") )
+  
   mf <- getDfuncModelFrame(formula, data)
-  mt <- terms(formula(mf), specials = gsSpecial)
+  mt <- terms(mf)
   if( attr(mt, "response") == 0 ){
     stop("Formula must have a response on LHS of '~'.")
   }
   dist <- model.response(mf,"any")
-  gsLoc <- attr(mt, "specials")[[gsSpecial]] # this is location in mf
-  if( !is.null(gsLoc) ){
+  if( !is.null(attr(mt, "offset")) ){
     # groupsize specified in formula
-    if( length(gsLoc) > 1 ){
-      stop("Only one groupsize variable allowed.")
-    }
-    gsLabel <- labels(mt)[gsLoc - 1]
-    formula2 <- update(mt, as.formula(paste0("~. -", gsLabel))) 
-    mt2 <- terms(formula2)
-    groupSize <- mf[[gsLoc]]
+    groupSize <- stats::model.offset(mf)
   } else {
-    groupSize <- rep(1, length(dist) )
-    mt2 <- mt
+    groupSize <- rep(1, length(dist))
   }
-  covars <- if (!is.empty.model(mt2)){
-    model.matrix(object = mt2, 
+  covars <- if (!is.empty.model(mt)){
+    model.matrix(object = mt, 
                  data = mf, 
                  contrasts.arg = control$contrasts )
   }

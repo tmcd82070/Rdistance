@@ -387,7 +387,7 @@ abundEstim <- function(dfunc,
         trans.freq <- data.frame(table(new.trans))  # how many times was each represented in the new sample?
         
         # subset distance data from these transects
-        if ( class(new.siteData$siteID) == "factor" ) {
+        if ( inherits(new.siteData$siteID, "factor") ) {
           new.trans <- unique(droplevels(new.siteData$siteID))
         } else {
           new.trans <- unique(new.siteData$siteID)

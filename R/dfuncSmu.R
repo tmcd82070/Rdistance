@@ -48,6 +48,8 @@
 #' for information on when \code{detectionData} and 
 #' \code{siteData} are required inputs. 
 #'  
+#' @inheritParams dfuncEstim
+#' 
 #' @param siteData A data.frame containing site (transect or point)
 #'  IDs and any 
 #' \emph{site level} covariates to include in the detection function. 
@@ -323,7 +325,6 @@
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
 #' 
-#' 
 #' # Compare smoothed and half-normal detection function
 #' dfuncSmu <- dfuncSmu(dist~1, sparrowDetectionData, w.hi=units::set_units(150, "m"))
 #' dfuncHn  <- dfuncEstim(formula=dist~1,sparrowDetectionData,w.hi=units::set_units(150, "m"))
@@ -400,7 +401,7 @@ dfuncSmu <- function (formula
   mt <- attr(mf, "terms")
   dist <- model.response(mf,"any")
   
-  groupSize <- model.offset(mf)
+  groupSize <- stats::model.offset(mf)
   if( is.null(groupSize) ){
     # no groupsize specified, assume 1
     groupSize <- rep(1, length(dist) )
@@ -467,6 +468,7 @@ dfuncSmu <- function (formula
   # Truncate for w.lo and w.hi
   ind <- (w.lo <= dist) & (dist <= w.hi)
   dist <- dist[ind]
+  groupSize <- groupSize[ind]
   
   # (tlm) Add this back in when we allow strata (factors) in the smoothed dfuncs
   #covars <- covars[ind,,drop=FALSE]
@@ -499,8 +501,13 @@ dfuncSmu <- function (formula
   #   Only reflect values > w.lo (not == w.lo) because we don't want 
   #   to double the number of points at exactly w.lo
   reflectedDist <- c(-dist[dist>w.lo]+2*w.lo,dist)
-  dsmu <- stats::density(reflectedDist, bw=bw, adjust=adjust, kernel=kernel,
-                  from=units::drop_units(w.lo), to=units::drop_units(w.hi))
+  dsmu <- stats::density(reflectedDist
+                       , bw=bw
+                       , adjust=adjust
+                       , kernel=kernel
+                       , from=units::drop_units(w.lo)
+                       , to=units::drop_units(w.hi)
+                       )
 
     
   # Make sure none of the y-values are < 0

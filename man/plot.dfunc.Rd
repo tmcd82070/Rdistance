@@ -140,7 +140,7 @@ The input distance function is returned, with two additional
 \description{
 Plot method for objects of class '\code{dfunc}'.  Objects of 
 class '\code{dfunc}' are estimated distance functions produced by 
-\code{\link{dfunc.estim}}.
+\code{\link{dfuncEstim}}.
 }
 \details{
 If \code{plotBars} is TRUE, a scaled histogram is plotted
@@ -163,25 +163,71 @@ If \code{plotBars} is TRUE, a scaled histogram is plotted
 set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]
+x <- units::set_units(x, "ft")
 dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
 plot(dfunc)
 plot(dfunc, nbins=25)
 
 # showing effects of plot params
-plot(dfunc, col=c("red","blue","orange"), 
- border="black", xlab="Dist (m)", ylab="Prob", 
- vertLines = FALSE, main="Showing plot params")
+plot(dfunc
+  , col=c("red","blue","orange")
+  , border="black"
+  , xlab="Off-transect distance"
+  , ylab="Prob"
+  , vertLines = FALSE
+  , main="Showing plot params")
  
-plot(dfunc, col="wheat", density=30, angle=c(-45,0,45), 
-cex.axis=1.5, cex.lab=2, ylab="Probability") 
+plot(dfunc
+   , col="wheat"
+   , density=30
+   , angle=c(-45,0,45)
+   , cex.axis=1.5
+   , cex.lab=2
+   , ylab="Probability") 
 
-plot(dfunc, col=c("grey","lightgrey"), border=NA) 
+plot(dfunc
+   , col=c("grey","lightgrey")
+   , border=NA) 
 
-plot(dfunc, col="grey", border=0, col.dfunc="blue", 
-lty.dfunc = 2, lwd.dfunc=4, vertLines=FALSE)
+plot(dfunc
+   , col="grey"
+   , border=0
+   , col.dfunc="blue"
+   , lty.dfunc=2
+   , lwd.dfunc=4
+   , vertLines=FALSE)
 
-plot(dfunc, plotBars=FALSE, cex.axis=1.5, col.axis="blue") 
+plot(dfunc
+   , plotBars=FALSE
+   , cex.axis=1.5
+   , col.axis="blue")
 rug(dfunc$detections$dist)
+
+# Plot showing f(0)
+hist(dfunc$detections$dist
+   , n = 40
+   , border = NA
+   , prob = TRUE)
+x <- seq(dfunc$w.lo, dfunc$w.hi, length=200)
+y <- predict(dfunc, type="dfunc", distances = x)
+lines(x, c(y)/attr(y, "scaler"))
+c(attr(y,"scaler") / y[1], ESW(dfunc))  # 1/f(0) = ESW
+
+# Covariates: detection by observer
+data(sparrowDetectionData)
+data(sparrowSiteData)
+dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                     , likelihood = "hazrate"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData)
+plot(dfuncObs
+   , newdata = data.frame(observer = levels(sparrowSiteData$observer))
+   , vertLines = FALSE
+   , lty = c(1,1)
+   , col.dfunc = heat.colors(length(levels(sparrowSiteData$observer)))
+   , col = c("grey","lightgrey")
+   , border=NA
+   , main="Detection by observer")
 
 }
 \seealso{

@@ -197,9 +197,29 @@ meaning surveyed points were not grouped into transects, each 'transect' consist
 of one point. In this case, set \code{transectID} equal to 
 the point's ID and set \code{pointID} equal to 1 for all points.}
 
+\item{outputUnits}{A string giving the symbolic measurment 
+units that results should be reported in.   Any 
+distance measurement unit in \code{units::valid_udunits()} 
+will work.  The strings for common distance symbolic units are: 
+"m" for meters, "ft" for feet, "cm" for centimeters, "mm" for 
+millimeters, "mi" for miles, "nmile" for 
+nautical miles ("nm" is nano meters), "in" for inches, 
+"yd" for yards, "km" for kilometers, "fathom" for fathoms, 
+"chains" for chains, and "furlong" for furlongs.  
+If \code{outputUnits} is unspecified (NULL),
+output units are the same as distance measurements units in 
+\code{data}.}
+
 \item{length}{Character string specifying the (single) column in 
 \code{siteData} that contains transect length. This is ignored if 
 \code{pointSurvey} = TRUE.}
+
+\item{control}{A list containing optimization control parameters such 
+as the maximum number of iterations, tolerance, the optimizer to use, 
+etc.  See the 
+\code{\link{RdistanceControls}} function for explanation of each value,
+the defaults, and the requirements for this list. 
+See examples below for how to change controls.}
 }
 \value{
 An object of class 'dfunc'.  Objects of class 'dfunc' 
@@ -329,7 +349,6 @@ the transect ID column(s)), not \emph{detections} or
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)
 data(sparrowSiteData)
-
 
 # Compare smoothed and half-normal detection function
 dfuncSmu <- dfuncSmu(dist~1, sparrowDetectionData, w.hi=units::set_units(150, "m"))
