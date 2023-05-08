@@ -184,7 +184,7 @@ F.start.limits <- function( like
     } else {
       start <- c( 0.5*(0.5 / (log(medDist) - log(dMin))) + 0.5*(0.5/ (log(dMax) - log(medDist))), 
                  rep(zero, expan))
-      low   <- c(0.01, 
+      low   <- c(0.001, 
                  rep(negInf, expan ))
       high  <- c(100*w
                  , rep( posInf, expan ))
