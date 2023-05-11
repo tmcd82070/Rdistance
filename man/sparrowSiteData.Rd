@@ -49,7 +49,7 @@ Dissertation. University of Wyoming, Laramie, Wyoming, USA.
 Carlisle, J. D., and A. D. Chalfoun. 2020. The abundance of Greater 
 Sage-Grouse as a proxy for the abundance of sagebrush-associated songbirds 
 in Wyoming, USA. \emph{Avian Conservation and Ecology} 15(2):16. 
-\url{https://doi.org/10.5751/ACE-01702-150216}
+\doi{10.5751/ACE-01702-150216}
 }
 \seealso{
 \code{\link{sparrowDetectionData}}

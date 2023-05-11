@@ -26,7 +26,7 @@ Computes AICc, AIC, or BIC for estimated distance functions.
 }
 \details{
 Regular Akaike's information criterion 
-  (\url{http://en.wikipedia.org/wiki/Akaike_information_criterion}) (\eqn{AIC}) is 
+  (\url{https://en.wikipedia.org/wiki/Akaike_information_criterion}) (\eqn{AIC}) is 
   \deqn{AIC = LL + 2p,}{AIC = (LL) + 2p,}
   where \eqn{LL} is the maximized value of the log likelihood 
   (the minimized value of the negative log 

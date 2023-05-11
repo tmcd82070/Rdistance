@@ -41,7 +41,7 @@
 #' Nontarget effects on songbirds from habitat manipulation for Greater 
 #' Sage-Grouse: Implications for the umbrella species concept. 
 #' \emph{The Condor: Ornithological Applications} 120:439–455. 
-#' \url{https://doi.org/10.1650/CONDOR-17-200.1}
+#' \doi{10.1650/CONDOR-17-200.1}
 #' 
 #' @keywords datasets
 NULL
