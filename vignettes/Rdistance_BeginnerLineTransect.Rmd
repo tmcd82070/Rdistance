@@ -5,9 +5,10 @@ author: "Trent McDonald, Jason Carlisle, and Abigail Hoffman"
 date: "`r format(Sys.Date(), '%F')`"
 output: pdf_document
 vignette: >
-  \VignetteIndexEntry{Rdistance: Beginner Line Transect Tutorial}
-  \VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteIndexEntry{Rdistance: Beginner Line Transect Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteKeyword{ds,distance,intro,transect,abundance,density,wildlife}
+  %\VignetteEncoding{UTF-8}
 ---
 
 # Introduction
