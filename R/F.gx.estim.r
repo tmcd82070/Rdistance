@@ -103,7 +103,6 @@
 #'   \item{x.scl}{The value of x (distance) at which g() is evaluated.  }
 #'   \item{comp2 }{The estimated value of g() when evaluated at \code{x.scl}.  }
 #'   
-#' @author Trent McDonald
 #' 
 #' @seealso \code{\link{dfuncEstim}}
 #' 

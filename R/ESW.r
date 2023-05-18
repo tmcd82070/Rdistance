@@ -68,7 +68,6 @@
 #'   1993. \emph{Distance Sampling: Estimating Abundance of Biological
 #'   Populations}. Chapman and Hall, London.
 #'   
-#' @author Trent McDonald
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{EDR}}, 
 #' \code{\link{effectiveDistance}}
 #' 

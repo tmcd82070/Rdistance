@@ -1,9 +1,8 @@
-Changes in version 2.2.0 (2023-01-15)
+Changes in version 2.2.2 (2023-05-17)
 ==============
-Version 2.2.0 represents a substantial change and upgrade 
-from prior versions. 
+Version 2.2.2 is a substantial change and upgrade. 
 
-* ~~BIG CHANGE~~: Measurement units are now required on all distances
+* ~~BIGGEST CHANGE~~: Measurement units are now required on all distances
 (e.g., off-transect distances, strip widths, study area size, etc.),
 and it is possible to specify output units.
 Unit conversion makes use of the `units` package, is internal, and automatic. 
@@ -23,11 +22,13 @@ printing an `abund` object.
 * Fixed bug in `F.gx.estim` that occasionally popped up when sighting 
 function was monotonically decreasing.
 * Updated starting values for faster estimation.
+* Decreased lower limit of `negexp` likelihood parameter to achieve more valid
+fits. 
 * Warning messages now report which parameters are at their boundary, 
 and which boundary (lower or upper).
 * Bug fixes:
   + Fixed issue with contrasts in `model.matrix`
-  + Fixed issue with no observations during bootstrapping
+  + Fixed issue of no observations during bootstrapping
   + Fixed issues with changing scale locations (i.e., `x.scl` and `g.x.sxl`)
   + Fixed `ESW` for `w.lo` > 0
   + Restricted likelihood values to be positive
@@ -50,7 +51,7 @@ Changes in version 2.1.4 (2019-06-11)
 Changes in version 2.1.3 (2019-01-02)
 ==============
 * Fixed scaling error in the Gamma likelihood causing mode to be less than 1.0
-* Fixed inverted plots that occured when w.lo > 0 (left-trunctation)
+* Fixed inverted plots that occurred when w.lo > 0 (left-truncatation)
 * Fixed bug in 'autoDistSamp' when 'bySite=TRUE'
 * Fixed bug causing bootstrap failure of point transect surveys when 'siteData' contained only one column
 

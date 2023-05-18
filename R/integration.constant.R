@@ -55,10 +55,6 @@
 #' it integrates to 1.0. If x = density(\ldots), then
 #' x / \code{integration.constant(density, \ldots)} will integrate to 1.0.
 #'
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-#'         Michael Kleinsasser, WEST Inc.,  \email{mkleinsa@uwyo.edu}
-#'
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
 #'
 #' @examples

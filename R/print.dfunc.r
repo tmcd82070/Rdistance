@@ -24,8 +24,7 @@
 #' }
 #' The number of digits printed is controlled by \code{options()$digits}.
 #' @return The input value of \code{obj} is invisibly returned.
-#' @author Trent McDonald, WEST Inc. \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST Inc. \email{aidan@mcdcentral.org}
+#' 
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
 #' @examples
 #' # Load example sparrow data (line transect survey type)

@@ -304,14 +304,14 @@ The estimated number of sparrows on the `r format(saSize)` study area is `r form
 
 # Advanced Remarks 
 
-## Boostrap Distribution
+## Bootstrap Distribution
 
 `Rdistance` stores density and ESW values from all bootstrap iterations in the `$B` component of abundance objects. This facilitates a couple more advanced analyses, i.e., 
 
 *  Users can append bootstrap iterations from multiple abundance objects 
-by 'rbind-ing' the `$B` components.
+by appending `$B` components together.
 *  Users can compute confidence intervals 
-using different methods (e.g., percentile)
+using different methods (e.g., percentile).
 *  Users can compute the variance of other quantities that depend on density or ESW. 
 *  Users can plot the full bootstrap distribution of density (or ESW) to inspect statistical properties. 
 

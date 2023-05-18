@@ -12,8 +12,9 @@
 #' @return A vector of off-transect (or perpendicular) distances.  Units are the same as \code{sightDist}.
 #' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. 
 #'   \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
-#' @author Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
+#'   
 #' @seealso \code{\link{dfuncEstim}}
+#' 
 #' @examples
 #' # Load the example dataset of sparrow detections from package
 #' data(sparrowDetectionData)

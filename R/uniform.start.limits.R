@@ -1,6 +1,6 @@
 #' @title uniform.start.limits - Start and limit values for uniform distance function
 #' 
-#' @description DEPRICATED: Starting values and limits for parameters of the uniform 
+#' @description DEPRECATED.: Starting values and limits for parameters of the uniform 
 #' distance function. 
 #' 
 #' @inheritParams logistic.like

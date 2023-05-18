@@ -23,10 +23,10 @@
 #' @return A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the cosine expansions of 
 #'   \code{x}. Column 1 is the first expansion term of \code{x}, column 2 is the second expansion term of \code{x}, and so on 
 #'   up to \code{expansions}.
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
+#'   
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
 #'   of user defined likelihoods in \code{\link{dfuncEstim}}.
+#'   
 #' @examples set.seed(33328)
 #'   x <- rnorm(1000) * 100
 #'   x <- x[ 0 < x & x < 100 ]

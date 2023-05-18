@@ -8,8 +8,6 @@
 #' 
 #' @return The value of x that maximizes g(x) in \code{fit}.
 #' 
-#' @author Trent McDonald
-#' 
 #' @seealso \code{\link{dfuncEstim}}
 #' 
 #' @examples \dontrun{

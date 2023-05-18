@@ -13,8 +13,9 @@
 #'   This function is equivalent to \code{obj$parameters} for classical detection functions.
 #' @return The estimated parameter vector for the detection function. Length and interpretation of values 
 #'   in this vector vary depending on the form of the detection function and expansion terms.
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#'   
 #' @seealso \code{\link{AIC}}, \code{\link{dfuncEstim}}
+#' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)
 #' data(sparrowDetectionData)

@@ -23,9 +23,11 @@
 #'   \eqn{p_2}{p2} is the proportion of targets seen by observer 1 that were also seen by observer 2.
 #'   This estimator is very close to unbiased when observers are actually independent.
 #' @return A single scalar, the probability of detection estimate.
-#' @author Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
+#' 
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
-#' @examples #   Fake observers
+#' 
+#' @examples 
+#' #   Fake observers
 #'   set.seed(538392)
 #'   obsrv <- data.frame( obsby.1=rbinom(100,1,.75), obsby.2=rbinom(100,1,.5) )
 #'   

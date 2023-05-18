@@ -165,13 +165,18 @@
 #'   effective sampling distance (i.e., \code{effDistance}).
 #'   }
 #'   
-#'   \item{B}{A data frame containing bootstrap density and effective distance 
-#'   values.  Number of rows is always \code{R}, the number of bootstrap 
+#'   \item{B}{A data frame containing bootstrap values of coefficients, 
+#'   density, and effective distances.  Number of rows is always 
+#'   \code{R}, the number of bootstrap 
 #'   requested iterations.  If a particular iteration did not converge, the
-#'   corresponding row in \code{B} is all \code{NA} (e.g., use 'na.rm = TRUE' 
-#'   when computing summaries). One column of the data frame 
-#'   contains bootstrap values of \code{density}.  Another column contains bootstrap 
-#'   values of \code{effDistance}. Bootstrap abundance values are 'B$density' * area.}
+#'   corresponding row in \code{B} is \code{NA} (e.g., use 'na.rm = TRUE' 
+#'   when computing summaries). Columns 1 through \code{length(coef(dfunc))}
+#'   contain bootstrap realizations of the distance function's coefficients. 
+#'   The second to last column contains bootstrap values of
+#'   density.  The last column of B contains bootstrap 
+#'   values of \code{effDistance}. If the distance function contains covariates,
+#'   \code{effDistance} is the average effective distance over detections 
+#'   used to estimate the distance function. }
 #'   
 #'   \item{nItersConverged}{The number of bootstrap iterations that converged.  }
 #'   
@@ -204,13 +209,8 @@
 #   points, this is \eqn{pi*EDR^2}.}
 #   
 #'   
-#' @author Trent McDonald, \email{trent@mcdonalddatasciences.com}\cr 
-#'   Aidan McDonald, \email{aidan@mcdcentral.org}\cr 
-#'   Jason Carlisle, Wyoming Game and Fish Department, 
-#'   \email{jason.carlisle@wyo.gov}
-#'   
 #' @references Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
-#'   monte-carlo methods in biology}, London: Chapman and Hall.
+#'   Monte-Carlo methods in biology}, London: Chapman and Hall.
 #'   
 #'   Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
@@ -368,7 +368,13 @@ abundEstim <- function(dfunc,
       g.x.scl.orig <- dfunc$call.g.x.scl  # g(0) or g(x) estimate
       
       B <- rep(NA, R)  # preallocate space for bootstrap replicates of nhat
-      B <- data.frame(density = B, effDistance = B)
+      coefCols <- 1:length(coef(dfunc))
+      coefB <- data.frame(matrix(B, nrow=R, ncol=max(coefCols)))
+      names(coefB) <- names(coef(dfunc))
+      B <- data.frame(
+               coefB
+             , density = B
+             , effDistance = B)
       
       # now including utils as import,
       if(showProgress){
@@ -477,7 +483,8 @@ abundEstim <- function(dfunc,
             efd <- abund.bs$w * abund.bs$pDetection # for lines
           }
           
-          B$effDistance[i] <- efd
+          B[i,coefCols] <- coef(dfunc.bs)
+          B$effDistance[i] <- mean(efd, na.rm = TRUE)
           B$density[i] <- abund.bs$density
 
           if (plot.bs ) {

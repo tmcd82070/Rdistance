@@ -302,7 +302,7 @@
 #' \code{w.lo} (unless it is zero); \code{w.hi} (unless it is NULL); 
 #' and \code{x.scl}. In addition, in \code{abundEstim}, units are 
 #' required on \code{siteData$length} and \code{area}. All units are 
-#' 1-dimensonal except those on \code{area}, which are 2-dimensional. 
+#' 1-dimensional except those on \code{area}, which are 2-dimensional. 
 #' 
 #' If measurements are truly unit-less, or measurement units are unknown, 
 #' set \code{RdistanceControls(requireUnits = FALSE)}.  This suppresses 

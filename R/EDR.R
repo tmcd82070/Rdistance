@@ -32,9 +32,6 @@
 #' a scalar equal to the (constant) effective detection radius for all 
 #' detections is returned.  
 #'   
-#' @author Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}\cr Trent
-#'   McDonald, WEST Inc., \email{tmcdonald@west-inc.com}
-#'   
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
 #' \code{\link{effectiveDistance}}
 #'   

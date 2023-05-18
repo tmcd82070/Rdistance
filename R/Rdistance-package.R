@@ -127,7 +127,7 @@
 #' @docType package
 #' 
 #' @author Main author and maintainer: Trent McDonald
-#' <tmcdonald@@west-inc.com>
+#' <trent@mcdonalddatasciences.com>
 #' 
 #' Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 #' 

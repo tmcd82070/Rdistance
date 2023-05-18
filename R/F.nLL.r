@@ -52,9 +52,6 @@
 #' @return A scalar, the negative of the log likelihood evaluated at 
 #' parameters \code{a}, including expansion terms.
 #' 
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}\cr
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#'         
 #' @seealso See \code{\link{uniform.like}} and links there; 
 #'  \code{\link{dfuncEstim}}
 #' 

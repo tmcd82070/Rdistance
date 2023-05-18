@@ -22,8 +22,6 @@
 #' ans <- fn(1, 0, 0, 1);
 #' ans$names}
 #' 
-#' @author Trent McDonald
-#' 
 #' @export
 #' 
 likeParamNames <- function(like.form){

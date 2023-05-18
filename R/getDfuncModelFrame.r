@@ -15,7 +15,6 @@
 #' In \code{dfuncEstim}, we first merge the detection and site data frames, then 
 #' call this routine. 
 #' 
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
 #' 
 #' 
 getDfuncModelFrame <- function(formula, data) {

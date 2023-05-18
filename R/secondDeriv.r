@@ -57,8 +57,6 @@
 #' \code{Rdistance}, is \code{solve(hessian)} where \code{hessian} is
 #' \code{secondDeriv(<parameter estimates>, <likelihood>)}.  
 #' 
-#' @author Trent McDonald
-#' 
 #' @examples 
 #' 
 #'func <- function(x){-x*x} # second derivative should be -2

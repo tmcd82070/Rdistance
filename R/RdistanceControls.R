@@ -83,8 +83,6 @@
 #' controls.  This list has the same components as this function 
 #' has input parameters. 
 #' 
-#' @author Trent McDonald \email{tmcdonald@west-inc.com}
-#' 
 #' @examples 
 #' # increase number of iterations
 #' RdistanceControls(maxIters=2000)

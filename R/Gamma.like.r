@@ -42,9 +42,6 @@
 #' @references Becker, E. F., and P. X. Quang, 2009. \emph{A Gamma-Shaped Detection Function for Line-Transect Surveys with Mark-Recapture and Covariate Data.}
 #'   Journal of Agricultural, Biological, and Environmental Statistics 14(2):207-223.
 #'   
-#' @author Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-#'         Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-#'         
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, \code{\link{uniform.like}}, \code{\link{negexp.like}}
 #' @examples \dontrun{
 #' set.seed(238642)
