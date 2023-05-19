@@ -1,0 +1,102 @@
+---
+title: "Extended `dfuncEstim` examples"
+author: "Trent McDonald"
+date: "`r format(Sys.Date(), '%F')`"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Rdistance: Extended dfuncEstim Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteKeyword{ds,distance,intro,transect,abundance,density,wildlife}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Following is a series of `dfuncEstim` calls showing calling parameters for many popular distance sampling options. 
+
+```{r}
+library(Rdistance)
+data("sparrowDetectionData")
+data("sparrowSiteData")
+```
+
+# Half-normal function with right truncation
+
+```{r}
+dfunc <- dfuncEstim(formula = dist ~ 1
+                  , detectionData = sparrowDetectionData
+                  , w.hi = units::set_units(100, "m"))
+dfunc
+plot(dfunc, col="grey")
+```
+
+# Half-normal function, truncation, group sizes
+
+```{r}
+dfunc <- dfuncEstim(formula = dist ~ groupsize(groupsize)
+                  , detectionData = sparrowDetectionData
+                  , w.hi = units::set_units(100, "m"))
+dfunc
+plot(dfunc, col="grey")
+```
+
+# Half-normal function with factor covariate 
+
+Increase the maximum number of iterations if distance function is having trouble converging.  Here, the `observer` covariate is in the *site* data frame (`sparrowSiteData`), so this data frame must be included in the call to `dfuncEstim`. 
+
+```{r}
+dfuncObs <- dfuncEstim(formula = dist ~ observer
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , w.hi = units::set_units(100, "m")
+                     , control=RdistanceControls(maxIter=1000))
+dfunc
+plot(dfunc, col="grey")
+```
+
+# Hazard-rate function with covariate, truncation, and variable group sizes
+
+Group sizes are not used to estimate the distance function.  Group sizes are used in future calls to `abundEstim`. 
+
+```{r}
+dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                     , likelihood = "hazrate"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , w.hi = units::set_units(100, "m"))
+dfunc
+plot(dfunc, col="grey")
+```
+
+# Hazard rate, covariate, group sizes, left and right truncation
+
+```{r}
+dfunc <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                     , likelihood = "hazrate"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , w.lo = units::set_units(20, "m")
+                     , x.scl = units::set_units(20, "m")
+                     , w.hi = units::set_units(100, "m"))
+dfunc
+plot(dfunc, col="grey")
+```
+
+
+
+# Hazard rate, covariate, group sizes, specify g(0)
+
+Specify $g(0)$ at the intercept by setting `g.x.scl`.  This scales the entire distance function. 
+
+```{r}
+dfunc <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                     , likelihood = "hazrate"
+                     , detectionData = sparrowDetectionData
+                     , siteData = sparrowSiteData
+                     , g.x.scl = 0.8)
+dfunc
+plot(dfunc, col="grey")
+```
+
