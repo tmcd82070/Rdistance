@@ -109,6 +109,3 @@ RdistanceControls(maxIters=2000)
 RdistanceControls(optimizer="optim", likeTol=1e-6) 
 
 }
-\author{
-Trent McDonald \email{tmcdonald@west-inc.com}
-}

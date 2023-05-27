@@ -49,7 +49,4 @@ When \code{observer} = "both", the observers are assumed to be independent. In t
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 }
-\author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-}
 \keyword{model}

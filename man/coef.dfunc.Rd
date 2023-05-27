@@ -44,7 +44,4 @@ coef(dfunc)
 \seealso{
 \code{\link{AIC}}, \code{\link{dfuncEstim}}
 }
-\author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-}
 \keyword{model}

@@ -38,6 +38,3 @@ Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993.
 \seealso{
 \code{\link{dfuncEstim}}
 }
-\author{
-Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
-}

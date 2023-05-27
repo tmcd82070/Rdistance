@@ -93,8 +93,4 @@ Becker, E. F., and P. X. Quang, 2009. \emph{A Gamma-Shaped Detection Function fo
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, \code{\link{uniform.like}}, \code{\link{negexp.like}}
 }
-\author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-}
 \keyword{models}

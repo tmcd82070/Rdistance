@@ -80,6 +80,3 @@ func <- function(x){x[1]^2 + 5*x[2]^2} # should be rbind(c(2,0),c(0,10))
 secondDeriv(c(1,1),func)
 
 }
-\author{
-Trent McDonald
-}

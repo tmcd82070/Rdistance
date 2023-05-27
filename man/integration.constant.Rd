@@ -95,9 +95,4 @@ print(int.y) # Should be 1
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
 }
-\author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}
-        Michael Kleinsasser, WEST Inc.,  \email{mkleinsa@uwyo.edu}
-}
 \keyword{models}

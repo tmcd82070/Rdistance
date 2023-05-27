@@ -33,7 +33,4 @@ fit$x.scl            # same thing
 \seealso{
 \code{\link{dfuncEstim}}
 }
-\author{
-Trent McDonald
-}
 \keyword{model}

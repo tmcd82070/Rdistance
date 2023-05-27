@@ -67,8 +67,4 @@ effectiveDistance(dfunc)
 \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
 \code{\link{effectiveDistance}}
 }
-\author{
-Aidan McDonald, WEST Inc., \email{aidan@mcdcentral.org}\cr Trent
-  McDonald, WEST Inc., \email{tmcdonald@west-inc.com}
-}
 \keyword{modeling}

@@ -45,8 +45,4 @@ set.seed(33328)
 \code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
   of user defined likelihoods in \code{\link{dfuncEstim}}.
 }
-\author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-        Aidan McDonald, WEST, Inc. \email{aidan@mcdcentral.org}
-}
 \keyword{models}

@@ -17,7 +17,7 @@
   xlab = NULL,
   ylab = NULL,
   border = TRUE,
-  col = "blue",
+  col = "grey85",
   col.dfunc = NULL,
   lty.dfunc = NULL,
   lwd.dfunc = NULL,

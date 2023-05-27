@@ -134,7 +134,4 @@ When \code{g.x.scl} is a data frame, it is assumed to contain
 \seealso{
 \code{\link{dfuncEstim}}
 }
-\author{
-Trent McDonald
-}
 \keyword{model}

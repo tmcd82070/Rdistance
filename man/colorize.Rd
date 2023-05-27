@@ -9,11 +9,11 @@ colorize(STR, col = NULL, bg = NULL)
 \arguments{
 \item{STR}{The string to colorize.}
 
-\item{col}{A string specifying the desired forground color.
+\item{col}{A string specifying the desired foreground color.
 This is passed straight to \code{crayon::style} and so must be 
 recognized as one of the 8 base crayon colors. i.e., 
 "black", "red", "green", "yellow", "blue", "magenta", "cyan", 
-"white", and "silver" (silver = grey). By default, numbers 
+"white", and "silver" (silver = gray). By default, numbers 
 are styled in "green".}
 
 \item{bg}{A string specifying the desired background color. 

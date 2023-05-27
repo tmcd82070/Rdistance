@@ -385,7 +385,4 @@ Silverman, B. W. (1986) \emph{Density Estimation}. London: Chapman and Hall.
 \code{\link{abundEstim}}, \code{\link{autoDistSamp}}, 
 \code{\link{dfuncEstim}} for the parametric version.
 }
-\author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-}
 \keyword{model}

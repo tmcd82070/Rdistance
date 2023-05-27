@@ -32,6 +32,3 @@ code that returns user-defined parameter names is,
 ans <- fn(1, 0, 0, 1);
 ans$names}
 }
-\author{
-Trent McDonald
-}

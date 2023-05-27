@@ -94,7 +94,4 @@ Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
 \code{\link{dfuncEstim}}, \code{\link{EDR}}, 
 \code{\link{effectiveDistance}}
 }
-\author{
-Trent McDonald
-}
 \keyword{modeling}

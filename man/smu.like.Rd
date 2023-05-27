@@ -112,7 +112,4 @@ L <- smu.like(a=dfunc$parameters,
          \code{\link{negexp.like}},
          \code{\link{halfnorm.like}}
 }
-\author{
-Trent McDonald, WEST, Inc. \email{tmcdonald@west-inc.com}
-}
 \keyword{models}

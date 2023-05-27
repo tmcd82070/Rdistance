@@ -9,8 +9,10 @@ abundEstim(
   detectionData,
   siteData,
   area = NULL,
+  singleSided = FALSE,
   ci = 0.95,
   R = 500,
+  lengthColumn = "length",
   plot.bs = FALSE,
   bySite = FALSE,
   showProgress = TRUE,
@@ -28,7 +30,7 @@ information:
 \itemize{
   \item Detection Distances: A single column containing 
   detection distances must be specified on the left-hand 
-  side of \code{formula}.  As of Rdistance version 2.2.0, 
+  side of \code{formula}.  As of Rdistance version 3.0.0, 
   the detection distances must have measurement units attached. 
   Attach measurements units to distances using \code{library(units);units()<-}.
   For example, \code{library(units)} followed by \code{units(df$dist) <- "m"} or 
@@ -58,25 +60,20 @@ for information on when \code{detectionData} and
 Every unique surveyed site (transect or point) is represented on
 one row of this data set, whether or not targets were sighted 
 at the site.  See arguments \code{transectID} and 
-\code{pointID} for an explanation of site and transect ID's. 
+\code{pointID} for an explanation of the way in which distance and site 
+data frames are merged.  See 
+section \bold{Relationship between data frames (transect and point ID's)}
+for additional details.
 
-If sites are transects, 
-this data frame must also contain transect length. By 
-default, transect length is assumed to be in column 'length' 
-but can be specified using argument \code{length}. 
+See \bold{Data frame requirements} for situations in which 
+\code{detectionData} only, \code{detectionData} and \code{siteData}, or 
+neither are required.}
 
-The total number of sites surveyed is \code{nrow(siteData)}. 
-Duplicate site-level IDs are not allowed in \code{siteData}. 
-
-See \bold{Input data frames} 
-for when \code{detectionData} and \code{siteData} are required inputs.}
-
-\item{area}{A scalar containing total area of 
+\item{area}{A scalar containing the total area of 
 inference. Commonly, this is study area size.  
 If \code{area} is NULL (the default), 
-area is set to 1 square unit of the output units. The default
-produces abundance estimates that equal density estimates
-(density estimates are always produced). 
+\code{area} will be set to 1 square unit of the output units and this
+produces abundance estimates equal density estimates. 
 If \code{area} is not NULL, it must have measurement units 
 assigned by the \code{units} package. 
 The units on \code{area} must be convertible
@@ -88,21 +85,29 @@ package.
 Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and many
 others are acceptable.}
 
+\item{singleSided}{Logical scaler. If only one side of the transect was 
+observed, set \code{singleSided} = TRUE. If both sides of line-transects were 
+observed, \code{singleSided} = FALSE. Some surveys
+observe only one side of transect lines for a variety of logistical reasons. 
+For example, some aerial line-transect surveys place observers on only one
+side of the aircraft. This parameter effects only line-transects.  When 
+\code{singleSided} = TRUE, surveyed area is halved and the density 
+estimator's denominator (see \bold{Details})
+is \eqn{(ESW)(L)}, not \eqn{2(ESW)(L)}.}
+
 \item{ci}{A scalar indicating the confidence level of confidence intervals. 
-Confidence intervals are computed using the bias corrected bootstrap
+Confidence intervals are computed using a bias corrected bootstrap
 method. If \code{ci = NULL}, confidence intervals are not computed.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
 NULL.}
 
+\item{lengthColumn}{Character string specifying the (single) column in 
+\code{siteData} that contains transect lengths. This is ignored if 
+\code{pointSurvey} = TRUE. This column must have measurement units.}
+
 \item{plot.bs}{A logical scalar indicating whether to plot individual
 bootstrap iterations.}
-
-\item{bySite}{A logical scalar indicating whether to compute site-level
-estimates of abundance. The default (\code{bySite=FALSE}) returns only one
-overall abundance estimate. This routine does not calculate confidence
-intervals for these site-level abundance estimates, so \code{ci} is set to
-\code{NULL} if \code{bySite = TRUE}. See \code{\link{estimateN}}.}
 
 \item{showProgress}{A logical indicating whether to show a text-based
 progress bar during bootstrapping. Default is \code{TRUE}. 
@@ -120,58 +125,67 @@ See examples below for how to change controls.}
 \value{
 An 'abundance estimate' object, which is a list of
   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
-  object (see \code{dfuncEstim}), plus the following: 
+  object (see \code{\link{dfuncEstim}}), plus the following: 
   
-  NOTE: THESE OUTPUT OBJECT DESCRIPTIONS NEED TO BE UPDATED. 
-  
-  \item{density}{Estimated density on the sampled area. The \emph{effectively}
+  \item{density}{Estimated density on the sampled area with units. The \emph{effectively}
   sampled area is 2*L*ESW (not 2*L*w.hi). Density has squared units of the 
-  requested output units.  E.g., if \code{outputUnits} = "km" in the call 
-  to \code{dfuncEstim}}, units on density are 1/km^2. No flexibility exists
-  to have obtain different distance and density units (e.g., "m" and "ha", or "km" and 
-  "acre").  To convert density to other units, use 
-  \code{units::set_units(x$density, "<units>")}. 
+  requested output units.  Convert density to other units with  
+  \code{units::set_units(x$density, "<units>").}} 
   
- \item{abundance}{Estimated abundance in the study area (if \code{area} >
- 1) or estimated density in the study area (if \code{area} = 1).}
+  \item{n.hat}{Estimated abundance on the study area (if \code{area} >
+  1) or estimated density on the study area (if \code{area} = 1), without units.}
  
-  \item{n}{The number of detections
- (not individuals, unless all group sizes = 1) used in the estimate of
- abundance.}
+  \item{n}{The number of detections (not individuals, unless all group sizes = 1) 
+  on non-NA length transects
+  used to compute density and abundance.}
+  
+  \item{n.seen}{The total number of individuals seen on transects with non-NA
+  length. Sum of group sizes used 
+  to estimate density and abundance.}
  
-  \item{area}{Total area of inference. Study area size}
+  \item{area}{Total area of inference in squared output units.}
   
-  \item{effDistance}{Effective strip width for line-transects, effective
-  radius for point-transects.  Both derived from \code{dfunc}. 
-  See \code{\link{ESW}} or \code{\link{EDR}} for formulas.}
+  \item{surveyedUnits}{The total length of sampled transect with units. This is the sum 
+  of the \code{lengthColumn} column of \code{siteData}. }
   
-  \item{n.sites}{Total number of transects for line-transects, 
-  total number of points for point-transects.}
+  \item{avg.group.size}{Average group size on transects with non-NA length transects.}
   
-  \item{tran.len}{Total transect length. NULL for point-transects.}
+  \item{rng.group.size}{Minimum and maximum groupsizes observed on non-NA length transects.}
   
-  \item{avg.group.size}{Average group size}
+  \item{effDistance}{A vector containing effective sample distance.  If covariates
+  are not included, length of this vector is 1 because effective sampling distance 
+  is constant over detections. If covariates are included, this vector has length
+  equal to the number of detections (i.e., \code{x$n}).  This vector was produced 
+  by a call to \code{effectiveDistance()} with \code{newdata} set to NULL.}
   
-  \item{n.hat.ci}{The bias corrected bootstrap confidence interval for
-  abundance (i.e., \code{n.hat}).  The names of this component 
-  give the quantiles of the bootstrap distribution used during computation of
-  the bias corrected interval.} 
+  \item{n.hat.ci}{A vector containing the lower and upper limits of the 
+  bias corrected bootstrap confidence interval for
+  abundance. } 
   
-  \item{density.ci}{The bias corrected bootstrap confidence interval for
-  density (i.e., \code{density}).
+  \item{density.ci}{A vector containing the lower and upper limits of the 
+  bias corrected bootstrap confidence interval for
+  density, with units.
   }
 
-  \item{effDistance.ci}{The bias corrected bootstrap confidence interval for
-  effective sampling distance (i.e., \code{effDistance}).
+  \item{effDistance.ci}{A vector containing the lower and upper limits of the 
+  bias corrected bootstrap confidence interval for \emph{average}
+  effective sampling distance.
   }
   
-  \item{B}{A data frame containing bootstrap density and effective distance 
-  values.  Number of rows is always \code{R}, the number of bootstrap 
-  requested iterations.  If a particular iteration did not converge, the
-  corresponding row in \code{B} is all \code{NA} (e.g., use 'na.rm = TRUE' 
-  when computing summaries). One column of the data frame 
-  contains bootstrap values of \code{density}.  Another column contains bootstrap 
-  values of \code{effDistance}. Bootstrap abundance values are 'B$density' * area.}
+  \item{B}{A data frame containing bootstrap values of coefficients, 
+  density, and effective distances.  Number of rows is always 
+  \code{R}, the requested number of bootstrap 
+  iterations.  If a particular iteration did not converge, the
+  corresponding row in \code{B} is \code{NA} (hence, use 'na.rm = TRUE' 
+  when computing summaries). Columns 1 through \code{length(coef(dfunc))}
+  contain bootstrap realizations of the distance function's coefficients. 
+  The second to last column contains bootstrap values of
+  density (with units).  The last column of B contains bootstrap 
+  values of effective sampling distance or radius (with units). If the 
+  distance function contains covariates,
+  the effective sampling distance column is the average 
+  effective distance over detections 
+  used during the associated bootstrap iteration. }
   
   \item{nItersConverged}{The number of bootstrap iterations that converged.  }
   
@@ -181,23 +195,26 @@ An 'abundance estimate' object, which is a list of
 \description{
 Estimate abundance (or density) given an estimated detection
   function and supplemental information on observed group sizes, transect
-  lengths, area surveyed, etc.  Also computes confidence intervals of
-  abundance (or density) using the bias corrected bootstrap method.
+  lengths, area surveyed, etc.  Also computes confidence intervals on
+  abundance (or density) using a the bias corrected bootstrap method.
 }
 \details{
-The abundance estimate for line transect surveys (if no covariates
-   are included in the detection function) is 
+The abundance estimate for line-transect surveys (if no covariates
+   are included in the detection function and both sides of the transect 
+   were observed) is 
    \deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
          N = n*A / (2*ESW*L)} 
    where \emph{n} is total number of sighted individuals 
-  (i.e., \code{sum(group.sizes)}), \emph{L} is the total length of 
-  surveyed transect,
+  (i.e., \code{sum(dfunc$detections$groupSizes)}), \emph{L} is the total length of 
+  surveyed transect (i.e., \code{sum(siteData[,lengthColumn])}),
   and \emph{ESW} is effective strip width
   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
+  If only one side of transects were observed, the "2" in the denominator 
+  is not present (or, replaced with a "1"). 
   
   The abundance estimate for point transect surveys (if no covariates are
   included) is 
-   \deqn{N =\frac{n(A)}{\pi ESR^2 P}}{%
+   \deqn{N =\frac{n(A)}{\pi(ESR^2)(P)}}{%
          N = n*A / ((3.1415)*ESR^2*(P))} 
    where \emph{n} is total number of sighted individuals,
    \emph{P} is the total number of surveyed points, 
@@ -255,36 +272,46 @@ The abundance estimate for line transect surveys (if no covariates
   counting non-NA rows in output data frame 'B'.
 }
 
+\section{Missing Transect Lengths}{
+
+
+  The transect length column of \code{siteData} can contain missing values. 
+  NA length transects are equivalent
+  to 0 [m] transects and do not count toward total surveyed units.  NA length
+  transects are handy if some off-transect distance observations should be included
+  when estimating the distance function, but not when estimating abundance. 
+  To do this, include the "extra" distance observations in the detection data frame, with valid
+  site IDs, but set the length of those site IDs to NA in the site data frame. 
+  Group sizes associated with NA length transects are dropped and not counted toward density
+  or abundance. Among other things, this allows estimation of abundance on one 
+  study area using off-transect distance observations from another.  This only 
+  applies to line-transects because point-transects use number of points, not length.
+}
+
 \examples{
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)
 data(sparrowSiteData)
 
 # Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist~1
+dfunc <- dfuncEstim(formula=dist ~ groupsize(groupsize)
                     , detectionData=sparrowDetectionData
                     , likelihood="halfnorm"
                     , w.hi=units::set_units(100, "m")
-                    , pointSurvey=FALSE)
+                    )
 
 # Estimate abundance given a detection function
 # Note, a person should do more than R=20 iterations
 fit <- abundEstim(dfunc
-                , detectionData=sparrowDetectionData
-                , siteData=sparrowSiteData
-                , R=20
-                , ci=0.95
-                , area=units::set_units(10000, "m^2")
-                , plot.bs=TRUE
-                , bySite=FALSE)
-
-# Print results
-fit
+                , detectionData = sparrowDetectionData
+                , siteData = sparrowSiteData
+                , area = units::set_units(4105, "km^2")
+                )
          
 }
 \references{
 Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
-  monte-carlo methods in biology}, London: Chapman and Hall.
+  Monte-Carlo methods in biology}, London: Chapman and Hall.
   
   Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
@@ -292,11 +319,5 @@ Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{autoDistSamp}}.
-}
-\author{
-Trent McDonald, \email{trent@mcdonalddatasciences.com}\cr 
-  Aidan McDonald, \email{aidan@mcdcentral.org}\cr 
-  Jason Carlisle, Wyoming Game and Fish Department, 
-  \email{jason.carlisle@wyo.gov}
 }
 \keyword{model}

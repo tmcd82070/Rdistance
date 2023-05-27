@@ -41,7 +41,7 @@ A list containing the following components:
 }
 }
 \description{
-DEPRICATED: Starting values and limits for parameters of the uniform 
+DEPRECATED.: Starting values and limits for parameters of the uniform 
 distance function.
 }
 \details{

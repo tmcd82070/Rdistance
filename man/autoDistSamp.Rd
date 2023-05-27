@@ -167,9 +167,4 @@ autoDistSamp(formula = dist ~ 1
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
 }
-\author{
-Trent McDonald, WEST Inc.,  \email{tmcdonald@west-inc.com}\cr
-        Aidan McDonald, WEST Inc.,  \email{aidan@mcdcentral.org}\cr
-        Jason Carlisle, University of Wyoming and WEST Inc., \email{jcarlisle@west-inc.com}
-}
 \keyword{model}
