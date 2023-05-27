@@ -47,7 +47,7 @@ print.dfunc <- function( x, criterion="AICc", ... ){
 #   Print a distance function
 #
 
-    is.smoothed <- class(x$fit) == "density"
+    is.smoothed <- inherits( x$fit, "density" )
 
     callLine <- deparse(x$call)
     callLine <- paste(callLine, collapse = " ")
@@ -142,13 +142,39 @@ print.dfunc <- function( x, criterion="AICc", ... ){
       }
     } else {
       if(x$pointSurvey){
-        cat(paste("Average effective detection radius (EDR):", 
+        mess <- "Average effective detection radius (EDR):"
+        cat(paste(mess, 
                   colorize(format(mean(effDist))), "\n"))
+        if( all(!is.null(x$effDistance.ci)) ){
+          ciMess <- paste0(
+            paste(rep(" ", nchar(mess) - 7), collapse = "")
+            , x$alpha*100
+            , "% CI: "
+            , colorize(format(x$effDistance.ci[1]))
+            , " to " 
+            , colorize(format(x$effDistance.ci[2])) 
+            , "\n"
+          ) 
+          cat(ciMess)
+        }
         cat(paste("Average probability of detection:", 
                   colorize(format(mean(pDetect^2))), "\n"))
       } else {
-        cat(paste("Average effective strip width (ESW):", 
-                  colorize(format(mean(effDist))), "\n"))
+        mess <- "Average effective strip width (ESW):"
+        cat(paste(mess
+                , colorize(format(mean(effDist))), "\n"))
+        if( all(!is.null(x$effDistance.ci)) ){
+          ciMess <- paste0(
+            paste(rep(" ", nchar(mess) - 7), collapse = "")
+            , x$alpha*100
+            , "% CI: "
+            , colorize(format(x$effDistance.ci[1]))
+            , " to " 
+            , colorize(format(x$effDistance.ci[2])) 
+            , "\n"
+          ) 
+          cat(ciMess)
+        }
         cat(paste("Average probability of detection:", 
                   colorize(format(mean(pDetect))), "\n"))
       }

@@ -1,9 +1,9 @@
 #' @title Abundance point estimates
 #' 
 #' @description Estimate abundance given a distance function, 
-#' total number of sampled units (length or points), and area.  
-#' This is called internally 
-#' by \code{abundEstim}.  Most users will call 
+#' a "merged" data frame containing detections and transect lengths, area, 
+#' and the number of sides surveyed (if line-transects).   
+#' This is called internally by \code{abundEstim}.  Most users will call 
 #' \code{abundEstim} to estimate abundance. 
 #' 
 #' @param dfunc An estimate distance function (see \code{dfuncEstim}).
@@ -13,63 +13,50 @@
 #' points (for point transects). This number is either $L$ or $P$ in the 
 #' abundance formulas (Details).
 #' 
+#' @param data A data frame containing distance observations, transects, 
+#' and lengths.  This data frame must have a column named 'siteID' that identifies
+#' unique sites (transects or points). If observations on line-transects, this 
+#' data frame must have a column named 
+#' in the \code{lengthColumn} parameter that contains transect lengths. NA
+#' length transects are accepted and are dropped when computing total 
+#' transect length in denominator of density.
+#' Only observations on non-NA transects are included in the numerator of density.
+#' 
 #' @inheritParams abundEstim
 #' 
-#' @inheritParams dfuncEstim  # for 'control'
-#' 
+#' @inheritParams dfuncEstim  
+#'  
 #' @inherit abundEstim details
 #'   
-#' @return If \code{bySite} is FALSE, a list containing the following components:
-#'    \item{dfunc}{The input distance function.}
-#'    \item{abundance}{Estimated abundance in the study area (if \code{area} >
-#'   1) or estimated density in the study area (if \code{area} = 1).}
-#'    \item{n}{The number of detections
-#'   (not individuals, unless all group sizes = 1) used in the estimate of
-#'   abundance.}
-#'    \item{area}{Total area of inference. Study area size}
-#'    \item{esw}{Effective strip width for line-transects, effective
-#'    radius for point-transects.  Both derived from \code{dfunc}}.
-#'    \item{n.sites}{Total number of transects for line-transects, 
-#'    total number of points for point-transects.}
-#'    \item{tran.len}{Total transect length. NULL for point-transects.}
-#'    \item{avg.group.size}{Average group size}
+#' @return A list containing the following components:
+#' 
+#'    \item{density}{Estimated density in the surveyed area.}
 #'    
-#'    If \code{bySite} is TRUE, a data frame containing site-level 
-#'    estimated abundance.  The data frame is an exact copy of \code{siteData}
-#'    with the following columns tacked onto the end:
-#'     
-#'    \item{effDist}{The effective sampling distance at the site.  For line-
-#'    transects, this is ESW at the site.  For points, this is EDR. } 
-#'    \item{pDetection}{Average probability of detection at the site. 
-#'    If only site-level covariates appear in the distance function, 
-#'    pDetection is constant within a site. When detection-level 
-#'    covariates are present, pDetection is the average at the site.}
-#'    \item{observedCount}{The total number of individuals detected at a site.}
-#'    \item{abundance}{Estimated abundance at the site. This is the sum
-#'    of inflated group sizes at the site. i.e., each group size 
-#'    at the site is divided by its pDetection, and then summed.    }
-#'    \item{density}{Estimated density at the site. This is abundance 
-#'    at the site divided by the sampled area at the site.  E.g., for 
-#'    line transects, this is abundance divided by \eqn{2*w*length}. For 
-#'    points, this is abundance divided by \eqn{pi*w^2}.}
-#'    \item{effArea}{The effective area sampled at the site. This could be used
-#'    as an offset in a subsequent linear model. For 
-#'    line transects, this is \eqn{2*ESW*length}. For 
-#'    points, this is \eqn{pi*EDR^2}.}
-#'
-#  MOVE THIS TO NEW BY SITE ROUTINE    
-# @details 
-# If \code{x} is the data frame returned when \code{bySite} = TRUE, 
-# the following is true: 
-# \enumerate{
-#   \item For line transects, \code{sum(x$abundance)*area/(2*w*sum(x$length))}
-#     is the estimate of abundance on the study area or the 
-#     abundance estimate when \code{bySite} = FALSE.
-#     
-#   \item \code{area*sum(x$density)/nrow(x)} is the estimate of abundance 
-#   on the study area or the abundance estimate when \code{bySite} = FALSE.
-# 
-# }
+#'    \item{abundance}{Estimated abundance on the study area.}
+#'    
+#'    \item{n.groups}{The number of detections (not individuals, unless all group sizes = 1) 
+#'    used to estimate density and abundance.}
+#'    
+#'    \item{n.seen}{The number of individuals (sum of group sizes) used to 
+#'    estimate density and abundance.}
+#'    
+#'    \item{area}{Total area of inference. Study area size}
+#'    
+#'    \item{surveyedUnits}{Number of surveyed sites.  This is total transect length
+#'    for line-transects and number of points for point-transects. This total transect
+#'    length does not include NA transects.}
+#'    
+#'    \item{surveyedSides}{Number of sides (1 or 2) of transects surveyed. Only relevant for line-transects.}
+#'    
+#'    \item{avg.group.size}{Average group size on non-NA transects}
+#'    
+#'    \item{w}{Strip width. }
+#'    
+#'    \item{pDetection}{Probability of detection.}
+#'    
+#' For line-transects that do not involve covariates, x$density  
+#' is x$n.seen / (x$surveyedSides * x$w * x$pDetection * x$surveyedUnits)
+#'    
 #'         
 #'    
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
@@ -79,8 +66,10 @@
 #' @export 
 
 estimateN <- function(dfunc
-                      , surveyedUnits
+                      , data
                       , area = NULL
+                      , surveyedSides
+                      , lengthColumn
                       , control = RdistanceControls()
                       ){
   
@@ -128,16 +117,23 @@ estimateN <- function(dfunc
     area <- units::set_units(area, squareOutputUnits, mode = "standard")
   }
   
+  # ---- Find observations on NA length transects inside the strip ----
+  mt <- terms(dfunc$model.frame)
+  distColumn <- all.vars(mt)[attr(mt, "response")]
+  inStrip <- (dfunc$w.lo <= data[,distColumn]) &
+    (data[,distColumn] <= dfunc$w.hi)
+  onPosTransect <- !is.na(data[, lengthColumn ])
+  distPresent <- !is.na(data[, distColumn])
+  obsInd <- inStrip & onPosTransect & distPresent
+  
   # ---- Estimate numerator of abundance ----
   # REMEMBER: component $detections of dfunc has been truncated to (w.lo, w.hi)
   #           component $model.frame has NOT been truncated to the strip
 
-  # sample size (number of detections, NOT individuals)
-  n <- nrow(dfunc$detections)
-  
   # If dfunc has covariates, esw is a vector of length n. No covars, esw is scalar
   # If dfunc is pointSurveys, esw is EDR.  If line surveys, esw is ESW.
-  esw <- effectiveDistance(dfunc)
+  esw <- effectiveDistance(dfunc
+                         , newdata = data[ obsInd, , drop = FALSE])
     
   w <- dfunc$w.hi - dfunc$w.lo
   
@@ -153,8 +149,16 @@ estimateN <- function(dfunc
   if( isUnitless(phat)  ){
     phat <- units::drop_units(phat)
   }
+
+  if( !is.null(attr(mt, "offset")) ){
+    gsCol <- all.vars(mt)[attr(mt, "offset")]
+    gs <- data[, gsCol]
+    gs <- gs[ obsInd ]
+  } else {
+    gs <- rep(1, sum(obsInd))
+  }
   
-  nhat <- dfunc$detections$groupSize / phat # inflated counts one per detection
+  nhat <- gs / phat # inflated counts one per detection
   
   # ---- Compute denominator of abundance, and abundance itself ----
   
@@ -162,97 +166,109 @@ estimateN <- function(dfunc
     
     # MOVE ALL THIS TO A PREDICT METHOD
     
-    if(!is.null(dfunc$covars)){
-      covarsInModel <- attr(terms(dfunc$model.frame), "term.labels")
-      allSiteLevelCovs <- all( covarsInModel %in% names(siteData) )
-      if( !allSiteLevelCovs ) {
-        nonSiteLevCovs <- paste("'",covarsInModel[!(covarsInModel %in% names(siteData))], 
-                                "'",collapse = ", ", sep="")
-        mess <-"Cannot estimate site-level abundance. bySite is TRUE but detection-level "
-        if(regexpr(",", nonSiteLevCovs) < 0) {
-          mess <- paste0(mess, "covariate ",
-                       nonSiteLevCovs,
-                       " is in the model. Options: remove this covariate from dfunc; ",
-                       "set bySite=FALSE; or, summarize it to the site-level,", 
-                       " place it in siteData under same name, and re-run ", 
-                       "abundEstim WITHOUT re-running dfuncEstim.")
-        } else {
-          mess <- paste0(mess, "covariates ",
-                         nonSiteLevCovs,
-                         " are in the model. Options: remove these covariates from dfunc; ",
-                         "set bySite=FALSE; or, summarize them to the site-level,", 
-                         " place them in siteData under same names, and re-run ", 
-                         "abundEstim WITHOUT re-running dfuncEstim.")
-          
-        }
-        stop(mess)
-      }
-    }
-    
-    # ---- sum statistics by siteID
-
-    nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat)
-    nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum)
-    nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df)
-
-    observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
-    observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount)
-
-    nhat.df <- merge(observedCount, nhat.df)  # should match perfectly
-
-    # If detectionData$siteID is a factor and has all levels, even zero
-    # sites, don't need to do this.  But, to be safe merge back to 
-    # get zero transects and replace NA with 0 
-
-    # Must do this to get pDetection on 0-sites.  Site must have 
-    # non-missing covars if dfunc has covars
-    esw <- effectiveDistance(dfunc, siteData)
-    siteData <- data.frame(siteData, esw=esw)
-    
-    if (dfunc$pointSurvey) {
-      siteData$pDetection <- (siteData$esw / w)^2  # for points
-    } else {
-      siteData$pDetection <- siteData$esw / w  # for lines
-    }
-    
-    
-    nhat.df <- merge(siteData, nhat.df, by="siteID", all.x=TRUE)
-    nhat.df$observedCount[is.na(nhat.df$observedCount)] <- 0
-    nhat.df$abundance[is.na(nhat.df$abundance)] <- 0
-    
-    # Calculate density
-    if (dfunc$pointSurvey) {
-      sampledArea <- pi * w^2  # area samled for single point  
-    } else {
-      sampledArea <- 2 * w * nhat.df$length  # area sampled for single line
-    }
-    nhat.df$density <- (nhat.df$abundance * area) / sampledArea
-    
-    
-    # Calculate effective area ("effective" as in ESW)
-    # This is suggested as the offset term in a GLM model of density
-    if (dfunc$pointSurvey) {
-      nhat.df$effArea <- (pi * nhat.df$esw^2) / area  # for points
-    } else {
-      nhat.df$effArea <- (nhat.df$length * nhat.df$esw * 2) / area  # for lines
-    }
-    
-    
-    # Replace the column name for "esw", which is edr for points
-    if (dfunc$pointSurvey) {
-      names(nhat.df)[names(nhat.df)=="esw"] <- "EDR"  # for points
-    } else {
-      names(nhat.df)[names(nhat.df)=="esw"] <- "ESW"  # for lines
-    }
+    # if(!is.null(dfunc$covars)){
+    #   covarsInModel <- attr(terms(dfunc$model.frame), "term.labels")
+    #   allSiteLevelCovs <- all( covarsInModel %in% names(siteData) )
+    #   if( !allSiteLevelCovs ) {
+    #     nonSiteLevCovs <- paste("'",covarsInModel[!(covarsInModel %in% names(siteData))], 
+    #                             "'",collapse = ", ", sep="")
+    #     mess <-"Cannot estimate site-level abundance. bySite is TRUE but detection-level "
+    #     if(regexpr(",", nonSiteLevCovs) < 0) {
+    #       mess <- paste0(mess, "covariate ",
+    #                    nonSiteLevCovs,
+    #                    " is in the model. Options: remove this covariate from dfunc; ",
+    #                    "set bySite=FALSE; or, summarize it to the site-level,", 
+    #                    " place it in siteData under same name, and re-run ", 
+    #                    "abundEstim WITHOUT re-running dfuncEstim.")
+    #     } else {
+    #       mess <- paste0(mess, "covariates ",
+    #                      nonSiteLevCovs,
+    #                      " are in the model. Options: remove these covariates from dfunc; ",
+    #                      "set bySite=FALSE; or, summarize them to the site-level,", 
+    #                      " place them in siteData under same names, and re-run ", 
+    #                      "abundEstim WITHOUT re-running dfuncEstim.")
+    #       
+    #     }
+    #     stop(mess)
+    #   }
+    # }
+    # 
+    # # ---- sum statistics by siteID
+    # 
+    # nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat)
+    # nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum)
+    # nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df)
+    # 
+    # observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
+    # observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount)
+    # 
+    # nhat.df <- merge(observedCount, nhat.df)  # should match perfectly
+    # 
+    # # If detectionData$siteID is a factor and has all levels, even zero
+    # # sites, don't need to do this.  But, to be safe merge back to 
+    # # get zero transects and replace NA with 0 
+    # 
+    # # Must do this to get pDetection on 0-sites.  Site must have 
+    # # non-missing covars if dfunc has covars
+    # esw <- effectiveDistance(dfunc, siteData)
+    # siteData <- data.frame(siteData, esw=esw)
+    # 
+    # if (dfunc$pointSurvey) {
+    #   siteData$pDetection <- (siteData$esw / w)^2  # for points
+    # } else {
+    #   siteData$pDetection <- siteData$esw / w  # for lines
+    # }
+    # 
+    # 
+    # nhat.df <- merge(siteData, nhat.df, by="siteID", all.x=TRUE)
+    # nhat.df$observedCount[is.na(nhat.df$observedCount)] <- 0
+    # nhat.df$abundance[is.na(nhat.df$abundance)] <- 0
+    # 
+    # # Calculate density
+    # if (dfunc$pointSurvey) {
+    #   sampledArea <- pi * w^2  # area samled for single point  
+    # } else {
+    #   sampledArea <- 2 * w * nhat.df$length  # area sampled for single line
+    # }
+    # nhat.df$density <- (nhat.df$abundance * area) / sampledArea
+    # 
+    # 
+    # # Calculate effective area ("effective" as in ESW)
+    # # This is suggested as the offset term in a GLM model of density
+    # if (dfunc$pointSurvey) {
+    #   nhat.df$effArea <- (pi * nhat.df$esw^2) / area  # for points
+    # } else {
+    #   nhat.df$effArea <- (nhat.df$length * nhat.df$esw * 2) / area  # for lines
+    # }
+    # 
+    # 
+    # # Replace the column name for "esw", which is edr for points
+    # if (dfunc$pointSurvey) {
+    #   names(nhat.df)[names(nhat.df)=="esw"] <- "EDR"  # for points
+    # } else {
+    #   names(nhat.df)[names(nhat.df)=="esw"] <- "ESW"  # for lines
+    # }
     
     
   } else {
-    
+
     # ----  not bySite ----
+    
+    # ---- Compute number of points or transect length ----
+    if( dfunc$pointSurvey ){
+      totSurveyedUnits <- length(unique(data$siteID))
+    } else {
+      # Note: drop NA length transects here, which may have detections
+      # There are dups because data has one row per detection and there 
+      # are multiple detections per transect.
+      dups <- duplicated(data$siteID)
+      totSurveyedUnits <- sum(data[!dups,,drop=FALSE][,lengthColumn], na.rm = TRUE)
+    }
+    
     if(dfunc$pointSurvey){
       dens <- sum(nhat) / (pi * w^2 * surveyedUnits)
     } else {
-      dens <- sum(nhat) / (2 * w * surveyedUnits)
+      dens <- sum(nhat) / (surveyedSides * w * surveyedUnits)
     }
     
     nhat.df <- dens * area
@@ -267,15 +283,15 @@ estimateN <- function(dfunc
     
     nhat.df <- list(density = dens
                     , abundance = nhat.df
-                    , n.groups = n
+                    , n.groups = length(gs)
+                    , n.seen = sum(gs)
                     , area = area
                     , surveyedUnits = surveyedUnits
-                    , avg.group.size = mean(dfunc$detections$groupSize)
+                    , surveyedSides = surveyedSides
+                    , avg.group.size = mean(gs)
+                    , range.group.size = range(gs)
                     , w = w
                     , pDetection = phat
-                    # , nhat.sampleArea = sum(nhat)
-                    # , observedCount = sum(dfunc$detections$groupSize)
-                    # , esw = esw
                     )
   }
     

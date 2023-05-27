@@ -67,17 +67,23 @@ print.abund <- function( x,
   hasCI <- all(!is.null(x$density.ci))
   
   # ---- Groupsize printout ----
-  gS <- x$detections$groupSize
-  if( diff(range(gS)) > 0){
-    mess <- format(c("Average group size:",  "Range:"), justify = "right")
-    mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
-    avgGs <- c(colorize( format( mean(gS) ))
-             , paste(colorize(format( min(gS) ))
+  if( diff(x$rng.group.size) > 0){
+    mess <- format(c(
+                    "Surveyed Units:"
+                  , "Individuals seen:"
+                  , "Average group size:"
+                  , "Range:"), justify = "right")
+    mess[1] <- paste0(" ", mess[1]) # pesky " " that happens with cat and \n
+    avgGs <- c(
+               format(x$surveyedUnits)
+             , paste( format(x$n.seen), "in", format(x$n), "groups")
+             , colorize( format( x$avg.group.size ))
+             , paste(colorize(format( x$rng.group.size[1] ))
                             , "to"
-                            , colorize(format( max(gS) ))))
-  } else {
-    mess <- "Average group size:"
-    avgGs <- colorize( format( mean(gS) ))
+                            , colorize(format( x$rng.group.size[2] ))))
+  # } else {
+  #   mess <- "Average group size:"
+  #   avgGs <- colorize( format( x$avg.group.size ))
   }
   mess <- paste(mess, avgGs)
   cat(paste(mess, "\n"))

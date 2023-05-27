@@ -225,7 +225,7 @@ plot.dfunc <- function( x,
                         xlab = NULL,
                         ylab = NULL,
                         border = TRUE,
-                        col = "blue",
+                        col = "grey85",
                         col.dfunc=NULL,
                         lty.dfunc=NULL,
                         lwd.dfunc=NULL,
@@ -239,14 +239,15 @@ plot.dfunc <- function( x,
   whi <- x$w.hi
   wlo <- x$w.lo
   xInStrip <- d[(d < whi) & (d > wlo)]
-  cnts <- hist( xInStrip, plot=FALSE, 
-                breaks=nbins, warn.unused = FALSE )
+  cnts <- hist( xInStrip
+             , plot=FALSE
+             , breaks=nbins
+             , warn.unused = FALSE )
   
   # hist should return breaks with units attached, but it does not
   cnts$breaks <- units::as_units(cnts$breaks, x$outputUnits)
   cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
   xscl <- cnts$mid[2] - cnts$mid[1]
-
 
   #   Gotta add bars on the left if first bar is not at w.lo.  I.e., if first 
   #   bar is not zero.  Zero bars at top end are not a problem, but low end are because
@@ -282,7 +283,7 @@ plot.dfunc <- function( x,
     }
     
     # Note: x$model.frame has all distances, even those < w.lo and > w.hi,
-    # and x$model.frame[,1] is the response (i.e., distances).
+    # and x$model.frame[,attr(terms(x$model.frame), "response")] is the response (i.e., distances, usually column 1).
     # x$covars has ONLY covariates for distances between w.lo and w.hi
     # x$model.frame has the original factors un-expanded to indicator variables.
     # x$covars has all factors expanded into indicators using specified contrasts.
@@ -519,6 +520,7 @@ plot.dfunc <- function( x,
   # x$yscl <- scaler   # this is g(x) / f(x) = ESW if lines. One for each row in newdata.  Might want this later.
   x$barHeights <- ybarhgts  # scaled to mean scaler.
   x$barWidths <- xscl
+  x$predCovValues <- newdata
   
   invisible(x)
 }
