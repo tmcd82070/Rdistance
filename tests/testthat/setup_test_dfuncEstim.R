@@ -65,29 +65,43 @@ test_dfuncEstim <- function( detectParams,
     
     # cat(crayon::green(paste("i=",i,testParams)))
     # cat("\n")
+    # ---- Get units of responses for w.lo, w.hi, and x.scl ----
+    formulaVars <- all.vars(formula)
+    responseLoc <- attr(terms(formula), "response")
+    responseVar <- formulaVars[responseLoc]
+    outUnits <- detectParams$outputUnits[i]
     
     # ---- x.scl param ----
     if( detectParams$x.scl[i] == "max" ){
       param.x.scl = "max"
     } else {
       param.x.scl = units::set_units(as.numeric(detectParams$x.scl[i]), 
-                                     detectParams$outputUnits[i], 
+                                     units(detectDf[,responseVar]), 
                                      mode = "standard")
     }
+    param.x.scl.output <- units::set_units(param.x.scl
+                                         , detectParams$outputUnits[i]
+                                         , mode = "standard")
     
     # ---- w.lo param ----
     param.w.lo = units::set_units(as.numeric(detectParams$w.lo[i]),
-                                  detectParams$outputUnits[i], 
+                                  units(detectDf[,responseVar]), 
                                   mode = "standard")
+    param.w.lo.output <- units::set_units(param.w.lo
+                                        , detectParams$outputUnits[i]
+                                        , mode = "standard")
     
     # ---- w.hi param ----
     if( is.na(detectParams$w.hi[i]) ){
       param.w.hi <- NULL
     } else {
       param.w.hi = units::set_units(detectParams$w.hi[i], 
-                                  detectParams$outputUnits[i], 
-                                  mode = "standard")
+                                    units(detectDf[,responseVar]), 
+                                    mode = "standard")
     }
+    param.w.hi.output <- units::set_units(param.w.hi
+                                          , detectParams$outputUnits[i]
+                                          , mode = "standard")
     
     # ---- param.x.scl < param.w.lo Warning ----
     if( !is.character(param.x.scl) ){
@@ -213,7 +227,7 @@ test_dfuncEstim <- function( detectParams,
     })
 
     test_that(paste(testParams,"Strip", sep=";"), {
-      tstString <- paste0("Strip: ", format(param.w.lo), " to ", format(param.w.hi))
+      tstString <- paste0("Strip: ", format(param.w.lo.output), " to ", format(param.w.hi.output))
       tstString <- gsub("[\\[\\]]", ".", tstString, perl = T)
       expect_output(print(dfuncFit), regexp = tstString)
     })
@@ -237,7 +251,7 @@ test_dfuncEstim <- function( detectParams,
       if( is.null(dfuncFit$covars) ){
         nED <- 1
       } else {
-        nED <- length(dfuncFit$dist)
+        nED <- nrow(dfuncFit$detections)
       }
       expect_length(effectiveDistance(dfuncFit), nED)
     })
@@ -287,7 +301,7 @@ test_dfuncEstim <- function( detectParams,
     
     test_that(paste(testParams,"Scaling prints", sep=";"), {
       if( !is.character(param.x.scl) ){
-        x0 <- format(param.x.scl)
+        x0 <- format(param.x.scl.output)
       } else {
         x0 <- format(dfuncFit$x.scl)
       }

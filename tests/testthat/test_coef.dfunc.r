@@ -6,12 +6,16 @@ library(Rdistance)
 data(sparrowDetectionData)
 
 # Fit half-normal detection function
-non_density_case <- dfuncEstim(formula=dist~1,
-                    detectionData=sparrowDetectionData,
-                    likelihood="halfnorm", w.hi=100, pointSurvey=FALSE)
+non_density_case <- dfuncEstim(formula=dist~1
+                             , detectionData = sparrowDetectionData
+                             , w.hi = units::set_units(100, "m")
+                             )
 
 # Fit smoothed detection function
-density_case <- dfuncSmu(dist~1, sparrowDetectionData, w.hi=150)
+density_case <- dfuncSmu(dist~1
+                       , sparrowDetectionData
+                       , w.hi=units::set_units(150, "m")
+                       )
 
 test_that("input=non_density_case outputs=46.3586986528704", {
   expect_equal(coef(non_density_case)[["Sigma"]], 46.3586986528704)

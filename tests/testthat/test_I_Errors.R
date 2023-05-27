@@ -113,7 +113,7 @@ test_that("No siteID in detection data", {
                            area = 1e4,
                            ci = NULL,
                            bySite=TRUE)
-      , "There is no column named 'siteID' in your detectionData.")
+      , "Transect ID column\\(s\\) .+ not found in data frame")
 })
 
 test_that("No siteID in site data", {
@@ -124,12 +124,12 @@ test_that("No siteID in site data", {
                  area = units::set_units(1e4, "m^2"),
                  ci = NULL,
                  bySite=TRUE)
-      , "There is no column named 'siteID' in your siteData.")
+      , "Transect ID column\\(s\\) .+ not found in data frame")
 })    
  
 tmp <- sparrowDetectionData
 tmp$dist[4:5] <- NA
-test_that("Missing dists are okay", {
+test_that("Missing dists in detectDF are okay", {
   expect_s3_class(
       dfuncEstim(dist ~ 1
                 , detectionData = tmp
@@ -137,4 +137,20 @@ test_that("Missing dists are okay", {
                 , w.lo = units::set_units(0, "m")
                 , w.hi = units::set_units(100, "m"))
       , "dfunc")
+})
+
+dfunc <-       dfuncEstim(dist ~ 1
+                          , detectionData = tmp
+                          , siteData = sparrowSiteData
+                          , w.lo = units::set_units(0, "m")
+                          , w.hi = units::set_units(100, "m"))
+
+test_that("Missing dists in siteDF are not okay", {
+  expect_s3_class(
+    abundEstim(dfunc
+               , detectionData = tmp
+               , siteData = sparrowSiteData
+               , area = set_units(1, "m^1")
+               )
+    , "dfunc")
 })
