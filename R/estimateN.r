@@ -8,19 +8,14 @@
 #' 
 #' @param dfunc An estimate distance function (see \code{dfuncEstim}).
 #' 
-#' @param surveyedUnits A scalar containing either the total length 
-#' of surveyed transects (for line transects) or total number of surveyed
-#' points (for point transects). This number is either $L$ or $P$ in the 
-#' abundance formulas (Details).
-#' 
 #' @param data A data frame containing distance observations, transects, 
 #' and lengths.  This data frame must have a column named 'siteID' that identifies
-#' unique sites (transects or points). If observations on line-transects, this 
-#' data frame must have a column named 
-#' in the \code{lengthColumn} parameter that contains transect lengths. NA
+#' unique sites (transects or points). If observations were made on  line-transects, this 
+#' data frame must also have a column named 
+#' by the \code{lengthColumn} parameter that contains transect lengths. NA
 #' length transects are accepted and are dropped when computing total 
-#' transect length in denominator of density.
-#' Only observations on non-NA transects are included in the numerator of density.
+#' transect length.
+#' Only observations on non-NA-length transects are toward density.
 #' 
 #' @inheritParams abundEstim
 #' 
@@ -72,31 +67,7 @@ estimateN <- function(dfunc
                       , lengthColumn
                       , control = RdistanceControls()
                       ){
-  
-  
-  # ---- Measurement units check. ----
-  if( !dfunc$pointSurvey ){
-    if( !inherits(surveyedUnits, "units") & control$requireUnits ){
-      stop(paste("Transect length units are required.\n" 
-                 , "Assign units to transect lengths in site data frame with statements like:\n"
-                 , "siteData$length <- units::set_units(siteData$length, '<units>')\n"
-                 , "'m' (meters), 'ft' (feet), 'km' (kilometers), etc. are acceptable.\n"
-                 , "See units::valid_udunits()"))
-    } else if( control$requireUnits ){
-      # if we are here, length has units. convert them to units used during estimation.
-      # Input dfunc must have a $outputUnits component.
-      surveyedUnits <-  units::set_units(surveyedUnits, dfunc$outputUnits, mode = "standard")
-    }
-  } else if( inherits(surveyedUnits, "units") ){
-    # Point surveys should not have units on surveyedUnits; 
-    # suveyedUnits should just be number of points
-    stop(paste("Measurement units on 'surveyedUnits' not allowed when analyzing\n" 
-               , "point surveys.  Drop units with statements like:\n"
-               , "surveyedUnits <- units::drop_units(surveyedUnits)\n"
-               ))
-  }
-  
-  
+
   if( !inherits(area, "units") & control$requireUnits ){
     if( !is.null(area) ){
       # If we are here, area did not come with units, we require units, and it's not null: ERROR
@@ -116,15 +87,38 @@ estimateN <- function(dfunc
     squareOutputUnits <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
     area <- units::set_units(area, squareOutputUnits, mode = "standard")
   }
+
+  # ---- Check whether point survey "lengths" are present ----
+  if( dfunc$pointSurvey ){
+    if( !( lengthColumn %in% names(data)) ){
+      # no point "length". Use siteID as length. Below, we count non-missing site ids
+      lengthColumn <- "siteID"
+    }  
+  }  
   
   # ---- Find observations on NA length transects inside the strip ----
   mt <- terms(dfunc$model.frame)
   distColumn <- all.vars(mt)[attr(mt, "response")]
   inStrip <- (dfunc$w.lo <= data[,distColumn]) &
-    (data[,distColumn] <= dfunc$w.hi)
-  onPosTransect <- !is.na(data[, lengthColumn ])
-  distPresent <- !is.na(data[, distColumn])
+             (data[,distColumn] <= dfunc$w.hi)
+  onPosTransect <- !is.na(data[, lengthColumn ]) # use distance in dfunc, but do not count groupsize
+  distPresent <- !is.na(data[, distColumn]) # count groupsize, but no distances
   obsInd <- inStrip & onPosTransect & distPresent
+
+  # ---- Measurement units check. ----
+  if( !dfunc$pointSurvey ){
+    if( !inherits(data[,lengthColumn], "units") & control$requireUnits ){
+      stop(paste("Transect length units are required.\n" 
+                 , "Assign units to transect lengths in site data frame with statements like:\n"
+                 , "siteData$length <- units::set_units(siteData$length, '<units>')\n"
+                 , "'m' (meters), 'ft' (feet), 'km' (kilometers), etc. are all acceptable.\n"
+                 , "See units::valid_udunits()"))
+    } else if( control$requireUnits ){
+      # if we are here, length has units. convert them to units used during estimation.
+      # Input dfunc must have a $outputUnits component.
+      data[,lengthColumn] <-  units::set_units(data[,lengthColumn], dfunc$outputUnits, mode = "standard")
+    }
+  } 
   
   # ---- Estimate numerator of abundance ----
   # REMEMBER: component $detections of dfunc has been truncated to (w.lo, w.hi)
@@ -255,20 +249,21 @@ estimateN <- function(dfunc
     # ----  not bySite ----
     
     # ---- Compute number of points or transect length ----
+    # Note: drop NA length transects or points here, which may have detections and distance measurements.
+    # There are dups because data is the merged data, and has one row per detection and there 
+    # are multiple detections per transect or point.
     if( dfunc$pointSurvey ){
-      totSurveyedUnits <- length(unique(data$siteID))
+      dups <- duplicated(data$siteID)
+      totSurveyedUnits <- sum(!is.na(data[!dups,,drop=FALSE][,lengthColumn]))
     } else {
-      # Note: drop NA length transects here, which may have detections
-      # There are dups because data has one row per detection and there 
-      # are multiple detections per transect.
       dups <- duplicated(data$siteID)
       totSurveyedUnits <- sum(data[!dups,,drop=FALSE][,lengthColumn], na.rm = TRUE)
     }
     
     if(dfunc$pointSurvey){
-      dens <- sum(nhat) / (pi * w^2 * surveyedUnits)
+      dens <- sum(nhat) / (pi * w^2 * totSurveyedUnits)
     } else {
-      dens <- sum(nhat) / (surveyedSides * w * surveyedUnits)
+      dens <- sum(nhat) / (surveyedSides * w * totSurveyedUnits)
     }
     
     nhat.df <- dens * area
@@ -277,8 +272,8 @@ estimateN <- function(dfunc
     if( isUnitless(nhat.df) ){
       nhat.df <- units::drop_units(nhat.df)
     } else {
-      warning(paste("Strange measurement units detected because abundance is not unitless.\n", 
-      "Check measurement unit compatability among distances, surveyedUnits, and area."))
+      warning(paste("Strange measurement units have been detected because abundance is not unitless.\n", 
+      "Check measurement unit compatability among distances, transect lengths, and area."))
     }
     
     nhat.df <- list(density = dens
@@ -286,7 +281,7 @@ estimateN <- function(dfunc
                     , n.groups = length(gs)
                     , n.seen = sum(gs)
                     , area = area
-                    , surveyedUnits = surveyedUnits
+                    , surveyedUnits = totSurveyedUnits
                     , surveyedSides = surveyedSides
                     , avg.group.size = mean(gs)
                     , range.group.size = range(gs)

@@ -1,102 +1,79 @@
-# Resubmission comments
-* This version fixes a critical bug in the bootstrap method, provides better error messages, and introduces testing files.  
+# Submission comments
 
-# Version of current submission
-* 2.1.5
-* 2.1.4 was an interim version
-* Previous version on CRAN: 2.1.3
+Prior version of this package (v 2.1.5) was archived.  The reason I did not respond
+to notes from CRAN is that 
+I left my prior place of employment and lost access to my old email: tmcdonald@west-inc.com. 
+People at my former employer promised to forward emails, but they did not. My 
+former employer and I also 
+had some miss-understandings on who was maintaining the package. 
 
-# R CMD check --as-cran results
+I will remain the package maintainer for the foreseeable future. 
+I apploogize for the mixup.  You can email jwalrath@west-inc.com to confirm that 
+my old email address is dead and that I have permission to continue maintaining 
+this package. 
+
+This new version (2.2.1) is a major update as follows:
+
+* Extensive use of the `units` package has been included. 
+* Many bugs associated with options that are rarely used have been fixed. 
+* Documentation has been extensively updated. 
+* I removed some problematic vignettes, but will be adding them back as I can.  
+I include a revamped "beginner" vignette. 
+* Testing functions have been updated.
+
+# Current submission
+
+* 2.2.1
+
+# Prior submission
+
+* 2.1.5 - Archived.  
+
+# Local Check
+
+R CMD check --as-cran results
+
 No ERRORs or WARNINGs. 
 
-# Test environments
-* local: Windows 10 Pro, R version 4.0.0 (2020-04-24) -- "Arbor Day"
+local environment:
+Windows 11 Pro, R version 4.2.3 (2023-03-15 ucrt) -- "Shortstop Beagle"
+
 * Unix (via Travis) : build passing
 
-# winbuilder: passing with note
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: 'Trent McDonald <tmcdonald@west-inc.com>'
+# Winbuilder Check
 
-Possibly mis-spelled words in DESCRIPTION:
-  Rdistance (23:38)
-  glm (27:10)
-  lm (27:6)
+Passing with one note,
 
-# devtools::check_rhub 
+```
+* checking CRAN incoming feasibility ... [8s] NOTE
+Maintainer: 'Trent McDonald <trent@mcdonalddatasciences.com>'
 
-## Windows Server 2008 R2 SP1: passing with note
+New submission
 
-Build ID:	Rdistance_2.1.3.tar.gz-b96c3d5cb312428890fcfc714886d606
-Platform:	Windows Server 2008 R2 SP1, R-devel, 32/64 bit
-Submitted:	3 minutes 1.3 seconds ago
-Build time:	2 minutes 47.1 seconds
+Package was archived on CRAN
 
-NOTES:
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: 'Trent McDonald <tmcdonald@west-inc.com>'
+Possibly misspelled words in DESCRIPTION:
+  Rdistance (31:3)
+  covariates (34:21)
+  glm (34:12)
+  lm (34:6)
 
-Possibly mis-spelled words in DESCRIPTION:
-  Rdistance (23:38)
-  glm (27:10)
-  lm (27:6)
+CRAN repository db overrides:
+  X-CRAN-Comment: Archived on 2022-10-03 as check issues were not
+    corrected despite reminders.
+```
 
-* checking sizes of PDF files under 'inst/doc' ... NOTE
-Unable to find GhostScript executable to run checks on size reduction
+**Those words are not misspelled. **
 
-** Possible mis-spellings are not mis-spelled **
+# Rhub Check
 
-### Ubuntu Linux 16.04 LTS : passing with note
 
-Build ID:	Rdistance_2.1.3.tar.gz-6500dcf92297437a91b88edc6cf1f8bd
-Platform:	Ubuntu Linux 16.04 LTS, R-release, GCC
-Submitted:	4 minutes 44.7 seconds ago
-Build time:	4 minutes 41 seconds
-NOTES:
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: ‘Trent McDonald <tmcdonald@west-inc.com>’
 
-Possibly mis-spelled words in DESCRIPTION:
-  glm (27:10)
-  lm (27:6)
-  Rdistance (23:38)
+# Ubuntu Linux 16.04 LTS 
 
-** Possible mis-spellings are not mis-spelled **
-  
-  
-## Fedora Linux : Latex warning
 
-Build ID:	Rdistance_2.1.3.tar.gz-354a7e98e04343d2a6c32078605d6701
-Platform:	Fedora Linux, R-devel, clang, gfortran
-Submitted:	9 minutes 38 seconds ago
-Build time:	9 minutes 32.8 seconds
-WARNINGS:
-* checking re-building of vignette outputs ... WARNING
-Error in re-building vignettes:
-  ...
-! LaTeX Error: File `framed.sty' not found.
+# Fedora Linux : Latex warning
 
-! Emergency stop.
-<read *> 
-
-Error: processing vignette 'Rdistance_BeginnerLineTransectCovar.Rmd' failed with diagnostics:
-Failed to compile Rdistance_BeginnerLineTransectCovar.tex. See Rdistance_BeginnerLineTransectCovar.log for more info.
-Execution halted
-NOTES:
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: ‘Trent McDonald <tmcdonald@west-inc.com>’
-
-Possibly mis-spelled words in DESCRIPTION:
-  Rdistance (23:38)
-  glm (27:10)
-  lm (27:6)
-* checking Rd cross-references ... NOTE
-Package unavailable to check Rd xrefs: ‘MASS’
-
-** Possible mis-spellings are not mis-spelled **
-
-** The LaTeX Error: File `framed.sty' not found is not an 
-issue with Rdistance, but an issue with the Latex installation
-on the Fedura test machine.**
 
 ## Downstream dependencies
 None known

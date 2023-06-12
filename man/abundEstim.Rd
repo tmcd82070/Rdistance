@@ -275,7 +275,7 @@ The abundance estimate for line-transect surveys (if no covariates
 \section{Missing Transect Lengths}{
 
 
-  The transect length column of \code{siteData} can contain missing values. 
+  \bold{Line transects}: The transect length column of \code{siteData} can contain missing values. 
   NA length transects are equivalent
   to 0 [m] transects and do not count toward total surveyed units.  NA length
   transects are handy if some off-transect distance observations should be included
@@ -284,8 +284,18 @@ The abundance estimate for line-transect surveys (if no covariates
   site IDs, but set the length of those site IDs to NA in the site data frame. 
   Group sizes associated with NA length transects are dropped and not counted toward density
   or abundance. Among other things, this allows estimation of abundance on one 
-  study area using off-transect distance observations from another.  This only 
-  applies to line-transects because point-transects use number of points, not length.
+  study area using off-transect distance observations from another.  
+  
+  \bold{Point transects}: Point transects do not have length. The "length" of point transects
+  is the number of points on the transect. \code{Rdistance} treats individual points as independent 
+  and bootstrap resampmles them to estimate variance. To include distance obervations
+  from some points but not the number of targets seen, include a separate "length" column 
+  in the site data frame with NA for the "extra" points. Like NA length line transects, 
+  NA "length" point transects are dropped from the count of points and group sizes on these 
+  transects are dropped from the counts of targets.  This allows users to estimate their distance 
+  function on one set of observations while inflating counts from another set of observations.  
+  A transect "length" column is not required for point transects. Values in the \code{lengthColumn}
+  do not matter except for NA (e.g., a column of 1's mixed with NA's is acceptable).
 }
 
 \examples{

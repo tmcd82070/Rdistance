@@ -18,12 +18,12 @@ estimateN(
 
 \item{data}{A data frame containing distance observations, transects, 
 and lengths.  This data frame must have a column named 'siteID' that identifies
-unique sites (transects or points). If observations on line-transects, this 
-data frame must have a column named 
-in the \code{lengthColumn} parameter that contains transect lengths. NA
+unique sites (transects or points). If observations were made on  line-transects, this 
+data frame must also have a column named 
+by the \code{lengthColumn} parameter that contains transect lengths. NA
 length transects are accepted and are dropped when computing total 
-transect length in denominator of density.
-Only observations on non-NA transects are included in the numerator of density.}
+transect length.
+Only observations on non-NA-length transects are toward density.}
 
 \item{area}{A scalar containing the total area of 
 inference. Commonly, this is study area size.  
@@ -51,11 +51,6 @@ etc.  See the
 \code{\link{RdistanceControls}} function for explanation of each value,
 the defaults, and the requirements for this list. 
 See examples below for how to change controls.}
-
-\item{surveyedUnits}{A scalar containing either the total length 
-of surveyed transects (for line transects) or total number of surveyed
-points (for point transects). This number is either $L$ or $P$ in the 
-abundance formulas (Details).}
 }
 \value{
 A list containing the following components:
