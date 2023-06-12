@@ -81,17 +81,21 @@ test_abundEstim <- function( abundParams,
       newComponents <- c( "density"
                         , "n.hat"
                         , "n"
+                        , "n.seen"
                         , "area"
                         , "surveyedUnits"
                         , "avg.group.size"
+                        , "rng.group.size"
                         , "effDistance" )
     } else {
       newComponents <- c( "density"
                           , "n.hat"
                           , "n"
+                          , "n.seen"
                           , "area"
                           , "surveyedUnits"
                           , "avg.group.size"
+                          , "rng.group.size"
                           , "effDistance" )
     }
     

@@ -78,10 +78,10 @@ test_dfuncEstim <- function( detectParams,
       param.x.scl = units::set_units(as.numeric(detectParams$x.scl[i]), 
                                      units(detectDf[,responseVar]), 
                                      mode = "standard")
-    }
-    param.x.scl.output <- units::set_units(param.x.scl
+      param.x.scl.output <- units::set_units(param.x.scl
                                          , detectParams$outputUnits[i]
                                          , mode = "standard")
+    }
     
     # ---- w.lo param ----
     param.w.lo = units::set_units(as.numeric(detectParams$w.lo[i]),
@@ -94,12 +94,14 @@ test_dfuncEstim <- function( detectParams,
     # ---- w.hi param ----
     if( is.na(detectParams$w.hi[i]) ){
       param.w.hi <- NULL
+      param.w.hi.output <- max(detectDf[,responseVar], na.rm=TRUE)
     } else {
       param.w.hi = units::set_units(detectParams$w.hi[i], 
                                     units(detectDf[,responseVar]), 
                                     mode = "standard")
+      param.w.hi.output <- param.w.hi
     }
-    param.w.hi.output <- units::set_units(param.w.hi
+    param.w.hi.output <- units::set_units(param.w.hi.output
                                           , detectParams$outputUnits[i]
                                           , mode = "standard")
     
@@ -127,6 +129,7 @@ test_dfuncEstim <- function( detectParams,
           )
         })
         param.x.scl <- param.w.lo
+        param.x.scl.output <- param.w.lo.output
       }
     }
     
@@ -265,7 +268,7 @@ test_dfuncEstim <- function( detectParams,
         
     test_that(paste(testParams,"Effective distance(s) > 0", sep=";"), {
       zero <- units::set_units(0, dfuncFit$outputUnits, mode = "standard")
-      expect_true( all( efd > zero), label = "Some EFDs <= 0" )
+      expect_true( all( efd > zero), label = "All EFDs > 0" )
     })
 
     nominalW <- param.w.hi - param.w.lo
@@ -274,7 +277,7 @@ test_dfuncEstim <- function( detectParams,
       # don't know the range of effective distance because g(x) could be > 1 for some x.
       # Don't test in this case.  Warnings and red text are printed and plotted.
       test_that(paste(testParams,"Effective distance <= w.hi-w.lo", sep=";"), {
-        expect_true( all(efd <= nominalW), label = "Some EFDs > W" )
+        expect_true( all(efd <= nominalW), label = "All EFDs <= W" )
       })
     }
     
