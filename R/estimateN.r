@@ -14,8 +14,10 @@
 #' data frame must also have a column named 
 #' by the \code{lengthColumn} parameter that contains transect lengths. NA
 #' length transects are accepted and are dropped when computing total 
-#' transect length.
-#' Only observations on non-NA-length transects are toward density.
+#' transect length. Only observations on non-NA-length transects are toward density.
+#' 
+#' @param surveyedSides The number of sides of the transect that were surveyed. Either 
+#' 1 or 2.  Only applies to line transects. 
 #' 
 #' @inheritParams abundEstim
 #' 

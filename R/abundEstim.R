@@ -244,11 +244,15 @@
 #'                     )
 #' 
 #' # Estimate abundance given a detection function
-#' # Note, a person should do more than R=20 iterations
+#' # No variance on density or abundance estimated here 
+#' # due to time constraints.  Set ci=0.95 (or another value)
+#' # to estimate bootstrap variances on ESW, density, and abundance.
+#' 
 #' fit <- abundEstim(dfunc
 #'                 , detectionData = sparrowDetectionData
 #'                 , siteData = sparrowSiteData
 #'                 , area = units::set_units(4105, "km^2")
+#'                 , ci = NULL
 #'                 )
 #'          
 #' @keywords model
@@ -266,11 +270,15 @@ abundEstim <- function(dfunc
                      , R=500
                      , lengthColumn = "length"
                      , plot.bs=FALSE
-                     , bySite=FALSE
                      , showProgress=TRUE
                      , control = RdistanceControls()
                      ){
-  
+
+  # A note on 'bysite' ----
+  # I left vestages of the 'bysite' code in this function because I may want 
+  # to re-include bysite capabilities in a future release.  For now, can't do
+  # bysite = TRUE.
+  bySite=FALSE
   
   # Check for transectID columns (specified in dfuncEstim) ----
   siteID.cols <- dfunc$siteID.cols
