@@ -15,7 +15,7 @@ vignette: >
 
 # Introduction
 
-This beginner's tutorial demonstrates estimation of density and abundance in `Rdistance`.  We assume familiarity with Program R, but not distance-sampling analysis.  We discuss data requirements, basic detection function estimation, and finally estimation of abundance (and density).  This tutorial analyzes line transect surveys and does not include covariates in the detection function. Other vignettes cover inclusion of sighting covariates and point-transects. 
+This beginner's tutorial demonstrates estimation of density and abundance in `Rdistance`.  We discuss data requirements, basic detection function estimation, and estimation of abundance (and density).  This tutorial is for line transect surveys when detection does not depend on covariates.  
 
 
 # 1: Install and load Rdistance
@@ -42,22 +42,22 @@ data("sparrowSiteData")
 
 # 2: Input data
 
-Estimation of abundance (or density) in `Rdistance` requires two data sets; the *detection* data set and the *sites* data set. Both data sets can be prepared using any method that results in an R `data.frame`. For example, one could format detection and transect information on separate sheets in `Excel`, export each sheet to CSV files, and read them into R using `read.csv`.  In this tutorial, we use the Brewer's sparrow data set comes bundled with `Rdistance`.
+Estimation of abundance (or density) in `Rdistance` requires two data sets; the *detection* data set and the *sites* data set. Both data sets can be prepared using any method that results in an R `data.frame`. For example, analysts can format detection and transect information on separate sheets in `Excel`, export each sheet to CSV files, and read them into R using `read.csv`. Importing data is beyond the scope of this vignette. Here, we use the Brewer's sparrow data set that comes bundled with `Rdistance`.
 
 ## *Detection* Data
 
-The *detection* data frame contains one row for each detected target, whether that target is a single individual or a group of individuals. Columns in the detection data frame contain information like group size and perpendicular off-transect distance of the target.  `Rdistance` requires the following information in the *detection* data frame:
+The *detection* data frame contains one row for each detected target, whether that target is a single individual or a group of individuals. Columns in the detection data frame contain information like group size and perpendicular off-transect distance to the group.  At a minimum, `Rdistance` requires the following information in the *detection* data frame:
 
 * **Detection Distance** = The perpendicular distance (also known as off-transect distance) from the 
-transect to the detected target (individual or group). `Rdistance` requires that this column of the deteciton data frame have measurment units (e.g., "m" or "ft").  Measurement units can be assigned using the `units()<-` or `units::set_units` functions. For example, `units(sparrowDetectionData$dist) <- "m"` makes all the measurements in column `dist` into meters if `dist` does not already have units assigned.  If column `dist` already has units, assigning meters converts from those units into into meters.  Measurement units are required on all distances in `Rdistance` (e.g., off-transect distances, left and right cut-offs, scale locations, transect lengths, and study area size). Additional details are in `help(dfuncEstim)`. 
+transect to the detected group or individual. `Rdistance` requires that this column of the detection data frame have measurement units (e.g., "m" or "ft").  Measurement units can be assigned using the `units()<-` or `units::set_units` functions. For example, `units(sparrowDetectionData$dist) <- "m"` makes all the measurements in column `dist` into meters.  If column `dist` already has units, assigning meters in this way converts from the previous units into meters.  Measurement units are required on all distances in `Rdistance` (e.g., off-transect distances, left and right cut-offs, scale locations, transect lengths, and study area size). Additional details are in `help(dfuncEstim)`. 
 * **Site ID** = The ID of the transect on which the detection was made. Transect IDs are required to 
 estimate abundance (in function `abundEstim`), but not to estimate a distance function (in function `dfuncEstim`). 
 * **Group Sizes** = The number of individuals in the group associated with each detection.  Group sizes are 
-required to estimate abundance (function `abundEstim`), but not to estimate a distance function (function `dfuncEstim`). 
+required to estimate abundance (function `abundEstim`), but not to estimate a distance function (function `dfuncEstim`). If all groups are size 1, group sizes can be omitted. 
 
 The specific columns that contain distances and group sizes can be named anything and are specified in the formula argument of function `dfuncEstim`.  Likewise, the `siteID` column(s) can be named anything and is specified in the `transectID` argument to function `dfuncEstim`. If `siteID` is not specified (or is NULL), `Rdistance` constructs the `siteID`s from the set of common columns contained in the *detection* and *sites* data frames. See the **Input data frames** section of `help(dfuncEstim)` for additional details.  
 
-Line-transect distance-sampling analysis is performed on perpendicular off-transect distances, where off-transect distances are measured from the detected target(s) to the closest point on the transect. In the field, observers commonly record straight-line sighting distance (from observer straight to the target) and sighting angle instead of perpendicular distance. `Rdistance` provides a utility function named `perpDists` that will compute perpendicular distances from sighting distance and angle.  See `help(perpDists)` for details.
+Line-transect distance-sampling analysis is performed on perpendicular off-transect distances, where off-transect distances are measured from the detected group to the closest point on the transect. In the field, observers commonly record straight-line sighting distance (from observer straight to the target) and sighting angle instead of perpendicular distance. `Rdistance` provides a utility function named `perpDists` that will compute perpendicular distances from sighting distance and angle.  See `help(perpDists)` for details.
 
 For reference, the first six rows of the sparrow  *detection* data set are: 
 ```{r detectionDataDisplay}
@@ -70,14 +70,14 @@ We will use `siteID`, `groupsize`, and `dist` in this tutorial.  Details on the 
 
 ## *Site* Data
 
-The *sites* data frame contains one row for each surveyed site regardless of whether the site was "positive" (one or more targets detected) or "zero" (no targets detected). We use the term 'site' because it encompasses both continuous transects and point transects.  In this tutorial, a 'site' is one transect. In actuality, one 'site' could contain two or more transects (e.g., blocks with both a north and south transect) if that is the way the study was designed. The key idea is that `Rdistance` views the study area as containing one or more surveyed 'sites', where each 'site' has a particular surveyed length along which zero or more targets were detected. Stratum and sub-units of the study area are not automatically accommodated in `Rdistance`. We view stratum as separate study areas, estimate abundance in each separately, and then sum over stratum to arrive as the study area estimate. 
+The *sites* data frame contains one row for each surveyed site regardless of whether the site was "positive" (one or more targets detected) or "zero" (no targets detected). We use the term 'site' because it encompasses both continuous transects and point transects.  In this tutorial, a 'site' is one transect. `Rdistance` views the study area as containing one or more surveyed 'sites', where each 'site' has a particular surveyed length. Along the surveyed length, zero or more groups were detected. Stratum and sub-units of the study area are not automatically accommodated in `Rdistance`. We view stratum as separate study areas, estimate abundance in each separately, and then sum over stratum to arrive as the study area estimate. 
 
-`Rdistance` requires the following information in the *sites* data frame: 
+At a minimum, `Rdistance` requires the following information in the *sites* data frame: 
 
 * **Site IDs** = The ID of every surveyed site (here, transect) in the study area.
-* **Length** = The length of transect surved in each site.  The length column in the *sites* data frame must have measurement units assigned (e.g., "m" or "ft"). Like other distance measurements, units can be assigned using `units()<-` or `units::set_units`. 
+* **Length** = The length of transect surveyed in each site.  The length column in the *sites* data frame must have measurement units assigned (e.g., "m" or "ft"). Like other distance measurements, units can be assigned using `units()<-` or `units::set_units`. 
 
-Note that a `site ` data frame is not required to estimate a distance function only. In addition to site IDs and length, the *sites* data set can contain covariates that are constant for detections on the same transect. We call such covariates site-level covariate to distinguish them from detection-level covariates that vary by detection.  
+Note that a `site ` data frame is not required to estimate a distance function. In addition to site IDs and length, the *sites* data set can contain covariates that are constant for detections on the same transect. We call such covariates site-level covariate to distinguish them from detection-level covariates that vary by detection.  
 
 For reference, the first six rows of the sparrow  *site* data set are: 
 
@@ -103,13 +103,13 @@ rug(sparrowDetectionData$dist,quiet = TRUE)
 summary(sparrowDetectionData$dist)
 ```
 
-Measurement units appear in the x-axis label. After a distance function is estimated, which we do next, `Rdistance`'s plotting facilities can improve this histogram and show fit of the distance function to the off-transect distances.  
+Measurement units appear in the x-axis label of the plot. After a distance function is estimated, which we do next, `Rdistance`'s plotting facilities can improve this histogram and show fit of the distance function to the off-transect distances.  
 
 We fit a detection function to perpendicular distances using the function `dfuncEstim`. Function `dfuncEstim` uses maximum likelihood methods to estimate parameters of the distance function.  Histogram bin sizes do not matter for parameter estimation and are for visual purposes only. In this tutorial, we proceed using the half-normal distance function. Normally, model selection would take place and a final distance function would be established; but, model selection is outside the scope of this tutorial.  Function `autoDistSamp` automates the process of fitting different detection functions, assessing their fit (by AICc), and estimating abundance from the best-fitting function.  
 
 ## Group Sizes
 
-If group sizes are not specified, `Rdistance` assumes all detected targets consisted of one individual. The team collecting our example data occasionally detected two or three sparrows together.  Group sizes should be entered in the *detection* data frame, and in our example data are contained in the `groupsize` column.  We specify group sizes during distance function estimation as an `groupsize()` term in the formula for the distance function. Group sizes are not used in `dfuncEstim` to estimate parameters of the distance function, but will be used later in function `abundEstim` to estimate density and abundance. 
+If group sizes are not specified, `Rdistance` assumes all detected groups consisted of one individual. The team collecting our example data occasionally detected two or three sparrows together.  Group sizes should be entered in the *detection* data frame, and in our example data are contained in the `groupsize` column.  We specify group sizes during distance function estimation as an `groupsize()` term in the formula for the distance function. Group sizes are not used in `dfuncEstim` to estimate parameters of the distance function, but will be used later in function `abundEstim` to estimate density and abundance. 
 
 Many distance analysts advocate dropping a small proportion of large distances to improve distance function estimation and reduce variance. Large but rare distances add variance to final estimates and can unduly influence (i.e., bias) distance functions, especially in small (e.g., n < 100) data sets. Dropping large observations establishes a maximum and is called right-truncation.  Analysts typically drop between one and five percent of the largest distances depending on histogram shape and personal preference. The 95-th quantile of the sparrow detection distances is `r round(quantile(sparrowDetectionData$dist, p=0.95), 2)`, while the 99-th quantile is `r round(quantile(sparrowDetectionData$dist, p=0.99), 2)`. We will right-truncate the sparrow detection distances at 150 meters, which is a nice round number just above the 99-th quantile. In `Rdistance`, we right-truncate by specifying a value for parameter `w.hi`. Parameter `w.hi` must have measurement units because it is a distance. 
 
@@ -126,11 +126,11 @@ dfuncSparrow<- dfuncEstim(formula = dist ~ 1 + offset(groupsize)
 dfuncSparrow
 ```
 
-The above printout provides parameter estimates, convergence messages, fit information, effective sampling distance. The estimated parameter of the half-normal distance function is `r round(dfuncSparrow$parameters, 2)`. When a half-normal distance function is estimated, this parameter is the standard deviation of a normal distribution if it were fitted to positive data only and if we required the mean to be zero.  Approximately `r round(100*2*(pnorm(1) - pnorm(0)), 0)` percent of distances will fall between 0 and this parameter. Approximately `r round(100*2*(pnorm(2) - pnorm(0)), 0)` percent of distances will fall between 0 and twice this parameter. In the sparrow detection data, `r round(100*mean(sparrowDetectionData$dist <= units::set_units(dfuncSparrow$parameters, "m")), 1)` percent of the observed distances are between 0 and `r round(dfuncSparrow$parameters, 2)` meters, while `r round(100*mean(sparrowDetectionData$dist <= units::set_units(2*dfuncSparrow$parameters, "m")), 1)` percent are between 0 and 2(`r round(dfuncSparrow$parameters, 2)`) = `r round(2*dfuncSparrow$parameters, 2)` meters. 
+The printout of a distance function object provides parameter estimates, convergence messages, fit information, and effective sampling distance. The estimated parameter of this half-normal distance function is `r round(dfuncSparrow$parameters, 2)`. As an aside, when a half-normal distance function is estimated, the estimated parameter is the standard deviation of a normal distribution if it were fitted only to positive data and if we required the mean to be exactly zero.  Approximately `r round(100*2*(pnorm(1) - pnorm(0)), 0)` percent of distances will fall between 0 and this parameter. Approximately `r round(100*2*(pnorm(2) - pnorm(0)), 0)` percent of distances will fall between 0 and twice this parameter. In the sparrow detection data, `r round(100*mean(sparrowDetectionData$dist <= units::set_units(dfuncSparrow$parameters, "m")), 1)` percent of the observed distances are between 0 and `r round(dfuncSparrow$parameters, 2)` meters, while `r round(100*mean(sparrowDetectionData$dist <= units::set_units(2*dfuncSparrow$parameters, "m")), 1)` percent are between 0 and 2(`r round(dfuncSparrow$parameters, 2)`) = `r round(2*dfuncSparrow$parameters, 2)` meters. The closeness of these observed proportions to their theoretical value provides information on fit of the detection function.  Further comments on fit are outside the scope of this vignette. 
 
-The observation strip comprising the left-, and right-truncation levels appears in the line labeled 'Strip:'.   The Effective Strip Width (ESW) is a key piece of information needed to estimate abundance and it appears on the line labeled 'Effective strip width (ESW):'.  ESW appears in default `Rdistance` printouts and can be calculated separately using the `ESW()` function. ESW is the distance at which the same number of targets are missed nearer to the observer as were sighted farther from the observer. Missing targets and sighting farther away targets balence themselves out at the ESW.  Another way to say think of ESW is that a survey with imperfect detection and ESW equal to *X* will effectively cover the same area as a study with perfect detection out to a distance of *X*. See `help(ESW)` for details.
+The observation strip comprising the left-, and right-truncation levels appears in the line labeled 'Strip:'.   The Effective Strip Width (ESW) is a key piece of information needed to estimate abundance and it appears on the line labeled 'Effective strip width (ESW):'.  ESW appears in default `Rdistance` printouts and can be calculated separately using the `ESW()` function. ESW is the distance at which the same number of targets are missed nearer to the observer as were sighted farther from the observer. Missed targets and farther away targets balance themselves out at the ESW.  Another way to say think of ESW is that a survey with imperfect detection and ESW equal to *X* will effectively cover the same area as a study with perfect detection out to a distance of *X*. See `help(ESW)` for details.
 
-Some researchers prefer to report overall probability of detection in the strip.  Probability of detection is ESW divided by observation strip width. Probability of detection is reported on the line below ESW and in this case equals  `r round(ESW(dfuncSparrow), 2)` / (`r dfuncSparrow$w.hi` - `r dfuncSparrow$w.lo`) = `r round(ESW(dfuncSparrow) / (dfuncSparrow$w.hi - dfuncSparrow$w.lo), 4)`.  We leave numbers reported in the remainder of the output for later tutorials. 
+Some researchers prefer to report overall probability of detection in the strip.  Probability of detection is ESW divided by the observation strip width. Probability of detection is reported on the line below ESW and in this case equals  `r round(ESW(dfuncSparrow), 2)` / (`r dfuncSparrow$w.hi` - `r dfuncSparrow$w.lo`) = `r round(ESW(dfuncSparrow) / (dfuncSparrow$w.hi - dfuncSparrow$w.lo), 4)`.  We leave numbers reported in the remainder of the output for later tutorials. 
 
 A visual picture of the distance function is obtained using the `plot` method,
 
@@ -145,18 +145,12 @@ In Figure 2, the histogram of distances is grey and the estimated distance funct
 # 4: Estimate abundance from the detection function
 
 ```{r studyAreaSize, include=FALSE}
+# NOT INCLUDED IN VIGNETTE
 saSize <- units::set_units(4105, "km^2")
-#units(saSize) <- "ha"
 set.seed(8927342)
-
-# Here!!!
-  # 4. Add section of Advanced Remarks at the end.  Say that 
-  #    the estimator is biased but the bias corrected bootstrap takes
-  #    care of it.  Remove bias from the final histogram.  Or, 
-  #    don't do any of this and erase the Final remarks part.
 ```
 
-Abundance estimation requires additional information contained in the *site* data set. In `Rdistance`, we estimate abundance on the `r format(saSize)` study area using function `abundEstim()`.  Confidence intervals for true abundance are calculated using bias-corrected bootstrapping methods (see `help(abundEstim)`). As a result, confidence intervals will vary slightly between runs due to simulation error. 
+Abundance estimation requires additional information contained in the *site* data set. Here, we estimate abundance on the `r format(saSize)` study area using function `abundEstim()`.  Confidence intervals for true abundance are calculated using bias-corrected bootstrapping methods (see `help(abundEstim)`). As a result, confidence intervals will vary slightly between runs due to simulation error. 
 
 
 ```
@@ -214,7 +208,7 @@ The estimated number of sparrows on the `r format(saSize)` study area is `r form
 
 ## Bootstrap Distribution
 
-`Rdistance` stores bootstrap parameter, density, and ESW values in the `$B` component of abundance objects. Storing bootstrap iterations provides flexibility for more advanced analyses, for example,
+`Rdistance` stores bootstrap parameter values, density, and ESW values in the `$B` component of abundance objects. Storing bootstrap iterations provides flexibility for more advanced analyses.  For example,
 
 *  Users can combine bootstrap iterations from multiple abundance objects 
 by appending `$B` components together.  New confidence intervals from the new `$B` component will be computed when the abundance object is printed. 
@@ -231,7 +225,7 @@ units(fit$B$density) <- "1/ha"
 head(fit$B)
 ```
 
-For example, the bootstrap distribution of sparrow density is,
+The bootstrap distribution of sparrow density is,
 
 ```{r bootPlot, fig., fig.width=6, fig.height=4, fig.cap="Bootstrap distribution of sparrow density computed in the `abundEstim` routine."}
 # Figure 3
@@ -252,7 +246,7 @@ In Figure 3, the density point estimate (`r format(d)`) and confidence limits (`
 
 ## Output Measurment Units
 
-It is possible to change the output measurement units on ESW and density by setting the `outputUnits = ` parameter in the original call to `dfuncEstim`.  Setting `outputUnits` only effects reporting units (output). There is no need to change the units of inputs because conversion to units specified by `outputUnits` is handled internally and automatically.  For example, to output linear distances in kilometers, and density in square kilometers, issue the following:
+It is possible to change the output measurement units on ESW and density by setting the `outputUnits = ` parameter in the original call to `dfuncEstim`.  Setting `outputUnits` only effects reporting units (output). There is no need to change the units of inputs because conversion is handled internally and automatically.  For example, to output linear distances in kilometers, and density in square kilometers, issue the following:
 
 ```{r changeUnits}
 dfuncSparrow <- dfuncEstim(formula = dist~1

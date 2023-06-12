@@ -14,7 +14,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Following is a series of `dfuncEstim` calls showing calling parameters for many popular distance sampling options. 
+Following is a series of `dfuncEstim` calls that show the calling parameters for popular distance sampling options. 
 
 ```{r}
 library(Rdistance)
@@ -44,7 +44,7 @@ plot(dfunc, col="grey")
 
 # Half-normal function with factor covariate 
 
-Increase the maximum number of iterations if distance function is having trouble converging.  Here, the `observer` covariate is in the *site* data frame (`sparrowSiteData`), so this data frame must be included in the call to `dfuncEstim`. 
+Increase the maximum number of iterations if distance function convergence is an issue.  The `observer` covariate is constant within transects and appears in the *site* data frame (`sparrowSiteData`), so the site data frame must be included in the call to `dfuncEstim`.  Otherwise, the site data frame is not needed until abundance is estimated (in `abundEstim`). 
 
 ```{r}
 dfuncObs <- dfuncEstim(formula = dist ~ observer
@@ -58,7 +58,7 @@ plot(dfunc, col="grey")
 
 # Hazard-rate function with covariate, truncation, and variable group sizes
 
-Group sizes are not used to estimate the distance function.  Group sizes are used in future calls to `abundEstim`. 
+Group sizes do not influence the estimated distance function. Only distance to the group is used.  But, group sizes are associated with individual detections and are used to estimate abundance in function `abundEstim`. If abundance will be estimate and group sizes vary, `Rdistance` requires specification of a group size variable in the call to `dfuncEstim`.  Here, `groupsize` is a column in the *detection* data frame and group sizes are specified using `groupsize()` in the formula.
 
 ```{r}
 dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
@@ -71,6 +71,8 @@ plot(dfunc, col="grey")
 ```
 
 # Hazard rate, covariate, group sizes, left and right truncation
+
+Right truncation at 100 meters, left truncation at 20 meters. If `x.scl` is not specified as greater than `w.lo`, a warning is issued.
 
 ```{r}
 dfunc <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
@@ -88,7 +90,7 @@ plot(dfunc, col="grey")
 
 # Hazard rate, covariate, group sizes, specify g(0)
 
-Specify $g(0)$ at the intercept by setting `g.x.scl`.  This scales the entire distance function. 
+Specify $g(0)$ at the intercept by setting `g.x.scl`.  This scales the entire distance function. Here, probability of detection on the transect is known to be 0.8.
 
 ```{r}
 dfunc <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
