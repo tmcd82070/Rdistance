@@ -34,10 +34,12 @@ If you are unfamiliar with
 distance-sampling, check out our primer, [Distance Sampling 
 for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/avgJoeIntro.Rmd). 
 For those ready to take on 
-an analysis, the best place to start is one of our vignettes:
+an analysis, the best place to start is one of our vignettes or in the **Examples** section (below).
 
-* [Beginner Line Transects with Covariates]{Rdistance-beginnerLineTransectCovar.Rmd}
-* [Beginner Point Transects with Covariates]{Rdistance-beginnerPointTransectCovar.Rmd}
+**Vignettes**:
+
+* [Beginner Line Transects]{Rdistance-BeginnerLineTransect.Rmd}
+* [Extended Beginner Line Transects Examples]{Extended_dfuncEstim_Examples.Rmd}
 
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
@@ -55,12 +57,12 @@ includeFigure("RdistanceSeparator.PNG")
 * Non-parametric smoothed distance functions (`smu`)
 * Built-in key functions: `sine`, `cosine`, and `hermite`
 * Expansion terms
-* Standard methods: `print`, `plot`, `predict`, etc.
+* Standard methods: `print`, `plot`, `predict`, `AIC`, etc.
 * Observation and transect-level distance function covariates
 * Standard R formula model specification (e.g., `distance ~ elevation + observer`)
 * Measurement unit control and automatic conversion
 * Automated bootstrap confidence intervals 
-* Overall (study area) and site-level (transect or point) abundance estimates
+* Overall (study area) abundance estimates
 * Custom (user-defined) detection functions
 * Help and vignettes reviewed and edited by multiple authors
 

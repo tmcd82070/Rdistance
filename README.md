@@ -21,12 +21,13 @@ If you are unfamiliar with distance-sampling, check out our primer,
 [Distance Sampling for the Average
 Joe](https://github.com/tmcd82070/Rdistance/wiki/avgJoeIntro.Rmd). For
 those ready to take on an analysis, the best place to start is one of
-our vignettes:
+our vignettes or in the **Examples** section (below).
 
-- \[Beginner Line Transects with
-  Covariates\]{Rdistance-beginnerLineTransectCovar.Rmd}
-- \[Beginner Point Transects with
-  Covariates\]{Rdistance-beginnerPointTransectCovar.Rmd}
+**Vignettes**:
+
+- \[Beginner Line Transects\]{Rdistance-BeginnerLineTransect.Rmd}
+- \[Extended Beginner Line Transects
+  Examples\]{Extended_dfuncEstim_Examples.Rmd}
 
 <img src="README_files/RdistanceSeparator.PNG" width="100%" />
 
@@ -42,14 +43,13 @@ our vignettes:
 - Non-parametric smoothed distance functions (`smu`)
 - Built-in key functions: `sine`, `cosine`, and `hermite`
 - Expansion terms
-- Standard methods: `print`, `plot`, `predict`, etc.
+- Standard methods: `print`, `plot`, `predict`, `AIC`, etc.
 - Observation and transect-level distance function covariates
 - Standard R formula model specification (e.g.,
   `distance ~ elevation + observer`)
 - Measurement unit control and automatic conversion
 - Automated bootstrap confidence intervals
-- Overall (study area) and site-level (transect or point) abundance
-  estimates
+- Overall (study area) abundance estimates
 - Custom (user-defined) detection functions
 - Help and vignettes reviewed and edited by multiple authors
 
@@ -93,7 +93,7 @@ if( !require("units") ){
 #> Loading required package: units
 #> udunits database from C:/Users/trent/AppData/Local/R/win-library/4.2/units/share/udunits/udunits2.xml
 library(Rdistance)
-#> Rdistance (version 2.2.0)
+#> Rdistance (version 3.0.0)
 library(units)
 
 # Example data
@@ -143,17 +143,22 @@ print(dfuncFit)
 #> Function: HAZRATE  
 #> Strip: 0 [m] to 150 [m] 
 #> Effective strip width (ESW): 61.11514 [m] 
-#>                      95% CI: 47.57195 [m] to 71.65096 [m]
+#>                      95% CI: 47.06821 [m] to 71.48264 [m]
 #> Probability of detection: 0.4074342 
 #> Scaling: g(0 [m]) = 1
-#> Log likelihood: 1631.795 
+#> Negative log likelihood: 1631.795 
 #> AICc: 3267.625
 #> 
+#>      Surveyed Units: 36000 [m] 
+#>    Individuals seen: 353 in 353 groups 
+#>  Average group size: 1 
+#>               Range: 1 to 1 
+#> 
 #> Density in sampled area: 8.022199e-05 [1/m^2]
-#>                  95% CI: 6.247695e-05 [1/m^2] to 0.0001107768 [1/m^2]
+#>                  95% CI: 6.020535e-05 [1/m^2] to 0.0001114628 [1/m^2]
 #> 
 #> Abundance in 2.5e+07 [m^2] study area: 2005.55
-#>                                95% CI: 1561.924 to 2769.419
+#>                                95% CI: 1505.134 to 2786.57
 plot(dfuncFit)
 ```
 
@@ -185,15 +190,18 @@ print(dfuncFit)
 #> Convergence: Success
 #> Function: HAZRATE  
 #> Strip: 0 [m] to 150 [m] 
-#> Average effective strip width (ESW): 62.78353 [m] 
-#> Average probability of detection: 0.4185569 
+#> Average effective strip width (ESW): 62.78704 [m] 
+#> Average probability of detection: 0.4185803 
 #> Scaling: g(0 [m]) = 1
-#> Log likelihood: 1626.919 
+#> Negative log likelihood: 1626.919 
 #> AICc: 3259.908
 #> 
-#> Density in sampled area: 7.873774e-05 [1/m^2]
-#> 
-#> Abundance in 2.5e+07 [m^2] study area: 1968.443
+#>      Surveyed Units: 36000 [m] 
+#>    Individuals seen: 353 in 353 groups 
+#>  Average group size: 1 
+#>               Range: 1 to 1 
+#> Density in sampled area: 8.023675e-05 [1/m^2]
+#> Abundance in 2.5e+07 [m^2] study area: 2005.919
 plot(dfuncFit, newdata = data.frame(bare = c(30, 40, 50)), lty = 1)
 ```
 
@@ -246,11 +254,14 @@ print(dfuncFit)
 #> Effective detection radius (EDR): 118.6222 [m] 
 #> Probability of detection: 0.2003733 
 #> Scaling: g(0 [m]) = 1
-#> Log likelihood: 999.0199 
+#> Negative log likelihood: 999.0199 
 #> AICc: 2002.103
 #> 
+#>      Surveyed Units: 120 
+#>    Individuals seen: 193 in 193 groups 
+#>  Average group size: 1 
+#>               Range: 1 to 1 
 #> Density in sampled area: 3.638267e-05 [1/m^2]
-#> 
 #> Abundance in 404687.3 [m^2] study area: 14.7236
 plot(dfuncFit)
 ```
@@ -286,11 +297,14 @@ print(dfuncFit)
 #> Average effective detection radius (EDR): 121.0046 [m] 
 #> Average probability of detection: 0.2114999 
 #> Scaling: g(0 [m]) = 1
-#> Log likelihood: 994.7526 
+#> Negative log likelihood: 994.7526 
 #> AICc: 1997.718
 #> 
+#>      Surveyed Units: 120 
+#>    Individuals seen: 193 in 193 groups 
+#>  Average group size: 1 
+#>               Range: 1 to 1 
 #> Density in sampled area: 3.65881e-05 [1/m^2]
-#> 
 #> Abundance in 404687.3 [m^2] study area: 14.80674
 plot(dfuncFit, newdata = data.frame(bare = c(30, 35, 40)
                                   , shrub = 20), lty = 1)
