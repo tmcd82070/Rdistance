@@ -54,8 +54,8 @@ dfuncObs <- dfuncEstim(formula = dist ~ observer
                      , siteData = sparrowSiteData
                      , w.hi = units::set_units(100, "m")
                      , control=RdistanceControls(maxIter=1000))
-dfunc
-plot(dfunc, col="grey")
+dfuncObs
+plot(dfuncObs, col="grey")
 ```
 
 # Hazard-rate function with covariate, truncation, and variable group sizes
@@ -68,8 +68,8 @@ dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
                      , detectionData = sparrowDetectionData
                      , siteData = sparrowSiteData
                      , w.hi = units::set_units(100, "m"))
-dfunc
-plot(dfunc, col="grey")
+dfuncObs
+plot(dfuncObs, col="grey")
 ```
 
 # Hazard rate, covariate, group sizes, left and right truncation
