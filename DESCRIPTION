@@ -22,22 +22,23 @@ Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdon
   person("Stefan", "Emmons", role="ctb", comment="Automated tests"),
   person("Will", "McDonald", role="ctb", comment="Automated tests"),
   person("Reid", "Olson", role="ctb", comment="Automated tests and bug fixes"))
-Description: Distance-sampling analyses estimate density and 
+Description: Distance-sampling analyses 
+  (Buckland et al., (2015) <doi:10.1007/978-3-319-19219-2>) estimate density and 
   abundance of organisms in ecology when detection probability declines with 
   increasing distance from the observers. Distance-sampling is popular 
   in most branches of ecology and especially when 
   organisms are observed from aerial platforms (e.g., airplane or drone), 
   surface vessels (e.g., boat or truck), or along walking transects. 
   Rdistance analyzes data collected on both point and line transects, 
-  estimates overall (study area) and site-level (transect or point) 
-  density, and allows users to specify regression-like formula (similar 
+  estimates overall (study area) density, and allows users to 
+  specify regression-like formula (similar 
   to lm or glm) for covariates. A large suite of classical, 
   parametric detection functions are 
   included along with some uncommon parametric 
   functions (e.g., Gamma, negative exponential) and non-parametric
   smoothed distance functions. Custom (user-defined) detection functions
-  can be implemented (see vignette).  Measurement unit integrity is 
-  enforced with internal unit conversion when necessary. 
+  can be implemented.  Measurement unit integrity is 
+  enforced with internal unit conversion. 
   The help files and vignettes have been 
   vetted by multiple authors and tested in workshop 
   settings. 
