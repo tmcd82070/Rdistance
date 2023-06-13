@@ -32,9 +32,6 @@
 #' @param R This parameter is passed to \code{abundEstim}.
 #'   See \code{abundEstim} documentation for definition.
 #'   
-#' @param bySite This parameter is passed to \code{abundEstim}.
-#'   See \code{abundEstim} documentation for definition.
-#'   
 #' @param plot.bs Logical for whether to plot bootstrap 
 #' iterations after the top model has been selected and 
 #' during final estimation of confidence intervals.  
@@ -118,37 +115,43 @@
 #' 
 #' # Automate fitting multiple detection functions, and estimate abundance
 #' # (density per ha in this case), given the 'best' detection function
-#' # Users should run more than R=20 bootstrap iterations
-#' autoDistSamp(formula = dist ~ 1
+#' autoDistSamp(formula = dist ~ groupsize(groupsize)
 #'            , detectionData = sparrowDetectionData
 #'            , siteData = sparrowSiteData
 #'            , likelihood = c("halfnorm", "hazrate")
 #'            , w.hi = units::set_units(100, "m")
-#'            , series = c("cosine", "simple")
-#'            , expansions = c(0, 1)
+#'            , expansions = 0
 #'            , area = units::set_units( 4105, "km^2" )
-#'            , R = 20
-#'            , ci = 0.95
-#'            , bySite=FALSE
-#'            , plot.bs = TRUE
+#'            , ci = NULL
 #'            , plot = FALSE
-#'            , pointSurvey = FALSE)
+#'            )
 #'            
 #' @keywords model
 #' @export
 #' @importFrom stats terms
 #' @importFrom graphics mtext
 
-autoDistSamp <- function (formula, detectionData, siteData, 
-                             w.lo=0, w.hi=NULL,
-                             likelihoods=c("halfnorm", "hazrate", "uniform", "negexp", "Gamma"),
-                             series=c("cosine", "hermite", "simple"), expansions=0:3,
-                             pointSurvey=FALSE, warn=TRUE,
-                             area=1, ci=0.95, R=500, bySite=FALSE, 
-                             plot.bs=FALSE, showProgress=TRUE,
-                             plot=TRUE, criterion="AICc", ...){
+autoDistSamp <- function (formula
+                          , detectionData
+                          , siteData
+                          , w.lo = 0
+                          , w.hi = NULL
+                          , likelihoods = c("halfnorm", "hazrate", "uniform", "negexp", "Gamma")
+                          , series = c("cosine", "hermite", "simple")
+                          , expansions = 0:3
+                          , pointSurvey = FALSE
+                          , warn = TRUE
+                          , area = NULL
+                          , ci = 0.95
+                          , R = 500
+                          , plot.bs = FALSE
+                          , showProgress = TRUE
+                          , plot = TRUE
+                          , criterion = "AICc"
+                          , ...){
   
-  
+  # I will leave some vestages of bySite, for when we add it back.
+  bySite <- FALSE
   
   # Stop and print error if key columns of detectionData or siteData are missing or contain NAs
   if(!("dist" %in% names(detectionData))) stop("There is no column named 'dist' in your detectionData.")
@@ -185,7 +188,7 @@ autoDistSamp <- function (formula, detectionData, siteData,
     } else {
       scl.ok <- "Ok"
       scl.ok.flag <- 1
-      aic = AIC.dfunc(dfunc, criterion=CRIT) 
+      aic <- AIC.dfunc(dfunc, criterion=CRIT) 
     }
     conv <- dfunc$convergence
     if (conv != 0) {
@@ -331,10 +334,15 @@ autoDistSamp <- function (formula, detectionData, siteData,
   }
 
   
-  abund <- abundEstim(dfunc, detectionData=detectionData, siteData=siteData,
-                      area=area, ci=ci, R=R, plot.bs=plot.bs, 
-                      bySite=bySite, showProgress = showProgress)
-  
+  abund <- abundEstim(dfunc
+                      , detectionData=detectionData
+                      , siteData=siteData
+                      , area=area
+                      , ci=ci
+                      , R=R
+                      , plot.bs=plot.bs
+                      , showProgress = showProgress
+                      )
   if( !bySite ){
     # Store the fitting table, just in case user wants it.
     abund$fitTable <- fit.table

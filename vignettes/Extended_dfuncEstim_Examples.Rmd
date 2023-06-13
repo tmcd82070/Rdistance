@@ -2,7 +2,9 @@
 title: "Extended `dfuncEstim` examples"
 author: "Trent McDonald"
 date: "`r format(Sys.Date(), '%F')`"
-output: pdf_document
+output: 
+  pdf_document:
+    keep_tex: true
 vignette: >
   %\VignetteIndexEntry{Rdistance: Extended dfuncEstim Examples}
   %\VignetteEngine{knitr::rmarkdown}

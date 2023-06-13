@@ -1,14 +1,15 @@
 # Submission comments
 
-Prior version of this package (v 2.1.5) was archived.  The reason I did not respond
+Prior version of this package (v 2.1.5) was archived because I did not respond
+to requests to fix an issue. The reason I did not respond
 to notes from CRAN is that 
 I left my prior place of employment and lost access to my old email: tmcdonald@west-inc.com. 
 People at my former employer promised to forward emails, but they did not. My 
 former employer and I also 
 had some miss-understandings on who was maintaining the package. 
 
-I will remain the package maintainer for the foreseeable future. 
-I apploogize for the mixup.  You can email jwalrath@west-inc.com to confirm that 
+I will remain the package maintainer. 
+You may email jwalrath@west-inc.com to confirm that 
 my old email address is dead and that I have permission to continue maintaining 
 this package. 
 
@@ -21,9 +22,11 @@ This new version (2.2.1) is a major update as follows:
 I include a revamped "beginner" vignette. 
 * Testing functions have been updated.
 
+Details on the specific changes are in **NEWS**. 
+
 # Current submission
 
-* 2.2.1
+* 3.0.0
 
 # Prior submission
 
@@ -65,15 +68,57 @@ CRAN repository db overrides:
 
 **Those words are not misspelled. **
 
-# Rhub Check
+# Rhub Checks
 
+## debian-gcc-release
 
+```
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: ‘Trent McDonald <trent@mcdonalddatasciences.com>’
 
-# Ubuntu Linux 16.04 LTS 
+New submission
 
+Package was archived on CRAN
 
-# Fedora Linux : Latex warning
+Possibly misspelled words in DESCRIPTION:
+  glm (34:12)
+  lm (34:6)
+  Rdistance (31:3)
 
+CRAN repository db overrides:
+  X-CRAN-Comment: Archived on 2022-10-03 as check issues were not
+    corrected despite reminders.
+```
 
-## Downstream dependencies
+## ubuntu-gcc-release
+
+```
+* checking CRAN incoming feasibility ... [6s/13s] NOTE
+Maintainer: ‘Trent McDonald <trent@mcdonalddatasciences.com>’
+
+New submission
+
+Package was archived on CRAN
+
+Possibly misspelled words in DESCRIPTION:
+  glm (34:12)
+  lm (34:6)
+  Rdistance (31:3)
+
+CRAN repository db overrides:
+  X-CRAN-Comment: Archived on 2022-10-03 as check issues were not
+    corrected despite reminders.
+```
+
+## windows-x86-64-release
+
+```
+--- re-building 'Extended_dfuncEstim_Examples.Rmd' using rmarkdown
+! Sorry, but C:\PROGRA~1\MiKTeX\miktex\bin\x64\pdflatex.exe did not succeed.
+```
+
+This appears to be a Latex issue on the rhub instance. The vignettes build without errors on local machine and on Win Builder, Ubuntu, and Debian. No other errors or issues. Same note as the Linux systems re maintainer. 
+
+# Downstream dependencies
+
 None known

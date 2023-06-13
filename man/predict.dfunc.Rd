@@ -113,12 +113,9 @@ predict(dfuncObs)
 predict(dfuncObs, newdata = data.frame(x = 1:5)) 
 
 predict(dfuncObs, type = "dfunc") # one function
-predict(dfuncObs, newdata = data.frame(x = 1:5), type = "dfunc") # same
 
 d <- units::set_units(c(0, 20, 40), "ft")
 predict(dfuncObs, distances = d, type = "dfunc") 
-d <- units::set_units(c(0.000,  6.096, 12.192), "m")
-predict(dfuncObs, distances = d, type = "dfunc") # same 
 
 # Covariates
 dfuncObs <- dfuncEstim(formula = dist ~ observer

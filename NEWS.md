@@ -1,26 +1,30 @@
-Changes in version 3.0.0 (2023-05-17)
+---
+title: "Rdistance NEWS"
+---
+
+Changes in version 3.0.0 (2023-06-12)
 ==============
 Version 3.0.0 is a substantial change and upgrade. 
 
-* ~~BIGGEST CHANGE~~: Measurement units are now required on all distances
+* ***BIGGEST CHANGE***: Measurement units are now required on all distances
 (e.g., off-transect distances, strip widths, study area size, etc.),
 and it is possible to specify output units.
 Unit conversion makes use of the `units` package, is internal, and automatic. 
-* ~~One-sided Transects~~: Added the ability to analyze single-sided transects 
+* ***One-sided Transects***: Added the ability to analyze single-sided transects 
 by setting `singleSided` = TRUE in call to `abundEstim`. 
-* ~~User Requested~~: Added computation of bootstrap confidence intervals 
+* ***User Requested***: Added computation of bootstrap confidence intervals 
 for effective sampling distances (ESW and EDR). 
-* ~~NA Length Transects~~: NA length transects are now allowed. Observations 
+* ***NA Length Transects***: NA length transects are now allowed. Observations 
 on NA length transects are used to estimate distance functions, but are dropped
-to estimate density.  This allows, for example, off-transect distance observations
-from one study area or year to estimate a distance function which is applied 
+when estimating density.  This allows, for example, off-transect distance observations
+from one study area or year to estimate a distance function which is then applied 
 to the observations from another study area or year. 
 * Added calculation of target density (number per unit area) 
 to `abundEstim`, and it is included in bootstrapping.
 * Allowed expansion terms and covariates in the same distance function.
 * Renamed `uniform` likelihood to `logistic`. Uniform is now deprecated.
 * Added covariates to Gamma likelihood estimation.
-* ~~Change in default parameter~~: Changed default value of `area` in
+* ***Change in default parameter***: Changed default value of `area` in
 `abundEstim` from 1 to NULL. NULL now translates to 1 square output 
 unit.  
 * Added color to print methods.  Results are in green, if the R terminal 

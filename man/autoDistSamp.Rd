@@ -15,10 +15,9 @@ autoDistSamp(
   expansions = 0:3,
   pointSurvey = FALSE,
   warn = TRUE,
-  area = 1,
+  area = NULL,
   ci = 0.95,
   R = 500,
-  bySite = FALSE,
   plot.bs = FALSE,
   showProgress = TRUE,
   plot = TRUE,
@@ -69,9 +68,6 @@ See \code{abundEstim} documentation for definition.}
 See \code{abundEstim} documentation for definition.}
 
 \item{R}{This parameter is passed to \code{abundEstim}.
-See \code{abundEstim} documentation for definition.}
-
-\item{bySite}{This parameter is passed to \code{abundEstim}.
 See \code{abundEstim} documentation for definition.}
 
 \item{plot.bs}{Logical for whether to plot bootstrap 
@@ -147,21 +143,16 @@ data(sparrowSiteData)
 
 # Automate fitting multiple detection functions, and estimate abundance
 # (density per ha in this case), given the 'best' detection function
-# Users should run more than R=20 bootstrap iterations
-autoDistSamp(formula = dist ~ 1
+autoDistSamp(formula = dist ~ groupsize(groupsize)
            , detectionData = sparrowDetectionData
            , siteData = sparrowSiteData
            , likelihood = c("halfnorm", "hazrate")
            , w.hi = units::set_units(100, "m")
-           , series = c("cosine", "simple")
-           , expansions = c(0, 1)
+           , expansions = 0
            , area = units::set_units( 4105, "km^2" )
-           , R = 20
-           , ci = 0.95
-           , bySite=FALSE
-           , plot.bs = TRUE
+           , ci = NULL
            , plot = FALSE
-           , pointSurvey = FALSE)
+           )
            
 }
 \seealso{

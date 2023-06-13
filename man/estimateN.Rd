@@ -22,8 +22,7 @@ unique sites (transects or points). If observations were made on  line-transects
 data frame must also have a column named 
 by the \code{lengthColumn} parameter that contains transect lengths. NA
 length transects are accepted and are dropped when computing total 
-transect length.
-Only observations on non-NA-length transects are toward density.}
+transect length. Only observations on non-NA-length transects are toward density.}
 
 \item{area}{A scalar containing the total area of 
 inference. Commonly, this is study area size.  
@@ -40,6 +39,9 @@ units on area must be convertible to "foo^2" by the \code{units}
 package. 
 Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and many
 others are acceptable.}
+
+\item{surveyedSides}{The number of sides of the transect that were surveyed. Either 
+1 or 2.  Only applies to line transects.}
 
 \item{lengthColumn}{Character string specifying the (single) column in 
 \code{siteData} that contains transect lengths. This is ignored if 
