@@ -320,7 +320,7 @@ abundEstim <- function(dfunc
                 , "."))
   }
 
-  # Check for presence of length column and NA's ----
+  # Check for presence of length column ----
   if(!dfunc$pointSurvey){
     if(!(lengthColumn %in% names(siteData))){
       stop(paste0("Transect length column, '"
@@ -381,18 +381,19 @@ abundEstim <- function(dfunc
     
     # ---- Make new composite siteID, and name it 'siteID' for convenience in bootstrap ----
     # Next version, use tidyr::unite() here
-    siteID <- as.character(detectionData[, siteID.cols[1] ])
+    # Here, we convert to data.frames in case detectionData is a tibble. i.e. this method only works for true data.frames
+    siteID <- as.character(data.frame(detectionData)[, siteID.cols[1] ])
     if( length(siteID.cols) > 1){
       for(j in 2:length(siteID.cols) ){
-        siteID <- paste(siteID, detectionData[, siteID.cols[j] ], sep = "_")
+        siteID <- paste(siteID, data.frame(detectionData)[, siteID.cols[j] ], sep = "_")
       }
     }
     detectionData$siteID <- siteID
     
-    siteID <- as.character(siteData[, siteID.cols[1] ])
+    siteID <- as.character(data.frame(siteData)[, siteID.cols[1] ])
     if( length(siteID.cols) > 1){
       for(j in 2:length(siteID.cols) ){
-        siteID <- paste(siteID, siteData[, siteID.cols[j] ], sep = "_")
+        siteID <- paste(siteID, data.frame(siteData)[, siteID.cols[j] ], sep = "_")
       }
     }
     siteData$siteID <- siteID
