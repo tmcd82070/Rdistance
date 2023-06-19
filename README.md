@@ -2,16 +2,26 @@
 <img src="README_files/RdistanceTopBanner.PNG" width="100%" />
 
 <!-- badges: start -->
+<center>
 
 [![CRAN
 Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
 [![CRAN
 Downloads](http://cranlogs.r-pkg.org/badges/Rdistance)](http://cran.rstudio.com/web/packages/Rdistance/index.html)
-[![Travis-CI Build
-Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance)
 [![CRAN Total
 Downloads](http://cranlogs.r-pkg.org/badges/grand-total/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
 [![codecov](https://codecov.io/gh/tmcd82070/Rdistance/branch/master/graph/badge.svg)](https://codecov.io/gh/tmcd82070/Rdistance)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+
+[![](https://img.shields.io/github/commit-activity/m/tmcd82070/Rdistance)](https://github.com/tmcd82070/Rdistance/commits/master)
+![](https://img.shields.io/github/commits-since/tmcd82070/Rdistance/v3.0.0/master?color=f9930d)
+![](https://img.shields.io/github/contributors/tmcd82070/Rdistance?color=656d44)
+![](https://img.shields.io/github/last-commit/tmcd82070/Rdistance?color=8e755e)
+![](https://img.shields.io/github/release-date/tmcd82070/Rdistance?color=c95443)
+
+</center>
+<!-- [![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance) -->
 <!-- badges: end -->
 
 # Simplified Distance-Sampling in R
@@ -19,9 +29,9 @@ Downloads](http://cranlogs.r-pkg.org/badges/grand-total/Rdistance)](http://www.r
 **Rdistance** analyzes line- and point-transect distance-sampling data.
 If you are unfamiliar with distance-sampling, check out our primer,
 [Distance Sampling for the Average
-Joe](https://github.com/tmcd82070/Rdistance/wiki/avgJoeIntro.Rmd). For
-those ready to take on an analysis, the best place to start is one of
-our vignettes or in the **Examples** section (below).
+Joe](https://github.com/tmcd82070/Rdistance/wiki/Distance-Sampling-for-the-Average-Joe).
+For those ready to take on an analysis, the best place to start is one
+of our vignettes or in the **Examples** section (below).
 
 **Vignettes**:
 
@@ -144,7 +154,7 @@ print(dfuncFit)
 #> Function: HAZRATE  
 #> Strip: 0 [m] to 150 [m] 
 #> Effective strip width (ESW): 61.11514 [m] 
-#>                      95% CI: 49.35207 [m] to 73.41854 [m]
+#>                      95% CI: 49.53595 [m] to 75.55914 [m]
 #> Probability of detection: 0.4074342 
 #> Scaling: g(0 [m]) = 1
 #> Negative log likelihood: 1631.795 
@@ -156,10 +166,10 @@ print(dfuncFit)
 #>               Range: 1 to 1 
 #> 
 #> Density in sampled area: 8.022199e-05 [1/m^2]
-#>                  95% CI: 5.753236e-05 [1/m^2] to 0.000105863 [1/m^2]
+#>                  95% CI: 5.786421e-05 [1/m^2] to 0.0001081076 [1/m^2]
 #> 
 #> Abundance in 2.5e+07 [m^2] study area: 2005.55
-#>                                95% CI: 1438.309 to 2646.575
+#>                                95% CI: 1446.605 to 2702.691
 plot(dfuncFit)
 ```
 

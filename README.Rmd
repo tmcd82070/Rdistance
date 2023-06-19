@@ -20,11 +20,23 @@ includeFigure("RdistanceTopBanner.PNG")
 ```
 
 <!-- badges: start -->
+<center> 
+
 [![CRAN Version](http://www.r-pkg.org/badges/version/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/Rdistance)](http://cran.rstudio.com/web/packages/Rdistance/index.html)
-[![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance)
 [![CRAN Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/Rdistance)](http://www.r-pkg.org/pkg/Rdistance)
 [![codecov](https://codecov.io/gh/tmcd82070/Rdistance/branch/master/graph/badge.svg)](https://codecov.io/gh/tmcd82070/Rdistance)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+
+[![](https://img.shields.io/github/commit-activity/m/tmcd82070/Rdistance)](https://github.com/tmcd82070/Rdistance/commits/master)
+![](https://img.shields.io/github/commits-since/tmcd82070/Rdistance/v3.0.0/master?color=f9930d)
+![](https://img.shields.io/github/contributors/tmcd82070/Rdistance?color=656d44)
+![](https://img.shields.io/github/last-commit/tmcd82070/Rdistance?color=8e755e)
+![](https://img.shields.io/github/release-date/tmcd82070/Rdistance?color=c95443)
+
+</center> 
+
+<!-- [![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance) -->
 <!-- badges: end -->
 
 # Simplified Distance-Sampling in R
@@ -32,7 +44,7 @@ includeFigure("RdistanceTopBanner.PNG")
 **Rdistance** analyzes line- and point-transect distance-sampling data. 
 If you are unfamiliar with 
 distance-sampling, check out our primer, [Distance Sampling 
-for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/avgJoeIntro.Rmd). 
+for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/Distance-Sampling-for-the-Average-Joe). 
 For those ready to take on 
 an analysis, the best place to start is one of our vignettes or in the **Examples** section (below).
 
