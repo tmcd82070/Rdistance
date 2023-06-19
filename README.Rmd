@@ -112,8 +112,9 @@ includeFigure("RdistanceSeparator.PNG")
 ## Examples 
 
 
-Examples show the basic workflow of distance-sampling analysis in 
-`Rdistance` are on our [Examples wiki page](examples.md)
+These examples show basic estimation of abundance via distance-sampling analyses, both with and without covariates. 
+Additional information can be found on our [wiki]((https://github.com/tmcd82070/Rdistance/wiki) and in 
+our vignettes.
 
 ### Line Transects - No Covariates
 

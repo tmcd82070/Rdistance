@@ -92,8 +92,10 @@ install.packages("Rdistance")
 
 ## Examples
 
-Examples show the basic workflow of distance-sampling analysis in
-`Rdistance` are on our [Examples wiki page](examples.md)
+These examples show basic estimation of abundance via distance-sampling
+analyses, both with and without covariates. Additional information can
+be found on our \[wiki\]((<https://github.com/tmcd82070/Rdistance/wiki>)
+and in our vignettes.
 
 ### Line Transects - No Covariates
 
@@ -154,7 +156,7 @@ print(dfuncFit)
 #> Function: HAZRATE  
 #> Strip: 0 [m] to 150 [m] 
 #> Effective strip width (ESW): 61.11514 [m] 
-#>                      95% CI: 49.53595 [m] to 75.55914 [m]
+#>                      95% CI: 48.58955 [m] to 73.256 [m]
 #> Probability of detection: 0.4074342 
 #> Scaling: g(0 [m]) = 1
 #> Negative log likelihood: 1631.795 
@@ -166,10 +168,10 @@ print(dfuncFit)
 #>               Range: 1 to 1 
 #> 
 #> Density in sampled area: 8.022199e-05 [1/m^2]
-#>                  95% CI: 5.786421e-05 [1/m^2] to 0.0001081076 [1/m^2]
+#>                  95% CI: 5.938148e-05 [1/m^2] to 0.0001108501 [1/m^2]
 #> 
 #> Abundance in 2.5e+07 [m^2] study area: 2005.55
-#>                                95% CI: 1446.605 to 2702.691
+#>                                95% CI: 1484.537 to 2771.251
 plot(dfuncFit)
 ```
 
