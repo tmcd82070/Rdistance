@@ -1,7 +1,3 @@
----
-title: "Rdistance NEWS"
----
-
 Changes in version 3.0.0 (2023-06-12)
 ==============
 Version 3.0.0 is a substantial change and upgrade. 

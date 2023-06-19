@@ -25,9 +25,10 @@ our vignettes or in the **Examples** section (below).
 
 **Vignettes**:
 
-- \[Beginner Line Transects\]{Rdistance-BeginnerLineTransect.Rmd}
-- \[Extended Beginner Line Transects
-  Examples\]{Extended_dfuncEstim_Examples.Rmd}
+- [Beginner Line
+  Transects](https://cran.r-project.org/web/packages/Rdistance/vignettes/Rdistance_BeginnerLineTransect.pdf)
+- [Extended Beginner Line Transects
+  Examples](https://cran.r-project.org/web/packages/Rdistance/vignettes/Extended_dfuncEstim_Examples.pdf)
 
 <img src="README_files/RdistanceSeparator.PNG" width="100%" />
 
@@ -143,7 +144,7 @@ print(dfuncFit)
 #> Function: HAZRATE  
 #> Strip: 0 [m] to 150 [m] 
 #> Effective strip width (ESW): 61.11514 [m] 
-#>                      95% CI: 47.06821 [m] to 71.48264 [m]
+#>                      95% CI: 49.35207 [m] to 73.41854 [m]
 #> Probability of detection: 0.4074342 
 #> Scaling: g(0 [m]) = 1
 #> Negative log likelihood: 1631.795 
@@ -155,10 +156,10 @@ print(dfuncFit)
 #>               Range: 1 to 1 
 #> 
 #> Density in sampled area: 8.022199e-05 [1/m^2]
-#>                  95% CI: 6.020535e-05 [1/m^2] to 0.0001114628 [1/m^2]
+#>                  95% CI: 5.753236e-05 [1/m^2] to 0.000105863 [1/m^2]
 #> 
 #> Abundance in 2.5e+07 [m^2] study area: 2005.55
-#>                                95% CI: 1505.134 to 2786.57
+#>                                95% CI: 1438.309 to 2646.575
 plot(dfuncFit)
 ```
 
@@ -318,4 +319,4 @@ plot(dfuncFit, newdata = data.frame(bare = c(30, 35, 40)
 
 # RECENT CHANGES
 
-See our [NEWS](NEWS.Rmd) file for recent changes.
+See our [NEWS](NEWS.md) file for recent changes.

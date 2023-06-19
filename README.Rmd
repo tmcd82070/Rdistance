@@ -38,8 +38,8 @@ an analysis, the best place to start is one of our vignettes or in the **Example
 
 **Vignettes**:
 
-* [Beginner Line Transects]{Rdistance-BeginnerLineTransect.Rmd}
-* [Extended Beginner Line Transects Examples]{Extended_dfuncEstim_Examples.Rmd}
+* [Beginner Line Transects](https://cran.r-project.org/web/packages/Rdistance/vignettes/Rdistance_BeginnerLineTransect.pdf)
+* [Extended Beginner Line Transects Examples](https://cran.r-project.org/web/packages/Rdistance/vignettes/Extended_dfuncEstim_Examples.pdf)
 
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
@@ -202,6 +202,6 @@ includeFigure("RdistanceSeparator.PNG")
 
 # RECENT CHANGES
 
-See our [NEWS](NEWS.Rmd) file for recent changes.
+See our [NEWS](NEWS.md) file for recent changes.
 
 
