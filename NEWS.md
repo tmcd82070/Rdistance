@@ -1,3 +1,17 @@
+Changes in version 3.1.0 (2023-08-28)
+==============
+Version 3.1.0 primarily addresses (GitHub issues)[https://github.com/tmcd82070/Rdistance/issues].
+
+* ***Summary Methods Implemented***: (Issue #57)[https://github.com/tmcd82070/Rdistance/issues/57] Rdistance did not implement `summary` methods for dfunc and abund objects prior to version v3.1.0. This version implements both `summary` and `print` methods for the main outputs.  `print.dfunc` and `print.abund` are modeled on print methods for lm and glm objects.  New methods `summary.dfunc` and `summary.abund` are modeled on the summary methods for lm and glm and will produce fuller (relative to print) outputs. 
+* Documentation fixes:
+  + Added reference to general method in DESCRIPTION as suggested by CRAN editors.
+  + Updated and clarified Description field of DESCRIPTION file.
+  + Updated numerous links in README and NEWS.
+* Bug Fixes:
+  + Fixed bug when `abundEstim` was called with tibbles. 
+
+
+
 Changes in version 3.0.0 (2023-06-12)
 ==============
 Version 3.0.0 is a substantial change and upgrade. 

@@ -113,7 +113,7 @@ includeFigure("RdistanceSeparator.PNG")
 
 
 These examples show basic estimation of abundance via distance-sampling analyses, both with and without covariates. 
-Additional information can be found on our [wiki]((https://github.com/tmcd82070/Rdistance/wiki) and in 
+Additional information can be found on our [wiki](https://github.com/tmcd82070/Rdistance/wiki) and in 
 our vignettes.
 
 ### Line Transects - No Covariates
@@ -144,7 +144,7 @@ dfuncFit <- abundEstim(dfuncFit
          , detectionData = sparrowDetectionData
          , siteData = sparrowSiteData
          , area = set_units(2500, "hectares"))
-print(dfuncFit)
+summary(dfuncFit)
 plot(dfuncFit)
 ```
 
@@ -162,7 +162,7 @@ dfuncFit <- abundEstim(dfuncFit
          , siteData = sparrowSiteData
          , area = set_units(2500, "hectares")
          , ci=NULL)
-print(dfuncFit)
+summary(dfuncFit)
 plot(dfuncFit, newdata = data.frame(bare = c(30, 40, 50)), lty = 1)
 ```
 
@@ -185,7 +185,7 @@ dfuncFit <- abundEstim(dfuncFit
          , detectionData = thrasherDetectionData
          , siteData = thrasherSiteData
          , area = set_units(100, "acres"), ci=NULL)
-print(dfuncFit)
+summary(dfuncFit)
 plot(dfuncFit)
 ```
 
@@ -201,7 +201,7 @@ dfuncFit <- abundEstim(dfuncFit
          , detectionData = thrasherDetectionData
          , siteData = thrasherSiteData
          , area = set_units(100, "acres"), ci=NULL)
-print(dfuncFit)
+summary(dfuncFit)
 plot(dfuncFit, newdata = data.frame(bare = c(30, 35, 40)
                                   , shrub = 20), lty = 1)
 ```
