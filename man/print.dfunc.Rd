@@ -4,37 +4,19 @@
 \alias{print.dfunc}
 \title{Print a distance function object}
 \usage{
-\method{print}{dfunc}(x, criterion = "AICc", ...)
+\method{print}{dfunc}(x, ...)
 }
 \arguments{
 \item{x}{An estimated distance function resulting from a call to \code{dfuncEstim}.}
 
-\item{criterion}{A string specifying the criterion to print.
-Must be one of "AICc" (the default), 
-"AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
-
 \item{\dots}{Included for compatibility with other print methods.  Ignored here.}
 }
 \value{
-The input value of \code{obj} is invisibly returned.
+The input distance function (\code{x}) is returned invisibly.
 }
 \description{
 Print method for distance functions produced by \code{dfuncEstim},
 which are of class \code{dfunc}.
-}
-\details{
-The call, coefficients of the distanced function, whether the estimation converged, 
-the likelihood and expansion function, and other statistics are printed.  At the bottom
-of the output, the following quantities are printed,
-\itemize{  
-  \item \samp{Strip} : The left (\code{w.lo}) and right (\code{w.hi}) truncation values.
-  \item \samp{Effective strip width or detection radius} : ESW or EDR as computed by \code{effectiveDistance}.
-  \item \samp{Scaling} : The horizontal and vertical coordinates used to scale the distance function. 
-  Usually, the horizontal coordinate is 0 and the vertical coordinate is 1 (i.e., g(0) = 1).
-  \item \samp{Log likelihood} : Value of the maximized log likelihood.
-  \item \samp{Criterion} : Value of the specified fit criterion (AIC, AICc, or BIC).
-}
-The number of digits printed is controlled by \code{options()$digits}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
@@ -44,12 +26,11 @@ data(sparrowDetectionData)
 dfunc <- dfuncEstim(formula=dist~1,
                     detectionData=sparrowDetectionData)
 
-# Print results
 dfunc
-print(dfunc, criterion="BIC")
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, \code{\link{print.abund}}
+\code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, 
+\code{\link{print.abund}}, \code{\link{summary.dfunc}}
 }
 \keyword{models}

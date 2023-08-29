@@ -4,43 +4,22 @@
 \alias{print.abund}
 \title{Print abundance estimates}
 \usage{
-\method{print}{abund}(
-  x,
-  criterion = "AICc",
-  maxBSFailPropForWarning = RdistanceControls()$maxBSFailPropForWarning,
-  ...
-)
+\method{print}{abund}(x, ...)
 }
 \arguments{
-\item{x}{An object output by \code{abundEstim}.  This is a distance function object that 
-also contains abundance estimates, and has class \code{c("abund", "dfunc")}.}
-
-\item{criterion}{A string specifying the criterion to print.
-Must be one of "AICc" (the default), 
-"AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
-
-\item{maxBSFailPropForWarning}{The proportion of bootstrap 
-iterations that can fail without a warning. If the proportion 
-of bootstrap iterations that did not converge exceeds this 
-parameter, a warning about the validity of CI's is issued and 
-a diagnostic message printed.  Increasing this to a number greater 
-than 1 will kill the warning, but ignoring a large number of non-convergent
-bootstrap iterations may be a bad idea (i.e., validity of the CI is 
-questionable).}
+\item{x}{An object output by \code{abundEstim}.  This is a distance 
+function object augmented with abundance estimates, and has 
+class \code{c("abund", "dfunc")}.}
 
 \item{\dots}{Included for compatibility to other print methods.
 Ignored here.}
 }
 \value{
-No value is returned.
+0 is invisibly returned
 }
 \description{
 Print an object of class \code{c("abund","dfunc")} 
-that is output by \code{abundEstim}.
-}
-\details{
-The default print method for class 'dfunc' is called, then the abundance estimates 
-  contained in \code{obj} are printed.
+produced by \code{abundEstim}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
@@ -57,14 +36,13 @@ fit <- abundEstim(dfunc
                 , detectionData = sparrowDetectionData
                 , siteData = sparrowSiteData
                 , area = units::set_units(4105, "km^2")
-                , R=20
-                , ci=0.95)
-
-# Print results
+                , ci = NULL)
 print(fit)
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{abundEstim}}
+\code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 
+\code{\link{summary.dfunc}}, \code{\link{print.dfunc}}, 
+\code{\link{summary.abund}}
 }
 \keyword{models}
