@@ -52,7 +52,8 @@ Rdistance.Rproj
 inst/doc
 R/prep.R
 data-raw
-# tests/
+tests/
+vignettes/
 WorkshopScripts/
 doc
 Meta
