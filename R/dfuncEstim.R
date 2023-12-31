@@ -1,415 +1,20 @@
-#' @title dfuncEstim - Detection function estimation
+#' @title dfuncEstim - Estimate a distance-based detection function
 #' 
-#' @description Fits a detection function to off-transect 
-#' or off-point (radial) distances using maximum likelihood. 
-#' Distance functions are fitted to individual 
-#' distance observations, not histogram bin heights. 
+#' @description Fits a detection function using maximum likelihood. 
+#'
+#' @inheritDotParams dE.lt.single formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
 #' 
-#' @param formula A standard formula object (e.g., \code{dist ~ 1}, 
-#' \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
-#' is the name of the vector containing distances (off-transect or 
-#' radial).  The right-hand side (after \code{~})
-#' contains the names of covariate vectors to fit in the detection
-#' function. Covariates can be either detection level and appear in \code{detectionData} 
-#' or transect level and appear in  \code{siteData}. Regular R scoping 
-#' rules apply.  
+#' @inheritParams dE.lt.single
 #' 
-#' \bold{Group Sizes:} Non-unity group sizes are specified using \code{groupsize()}
-#' in the formula. That is, when group sizes are not all 1, they must 
-#' be entered as a column in \code{detectionData} and specified 
-#' using \code{groupsize()} as part of \code{formula}.  For example, 
-#' \code{d ~ habitat + groupsize(number)} specifies that 
-#' distances appear in variable \code{d}, one covariate 
-#' named \code{habitat} is to be fitted, and column \code{number} 
-#' contains the number of individuals 
-#' associated with each detection.  If group sizes are not specified, 
-#' all group sizes are assumed to be 1.
-#'   
+#' @inherit dE.lt.single details
 #' 
-#' @param detectionData A data frame containing detection distances 
-#' (either perpendicular for line-transect or radial for point-transect
-#' designs), with one row per detected object or group.   
-#' This data frame must contain at least the following 
-#' information: 
-#' \itemize{
-#'   \item Detection Distances: A single column containing 
-#'   detection distances must be specified on the left-hand 
-#'   side of \code{formula}.  As of Rdistance version 3.0.0, 
-#'   the detection distances must have measurement units attached. 
-#'   Attach measurements units to distances using \code{library(units);units()<-}.
-#'   For example, \code{library(units)} followed by \code{units(df$dist) <- "m"} or 
-#'   \code{units(df$dist) <- "ft"} will work. Alternatively, 
-#'   \code{df$dist <- units::set_units(df$dist, "m")} also works.
-#'   
-#'   \item Site IDs: The ID of the transect or point 
-#'   (i.e., the 'site') where each object or group was detected.
-#'   The site ID  column(s) (see arguments \code{transectID} and
-#'   \code{pointID}) must 
-#'   specify the site (transect or point) so that this 
-#'   data frame can be merged with \code{siteData}.    
-#'  
-#'   \item In a later release, \code{Rdistance} will allow detection-level 
-#'   covariates.  When that happens, detection-level 
-#'   covariates will appear in this data frame. 
-#'    
-#' }
-#' See example data set \code{\link{sparrowDetectionData}}.
-#' See also \bold{Input data frames} below 
-#' for information on when \code{detectionData} and 
-#' \code{siteData} are required inputs. 
+#' @inheritSection dE.lt.single Group Sizes
 #' 
-#' @param siteData A data.frame containing site (transect or point)
-#'  IDs and any 
-#' \emph{site level} covariates to include in the detection function. 
-#' Every unique surveyed site (transect or point) is represented on
-#' one row of this data set, whether or not targets were sighted 
-#' at the site.  See arguments \code{transectID} and 
-#' \code{pointID} for an explanation of the way in which distance and site 
-#' data frames are merged.  See 
-#' section \bold{Relationship between data frames (transect and point ID's)}
-#' for additional details.
+#' @inheritSection dE.lt.single Contrasts
 #' 
-#' See \bold{Data frame requirements} for situations in which 
-#' \code{detectionData} only, \code{detectionData} and \code{siteData}, or 
-#' neither are required. 
+#' @inheritSection dE.lt.single Measurement Units
 #' 
-#' 
-#' @param likelihood String specifying the likelihood to fit. Built-in 
-#' likelihoods at present are "uniform", "halfnorm", 
-#' "hazrate", "negexp", and "Gamma". See vignette for a way to use 
-#' user-define likelihoods.
-#' 
-#' @param pointSurvey A logical scalar specifying whether input data come
-#' from point-transect surveys (TRUE),
-#' or line-transect surveys (FALSE).  
-#' 
-#' @param w.lo Lower or left-truncation limit of the distances in distance data. 
-#' This is the minimum possible off-transect distance. Default is 0.  If 
-#' \code{w.lo} is greater than 0, it must be assigned measurement units
-#' using \code{units(w.lo) <- "<units>"} or 
-#' \code{w.lo <- units::set_units(w.lo, "<units>")}. 
-#' See examples in the help for \code{set_units}.
-#'  
-#' @param w.hi Upper or right-truncation limit of the distances 
-#' in \code{dist}. This is the maximum off-transect distance that 
-#' could be observed. If unspecified (i.e., NULL), 
-#' right-truncation is set to the maximum of the observed 
-#' distances.  If \code{w.hi} is specified, it must have associated 
-#' measurement units.  Assign measurement units
-#' using \code{units(w.hi) <- "<units>"} or 
-#' \code{w.hi <- units::set_units(w.hi, "<units>")}. 
-#' See examples in the help for \code{set_units}. 
-#' 
-#' @param expansions A scalar specifying the number of terms 
-#' in \code{series} to compute. Depending on the series, 
-#' this could be 0 through 5.  The default of 0 equates 
-#' to no expansion terms of any type.  No expansion terms 
-#' are allowed (i.e., \code{expansions} is forced to 0) if 
-#' covariates are present in the detection function 
-#' (i.e., right-hand side of \code{formula} includes
-#' something other than \code{1}). 
-#' 
-#' @param series If \code{expansions} > 0, this string 
-#' specifies the type of expansion to use. Valid values at 
-#' present are 'simple', 'hermite', and 'cosine'. 
-#' 
-#' @inheritParams F.gx.estim
-#' 
-#' @param warn A logical scalar specifying whether to issue 
-#' an R warning if the estimation did not converge or if one 
-#' or more parameter estimates are at their boundaries.  
-#' For estimation, \code{warn} should generally be left at
-#' its default value of \code{TRUE}.  When computing bootstrap 
-#' confidence intervals, setting \code{warn = FALSE} 
-#' turns off annoying warnings when an iteration does 
-#' not converge.  Regardless of \code{warn}, after 
-#' completion all messages about 
-#' convergence and boundary conditions are printed 
-#' by \code{print.dfunc}, \code{print.abund}, and 
-#' \code{plot.dfunc}. 
-#' 
-#' @param transectID A character vector naming the transect ID column(s) in
-#' \code{detectionData} and \code{siteData}.  If transects are 
-#' not identified in columns named 'siteID' (the default for both data frames), you need 
-#' to specify which column(s) uniquely identify transects. \code{transectID} can have length
-#' greater than 1, in which case unique transects are identified by the composite columns. 
-#' 
-#' @param pointID When point-transects are used, this is the 
-#' ID of points on a transect.  When \code{pointSurvey}=TRUE, 
-#' the combination of \code{transectID} and 
-#' \code{pointID} specify unique sampling sites.  
-#' See \bold{Input data frames}.  
-#' 
-#' If single points are surveyed, 
-#' meaning surveyed points were not grouped into transects, each 'transect' consists
-#' of one point. In this case, set \code{transectID} equal to 
-#' the point's ID and set \code{pointID} equal to 1 for all points. 
-#'  
-#' @param control A list containing optimization control parameters such 
-#' as the maximum number of iterations, tolerance, the optimizer to use, 
-#' etc.  See the 
-#' \code{\link{RdistanceControls}} function for explanation of each value,
-#' the defaults, and the requirements for this list. 
-#' See examples below for how to change controls.
-#' 
-#' @param outputUnits A string giving the symbolic measurment 
-#' units that results should be reported in.   Any 
-#' distance measurement unit in \code{units::valid_udunits()} 
-#' will work.  The strings for common distance symbolic units are: 
-#' "m" for meters, "ft" for feet, "cm" for centimeters, "mm" for 
-#' millimeters, "mi" for miles, "nmile" for 
-#' nautical miles ("nm" is nano meters), "in" for inches, 
-#' "yd" for yards, "km" for kilometers, "fathom" for fathoms, 
-#' "chains" for chains, and "furlong" for furlongs.  
-#' If \code{outputUnits} is unspecified (NULL),
-#' output units are the same as distance measurements units in 
-#' \code{data}.  
-#' 
-#' @section Transect types: 
-#' \code{Rdistance} 
-#' accommodates two kinds of transects: continuous and point.  
-#' On continuous transects detections can occur at
-#' any point along the route, and these are line-transects. 
-#' On point transects detections can only 
-#' occur at a series of stops (points), and these are 
-#' point-transects.  
-#' Transects are the basic sampling unit in both cases. 
-#' Columns named in \code{transectID} are  
-#' sufficient to specify unique line-transects. 
-#' The combination of \code{transectID} and 
-#' \code{pointID} specify unique sampling locations along point-transects.  
-#' See \bold{Input data frames} below for more detail.
-#' 
-#' @section Input data frames:
-#' To save space and to easily specify 
-#' sites without detections, 
-#' all site ID's, regardless of whether a detection occurred there,
-#' and \emph{site level} covariates are stored in 
-#' the \code{siteData} data frame.  Detection distances and group
-#' sizes are measured at the \emph{detection level} and 
-#' are stored in the 
-#' \code{detectionData} data frame.  
-#' 
-#' \subsection{Data frame requirements}{The following explains  
-#' conditions under which various combinations of the input data frames 
-#' are required.
-#' 
-#'    \enumerate{
-#'       \item \bold{Detection data and site data both required:}\cr
-#'          Both \code{detectionData} and \code{siteData}  
-#'          are required if \emph{site level} covariates are 
-#'          specified on the right-hand side of \code{formula}. 
-#'          \emph{Detection level} covariates are not currently allowed.
-#'          Both \code{detectionData} and 
-#'          \code{siteData} data frames are required to estimate abundance 
-#'          later in \code{abundEstim}.
-#'   
-#'       \item \bold{Detection data only required:}\cr
-#'          \code{detectionData} only is required when 
-#'          covariates are not included in the distance function (i.e., the right-hand side of 
-#'          \code{formula} is "~1" or "~groupsize(groupSize)"). Note that \code{dfuncEstim}
-#'          does not need to know transect IDs (or group sizes)  
-#'          in order to estimate a distance function; but, group sizes and 
-#'          transect IDs are stored and used for later use 
-#'          in \code{abundEstim}. Both the \code{detectionData} and 
-#'          \code{siteData} data frames are required in \code{abundEstim}. 
-#'   
-#'       \item \bold{Neither detection data nor site data required}\cr
-#'          Neither \code{detectionData} nor \code{siteData}  
-#'          are required if all variables specified in \code{formula} 
-#'          are within the scope of \code{dfuncEstim} (e.g., in the global working
-#'          environment) and abundance estimates are not required. 
-#'          Regular R scoping rules apply when the call 
-#'          to \code{dfuncEstim} is embedded in a function. 
-#'          This case will produce distance functions only.
-#'          Abundance cannot later be estimated because transects and transect lengths cannot
-#'          be specified outside of a data frame.  If abundance will be estimated, 
-#'          use either case 1 or 2.  
-#'    }
-#'     
-#' }
-#' 
-#' \subsection{Relationship between data frames (transect and point ID's)}{
-#' The input data frames, \code{detectionData} and \code{siteData},
-#' must be merge-able on unique sites.  For line-transects, 
-#' site ID's specify transects or routes and are unique values of 
-#' the \code{transectID} column in \code{siteData}.  In this case,
-#' the following merge must work:  
-#' \code{merge(detectionData,siteData,by=transectID)}.
-#' 
-#' For point-transects, 
-#' site ID's specify individual points and are unique values 
-#' of the combination \code{paste(transectID,pointID)}.
-#' In this case, the following merge must work:    
-#' \code{merge(detectionData,siteData,by=c(transectID, pointID)}.
-#'  
-#' By default, \emph{transects} are unique combinations of the
-#' common variables in the \code{detectionData} and \code{siteData} data frames
-#' if both data frames are specified (i.e., unique values of
-#' \code{intersect(names(detectionData), names(siteData))}). If \code{siteData}
-#' is not specified and \code{transectID} is not given, transects are assumed to 
-#' be identified in a column named \code{siteID} in \code{detectionData}. 
-#' 
-#' Either way
-#' (i.e., either \code{transectID} = "siteID" or specified as something else), 
-#' the column(s) containing transect ID's must be correct here if abundance is to be 
-#' estimated later. Routine \code{\link{abundEstim}} requires transect ID's for bootstrapping
-#' because it resamples unique values of the composite transect ID column(s). \code{abundEstim}
-#' uses the value of \code{transectID} specified here and hence users cannot change transect ID's between 
-#' calls to \code{dfuncEstim} and \code{abundEstim} and all \code{transectID} columns 
-#' must be present in both data frames even though they may not be used until later.
-#' 
-#' An error occurs if both \code{detectionData} and \code{siteData} are specified 
-#' but no common columns exist.  Duplicate \code{transectID} values are not allowed in \code{siteData}
-#' but are allowed in \code{detectionData} because multiple detections can occur on a single transect
-#' or at a single site. If the same site is surveyed in multiple years, specify another level of transect ID; 
-#' for example, \code{transectID} = \code{c("year","transectID")}. 
-#' 
-#' }
-#'  
-#' 
-#' 
-#' @section Measurement Units: 
-#' As of \code{Rdistance} version 3.0.0, measurement units are 
-#' require on all distances.  This includes off-transect 
-#' distances, radial 
-#' distances, truncation distances (\code{w.lo} and \code{w.hi}), 
-#' transect lengths, and study size area. 
-#' In \code{dfuncEstim}, units are required on the following: 
-#' \code{detectionData$dist}; \code{w.lo} (unless it is zero); 
-#' \code{w.hi} (unless it is NULL); 
-#' and \code{x.scl}. In \code{abundEstim}, units are 
-#' required on \code{siteData$length} and \code{area}. All units are 
-#' 1-dimensional except those on \code{area}, which are 2-dimensional. 
-#' 
-#' Requiring units ensures that internal calculations and results 
-#' (e.g., ESW and abundance) are correct 
-#' and that output units are clear.   
-#' Input distances can have variable units. For example, 
-#' input distances can be in specified in "m", \code{w.hi} in "in", 
-#' and \code{w.lo} in "km".  Internally, all distances are 
-#' converted to the units specified by \code{outputUnits} 
-#' (or the units of input distances if 
-#' \code{outputUnits} is NULL), and 
-#' all output is reported 
-#' in units of \code{outputUnits}. 
-#'   
-#' Measurement units can be assigned using  
-#' \code{units()<-} after attaching the \code{units} 
-#' package or with \code{x <- units::set_units(x, "<units>")}. 
-#' See \code{units::valid_udunits()}
-#' for a list of valid symbolic units. 
-#' 
-#' If measurements are truly unit-less, or measurement units are unknown, 
-#' set \code{RdistanceControls(requireUnits = FALSE)}.  This suppresses 
-#' all unit checks and conversions.  Users are on their own 
-#' to make sure inputs are scaled correctly and that output units are known. 
-#'  
-#' @return  An object of class 'dfunc'.  Objects of class 'dfunc' 
-#' are lists containing the following components:
-#'   \item{parameters}{The vector of estimated parameter values. 
-#'     Length of this vector for built-in likelihoods is one 
-#'     (for the function's parameter) plus the 
-#'     number of expansion terms plus one if the likelihood is 
-#'     either 'hazrate' or 'uniform' (hazrate and uniform have
-#'     two parameters). }
-#'   \item{varcovar}{The variance-covariance matrix for coefficients 
-#'     of the distance function, estimated by the inverse of the Hessian
-#'     of the fit evaluated at the estimates.  There is no guarantee this 
-#'     matrix is positive-definite and should be viewed with caution.  
-#'     Error estimates derived from bootstrapping are generally 
-#'     more reliable.}   
-#'   \item{loglik}{The maximized value of the log likelihood 
-#'     (more specifically, the minimized value of the negative 
-#'     log likelihood).}
-#'   \item{convergence}{The convergence code. This code 
-#'     is returned by \code{optim}.  Values other than 0 indicate suspect 
-#'     convergence.}
-#'     
-#'   \item{like.form}{The name of the likelihood. This is 
-#'     the value of the argument \code{likelihood}. }
-#'     
-#'   \item{w.lo}{Left-truncation value used during the fit.}
-#'   
-#'   \item{w.hi}{Right-truncation value used during the fit.}
-#'   
-#'   \item{detections}{A data frame of detections within the strip 
-#'   or circle used in the fit.  Column 'dist' contains the 
-#'   observed distances. 
-#'   Column 'groupSize' contains group sizes associated with 
-#'   the values of 'dist'. Group 
-#'   sizes are only used in \code{abundEstim}.  This data frame 
-#'   contains only distances between \code{w.lo} and \code{w.hi}. 
-#'   Another component of the returned object, i.e., \code{model.frame} 
-#'   contains all observations in the input data, including those outside the strip.}
-#'   
-#'   \item{covars}{Either NULL if no covariates are included in the 
-#'   detection function, or a \code{model.matrix} containing the covariates
-#'     used in the fit. Factors in in the model.matrix version have been expanded
-#'     into 0-1 indicator variables based on R contrasts in effect at the time 
-#'     of the call. Only covariates associated with distances inside the strip 
-#'     or circle are included. }
-#'     
-#'   \item{model.frame}{A \code{model.frame} object containing observed distances 
-#'   (the 'response'), covariates specified in the formula, and group sizes if they
-#'   were specified.  If specified, the name of the group size column is "offset(-variable-)", 
-#'   not "groupsize(-variable-)", because internally it is easier to treat group sizes  
-#'   as an offset in the model.  This component is a proper \code{model.frame} and contains
-#'   both 'terms' and 'contrasts' attributes. }
-#'   
-#'   \item{siteID.cols}{A vector containing the transect ID column names in \code{detectionData}
-#'   and \code{siteData}. Transect IDs can be a composite of two or more columns and hence 
-#'   this component can have length greater than 1. }
-#'     
-#'   \item{expansions}{The number of expansion terms used 
-#'   during estimation.}
-#'   
-#'   \item{series}{The type of expansion used during estimation.}
-#'   
-#'   \item{call}{The original call of this function.}
-#'   
-#'   \item{call.x.scl}{The \emph{input} or user requested 
-#'     distance at which the distance function is scaled. }
-#'     
-#'   \item{call.g.x.scl}{The \code{input} value specifying the 
-#'     height of the distance function at a distance 
-#'     of \code{call.x.scl}.  }
-#'     
-#'   \item{call.observer}{The value of input parameter \code{observer}.
-#'     The input \code{observer} parameter is only applicable when 
-#'     \code{g.x.scl} is a data frame.}
-#'     
-#'   \item{fit}{The fitted object returned by \code{optim}.  
-#'     See documentation for \code{optim}.}
-#'     
-#'   \item{factor.names}{The names of any factors in \code{formula}. }
-#'   
-#'   \item{pointSurvey}{The input value of \code{pointSurvey}. 
-#'     This is TRUE if distances are radial from a point. FALSE 
-#'     if distances are perpendicular off-transect. }
-#'     
-#'   \item{formula}{The formula specified for the detection function.}
-#'   
-#'   \item{control}{A list containing values of the 'control' parameters 
-#'   set by \code{RdistanceControls}.}
-#'   
-#'   \item{outputUnits}{The measurement units used for output.  All 
-#'     distance measurements are converted to these units internally. }
-#'     
-#'   \item{x.scl}{The \emph{actual} distance at which 
-#'     the distance function is scaled to some value.  
-#'     i.e., this is the actual \emph{x} at 
-#'     which g(\emph{x}) = \code{g.x.scl}.
-#'     Note that \code{call.x.scl} = \code{x.scl} unless 
-#'     \code{call.x.scl} == "max", in which case \code{x.scl} is the 
-#'     distance at which \emph{g}() is maximized. } 
-#'     
-#'   \item{g.x.scl}{The \emph{actual} height of the distance function 
-#'     at a distance of \code{x.scl}. Note that \code{g.x.scl} = 
-#'     \code{call.g.x.scl} unless \code{call.g.x.scl}
-#'     is a multiple observer data frame, in which case \code{g.x.scl} is the 
-#'     actual height of the distance function at \code{x.scl} computed 
-#'     from the multiple observer data frame.   }
+#' @inherit dE.lt.single return
 #'     
 #' @references Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
@@ -434,106 +39,48 @@
 #' @importFrom stats model.matrix contrasts optim
 #' @import units
 
-dfuncEstim <- function (formula
-                        , data
-                        , likelihood = "halfnorm"
-                        , pointSurvey = FALSE
-                        , w.lo = units::set_units(0,"m")
-                        , w.hi = NULL
-                        , expansions = 0
-                        , series = "cosine"
-                        , x.scl = units::set_units(0,"m")
-                        , g.x.scl = 1
-                        , observer = "single"
-                        , warn = TRUE
-                        , outputUnits = NULL
-                        , control = RdistanceControls()){
+dfuncEstim <- function (  data, ... ){
 
-  # To-do: remove control = RdistanceControls.  Put all options in
-  # 'options(<name> = <value>)' in onAttach function.
-  # rule: one site per line in data
-  #       No point id col: all points on same transect bootstrapped.
-  #       do not need transectID because we bootstrap lines. 
-  #
-  cl <- match.call()
+  # Check validity of data ----
+  # checkUnits is part of checkRdistDf
+  # checkRdistDf(data)
+
+  errUnk <- function(txt, attri){
+    paste0( "Unknown "
+             , txt
+             , ". Set "
+             , txt
+             , " using 'RdistDf',"
+             , " or with "
+             , 'attr(data, "'
+             , attri
+             , '") <- "value".'
+             , " See help(RdistDf) for list of values."
+    )
+  } 
   
-  if ( likelihood == "uniform" ){
-      .Deprecated(new = "logistic.like"
-      , package = "Rdistance"
-      , msg = paste("'unform.like' is depricated. Use 'logistic'.\n"
-      , "Switching to 'logistic' likelihood.")
-      , old = "uniform.like")
-      likelihood <- "logistic"
-  }
-  
-  if( pointSurvey ){
+  if( attr(data, "transType") == "point" ){
     # Point transects ----
-    res <- switch( observer,
-          "single" = dE.pt.single(formula = formula
-                          , data = data
-                          , likelihood = likelihood 
-                          , w.lo = w.lo
-                          , w.hi = w.hi
-                          , expansions = expansions
-                          , series = series
-                          , x.scl = x.scl
-                          , g.x.scl = g.x.scl
-                          , warn = warn
-                          , outputUnits = outputUnits
-                          , control = control
-      ), 
-      "1|2" =,
-      "2|1" =,
-      "both" = dE.pt.multi(formula = formula
-                          , data = data
-                          , likelihood = likelihood 
-                          , w.lo = w.lo
-                          , w.hi = w.hi
-                          , expansions = expansions
-                          , series = series
-                          , x.scl = x.scl
-                          , g.x.scl = g.x.scl
-                          , observer = observer
-                          , warn = warn
-                          , outputUnits = outputUnits
-                          , control = control
-                          )
-      )
-    } else {
+    res <- switch( attr(data, "obsType"),
+              "single" = dE.pt.single(data, ...)
+            , "1|2"    =
+            , "2|1"    =
+            , "both"   = dE.pt.multi(data, ...)
+            , stop(errUnk("observer system", "obsType"))
+            )
+  } else if(attr(data, "transType") == "line"){
       # Line transects ----
-      res <- switch( observer,
-          "single" = dE.lt.single(
-                            formula = formula
-                          , data = data
-                          , likelihood = likelihood 
-                          , w.lo = w.lo
-                          , w.hi = w.hi
-                          , expansions = expansions
-                          , series = series
-                          , x.scl = x.scl
-                          , g.x.scl = g.x.scl
-                          , warn = warn
-                          , outputUnits = outputUnits
-                          , control = control
-      ) ,
-      "1|2" =,
-      "2|1" =,
-      "both" =  dE.lt.multi(formula = formula
-                          , data = data
-                          , likelihood = likelihood 
-                          , w.lo = w.lo
-                          , w.hi = w.hi
-                          , expansions = expansions
-                          , series = series
-                          , x.scl = x.scl
-                          , g.x.scl = g.x.scl
-                          , observer = observer
-                          , warn = warn
-                          , outputUnits = outputUnits
-                          , control = control
-                      )
+      res <- switch( attr(data, "obsType")
+            , "single" = dE.lt.single(data, ...)
+            , "1|2"    =
+            , "2|1"    =
+            , "both"   = dE.lt.multi(data, ...)
+            , stop(errUnk("observer system", "obsType"))
       )
-    }
+  } else {
+    stop(errUnk("transect type", "transType"))
+  }
   
   res 
 }
+

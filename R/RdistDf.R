@@ -1,4 +1,4 @@
-#' @title RdistDf - Makes a Rdistance nested data frame
+#' @title RdistDf - Make an Rdistance nested data frame
 #' 
 #' @description Make an Rdistance data frame from 
 #' separate transect and distance 
@@ -7,13 +7,18 @@
 #' \itemize{
 #'   \item \bold{transects}: Groups of observations on the same transect, plus
 #'       id, length, and potentially covariates. (rows)
-#'   \item \bold{distanced}: Observation distances and potentially covariates.
-#'       (in a list column)
+#'   \item \bold{distances}: Observation distances and potentially covariates 
+#'   are recorded in a list column that contains a data frame.
 #'   \item \bold{distance types}: Either perpendicular (line-transects) 
 #'       or radial (point-transects). (an attribute)
 #'   \item \bold{observer type}: Either single observer or multiple observers.
 #'   (an attribute)
 #' }
+#' Rdistance data frames can be constructed using a relatively straight forward
+#' call to \code{dplyr::nest} and attribute 
+#' assignment (see \bold{Examples}). This routine is simply a convenience wrapper 
+#' for those calls.  
+#' 
 #' 
 #' @param transectDf A data frame containing attributes of transects. 
 #' At a minimum, this data frame must contain the transect's ID (so 
@@ -25,12 +30,24 @@
 #' The length of a line-transect is it's physical length in 2D space.
 #' The 'length' of a point transect is 
 #' the number of points along the transect. A single 
-#' point is considered a transect of length one.
+#' point is considered a transect of length one.  Transect level covariates,
+#' if any, appear in this data frame.
 #'  
-#' @param detectionDf A data frame containing information about the observations
-#' on each transect.  At a minimum, this data frame must contain 
-#' observation distances and transect ID (so it can merge with \code{transectDf}).
-#' Observation level covariates are included in this data frame.  
+#' @param detectionDf A data frame containing information about observations
+#' made on each transect.  At a minimum, this data frame must contain 
+#' the following:
+#' \itemize{
+#'   \item \bold{Detection Distances}: A single column containing 
+#'   detection distances. This column will be specified on the left-hand 
+#'   side of \code{formula} in a later call to \code{dfuncEstim}.  
+#'   As of Rdistance version 3.0.0, detection distances must have 
+#'   physical measurement units attached. See Section \bold{Measurment Units}. 
+#'   
+#'   \item \bold{Transect IDs}: The ID of the transect on which target groups
+#'   were detected. Transect ID must be present so that the detection
+#'   data frame can be merged with \code{transectDf}.    
+#' }
+#' Optionally, \code{detectionDf} can contain detection level covariates.
 #' 
 #' @param pointSurvey If TRUE, observations were
 #' made from discrete points (i.e., during a point-transect survey) and distances 
@@ -64,13 +81,30 @@
 #' "c" = "d") which joins \code{transectDf$a} to 
 #' \code{detectionDf$b} and 
 #' \code{transectDf$c} to \code{detectionDf$d}. 
+#' Normally, the merge columns in \code{transectDf} 
+#' specify unique rows.  See \bold{Details}.
+#' 
+#' @inheritSection dE.lt.single Measurement Units
 #' 
 #' @return A nested dataframe with one row per transect and observation information  
 #' in a list column.  Technically, the return is 
 #' a \code{tibble} from 
 #' the \code{tibble} package with a list column containing 
 #' distance information. Survey type and observer system are recorded 
-#' as attributes (\code{transType} and \code{obsType}, respecfully). 
+#' as attributes (\code{transType} and \code{obsType}, respectfully). 
+#' 
+#' @details 
+#' Users should ensure that rows of the output nested
+#' data frame contains one sampling unit and that none are duplicated because
+#' rows will eventually be re-sampled (in \code{abundEstim}) to estimate 
+#' variance and confidence intervals. The combination of transect columns 
+#' in \code{by} (i.e., the RHS of the merge, or "a" and "b" of 
+#' 'c("a" = "d", "b" = "c")' for example) 
+#' should normally specify \emph{unique} transects, which should normally 
+#' be unique rows of \code{transectDf}. If duplicate transect row ID's are 
+#' specified in \code{by}, \code{dplyr::left_join}, which is called internally,
+#' may perform a many-to-many merge without warning, and this normally duplicates both 
+#' transects and detections.
 #' 
 #' @examples
 #' 

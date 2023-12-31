@@ -4,22 +4,6 @@
 #' 
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
 #' 
-#' @param x.scl The x coordinate (a distance) at which to scale the 
-#'   sightability function to \code{g.x.scl}, or the string "max".  
-#'   When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
-#'   units assigned using either \code{library(units);units(x.scl) <- '<units>'}
-#'   or \code{x.scl <- units::set_units(x.scl, <units>)}. See
-#'   \code{units::valid_udunits()} for valid symbolic units. See 
-#'   Details for more on 
-#'   scaling the sightability function.
-#'   
-#' @param g.x.scl Height of the distance function at coordinate \emph{x}. 
-#'   The distance function 
-#'   will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. 
-#'   If \code{g.x.scl} is not 
-#'   a data frame, it must be a numeric value (vector of length 1) 
-#'   between 0 and 1. 
-#'   See Details. 
 #'   
 #' @param observer A numeric scalar or text string specifying whether observer 1 
 #'   or observer 2 or both were full-time observers. 
