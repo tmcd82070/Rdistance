@@ -114,6 +114,9 @@ F.start.limits <- function( like
   
   #   No starting values given
   if( like == "hazrate" ){
+    if(medDist <= units::set_units(0,"m")){
+      medDist <- (w.hi - w.lo)*0.05
+    }
     if( ncovars > 1 ){  
       start <- c(log(0.8 * medDist)   # Sigma 
                  , rep(0, ncovars-1)    # any covars
