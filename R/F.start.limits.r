@@ -114,9 +114,6 @@ F.start.limits <- function( like
   
   #   No starting values given
   if( like == "hazrate" ){
-    if(medDist <= units::set_units(0,"m")){
-      medDist <- (w.hi - w.lo)*0.05
-    }
     if( ncovars > 1 ){  
       start <- c(log(0.8 * medDist)   # Sigma 
                  , rep(0, ncovars-1)    # any covars
@@ -176,6 +173,18 @@ F.start.limits <- function( like
     }
     
   } else if( like == "negexp" ){
+    if(is.na(medDist)){
+      cat("\n")
+      cat("dist:\n")
+      print(dist)
+      cat("wlo, whi:\n")
+      print(c(wlo, whi))
+      cat("dMin,dMax,dMed:\n")
+      print(c(dMin, dMax, dMed))
+    }
+    if(medDist <= dMin){
+      medDist <- w*0.05
+    }
     if( ncovars > 1 ){
       start <- c(zero
                , rep(zero, np - 1))

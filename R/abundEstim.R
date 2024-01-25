@@ -520,7 +520,7 @@ abundEstim <- function(dfunc
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
                                warn = FALSE )
-        } else {
+        } else if(nrow(new.detectionData) > 0){
           dfunc.bs <- dfuncEstim(formula = dfunc$formula,  
                                detectionData = new.mergeData,
                                likelihood = dfunc$like.form, 
@@ -534,6 +534,8 @@ abundEstim <- function(dfunc
                                pointSurvey = dfunc$pointSurvey, 
                                outputUnits = dfunc$outputUnits,
                                warn = FALSE)
+        } else {
+          dfunc.bs <- list(convergence = 1)
         }
         
         # Store ESW if it converged
