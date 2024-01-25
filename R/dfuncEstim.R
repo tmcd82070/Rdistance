@@ -43,7 +43,7 @@ dfuncEstim <- function (  data, ... ){
 
   # Check validity of data ----
   # checkUnits is part of checkRdistDf
-  # checkRdistDf(data)
+  checkRdistDf(data)
 
   errUnk <- function(txt, attri){
     paste0( "Unknown "

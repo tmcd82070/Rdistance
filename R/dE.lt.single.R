@@ -24,9 +24,8 @@
 #' 
 #' 
 #' @param likelihood String specifying the likelihood to fit. Built-in 
-#' likelihoods at present are "uniform", "halfnorm", 
-#' "hazrate", "negexp", and "Gamma". See vignette for a way to use 
-#' user-define likelihoods.
+#' likelihoods at present are "logistic", "halfnorm", 
+#' "hazrate", "negexp", and "Gamma". 
 #' 
 #' @param w.lo Lower or left-truncation limit of the distances in distance data. 
 #' This is the minimum possible off-transect distance. Default is 0.  If 
@@ -311,56 +310,56 @@ dE.lt.single <- function(   data
                             , outputUnits = NULL
  ){
 
-    if ( likelihood == "uniform" ){
-      .Deprecated(new = "logistic.like"
-                  , package = "Rdistance"
-                  , msg = paste("'unform.like' is depricated. Use 'logistic'.\n"
-                                , "Switching to 'logistic' likelihood.")
-                  , old = "uniform.like")
-      likelihood <- "logistic"
-    }
+  if ( likelihood == "uniform" ){
+    .Deprecated(new = "logistic.like"
+                , package = "Rdistance"
+                , msg = paste("'unform.like' is depricated. Use 'logistic'.\n"
+                              , "Switching to 'logistic' likelihood.")
+                , old = "uniform.like")
+    likelihood <- "logistic"
+  }
 
-    # all parameters go into parseModel because they need to become
-    # components for the output list, not just formula.
-    modelList <- parseModel(formula = formula
-                          , likelihood = likelihood
-                          , w.lo = w.lo
-                          , w.hi = w.hi
-                          , expansions = expansions
-                          , series = series
-                          , x.scl = x.scl
-                          , g.x.scl = g.x.scl
-                          , control = control)
+  # all parameters go into parseModel because they need to become
+  # components for the output list, not just formula.
+  modelList <- parseModel(formula = formula
+                        , likelihood = likelihood
+                        , w.lo = w.lo
+                        , w.hi = w.hi
+                        , expansions = expansions
+                        , series = series
+                        , x.scl = x.scl
+                        , g.x.scl = g.x.scl
+                        )
 
-    strt.lims <- F.start.limits(modelList)
+  strt.lims <- F.start.limits(modelList)
 
-    # Perform optimization
-    fit <- mlEstimates( modelList )
-    
+  # Perform optimization
+  fit <- mlEstimates( modelList )
+  
 
-ans <- list(parameters = fit$par,
-varcovar = varcovar,
-loglik = fit$value,
-convergence = fit$convergence,
-like.form = likelihood,
-w.lo = w.lo,
-w.hi = w.hi,
-detections = data.frame(dist, groupSize),
-covars = covars,
-model.frame = mf,
-siteID.cols = siteID.cols,
-expansions = expansions,
-series = series,
-call = cl,
-call.x.scl = x.scl,
-call.g.x.scl = g.x.scl,
-call.observer = observer,
-fit = fit,
-factor.names = factor.names,
-pointSurvey = pointSurvey,
-formula = formula,
-control = control,
-outputUnits = outUnits)
+  ans <- list(parameters = fit$par,
+    varcovar = varcovar,
+    loglik = fit$value,
+    convergence = fit$convergence,
+    like.form = likelihood,
+    w.lo = w.lo,
+    w.hi = w.hi,
+    detections = data.frame(dist, groupSize),
+    covars = covars,
+    model.frame = mf,
+    siteID.cols = siteID.cols,
+    expansions = expansions,
+    series = series,
+    call = cl,
+    call.x.scl = x.scl,
+    call.g.x.scl = g.x.scl,
+    call.observer = observer,
+    fit = fit,
+    factor.names = factor.names,
+    pointSurvey = pointSurvey,
+    formula = formula,
+    control = control,
+    outputUnits = outUnits)
 
 ans$loglik <- F.nLL(ans$parameters
 , ans$detections$dist
