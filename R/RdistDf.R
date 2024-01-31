@@ -6,18 +6,18 @@
 #' and contain the following information:
 #' \itemize{
 #'   \item \bold{transects}: Groups of observations on the same transect, plus
-#'       id, length, and potentially covariates. (rows)
+#'       id, length, and potentially covariates. (one transect per row)
 #'   \item \bold{distances}: Observation distances and potentially covariates 
-#'   are recorded in a list column that contains a data frame.
+#'   are recorded in a list column containing a data frame.
 #'   \item \bold{distance types}: Either perpendicular (line-transects) 
 #'       or radial (point-transects). (an attribute)
 #'   \item \bold{observer type}: Either single observer or multiple observers.
 #'   (an attribute)
 #' }
-#' Rdistance data frames can be constructed using a relatively straight forward
-#' call to \code{dplyr::nest} and attribute 
-#' assignment (see \bold{Examples}). This routine is simply a convenience wrapper 
-#' for those calls.  
+#' Rdistance data frames can be constructed using calls to 
+#' \code{dplyr::nest} and \code{dplyr::right_jion}, with subsequent 
+#' attribute assignment (see \bold{Examples}). This routine is 
+#' a convenience wrapper for those calls.  
 #' 
 #' 
 #' @param transectDf A data frame containing attributes of transects. 
@@ -29,8 +29,8 @@
 #' consist of one or more discrete points from which observers search for targets. 
 #' The length of a line-transect is it's physical length in 2D space.
 #' The 'length' of a point transect is 
-#' the number of points along the transect. A single 
-#' point is considered a transect of length one.  Transect level covariates,
+#' the number of points along the transect. Single 
+#' points are considered transects of length one.  Transect level covariates,
 #' if any, appear in this data frame.
 #'  
 #' @param detectionDf A data frame containing information about observations
@@ -41,11 +41,12 @@
 #'   detection distances. This column will be specified on the left-hand 
 #'   side of \code{formula} in a later call to \code{dfuncEstim}.  
 #'   As of Rdistance version 3.0.0, detection distances must have 
-#'   physical measurement units attached. See Section \bold{Measurment Units}. 
+#'   physical measurement units attached. See 
+#'   Section \bold{Measurment Units}. 
 #'   
-#'   \item \bold{Transect IDs}: The ID of the transect on which target groups
-#'   were detected. Transect ID must be present so that the detection
-#'   data frame can be merged with \code{transectDf}.    
+#'   \item \bold{Transect IDs}: The ID of the transect on 
+#'   which target groups were detected. Transect ID must be present 
+#'   so that the detection data frame can be merged with \code{transectDf}.    
 #' }
 #' Optionally, \code{detectionDf} can contain detection level covariates.
 #' 
@@ -65,8 +66,8 @@
 #' \bold{"both"} for a double observer system wherein observations 
 #' made by both observers are tested against the other and combined.
 #' 
-#' @param .distanceCol Name of the list column in returned object 
-#' containing distances. 
+#' @param .distanceCol Name of the list column that
+#' contains distances. Default name is "distances".
 #' 
 #' @param by A character vector of variables to join by.
 #' If NULL, the default, \code{RdistDf}⁠ will perform a
@@ -86,16 +87,17 @@
 #' 
 #' @inheritSection dE.lt.single Measurement Units
 #' 
-#' @return A nested dataframe with one row per transect and observation information  
-#' in a list column.  Technically, the return is 
+#' @return A nested dataframe with one row per transect, and observation 
+#' information in a list column.  Technically, the return is 
 #' a \code{tibble} from 
 #' the \code{tibble} package with a list column containing 
 #' distance information. Survey type and observer system are recorded 
 #' as attributes (\code{transType} and \code{obsType}, respectfully). 
 #' 
 #' @details 
-#' Users should ensure that rows of the output nested
-#' data frame contains one sampling unit and that none are duplicated because
+#' Users should ensure that rows of the nested
+#' data frame contain one sampling unit each, and that none are 
+#' duplicated. This is important because
 #' rows will eventually be re-sampled (in \code{abundEstim}) to estimate 
 #' variance and confidence intervals. The combination of transect columns 
 #' in \code{by} (i.e., the RHS of the merge, or "a" and "b" of 
