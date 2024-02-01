@@ -43,22 +43,10 @@ dfuncEstim <- function (  data, ... ){
 
   # Check validity of data ----
   # checkUnits is part of checkRdistDf
+  # get data checks from 'master' branch and put them in checkRdistDf.
   checkRdistDf(data)
 
-  errUnk <- function(txt, attri){
-    paste0( "Unknown "
-             , txt
-             , ". Set "
-             , txt
-             , " using 'RdistDf',"
-             , " or with "
-             , 'attr(data, "'
-             , attri
-             , '") <- "value".'
-             , " See help(RdistDf) for list of values."
-    )
-  } 
-  
+
   if( attr(data, "transType") == "point" ){
     # Point transects ----
     res <- switch( attr(data, "obsType"),
@@ -66,7 +54,7 @@ dfuncEstim <- function (  data, ... ){
             , "1|2"    =
             , "2|1"    =
             , "both"   = dE.pt.multi(data, ...)
-            , stop(errUnk("observer system", "obsType"))
+            , stop(dfuncEstimErrMessage("observer system", "obsType"))
             )
   } else if(attr(data, "transType") == "line"){
       # Line transects ----
@@ -75,10 +63,10 @@ dfuncEstim <- function (  data, ... ){
             , "1|2"    =
             , "2|1"    =
             , "both"   = dE.lt.multi(data, ...)
-            , stop(errUnk("observer system", "obsType"))
+            , stop(dfuncEstimErrMessage("observer system", "obsType"))
       )
   } else {
-    stop(errUnk("transect type", "transType"))
+    stop(dfuncEstimErrMessage("transect type", "transType"))
   }
   
   res 
