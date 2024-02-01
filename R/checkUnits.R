@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 #' @title checkUnits - Check for the presence of units
 #' 
 #' @description
@@ -15,8 +14,6 @@
 #' 
 #' @export
 #' 
-=======
->>>>>>> Stashed changes
 checkUnits <- function(ml){
 
     # Units for dist ----
@@ -33,14 +30,9 @@ checkUnits <- function(ml){
         # w.lo, w.hi, and x.scl will all be converted later
         if ( !is.null(ml$outputUnits) ){
             ml$dist <- units::set_units(ml$dist, ml$outputUnits, mode = "standard")
-<<<<<<< Updated upstream
         } else {
             ml$outputUnits <- units(ml$dist)
         }
-=======
-        }
-        ml$outUnits <- units(ml$dist)
->>>>>>> Stashed changes
     }
     
     # Units for w.lo ----
@@ -53,20 +45,12 @@ checkUnits <- function(ml){
                 "See units::valid_udunits() for valid symbolic units."))
         }
         # if we are here, w.lo is 0, it has no units, and we require units
-<<<<<<< Updated upstream
         ml$w.lo <- units::set_units(ml$w.lo, ml$outputUnits, mode = "standard") # assign units to 0
-=======
-        ml$w.lo <- units::set_units(ml$w.lo, ml$outUnits, mode = "standard") # assign units to 0
->>>>>>> Stashed changes
     } else if ( ml$control$requireUnits ){
         # if we are here, w.lo has units and we require units, convert to the output units
         # Technically, I don't think we need to do this.  As long as w.lo has units, we are good.
         # We do this here so that we don't do it later when we print units during output.
-<<<<<<< Updated upstream
         ml$w.lo <- units::set_units(ml$w.lo, ml$outputUnits, mode = "standard")
-=======
-        ml$w.lo <- units::set_units(ml$w.lo, ml$outUnits, mode = "standard")
->>>>>>> Stashed changes
     }
     
     # Units on w.hi ----
@@ -81,11 +65,7 @@ checkUnits <- function(ml){
     } else if ( ml$control$requireUnits ){
         # if we are here, w.hi has units and we require them, convert to output units
         # Again, technically I don't think we need to do this.  Happens automatically in computations
-<<<<<<< Updated upstream
         ml$w.hi <- units::set_units(ml$w.hi, ml$outputUnits, mode = "standard")
-=======
-        ml$w.hi <- units::set_units(ml$w.hi, ml$outUnits, mode = "standard")
->>>>>>> Stashed changes
     }
     
     ml
