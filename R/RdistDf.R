@@ -8,11 +8,11 @@
 #'   \item \bold{transects}: Groups of observations on the same transect, plus
 #'       id, length, and potentially covariates. (one transect per row)
 #'   \item \bold{distances}: Observation distances and potentially covariates 
-#'   are recorded in a list column containing a data frame.
-#'   \item \bold{distance types}: Either perpendicular (line-transects) 
-#'       or radial (point-transects). (an attribute)
-#'   \item \bold{observer type}: Either single observer or multiple observers.
-#'   (an attribute)
+#'   are recorded in a list column containing data frames.
+#'   \item \bold{distance types attribute}: Either perpendicular (line-transects) 
+#'       or radial (point-transects). 
+#'   \item \bold{observer type attribute}: Either single observer or multiple observers.
+#'
 #' }
 #' Rdistance data frames can be constructed using calls to 
 #' \code{dplyr::nest} and \code{dplyr::right_jion}, with subsequent 
@@ -20,19 +20,15 @@
 #' a convenience wrapper for those calls.  
 #' 
 #' 
-#' @param transectDf A data frame containing attributes of transects. 
+#' @param transectDf A data frame containing transects information. 
 #' At a minimum, this data frame must contain the transect's ID (so 
-#' it can be merged with \code{detectionDf}) and the transect's length.  
-#' All observations are made on a transect, but not all transects necessarily have 
-#' observations.  Line-transects are continuous paths wherein targets can 
-#' be sighted at any point.  Point transects
-#' consist of one or more discrete points from which observers search for targets. 
-#' The length of a line-transect is it's physical length in 2D space.
-#' The 'length' of a point transect is 
-#' the number of points along the transect. Single 
-#' points are considered transects of length one.  Transect level covariates,
+#' it can be merged with \code{detectionDf}, see parameter \code{by}) 
+#' and the transect's length.  
+#' All are made are made on a transect, but not all transects necessarily have 
+#' observations. That is, include all transects (all transect IDs) in this 
+#' data frame, even if no targets are detected on some. Transect level covariates,
 #' if any, appear in this data frame.
-#'  
+#' 
 #' @param detectionDf A data frame containing information about observations
 #' made on each transect.  At a minimum, this data frame must contain 
 #' the following:
@@ -46,8 +42,11 @@
 #'   
 #'   \item \bold{Transect IDs}: The ID of the transect on 
 #'   which target groups were detected. Transect ID must be present 
-#'   so that the detection data frame can be merged with \code{transectDf}.    
+#'   so that the detection data frame can be merged with \code{transectDf} 
+#'   (see parameter \code{by}).    
 #' }
+#' If group sizes of sighted targets are not all 1, \code{detectionDf} must 
+#' contain a column specifying group sizes. 
 #' Optionally, \code{detectionDf} can contain detection level covariates.
 #' 
 #' @param pointSurvey If TRUE, observations were
@@ -69,8 +68,10 @@
 #' @param .distanceCol Name of the list column that
 #' contains distances. Default name is "distances".
 #' 
-#' @param by A character vector of variables to join by.
-#' If NULL, the default, \code{RdistDf}⁠ will perform a
+#' @param by A character vector of variables to join on. The right-hand
+#' side of this join identifies unique transects and will specify unique 
+#' rows in the output (see \bold{Details}).
+#' If NULL, \code{RdistDf}⁠ will perform a
 #' natural join, using all variables in common between
 #' \code{transectDf} and \code{detectionDf}. To join on 
 #' specific variables, specify a character vector of 
@@ -82,32 +83,44 @@
 #' "c" = "d") which joins \code{transectDf$a} to 
 #' \code{detectionDf$b} and 
 #' \code{transectDf$c} to \code{detectionDf$d}. 
-#' Normally, the merge columns in \code{transectDf} 
-#' specify unique rows.  See \bold{Details}.
+#' 
 #' 
 #' @inheritSection dE.lt.single Measurement Units
 #' 
 #' @return A nested dataframe with one row per transect, and observation 
-#' information in a list column.  Technically, the return is 
+#' information (detections) in a list column.  Technically, the return is 
 #' a \code{tibble} from 
 #' the \code{tibble} package with a list column containing 
-#' distance information. Survey type and observer system are recorded 
-#' as attributes (\code{transType} and \code{obsType}, respectfully). 
+#' distance, group size, and (potentially) covariate information. 
+#' Survey type and observer system are recorded 
+#' as attributes (\code{transType} and \code{obsType}, respectfully). Duplicate
+#' transects or detections, if produced, are not identified. 
 #' 
 #' @details 
-#' Users should ensure that rows of the nested
-#' data frame contain one sampling unit each, and that none are 
-#' duplicated. This is important because
-#' rows will eventually be re-sampled (in \code{abundEstim}) to estimate 
-#' variance and confidence intervals. The combination of transect columns 
+#' For the bootstrap method in \code{\link{abundEstim}} to yield 
+#' accurate confidence intervals, each row of the nested
+#' data frame should represent one transect (or sampling unit), and none should
+#' be duplicated. The combination of transect columns 
 #' in \code{by} (i.e., the RHS of the merge, or "a" and "b" of 
-#' 'c("a" = "d", "b" = "c")' for example) 
-#' should normally specify \emph{unique} transects, which should normally 
-#' be unique rows of \code{transectDf}. If duplicate transect row ID's are 
-#' specified in \code{by}, \code{dplyr::left_join}, which is called internally,
-#' may perform a many-to-many merge without warning, and this normally duplicates both 
+#' \code{by = c("a" = "d", "b" = "c")} for example) 
+#' should specify \emph{unique} transects and unique rows of 
+#' \code{transectDf}. \bold{Warning:} If \code{by} 
+#' does not specify unique rows of \code{transectDf}, \code{dplyr::left_join}, 
+#' which is called internally, will perform a many-to-many merge without 
+#' warning, and this normally duplicates both 
 #' transects and detections.
-#' 
+#'
+#' @section Transect Lengths:
+#' Line-transects are continuous paths wherein targets can 
+#' be sighted at any point.  Point transects
+#' consist of one or more discrete points from which observers search for targets. 
+#' The length of a line-transect is it's physical length in 2D space.
+#' The 'length' of a point transect is 
+#' the number of points along the transect. Single 
+#' points are considered transects of length one. The length of line-transects
+#' must have a physical measurement unit (e.g., 'm' or 'ft').  The length of 
+#' point-transects must be a unit-less integers (i.e., number of points).
+#'  
 #' @examples
 #' 
 #' sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
@@ -122,6 +135,11 @@
 #' attr(sparrowDf, "obsType") <- "single"
 #' attr(sparrowDf, "transType") <- "line"
 #' 
+#' thrasherDf <- RdistDf( thrasherSiteData
+#'                , thrasherDetectionData
+#'                , pointSurvey = T
+#'                , by = "siteID")
+#'                
 #' @export
 #' 
 RdistDf <- function( transectDf
