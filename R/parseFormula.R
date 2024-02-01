@@ -88,7 +88,8 @@ parseModel <- function(formula
     # Enforce minimum number of spline basis functions ----
     if (ml$expansions < 2 & ml$series == "bspline"){
         ml$expansions <- 2
-        if (warn) warning("Minimum spline expansions = 2. Proceeding with 2.")
+        if (warn){
+          warning("Minimum spline expansions = 2. Proceeding with 2.")
         }
     }
 
