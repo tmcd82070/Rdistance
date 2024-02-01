@@ -124,7 +124,6 @@
 #' 
 #' @aliases Rdistance-package distance Rdistance point-transect line-transect
 #' 
-#' @docType package
 #' 
 #' @author Main author and maintainer: Trent McDonald
 #' <trent@mcdonalddatasciences.com>
@@ -138,4 +137,4 @@
 #' @keywords package
 #' 
 #' 
-NULL
+"_PACKAGE"
