@@ -1,38 +1,63 @@
-#' @title RdistDf - Make an Rdistance nested data frame
+#' @title RdistDf - Construct Rdistance nested data frames
 #' 
-#' @description Make an Rdistance data frame from 
-#' separate transect and distance 
-#' data frames. Rdistance data frames are nested 
-#' and contain the following information:
+#' @description Makes an \code{Rdistance} data frame from 
+#' separate transect and detection 
+#' data frames. \data{Rdistance} data frames are nested 
+#' data frames with one row per transect and detection 
+#' information in a list-based column that itself contains a
+#' data frame. \code{Rdistance} contain the following information:
 #' \itemize{
-#'   \item \bold{transects}: Groups of observations on the same transect, plus
-#'       id, length, and potentially covariates. (one transect per row)
-#'   \item \bold{distances}: Observation distances and potentially covariates 
-#'   are recorded in a list column containing data frames.
-#'   \item \bold{distance types attribute}: Either perpendicular (line-transects) 
-#'       or radial (point-transects). 
-#'   \item \bold{observer type attribute}: Either single observer or multiple observers.
+#'   \item \bold{Transect Information}: At a minimum, each row of the 
+#'   data frame must contain transect id and length.  
+#'   Optionally, transect-level covariate variables (such as habitat or observer
+#'   id) can appear on each row. 
+#'   \item \bold{Detection Information}: At a minimum, observation distances
+#'   (either perpendicular off-transect or radial) must appear in the 
+#'   list column on each row.  If detections occasionally included  
+#'   more than one target in a group, group sizes must 
+#'   also be present in the list column alongside observation distances.  
+#'   Optionally, detection-level covariates (such as sex or size)
+#'   can appear in the list column.
+#'   \item \bold{Distance Type}: The type of observation distances, either 
+#'   perpendicular off-transect (for line-transects studies) 
+#'       or radial off-point (for point-transect studies) must appear as an 
+#'       attribute of \code{Rdistance} data frames. 
+#'   \item \bold{Observer Type}: The type of observation system used, either 
+#'   single observer or one of three types of multiple observer systems, must 
+#'   appear as an attribute of \code{Rdistance} data frames.
 #'
 #' }
-#' Rdistance data frames can be constructed using calls to 
-#' \code{dplyr::nest} and \code{dplyr::right_jion}, with subsequent 
+#' \code{Rdistance} data frames can be constructed using calls to 
+#' \code{dplyr::nest_by} and \code{dplyr::right_jion}, with subsequent 
 #' attribute assignment (see \bold{Examples}). This routine is 
 #' a convenience wrapper for those calls.  
 #' 
 #' 
-#' @param transectDf A data frame containing transects information. 
+#' @param transectDf A data frame with one line per transect and 
+#' variables containing transect information. 
 #' At a minimum, this data frame must contain the transect's ID (so 
 #' it can be merged with \code{detectionDf}, see parameter \code{by}) 
 #' and the transect's length.  
-#' All are made are made on a transect, but not all transects necessarily have 
-#' observations. That is, include all transects (all transect IDs) in this 
-#' data frame, even if no targets are detected on some. Transect level covariates,
-#' if any, appear in this data frame.
+#' All detections are made on a transect, but not all transects necessarily have 
+#' observations. That is, the \code{transectDf} should contain rows, and hence
+#' ID's and lengths, of all surveyed transects, even those on which no targets 
+#' were detected (so-called "zero transects"). Transect-level covariates, such 
+#' as habitat type, elevation, or observer IDs, should appear as variables 
+#' in this data frame.
 #' 
-#' @param detectionDf A data frame containing information about observations
-#' made on each transect.  At a minimum, this data frame must contain 
+#' @param detectionDf A data frame containing information on the 
+#' detections made on each transect.  At a minimum, each row of this data 
+#' frame must contain 
 #' the following:
 #' \itemize{
+#'   \item \bold{Transect IDs}: The ID of the transect on 
+#'   which a target group was detected. Transect ID must be present 
+#'   so that the detection data frame can be merged with \code{transectDf} 
+#'   (see parameter \code{by}). Multiple detections on the same transect 
+#'   result in multiple transect ID's across several rows of this data base. 
+#'   
+#'   here!!!
+#'      
 #'   \item \bold{Detection Distances}: A single column containing 
 #'   detection distances. This column will be specified on the left-hand 
 #'   side of \code{formula} in a later call to \code{dfuncEstim}.  
@@ -40,10 +65,6 @@
 #'   physical measurement units attached. See 
 #'   Section \bold{Measurment Units}. 
 #'   
-#'   \item \bold{Transect IDs}: The ID of the transect on 
-#'   which target groups were detected. Transect ID must be present 
-#'   so that the detection data frame can be merged with \code{transectDf} 
-#'   (see parameter \code{by}).    
 #' }
 #' If group sizes of sighted targets are not all 1, \code{detectionDf} must 
 #' contain a column specifying group sizes. 
@@ -195,12 +216,7 @@ RdistDf <- function( transectDf
     dplyr::nest_by( dplyr::across(dplyr::all_of(unname(by)))
                     , .key = .distanceCol
                     , .keep = FALSE) |> 
-    dplyr::ungroup()
-  
-  # Merge transect and detection data frames -----
-  clsAns <- class(ans)
-  ans <- transectDf |> 
-    dplyr::left_join(ans, by = by)
+    dplyr::right_join(transectDf, by = by)
   
   
   attr(ans, "distColumn") <- .distanceCol
@@ -211,7 +227,7 @@ RdistDf <- function( transectDf
   # the extra classes.  they don't. dplyr::group_by wipes out 
   # obsType and transType class components
   # class(ans) <- c(as.character(obsType), as.character(transType), clsAns)
-  class(ans) <- clsAns
+  # class(ans) <- clsAns
   
   ans
 }
