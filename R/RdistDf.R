@@ -167,6 +167,7 @@
 #' attr(sparrowDf, "detectionColumn") <- "detections"
 #' attr(sparrowDf, "obsType") <- "single"
 #' attr(sparrowDf, "transType") <- "line"
+#' class(sparrowDf) <- c("RdistDf", class(sparrowDf))
 #' 
 #' thrasherDf <- RdistDf( thrasherSiteData
 #'                , thrasherDetectionData
