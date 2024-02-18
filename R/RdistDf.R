@@ -2,67 +2,49 @@
 #' 
 #' @description Makes an \code{Rdistance} data frame from 
 #' separate transect and detection 
-#' data frames. \data{Rdistance} data frames are nested 
-#' data frames with one row per transect and detection 
-#' information in a list-based column that itself contains a
-#' data frame. \code{Rdistance} contain the following information:
-#' \itemize{
-#'   \item \bold{Transect Information}: At a minimum, each row of the 
-#'   data frame must contain transect id and length.  
-#'   Optionally, transect-level covariate variables (such as habitat or observer
-#'   id) can appear on each row. 
-#'   \item \bold{Detection Information}: At a minimum, observation distances
-#'   (either perpendicular off-transect or radial) must appear in the 
-#'   list column on each row.  If detections occasionally included  
-#'   more than one target in a group, group sizes must 
-#'   also be present in the list column alongside observation distances.  
-#'   Optionally, detection-level covariates (such as sex or size)
-#'   can appear in the list column.
-#'   \item \bold{Distance Type}: The type of observation distances, either 
-#'   perpendicular off-transect (for line-transects studies) 
-#'       or radial off-point (for point-transect studies) must appear as an 
-#'       attribute of \code{Rdistance} data frames. 
-#'   \item \bold{Observer Type}: The type of observation system used, either 
-#'   single observer or one of three types of multiple observer systems, must 
-#'   appear as an attribute of \code{Rdistance} data frames.
-#'
-#' }
+#' data frames. \code{Rdistance} data frames are nested 
+#' data frames with one row per transect. Detection 
+#' information for each transect appears in a list-based 
+#' column that itself contains a
+#' data frame. See section `Rdistance Data Frames`. 
+#' 
 #' \code{Rdistance} data frames can be constructed using calls to 
 #' \code{dplyr::nest_by} and \code{dplyr::right_jion}, with subsequent 
 #' attribute assignment (see \bold{Examples}). This routine is 
-#' a convenience wrapper for those calls.  
-#' 
+#' a convenience wrapper for those calls.
 #' 
 #' @param transectDf A data frame with one line per transect and 
-#' variables containing transect information. 
+#' columns containing information about the entire transect. 
 #' At a minimum, this data frame must contain the transect's ID (so 
 #' it can be merged with \code{detectionDf}, see parameter \code{by}) 
 #' and the transect's length.  
-#' All detections are made on a transect, but not all transects necessarily have 
-#' observations. That is, the \code{transectDf} should contain rows, and hence
-#' ID's and lengths, of all surveyed transects, even those on which no targets 
-#' were detected (so-called "zero transects"). Transect-level covariates, such 
+#' All detections are made on a transect, but not all transects 
+#' necessarily have detections. That is, \code{transectDf} 
+#' should contain rows, and hence
+#' ID's and lengths, of all surveyed transects, even those on 
+#' which no targets were detected (so-called "zero transects"). 
+#' Transect-level covariates, such 
 #' as habitat type, elevation, or observer IDs, should appear as variables 
 #' in this data frame.
 #' 
-#' @param detectionDf A data frame containing information on the 
-#' detections made on each transect.  At a minimum, each row of this data 
-#' frame must contain 
-#' the following:
+#' @param detectionDf A data frame containing   
+#' detection information associated with each transect.  
+#' At a minimum, each row of this data 
+#' frame must contain the following:
 #' \itemize{
 #'   \item \bold{Transect IDs}: The ID of the transect on 
 #'   which a target group was detected. Transect ID must be present 
 #'   so that the detection data frame can be merged with \code{transectDf} 
 #'   (see parameter \code{by}). Multiple detections on the same transect 
-#'   result in multiple transect ID's across several rows of this data base. 
-#'   
-#'   here!!!
+#'   are possible and hence multiple rows in \code{detectonDf} 
+#'   can contain the same transect ID. 
 #'      
-#'   \item \bold{Detection Distances}: A single column containing 
-#'   detection distances. This column will be specified on the left-hand 
-#'   side of \code{formula} in a later call to \code{dfuncEstim}.  
+#'   \item \bold{Detection Distances}: The distance at which each 
+#'   detection was made. The distance column will eventually be 
+#'   specified on the left-hand 
+#'   side of \code{formula} in a call to \code{dfuncEstim}.  
 #'   As of Rdistance version 3.0.0, detection distances must have 
-#'   physical measurement units attached. See 
+#'   physical measurement units assigned. See 
 #'   Section \bold{Measurment Units}. 
 #'   
 #' }
@@ -86,19 +68,18 @@
 #' \bold{"both"} for a double observer system wherein observations 
 #' made by both observers are tested against the other and combined.
 #' 
-#' @param .distanceCol Name of the list column that
-#' contains distances. Default name is "distances".
+#' @param .detectionCol Name of the list column that will
+#' contain detection data frames. Default name is "detections".
 #' 
-#' @param by A character vector of variables to join on. The right-hand
+#' @param by A character vector of variables to use in the join. The right-hand
 #' side of this join identifies unique transects and will specify unique 
-#' rows in the output (see \bold{Details}).
-#' If NULL, \code{RdistDf}⁠ will perform a
-#' natural join, using all variables in common between
+#' rows in both \code{transectDf} and the output (see warning in \bold{Details}).
+#' If NULL, the join will be 'natural', using all variables in common between
 #' \code{transectDf} and \code{detectionDf}. To join on 
 #' specific variables, specify a character vector of 
-#' variable names to join by. For example, by = c("a", "b") 
+#' the variables. For example, by = c("a", "b") 
 #' joins \code{transectDf$a} to \code{detectionDf$a} and 
-#' \code{transectDf$b} to \code{detectionDf$b}. If variable names 
+#' \code{transectDf$b} to \code{detectionDf$b}. If join variable names 
 #' differ between \code{transectDf} and \code{detectionDf}, 
 #' use a named character vector like by = c("a" = "b", 
 #' "c" = "d") which joins \code{transectDf$a} to 
@@ -108,19 +89,46 @@
 #' 
 #' @inheritSection dE.lt.single Measurement Units
 #' 
-#' @return A nested dataframe with one row per transect, and observation 
-#' information (detections) in a list column.  Technically, the return is 
-#' a \code{tibble} from 
-#' the \code{tibble} package with a list column containing 
-#' distance, group size, and (potentially) covariate information. 
+#' @return A nested data frame with one row per transect, and detection 
+#' information in a list column.  Technically, the return is 
+#' a grouped \code{tibble} from 
+#' the \code{tibble} package with one row per group, and a list 
+#' column containing detection information. 
 #' Survey type and observer system are recorded 
-#' as attributes (\code{transType} and \code{obsType}, respectfully). Duplicate
-#' transects or detections, if produced, are not identified. 
+#' as attributes (\code{transType} and \code{obsType}, respectfully). 
+#' 
+#' @section Rdistance Data Frames: 
+#' 
+#' \code{Rdistance} data frames (class \code{RdistDf}) contain 
+#' the following information:
+#' \itemize{
+#'   \item \bold{Transect Information}: At a minimum, each row of the 
+#'   data frame contains transect id and length.  
+#'   Optionally, transect-level covariates(such as habitat or observer
+#'   id) appear on each row. 
+#'   \item \bold{Detection Information}: At a minimum, observation distances
+#'   (either perpendicular off-transect or radial off-point) appear 
+#'   in a data frame stored in a list column.  If detected groups
+#'   occasionally included more than one target, group sizes must 
+#'   also be present in the data frame contained in the list column.
+#'   Optionally, detection-level covariates (such as sex or size)
+#'   can appear in the data frame of the list column.
+#'   \item \bold{Distance Type}: The type of observation distances, either 
+#'   perpendicular off-transect (for line-transects studies) 
+#'       or radial off-point (for point-transect studies) must appear as an 
+#'       attribute of \code{Rdistance} data frames. 
+#'   \item \bold{Observer Type}: The type of observation system used, either 
+#'   single observer or one of three types of multiple observer systems, must 
+#'   appear as an attribute of \code{Rdistance} data frames.
+#'
+#' }  
 #' 
 #' @details 
-#' For the bootstrap method in \code{\link{abundEstim}} to yield 
-#' accurate confidence intervals, each row of the nested
-#' data frame should represent one transect (or sampling unit), and none should
+#' 
+#' For the bootstrap method, employed in \code{\link{abundEstim}}, 
+#' each row of the nested
+#' data frame should represent one transect (more generally, 
+#' one sampling unit), and none should
 #' be duplicated. The combination of transect columns 
 #' in \code{by} (i.e., the RHS of the merge, or "a" and "b" of 
 #' \code{by = c("a" = "d", "b" = "c")} for example) 
@@ -131,28 +139,32 @@
 #' warning, and this normally duplicates both 
 #' transects and detections.
 #'
+#' 
 #' @section Transect Lengths:
-#' Line-transects are continuous paths wherein targets can 
-#' be sighted at any point.  Point transects
-#' consist of one or more discrete points from which observers search for targets. 
-#' The length of a line-transect is it's physical length in 2D space.
+#' Line-transects are continuous paths with targets detectable at 
+#' any point.  Point transects
+#' consist of one or more discrete points along a path 
+#' from which observers search for targets. 
+#' The length of a line-transect is it's physical length (e.g., km or miles).
 #' The 'length' of a point transect is 
 #' the number of points along the transect. Single 
 #' points are considered transects of length one. The length of line-transects
 #' must have a physical measurement unit (e.g., 'm' or 'ft').  The length of 
 #' point-transects must be a unit-less integers (i.e., number of points).
 #'  
+#' @seealso \code{\link{checkRdistDf}}: check validity of RdistDf data frames;
+#'  \code{\link{dfuncEstim}}: estimate distance function.
+#'  
 #' @examples
 #' 
 #' sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
 #' 
-#' # Equivalent to above, but with re-ordered rows and columns 
+#' # Equivalent to above: 
 #' sparrowDf <- sparrowDetectionData |> 
 #'   dplyr::nest_by( siteID
-#'                , .key = "distances") |> 
-#'   dplyr::right_join(sparrowSiteData, by = "siteID") |> 
-#'   dplyr::ungroup()  
-#' attr(sparrowDf, "distColumn") <- "distances"
+#'                , .key = "detections") |> 
+#'   dplyr::right_join(sparrowSiteData, by = "siteID") 
+#' attr(sparrowDf, "detectionColumn") <- "detections"
 #' attr(sparrowDf, "obsType") <- "single"
 #' attr(sparrowDf, "transType") <- "line"
 #' 
@@ -168,7 +180,7 @@ RdistDf <- function( transectDf
                    , by = NULL
                    , pointSurvey = FALSE
                    , observer = "single"
-                   , .distanceCol = "distances"
+                   , .detectionCol = "detections"
                    ){
   
   # Check lengths ----
@@ -214,19 +226,18 @@ RdistDf <- function( transectDf
   }
   ans <- detectionDf |> 
     dplyr::nest_by( dplyr::across(dplyr::all_of(unname(by)))
-                    , .key = .distanceCol
+                    , .key = .detectionCol
                     , .keep = FALSE) |> 
     dplyr::right_join(transectDf, by = by)
-  
-  
-  attr(ans, "distColumn") <- .distanceCol
+
+  attr(ans, "detectionColumn") <- .detectionCol
   attr(ans, "obsType") <- as.character(obsType)
   attr(ans, "transType") <- as.character(transType)
   
   # Could assign class this way; but, I wish outside ops would preserve
   # the extra classes.  they don't. dplyr::group_by wipes out 
   # obsType and transType class components
-  # class(ans) <- c(as.character(obsType), as.character(transType), clsAns)
+  class(ans) <- c("RdistDf", class(ans))
   # class(ans) <- clsAns
   
   ans
