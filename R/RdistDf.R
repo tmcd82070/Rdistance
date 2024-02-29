@@ -99,8 +99,7 @@
 #' 
 #' @section Rdistance Data Frames: 
 #' 
-#' \code{Rdistance} data frames (class \code{RdistDf}) contain 
-#' the following information:
+#' \code{RdistDf} data frames contain the following information:
 #' \itemize{
 #'   \item \bold{Transect Information}: At a minimum, each row of the 
 #'   data frame contains transect id and length.  
@@ -116,18 +115,17 @@
 #'   \item \bold{Distance Type}: The type of observation distances, either 
 #'   perpendicular off-transect (for line-transects studies) 
 #'       or radial off-point (for point-transect studies) must appear as an 
-#'       attribute of \code{Rdistance} data frames. 
+#'       attribute of \code{RdistDf}'s. 
 #'   \item \bold{Observer Type}: The type of observation system used, either 
 #'   single observer or one of three types of multiple observer systems, must 
-#'   appear as an attribute of \code{Rdistance} data frames.
+#'   appear as an attribute of \code{RdistDf}'s.
 #'
 #' }  
 #' 
 #' @details 
 #' 
-#' For the bootstrap method, employed in \code{\link{abundEstim}}, 
-#' each row of the nested
-#' data frame should represent one transect (more generally, 
+#' For valid bootstrap estimates of confidence intervals (computed in \code{\link{abundEstim}}), 
+#' each row of the nested data frame must represent one transect (more generally, 
 #' one sampling unit), and none should
 #' be duplicated. The combination of transect columns 
 #' in \code{by} (i.e., the RHS of the merge, or "a" and "b" of 
@@ -169,10 +167,12 @@
 #' attr(sparrowDf, "transType") <- "line"
 #' class(sparrowDf) <- c("RdistDf", class(sparrowDf))
 #' 
+#' # Point transects
 #' thrasherDf <- RdistDf( thrasherSiteData
 #'                , thrasherDetectionData
 #'                , pointSurvey = T
-#'                , by = "siteID")
+#'                , by = "siteID"
+#'                , .detectionCol = "birds")
 #'                
 #' @export
 #' 
