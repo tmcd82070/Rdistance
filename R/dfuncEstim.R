@@ -52,15 +52,8 @@
 
 dfuncEstim <- function (  data, ... ){
 
-  # Check validity of data ----
-  if( !Rdistance::is.RdistDf(data) ){
-    stop(paste(deparse(substitute(data)), "is not an RdistDf. See help('RdistDf')"))
-  }
   
-  # checkUnits is part of checkRdistDf
-  # get data checks from 'master' branch and put them in checkRdistDf.
-  checkRdistDf(data)
-
+  # Dispatch separate estimation functions based on transect and observer types ----
   if( attr(data, "transType") == "point" ){
     # Point transects ----
     res <- switch( attr(data, "obsType"),

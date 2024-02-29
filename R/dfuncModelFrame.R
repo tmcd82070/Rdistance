@@ -1,8 +1,7 @@
-#' @title Return model frame for dfunc
+#' @title dfuncModelFrame - Return 'Rdistance' model frame
 #' 
 #' @description Returns the model frame from a formula and 
-#' data set. This routine is intended to only be called from within other Rdistance
-#' functions. 
+#' data set.  
 #' 
 #' @param formula A dfunc formula object.  See \code{dfuncEstim}.
 #' 
@@ -11,13 +10,15 @@
 #' @return a model frame containing the response and covariates resulting from 
 #' evaluating formula in data.
 #' 
-#' @details This routine is needed to get the scoping correct in \code{dfuncEstim}. 
-#' In \code{dfuncEstim}, we first merge the detection and site data frames, then 
-#' call this routine. 
+#' @details
+#' This routine is not intended to be called by users.  It is called 
+#' from within \code{Rdistance} estimation functions.
 #' 
+#' This routine is required for proper scoping in \code{dfuncEstim}. 
 #' 
+#' @export
 #' 
-getDfuncModelFrame <- function(formula, data) {
+dfuncModelFrame <- function(data, formula) {
 
   mf <- match.call(expand.dots = FALSE)
   m <- match(c("formula", "data"), names(mf), 0L)

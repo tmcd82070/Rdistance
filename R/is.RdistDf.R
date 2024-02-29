@@ -24,6 +24,9 @@
 #'   is implied by 'rowwise_df', but not a 'grouped_df', and both are allowed
 #'   in \code{Rdistance}. One row per group ensures rows are uniquely identified 
 #'   and hence represents one transect. 
+#'   \item No column names in the list-column are duplicated in the non-list 
+#'   columns of the data frame. This check ensures that \code{tidyr::unnest}
+#'   executes. 
 #' }
 #' Other data checks, e.g., for measurement units, are performed 
 #' later in \code{\link{dfuncEstim}}, after the model is specified. 
@@ -167,6 +170,32 @@ is.RdistDf <- function(df, verbose = FALSE){
         , crayon::red(paste0(dfName, " |> dplyr::summarise(n = dplyr::n())"
         , " |> dplyr::filter(n > 1)."))
         , "See help('RdistDf')."
+      ))
+    }
+    return(FALSE)
+  }
+  
+  # Check that tidy::unnest will work ----
+  # no duplicate names in list vs out list
+  firstList <- df |> 
+    dplyr::ungroup() |>  
+    dplyr::pull(dplyr::all_of(distColName))
+  firstList <- do.call(dplyr::bind_rows, firstList)
+  namesInList <- names(firstList)
+  namesOutList <- setdiff(names(df), distColName)
+  if( any( namesInList %in% namesOutList) ){
+    if(verbose){
+      cat(paste0(
+        "Duplicate names found inside ",
+        crayon::red(distColName), 
+        " column and in the remainder of " 
+        , crayon::red(dfName)
+        , ". Make names in detection data frame different unique."
+        , " Test: "
+        , crayon::red(paste0("tidyr::unnest(", dfName, ")"))
+        , " should execute."
+        , " Duplicate names found: "
+        , crayon::red(intersect(namesOutList, namesInList))
       ))
     }
     return(FALSE)

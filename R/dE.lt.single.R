@@ -309,16 +309,20 @@ dE.lt.single <- function(   data
     likelihood <- "logistic"
   }
 
+  # Parse the formula and make a model list ----
   # all parameters go into parseModel because they need to become
   # components for the output list, not just formula.
-  modelList <- parseModel(formula = formula
-                        , likelihood = likelihood
-                        , w.lo = w.lo
-                        , w.hi = w.hi
-                        , expansions = expansions
-                        , series = series
-                        , x.scl = x.scl
-                        , g.x.scl = g.x.scl
+  # All checking is done in parseModel(), including 
+  # check of units (via checkUnits()).
+  modelList <- parseModel(data
+                          , formula = formula
+                          , likelihood = likelihood
+                          , w.lo = w.lo
+                          , w.hi = w.hi
+                          , series = series
+                          , x.scl = x.scl
+                          , g.x.scl = g.x.scl
+                          , outputUnits = outputUnits
                         )
 
   strt.lims <- F.start.limits(modelList)
