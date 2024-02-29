@@ -238,7 +238,7 @@ RdistDf <- function( transectDf
   # Could assign class this way; but, I wish outside ops would preserve
   # the extra classes.  they don't. dplyr::group_by wipes out 
   # obsType and transType class components
-  class(ans) <- c("RdistDf", class(ans))
+  # class(ans) <- c("RdistDf", class(ans))
   # class(ans) <- clsAns
   
   ans

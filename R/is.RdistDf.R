@@ -1,33 +1,35 @@
 #' @title checkRdistDf - Check RdistDf data frames
 #' 
 #' @description
-#' Checks the valicity of \code{Rdistance} nested data frames, 
-#' which have class 'RdistDf'.  \code{Rdistance} data frames 
+#' Checks the validity of \code{Rdistance} nested data frames. 
+#' \code{Rdistance} data frames 
 #' are a particular implementation of rowwise \code{tibbles} 
 #' that contain detections in a list column, and extra attributes 
 #' specifying types. 
 #' 
 #' @param df A data frame to check
 #' 
-#' @param verbose If true, an explanation of which check the data frame
-#' fails is printed. Otherwise, no information on checks is provided.
+#' @param verbose If TRUE, an explanation of the check that fails is printed. 
+#' Otherwise, no information on checks is provided.
 #' 
-#' @details The data frame is checked for the following:
+#' @details The following checks are performed (in this order):
 #' \itemize{
-#'   \item That the data frame inherits from the 'RdistDf' class. 
-#'   \item That the data frame is a 'rowwise_df' \code{tibble} with one 
-#'   row per group.  This ensures that each 
-#'   row is uniquely identified and hence represents one transect. 
 #'   \item \code{attr(df, "detectionColumn")} exists and points to a valid 
 #'   list-based column in the data frame. 
 #'   \item \code{attr(df, "obsType")} exists and is one of the valid values.
 #'   \item \code{attr(df, "transType")} exists and is one of the valid values.
+#'   \item The data frame is either a 'rowwise_df' or 'grouped_df' 
+#'   \code{tibble}.
+#'   \item The data frame has only one row per group. One row per group 
+#'   is implied by 'rowwise_df', but not a 'grouped_df', and both are allowed
+#'   in \code{Rdistance}. One row per group ensures rows are uniquely identified 
+#'   and hence represents one transect. 
 #' }
 #' Other data checks, e.g., for measurement units, are performed 
 #' later in \code{\link{dfuncEstim}}, after the model is specified. 
 #' 
-#' @return 0 invisibly. 0 means all checks passed. If a check fails, 
-#' an error is thrown.  So, if this returns, all is good.
+#' @return TRUE or FALSE invisibly. TRUE means all checks passed. FALSE implies 
+#' at least one check failed. Use \code{verbose} = TRUE to see which. 
 #' 
 #' @examples
 #' 
@@ -48,25 +50,25 @@ is.RdistDf <- function(df, verbose = FALSE){
   
   dfName <- deparse(substitute(df))
   
-  # Check for 'RdistDf' class ----
-  if(!inherits(df, "RdistDf")){
-    if(verbose){
-      cat(paste(
-        crayon::red(dfName)
-        , "does not inherit from class 'RdistDf'."
-        , "Assign class using", 
-        crayon::red(paste0("class("
-                           , dfName
-                           , ") <- c('RdistDf', class("
-                           , dfName
-                           , ")),"
-                           ))
-        , "or execute function Rdistance::RdistDf()."
-        , "\n"
-        ))
-    }
-    return(FALSE)
-  }
+  # Check for 'RdistDf' class 
+  # if(!inherits(df, "RdistDf")){
+  #   if(verbose){
+  #     cat(paste(
+  #       crayon::red(dfName)
+  #       , "does not inherit from class 'RdistDf'."
+  #       , "Assign class using", 
+  #       crayon::red(paste0("class("
+  #                          , dfName
+  #                          , ") <- c('RdistDf', class("
+  #                          , dfName
+  #                          , ")),"
+  #                          ))
+  #       , "or execute function Rdistance::RdistDf()."
+  #       , "\n"
+  #       ))
+  #   }
+  #   return(FALSE)
+  # }
   
   # Check for list-based distance column. ----
   # The && are critical here. Must stop evaluating hasDistCol if distColName 
@@ -100,8 +102,8 @@ is.RdistDf <- function(df, verbose = FALSE){
     if(verbose){
       cat(paste(
         crayon::red(dfName)
-        , "must have a declared transect type, either 'line' or"
-        , "'point'. Transect type must be named in attribute 'transType'."
+        , "must have a declared transect type, either 'line' or 'point'."
+        # , "Transect type must be named in attribute 'transType'."
         , "Assign transect type attribute with statement like"
         , crayon::red(paste0("attr("
                              , dfName
@@ -112,7 +114,7 @@ is.RdistDf <- function(df, verbose = FALSE){
     return(FALSE)
   }
 
-  # Check for presence and validity of transType ----
+  # Check for presence and validity of obsType ----
   obsType <- attr(df, "obsType")[1]
   hasObsType <- !is.null(obsType) &&
     (obsType %in% c("single", "1given2", "2given1", "both"))
@@ -120,9 +122,8 @@ is.RdistDf <- function(df, verbose = FALSE){
     if(verbose){
       cat(paste(
         crayon::red(dfName)
-        , "must have a declared observation system, one of 'single',"
-        , "'1given2', '2given1', or 'both'. Observation type must be named"
-        , "in attribute 'obsType'."
+        , "must have a declared observation system, one of 'single', '1given2', '2given1', or 'both'."
+        # , " Observation type must be named in attribute 'obsType'."
         , "Assign observation system attribute with statement like"
         , crayon::red(paste0("attr("
                              , dfName
@@ -150,10 +151,9 @@ is.RdistDf <- function(df, verbose = FALSE){
   # If we are here, the data frame has groups.
   # Note: I am not sure it is possible to have a "rowwise_df" containing groups
   # that have >1 row.  I.e., "rowwise_df" may imply all groups have one row.
-  # Anyway, we check group sizes here. 
-  grps <- attr(df, "groups")
-  lenGrps <- lengths(grps$.rows)
-  if( any(lenGrps > 1) ){
+  # I don't think so.  Anyway, we check group sizes here. 
+  grps <- dplyr::group_size(df)
+  if( any(grps > 1) ){
     if(verbose){
       cat(paste(
         "Groups in" 
@@ -161,7 +161,7 @@ is.RdistDf <- function(df, verbose = FALSE){
         , "must identify unique rows, corresponding"
         , "to unique transects."
         , "Found"
-        , sum(lenGrps > 1)
+        , sum(grps > 1)
         , "groups containing more than one row, i.e., duplicate row IDs."
         , "Identify duplicate rows using"
         , crayon::red(paste0(dfName, " |> dplyr::summarise(n = dplyr::n())"
