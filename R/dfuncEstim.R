@@ -3,8 +3,19 @@
 #' @description Fits a detection function using maximum likelihood. 
 #'
 #' @inheritDotParams dE.lt.single formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
+#' @inheritDotParams dE.lt.multi  formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
+#' @inheritDotParams dE.pt.single formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
+#' @inheritDotParams dE.pt.multi  formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
 #' 
-#' @inheritParams dE.lt.single
+#' @param data An \code{RdistDf} data frame. \code{RdistDf} data frames 
+#' contain one line per transect and a list-based column. The list-based
+#' column contains a data frame with detection information. 
+#' The detection information data frame on each row contains (at least) distances 
+#' and group sizes of all targets detected on the transect.
+#' Function \code{\link{RdistDf}} creates \code{RdistDf} data frames 
+#' from separate transect and detection data frames. 
+#' \code{\link{is.RdistDf}} checks whether data frames
+#' are \code{RdistDf}'s. 
 #' 
 #' @inherit dE.lt.single details
 #' 
@@ -42,10 +53,13 @@
 dfuncEstim <- function (  data, ... ){
 
   # Check validity of data ----
+  if( !Rdistance::is.RdistDf(data) ){
+    stop(paste(deparse(substitute(data)), "is not an RdistDf. See help('RdistDf')"))
+  }
+  
   # checkUnits is part of checkRdistDf
   # get data checks from 'master' branch and put them in checkRdistDf.
   checkRdistDf(data)
-
 
   if( attr(data, "transType") == "point" ){
     # Point transects ----

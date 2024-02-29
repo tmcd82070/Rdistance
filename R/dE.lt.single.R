@@ -13,15 +13,6 @@
 #' global working environment. Regular R scoping 
 #' rules apply.  
 #' 
-#' @param data A data frame containing one line per 
-#' transect and a list-based variable containing detection distances 
-#' (either perpendicular for line-transect or radial for point-transect
-#' designs).  The list-based variable must be a data frame
-#' containing one row per detected object or group. Function 
-#' \code{\link{RdistDf}} will 
-#' create an appropriate data frame from separate transect and 
-#' detection data frames. 
-#' 
 #' 
 #' @param likelihood String specifying the likelihood to fit. Built-in 
 #' likelihoods at present are "logistic", "halfnorm", 
@@ -99,10 +90,9 @@
 #'
 #'
 #' @section Group Sizes: 
-#' Non-unity group sizes are specified using \code{groupsize()}
-#' in \code{formula}. When group sizes are not all 1, they should appear in a column 
-#' of the 'distances' list-column of \code{data}. Specify 
-#' variable group sizes using \code{groupsize()} on the RHS of \code{formula}.
+#' To specify non-unity group sizes,  use \code{groupsize()}
+#' on the RHS of \code{formula}. When group sizes are not all 1, they must appear in a column 
+#' of the 'detections' list-column of \code{data}. 
 #' For example, \code{d ~ habitat + groupsize(number)} specifies  
 #' distances in column \code{d}, one covariate 
 #' named \code{habitat}, and that column \code{number} 

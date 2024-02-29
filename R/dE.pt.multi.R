@@ -1,4 +1,25 @@
-dE.pt.multi <- function(){
+#' @title dE.pt.multi - Estimate multiple-observer point-transect distance functions
+#' 
+#' @description Fits a detection function to radial off-point
+#' distances collected by multiple observers. 
+#' 
+#' @inheritParams dE.lt.single
+#' 
+#' @inherit dE.lt.single return
+#' 
+#' @export
+dE.pt.multi <- function( data
+                         , formula
+                         , likelihood = "halfnorm"
+                         , w.lo = units::set_units(0,"m")
+                         , w.hi = NULL
+                         , expansions = 0
+                         , series = "cosine"
+                         , x.scl = units::set_units(0,"m")
+                         , g.x.scl = 1
+                         , warn = TRUE
+                         , outputUnits = NULL
+                         ){
   
   
   # The double-observer method hasn't been checked since updating to version 2.x
