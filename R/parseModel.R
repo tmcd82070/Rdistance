@@ -19,7 +19,7 @@
 #' @export
 parseModel <- function(data
                           , formula = NULL
-                          , likelihood = NULL
+                          , likelihood = "halfnorm"
                           , w.lo = 0
                           , w.hi = NULL
                           , expansions = 0
@@ -33,118 +33,148 @@ parseModel <- function(data
   if( !Rdistance::is.RdistDf(data, verbose = TRUE) ){
     stop(paste(deparse(substitute(data)), "is not an RdistDf. See help('RdistDf')"))
   }
+
+  # Control parameters ----
+  control <- options()[grep("Rdist_", names(options()))]
   
-  # First convert 'groupsize' to 'offset' ----
-  # Much easier to convert "groupsize" to "offset" in formula because
-  # model.frame and others treat offset correctly.
+  # Check for a response ----
+  # Otherwise, as.character(formula) is length 2, not 3
   if( is.null(formula) ){
     stop("'formula' is required.")
   }
   if( !inherits(formula, "formula") ){
     stop("'formula' must be a formula object.")
   }
-  
-  formulaChar <- as.character(formula) # [1] = "~"; [2] = LHS; [3] = RHS
-  formulaChar[3] <- gsub( "groupsize\\(", "offset(", formulaChar[3] )
-  formula <- formula( paste(formulaChar[c(2,1,3)], collapse = " ") )
+  mt <- stats::terms.formula(formula)
+  if ( attr(mt, "response") == 0 ){
+    stop("Formula must have a response on LHS of '~'.")
+  }
 
-  # Second, extract model frame, terms etc. ----
-  # mf <- Rdistance::dfuncModelFrame(formula, data)
+  # Unnest the data frame ----
   # If a name in list column is the same as another in parent frame, 
   # unnest will throw an error.
   detectionData <- tidyr::unnest(data
                                  , cols = attr(data, "detectionColumn"))
-  mf <- match.call(expand.dots = FALSE)
-  m <- match(c("formula", "data"), names(mf), 0L)
-  mf <- mf[c(1L, m)]
-  names(mf)[names(mf)=="formula"] <- "formula"
-  mf$drop.unused.levels <- TRUE
-  mf[[1L]] <- quote(stats::model.frame)
-
-  mf <- eval(mf, detectionData)
-  # mf <- eval(mf, parent.frame())
   
-  mt <- stats::terms(mf)
-  if ( attr(mt, "response") == 0 ){
-      stop("Formula must have a response on LHS of '~'.")
-  }
-  dist <- stats::model.response(mf,"any")
-  if ( !is.null(attr(mt, "offset")) ){
-      # groupsize specified in formula
-      groupSize <- stats::model.offset(mf)
+  
+  # Fix up formula ----
+  # I.e., add offset() if not present; change "groupsize" to "offset" if present.
+  # Use "offset" because model.offset works with it. 
+  # This may change detectionData by adding an offset with random name
+  #
+  # Much easier to convert "groupsize" to "offset" in formula because
+  # model.frame and others treat offset correctly.
+  formulaAtCall <- formula # save the original
+  formulaChar <- as.character(formula) # [1] = "~"; [2] = LHS; [3] = RHS
+  gsFormulaTxt <- "groupsize\\(" # string specifying groupsize in formula
+  if( grepl( gsFormulaTxt, formulaChar[3]) ){
+    # "groupsize(...)" specified
+    formulaChar[3] <- gsub( gsFormulaTxt, "offset(", formulaChar[3] )
   } else {
-      groupSize <- rep(1, length(dist))
+    # "groupsize" not specified; add it.
+    offsetVar <- withr::with_preserve_seed({
+      set.seed(Sys.time())
+      formatC(trunc(runif(1, max = 10000000))
+              , format="f"
+              , digits=0
+              , width = 7
+              , flag = "0")
+      })
+    offsetVar <- paste0("gs_",offsetVar)
+    formulaChar[3] <- paste0(formulaChar[3], " + offset(", offsetVar, ")")
+    detectionData <- detectionData |> 
+      dplyr::mutate( !!offsetVar := 1 ) 
   }
+  formula <- formula( paste(formulaChar[c(2,1,3)], collapse = " ") )
+
   
-  # Convert distances and group sizes into a data frame:
-  distances <- dplyr::bind_cols(dist = dist
-                                , groupSize = groupSize)
+  # Evaluate model frame ----
+  # Will evaluate model frame twice: here, to get response and offset from formula
+  # so that we can check units. Later, to exclude observations outside the strip.
+  #
+  # Use na.exclude here so that predict includes NA for any missing cases 
+  # later.  I.e., predict returns vector same size as detectionData always
+  # Test whether NA cases were present with is.null(attr())
+  mf <- stats::model.frame(
+    formula = formula
+    , data = detectionData
+    , drop.unused.levels = TRUE
+    , na.action = na.exclude
+  )
 
-  covars <- if (!is.empty.model(mt)){
-      stats::model.matrix(object = mt,
-          data = mf,
-          contrasts.arg = control$contrasts )
-  }
-  covars <- dplyr::as_tibble(covars)
-
-  # Missing values in dist ----
+  # A note on missing values  ----
   # Missing distances are okay.  They are observations of 
   # a target for which crew did not get a distance. Happens. 
   # These count toward "n" when computing density, but not 
   # when estimating distance functions.
-  #  ml$dist = original distances potentially with NAs
-  #  ml$distNoNA = distance without NAs, use for computations
-  # distNoNA <- na.omit(dist)
-
-  # Control parameters ----
-  control <- options()[grep("Rdist_", names(options()))]
+  # Using na.exclude in model.frame excludes missing distances 
+  # from the fitting frame, but attr(mf, "na.action") stores the 
+  # line numbers of rows in the original data set with missing cases. 
+  # A missing case has either missing distance or missing covariates. 
   
-  # Put everything in list ----    
-  ml <- list(mf = mf
-      , mt = mt
-      , distances = distances
-      , dataName = deparse(substitute(data))
-      # , distNoNA = distNoNA
-      # , groupsize = groupsize
-      , covars = covars
-      # , control = control
-      # , assgn = assign
-      , likelihood = likelihood
-      , w.lo = w.lo
-      , w.hi = w.hi
-      , expansions = expansions
-      , series = series
-      , x.scl = x.scl
-      , g.x.scl = g.x.scl
-      , outputUnits = outputUnits
-      # , control = control
-      )
-  ml <- c(ml
-          , control)
-
+  # Check units ----    
+  # We could check that offset, g.x.scl, and expanstions DON'T have units
+  mtNames <- as.character(attr(mt, "variables"))
+  respName <- mtNames[ attr(mt, "response") + 1 ]
+  offsetName <- mtNames[ attr(mt, "offset") + 1 ]
+  dataWUnits <- list(data = detectionData
+                     , w.lo = w.lo
+                     , w.hi = w.hi
+                     , respName = respName
+                     , offsetName = offsetName
+                     , x.scl = x.scl
+                     , outputUnits = outputUnits
+                     , dataName = deparse(substitute(data))
+  )
   
-  # Check units ----
-  ml <- Rdistance::checkUnits(ml)
-
-  # Truncate for w.lo and w.hi
-  ind <- (ml$w.lo <= ml$distances$dist) & (ml$distances$dist <= ml$w.hi)
-  if( any(!ind) ){
-      ml$dist <- ml$dist[ind]
-      ml$groupSize <- ml$groupSize[ind]
-      ml$covars <- ml$covars[ind,,drop = FALSE] 
+  if( control$Rdist_requireUnits ){
+    dataWUnits <- Rdistance::checkUnits(dataWUnits)
   }
   
-  # attr(ml$covars,"assign") <- assgn
-  # attr(ml$covars,"contrasts") <- contr
-          
+
+  # Truncate for w.lo and w.hi ----
+  # This is second evaluation of model.frame
+  # Re-do model.frame so that distances outside strip are set to NA, but 
+  # row is kept. Do this here, rather than above, because we've check all units here.
+  # Use ml because checkUnits may have changed units, so original mf (and mt) may
+  # not be good.
+  d <- dplyr::pull(dataWUnits$data, dataWUnits$respName)
+  ind <- (dataWUnits$w.lo <= d) & (d <= dataWUnits$w.hi)  # could be NA's here
+  ind <- ind & !is.na(ind)
+  if( any(!ind) ){
+    missDist <- units::set_units(NA_real_, dataWUnits$outputUnits, mode="standard")
+    dataWUnits$data[!ind, dataWUnits$respName] <- missDist
+  }
+
+  mf <- stats::model.frame(
+      formula = formula
+      , data = dataWUnits$data
+      , drop.unused.levels = TRUE
+      , na.action = na.exclude
+    )    
+
+  # Put everything in list ----    
+  ml <- list(mf = mf
+             , mt = stats::terms(mf)
+             , formula = formulaAtCall
+             , dataName = dataWUnits$dataName
+             , likelihood = likelihood
+             , w.lo = dataWUnits$w.lo
+             , w.hi = dataWUnits$w.hi
+             , expansions = expansions
+             , series = series
+             , x.scl = dataWUnits$x.scl
+             , g.x.scl = g.x.scl
+             , outputUnits = dataWUnits$outputUnits
+             , control = control
+  )
+  
   # Enforce minimum number of spline basis functions ----
   if (ml$expansions < 2 & ml$series == "bspline"){
       ml$expansions <- 2
       if (warn) warning("Minimum spline expansions = 2. Proceeding with 2.")
   }
 
-  here!!!
-    
   # Override x.scl for Gamma likelihood ----
   if ( !is.character(ml$x.scl) ){
       if ( inherits(ml$x.scl, "units") ){ 
@@ -160,23 +190,5 @@ parseModel <- function(data
       }
   }
 
-
-  # Find factors. ----
-  # This works when covars is NULL and must be called
-  # even when ncovars == 1 to cover case like dist ~ -1+x (no intercept)
-  #for (i in 1:ncol(mf)){
-  #    if (is.factor(mf[,i])){
-  #        factor.names <- c(factor.names, names(mf)[i])
-  #    }
-  #}
-  
-  strMf <- str(mf)
-  factor.names <- strMf |>
-    dplyr::filter( type == "factor" ) |>
-    dplyr::pull(name)
-  
-  # vnames has original names, not expanded for factor levels
-  vnames<-dimnames(covars)[[2]]
-  
   ml
 }
