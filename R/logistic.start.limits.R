@@ -18,12 +18,7 @@
 #' 
 #' @export
 #' 
-logistic.start.limits <- function(dist
-                                , covars
-                                , expansions
-                                , w.lo
-                                , w.hi
-                                ){
+logistic.start.limits <- function(ml){
 
   # Dist, w.lo, and w.hi should all have units, or none have units
   # dist should already be reduced to values within w.lo to w.hi, 

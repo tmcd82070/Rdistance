@@ -166,6 +166,8 @@ parseModel <- function(data
              , x.scl = dataWUnits$x.scl
              , g.x.scl = g.x.scl
              , outputUnits = dataWUnits$outputUnits
+             , transType = attr(data, "transType")
+             , obsType = attr(data, "obsType")
              , control = control
   )
   

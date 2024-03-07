@@ -314,7 +314,7 @@ dE.lt.single <- function(   data
   # components for the output list, not just formula.
   # All checking is done in parseModel(), including 
   # check of units (via checkUnits()).
-  modelList <- parseModel(data
+  modelList <- Rdistance::parseModel(data
                           , formula = formula
                           , likelihood = likelihood
                           , w.lo = w.lo
@@ -325,7 +325,7 @@ dE.lt.single <- function(   data
                           , outputUnits = outputUnits
                         )
 
-  strt.lims <- F.start.limits(modelList)
+  strt.lims <- Rdistance::startLimits(modelList)
 
   # Perform optimization
   fit <- mlEstimates( modelList )

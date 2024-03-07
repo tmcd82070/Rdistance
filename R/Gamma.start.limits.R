@@ -1,29 +1,33 @@
-#' @title Gamma.start.limits - Start and limit values for Gamma parameters.
+#' @title Gamma.start.limits - Start and limit values for Gamma distance function
 #' 
-#' @description Compute starting values and limits for the Gamma likelihood
+#' @description Compute starting values and limits for the Gamma distance
 #' function. 
 #' 
-#' @inheritParams logistic.like
+#' @inheritParams startLimits
 #' 
-#' @inherit logistic.start.limits return
+#' @inherit startLimits return
 #' 
 #' @export
-Gamma.start.limits <- function (dist
-                                , covars
-                                , expansions
-                                , w.lo
-                                , w.hi
-                                ){
+Gamma.start.limits <- function (ml){
   
-  d <- dist[ w.lo <= dist & dist <= w.hi ]
-  d <- d[ d > units::set_units(0, "m") ] # even though 0 is fine, can't take log of it
-  s <- units::drop_units( log( mean(d, na.rm=TRUE) ) - mean( log(d), na.rm=TRUE ) )
+  X <- stats::model.matrix(ml$mt, ml$mf)
+  dist <- stats::model.response(ml$mf)  
+  
+  ncovars <- ncol(X)
+
+  negInf <- -.Machine$double.xmax
+  posInf <- -negInf
+  zero <- .Machine$double.xmin
+  fuzz <- .Machine$double.eps
+  
+  d <- dist[ dist > units::set_units(0, "m") ] # even though 0 is fine, can't take log of it
+  s <- units::drop_units( log( mean(d, na.rm=TRUE) ) - mean( log(d), na.rm=TRUE ) ) # there are no NA's
   s2 <- (s-3)^2 + 24*s
-  if( s2 < 0 ){ 
-    s2 <- 0 
+  if( s2 < zero ){ 
+    s2 <- zero 
   }
   r <- (3 - s + sqrt( s2 )) / (12*s)
-  if( r <= 1 ) {
+  if( r <= 1.0 ) {
     r <- 1.01
   }
   b <- ( (r-1) / exp(1) )^(r-1) / gamma(r)
@@ -33,30 +37,22 @@ Gamma.start.limits <- function (dist
     lam <- units::drop_units(lam)
   }
 
-  negInf <- -.Machine$double.xmax
-  posInf <- -negInf
-  zero <- .Machine$double.xmin
+  expanStart <- rep(0, ml$expansions)
+  expanLow <- rep(negInf, ml$expansions)
+  expanHigh <- rep(posInf, ml$expansions)
   
-  expanStart <- rep(0, expansions)
-  expanLow <- rep(negInf, expansions)
-  expanHigh <- rep(posInf, expansions)
-  
-  ncovars <- ncol(covars)
-  if( !is.null(covars) ){
-    start <- c(log(lam), rep(0, ncovars-1), r, expanStart)
-    low   <- c(zero, rep(negInf, ncovars-1), 1 + .Machine$double.eps, expanLow)
-    nms <- c(colnames(covars), "Shape")
-    high  <- c(posInf, rep(posInf, ncovars-1), posInf, expanHigh)
-  } else {
-    start <- c(lam, r, expanStart)
-    low   <- c(zero, 1 + .Machine$double.eps, expanLow)
-    nms <- c("Scale", "Shape")
-    high  <- c(posInf, posInf, expanHigh)
-  }
-  
+  start <- c(log(lam), rep(0, ncovars-1), r, expanStart)
+  low   <- c(zero, rep(negInf, ncovars-1), 1 + fuzz, expanLow)
+  high  <- c(posInf, rep(posInf, ncovars-1), posInf, expanHigh)
+
+  nms <- c(colnames(X), "Shape")
   if(expansions > 0){
     nms <- c(nms, paste( "a", 1:expansions, sep=""))
   }
+
+  names(start) <- nms
+  names(low) <- nms
+  names(high) <- nms  
   
   list( start=start, lowlimit=low, uplimit=high, names=nms )
   
