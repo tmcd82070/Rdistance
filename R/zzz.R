@@ -7,14 +7,18 @@
   
   op <- options()
   op.Rdist <- list(
-      Rdist_optimizer = "nlminb"
-    , Rdist_evalMax = 2000
-    , Rdist_maxIters = 1000
-    , Rdist_likeTol = 1e-8
-    , Rdist_coefTol = 1.5e-8
-    , Rdist_hessEps = 1e-8
-    , Rdist_requireUnits = TRUE
-    , Rdist_maxBSFailPropForWarning = 0.2
+      Rdistance_optimizer = "nlminb"
+    , Rdistance_evalMax   = 2000
+    , Rdistance_maxIters  = 1000
+    , Rdistance_likeTol   = 1e-8
+    , Rdistance_coefTol   = 1.5e-8
+    , Rdistance_hessEps   = 1e-8
+    , Rdistance_requireUnits = TRUE
+    , Rdistance_maxBSFailPropForWarning = 0.2
+    , Rdistance_negInf    = .Machine$double.xmin / .Machine$double.eps
+    , Rdistance_posInf    = .Machine$double.xmax * .Machine$double.eps
+    , Rdistance_fuzz      = .Machine$double.eps
+    , Rdistance_zero      = .Machine$double.eps
   )
   toset <- !(names(op.Rdist) %in% names(op))
   if (any(toset)) options(op.Rdist[toset])
@@ -24,17 +28,21 @@
 
 .onUnload <- function(libpath){
   
-  # un-option Rdist options by full name, not just grep("Rdist_", names(op))
-  # in case user has an options starting with "Rdist_".
+  # un-option Rdist options by full name, not just grep("Rdistance_", names(op))
+  # in case user has an options starting with "Rdistance_".
   op.Rdist <- list(
-    "Rdist_optimizer" = NULL
-    , "Rdist_evalMax" = NULL
-    , "Rdist_maxIters" = NULL 
-    , "Rdist_likeTol" = NULL
-    , "Rdist_coefTol" = NULL
-    , "Rdist_hessEps" = NULL
-    , "Rdist_requireUnits" = NULL
-    , "Rdist_maxBSFailPropForWarning" = NULL
+    "Rdistance_optimizer" = NULL
+    , "Rdistance_evalMax" = NULL
+    , "Rdistance_maxIters" = NULL 
+    , "Rdistance_likeTol" = NULL
+    , "Rdistance_coefTol" = NULL
+    , "Rdistance_hessEps" = NULL
+    , "Rdistance_requireUnits" = NULL
+    , "Rdistance_maxBSFailPropForWarning" = NULL
+    , "Rdistance_negInf"    = NULL
+    , "Rdistance_posInf"    = NULL
+    , "Rdistance_fuzz"      = NULL
+    , "Rdistance_zero"      = NULL
   )
   
   options(op.Rdist)

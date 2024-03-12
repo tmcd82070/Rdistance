@@ -15,10 +15,10 @@ hazrate.start.limits <- function (ml){
   
   ncovars <- ncol(X)
 
-  fuzz <- .Machine$double.eps
-  negInf <- -.Machine$double.xmax * fuzz # fuzz decimals off Infinity
-  posInf <- -negInf 
-  zero <- fuzz
+  fuzz <- getOption("Rdistance_fuzz")
+  zero <- getOption("Rdistance_zero")
+  posInf <- getOption("Rdistance_posInf")
+  negInf <- getOption("Rdistance_negInf")
   
   expan <- ml$expansions
   dMin <- max( min(dist), ml$w.lo )

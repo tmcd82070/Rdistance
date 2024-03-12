@@ -15,10 +15,10 @@ Gamma.start.limits <- function (ml){
   
   ncovars <- ncol(X)
 
-  negInf <- -.Machine$double.xmax
-  posInf <- -negInf
-  zero <- .Machine$double.xmin
-  fuzz <- .Machine$double.eps
+  fuzz <- getOption("Rdistance_fuzz")
+  zero <- getOption("Rdistance_zero")
+  posInf <- getOption("Rdistance_posInf")
+  negInf <- getOption("Rdistance_negInf")
   
   d <- dist[ dist > units::set_units(0, "m") ] # even though 0 is fine, can't take log of it
   s <- units::drop_units( log( mean(d, na.rm=TRUE) ) - mean( log(d), na.rm=TRUE ) ) # there are no NA's

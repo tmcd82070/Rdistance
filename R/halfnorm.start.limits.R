@@ -16,11 +16,10 @@ halfnorm.start.limits <- function (ml){
   expan <- ml$expansions
   ncovars <- ncol(X)
 
-  negInf <- -.Machine$double.xmax
-  fuzz <- .Machine$double.eps
-  posInf <- -negInf * fuzz # fuzz decimals less than Infinity
-  zero <- fuzz
-  
+  fuzz <- getOption("Rdistance_fuzz")
+  zero <- getOption("Rdistance_zero")
+  posInf <- getOption("Rdistance_posInf")
+
   dist2 <- dist - ml$w.lo
   if( inherits(dist2, "units") ){
     # Only time dist2 will not have units is when user overides requirement

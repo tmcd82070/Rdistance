@@ -20,14 +20,16 @@
 #' 
 logistic.start.limits <- function(ml){
 
+  fuzz <- getOption("Rdistance_fuzz")
+  zero <- getOption("Rdistance_zero")
+  posInf <- getOption("Rdistance_posInf")
+  negInf <- getOption("Rdistance_negInf")
+  
   # Dist, w.lo, and w.hi should all have units, or none have units
   # dist should already be reduced to values within w.lo to w.hi, 
   # but just in case...
   ind <- (w.lo <= dist) & (dist <= w.hi)  # unit conversions happen if needed
   dist <- dist[ind]
-  negInf <- -.Machine$double.xmax / 100
-  posInf <- -negInf
-  zero <- 0
   if(!is.null(covars)){
     ncovars <- ncol(covars)
   } else { 
