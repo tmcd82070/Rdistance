@@ -352,7 +352,7 @@ dE.lt.single <- function(   data
     factor.names = factor.names,
     pointSurvey = pointSurvey,
     formula = formula,
-    control = control,
+    # control = control, # could store options here
     outputUnits = outUnits)
 
 ans$loglik <- F.nLL(ans$parameters

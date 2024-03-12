@@ -35,7 +35,8 @@ parseModel <- function(data
   }
 
   # Control parameters ----
-  control <- options()[grep("Rdist_", names(options()))]
+  # if you want, could save control options in output object.
+  # control <- options()[grep("Rdist_", names(options()))]
   
   # Check for a response ----
   # Otherwise, as.character(formula) is length 2, not 3
@@ -127,7 +128,7 @@ parseModel <- function(data
                      , dataName = deparse(substitute(data))
   )
   
-  if( control$Rdist_requireUnits ){
+  if( getOption("Rdistance_requireUnits") ){
     dataWUnits <- Rdistance::checkUnits(dataWUnits)
   }
   
@@ -168,7 +169,7 @@ parseModel <- function(data
              , outputUnits = dataWUnits$outputUnits
              , transType = attr(data, "transType")
              , obsType = attr(data, "obsType")
-             , control = control
+             # , control = control
   )
   
   # Enforce minimum number of spline basis functions ----
