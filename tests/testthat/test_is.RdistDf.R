@@ -32,7 +32,7 @@ test_that("sparrowDf without attributes does not pass is.RdistDf", {
 
 test_that("non-passing error message", {
   expect_output(Rdistance::is.RdistDf(sparrowDf, verbose = TRUE)
-                , "inherit from")
+                , "must have a 'detectionColumn' attribute naming a list-based")
 })
 
 class(sparrowDf) <- c("RdistDf", class(sparrowDf))
@@ -47,7 +47,7 @@ attr(sparrowDf, "obsType") <- "abcd"
 
 test_that("Invalid observation system error message", {
   expect_output(Rdistance::is.RdistDf(sparrowDf, verbose = TRUE)
-                , "observations system")
+                , "observation system, one of 'single', '1given2', '2given1', or 'both'")
 })
 test_that("Invalid observation system does not pass is.RdistDf", {
   expect_false(Rdistance::is.RdistDf(sparrowDf))

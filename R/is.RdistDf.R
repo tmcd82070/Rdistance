@@ -73,23 +73,41 @@ is.RdistDf <- function(df, verbose = FALSE){
   #   return(FALSE)
   # }
   
-  # Check for list-based distance column. ----
-  # The && are critical here. Must stop evaluating hasDistCol if distColName 
-  # is NULL or not in data. 
+  # Check for list column name attribute ----
   distColName <- attr(df, "detectionColumn")[1]  # could be NULL
-  hasDistCol <- !is.null(distColName) && 
+  hasListColName <- !is.null(distColName)
+  if( !hasListColName ){
+    if(verbose){
+      cat(paste(
+        crayon::red(dfName)
+        , "must have a"
+        , crayon::red("'detectionColumn'")
+        , "attribute naming a list-based column that contains detection information."
+        , "Assign attributes with statements like"
+        , crayon::red(paste0("attr("
+                             , dfName
+                             , ",'detectionColumn') <- <list column>"))
+        , "See help('RdistDf')."
+        , "\n"
+      ))
+    }
+    return(FALSE)
+  }
+  
+  # Check for list-based distance column. ----
+  # The && are critical here. Must stop evaluating if distColName 
+  # is not in the data frame. 
+  hasDistCol <-  
     (distColName %in% names(df)) &&
     (is.list(df[,distColName][[1]]))
   if( !hasDistCol ){
     if(verbose){
-      cat(paste(
+      cat(paste0(
         crayon::red(dfName)
-        , "must have a list column containing detection information," 
-        , "such as distance and group size. The list column must be named"
-        , "in attribute 'detectionColumn'. Assign attribute with statement like"
-        , crayon::red(paste0("attr("
-                           , dfName
-                           , ",'detectionColumn') <- <list column>"))
+        , " must have a list column containing detection information." 
+        , " Expected to find a list-based column named "
+        , crayon::red(distColName)
+        , ". "
         , "See help('RdistDf')."
         , "\n"
       ))
