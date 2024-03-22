@@ -319,6 +319,7 @@ dE.lt.single <- function(   data
                           , likelihood = likelihood
                           , w.lo = w.lo
                           , w.hi = w.hi
+                          , expansions = expansions
                           , series = series
                           , x.scl = x.scl
                           , g.x.scl = g.x.scl

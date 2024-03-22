@@ -50,11 +50,17 @@ negexp.start.limits <- function (ml){
   startIntercept <- max(startIntercept, 1)
   
   start <- c(log(startIntercept)
-             , rep(zero, np - 1))
+             , rep(zero, ncovars - 1)
+             , rep( posInf, expan)
+             )
   low   <- c(negInf
-             , rep(negInf, np - 1 ))
+             , rep(negInf, ncovars - 1 )
+             , rep( posInf, expan)
+             )
   high  <- c(posInf*w
-             , rep( posInf*w, np - 1 ))
+             , rep( posInf*w, ncovars - 1 )
+             , rep( posInf, expan)
+             )
   nms <- colnames(X)
   
   if(expan > 0){

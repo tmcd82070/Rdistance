@@ -20,21 +20,16 @@
 #' 
 logistic.start.limits <- function(ml){
 
+  X <- stats::model.matrix(ml$mt, ml$mf)
+  dist <- stats::model.response(ml$mf)  
+  
+  ncovars <- ncol(X)
+  expan <- ml$expansions
+  
   fuzz <- getOption("Rdistance_fuzz")
   zero <- getOption("Rdistance_zero")
   posInf <- getOption("Rdistance_posInf")
   negInf <- getOption("Rdistance_negInf")
-  
-  # Dist, w.lo, and w.hi should all have units, or none have units
-  # dist should already be reduced to values within w.lo to w.hi, 
-  # but just in case...
-  ind <- (w.lo <= dist) & (dist <= w.hi)  # unit conversions happen if needed
-  dist <- dist[ind]
-  if(!is.null(covars)){
-    ncovars <- ncol(covars)
-  } else { 
-    ncovars <- 1
-  }
   
   # fit logistic to counts as initial guess
   d <- units::drop_units(dist)
@@ -63,58 +58,59 @@ logistic.start.limits <- function(ml){
   #   sd.a <- sqrt(var.a)
   # }
   
-  a.low <- max(1e-7, 0.5 * quantile(d, p = 0.00)) 
+  a.low <- max(fuzz, 0.5 * quantile(d, p = 0.00)) 
   a.high <- quantile(d, p = 1.00) + 0.5 * stats::sd(d)
-  if( a.start <= 0 ){
+  if( a.start <= zero ){
     a.start <- stats::median(d)
   } 
-  if(b.start <= 0){
+  if(b.start <= fuzz){
     b.start <- 1
-    b.low <- 1e-7
-    b.high <- 1e7
+    b.low <- fuzz
+    b.high <- fuzz
   } else {
     sdb2 <- varCoefFit[2]
-    if(sdb2 <= 0){
+    if(sdb2 <= zero){
       sdb2 <- 1
     } else {
       sdb2 <- sqrt(sdb2)
     }
-    b.low <- max(1e-7, b.start - 1000*sdb2)
-    b.high <- min(1e7, b.start + 1000*sdb2)
+    b.low <- max(fuzz, b.start - 1000*sdb2)
+    b.high <- min(fuzz, b.start + 1000*sdb2)
   }
   
   if( ncovars > 1 ){
     start <- c(log(a.start)                          # Threshold 
                , rep(zero, ncovars-1)                # Covars
                , b.start                             # Knee (no link fn)
-               , rep(zero, expansions))                   # any expansions
+               , rep(zero, expan))              # any expansions
     low   <- c(log(a.low)
                , rep(negInf, ncovars-1)
                , b.low
-               , rep(negInf, expansions))
+               , rep(negInf, expan))
     high  <- c(log(a.high)
                , rep( posInf, ncovars-1)
                , b.high
-               , rep( posInf, expansions))
-    nms <- c(colnames(covars), "Knee")
+               , rep( posInf, expan))
   } else {
     start <- c( a.start
                , b.start
-               , rep(zero, expansions))
+               , rep(zero, expan))
     low   <- c(a.low
                , b.low 
-               , rep(negInf, expansions))
+               , rep(negInf, expan))
     high  <- c(a.high
                , b.high
-               , rep( posInf, expansions))
-    nms <- c("Threshold", "Knee")
-    
+               , rep( posInf, expan))
   }
-
-  if(expansions > 0){
-    nms <- c(nms, paste( "a", 1:expansions, sep=""))
+  nms <- c(colnames(X), "Knee")
+  
+  if(expan > 0){
+    nms <- c(nms, paste( "a", 1:expan, sep=""))
   }
-
+  names(start) <- nms
+  names(low) <- nms
+  names(high) <- nms
+  
   list( start=start, lowlimit=low, uplimit=high, names=nms )
   
 }
