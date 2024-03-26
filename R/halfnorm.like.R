@@ -55,18 +55,16 @@
 #'          \code{\link{negexp.like}},
 #'          \code{\link{Gamma.like}}
 #'          
-#' @examples  \dontrun{
-#' set.seed(238642)
+#' @examples  
 #' x <- seq(0, 100, length=100)
-#' ones <- matrix(1, nrow = length(x), ncol = 1)
-#' 
-#' halfnorm.like(log(20), x, ones)
+#' halfnorm.like(log(20), x, 1)
 #' 
 #' # Plots showing effects of changes in parameter Sigma
-#' plot(x, halfnorm.like(log(20), x, ones)$key, type="l", col="red")
-#' lines(x, halfnorm.like(log(40), x, ones)$key, col="blue")
+#' plot(x, halfnorm.like(log(20), x, 1)$key, type="l", col="red")
+#' lines(x, halfnorm.like(log(40), x, 1)$key, col="blue")
 #' 
 #' # Estimate 'halfnorm' distance function
+#' set.seed(238642)
 #' a <- 5
 #' x <- rnorm(1000, mean=0, sd=a)
 #' x <- x[x >= 0]
@@ -80,15 +78,21 @@ halfnorm.like <- function(a
                           , dist
                           , covars ){
 
-  q <- ncol(covars)
+  # covars can be 1 X p or n X p where n = length(dist)
+  
+  if( inherits(covars, "matrix") ){
+    q <- ncol(covars)
+  } else {
+    q <- length(covars)
+  }
   beta <- a[1:q] # could be expansion coefs after q
-  s <- drop( covars %*% matrix(beta,ncol=1) )
+  s <- drop(covars %*% matrix(beta,ncol=1))
   sigma <- exp(s)  # link function here
 
   if(inherits(dist, "units")){
     dist <- units::drop_units(dist)
   }
-  key <- -(dist*dist)/(2*sigma*sigma)  
+  key <- -(dist*dist)/(2*c(sigma*sigma))  
   # Above is safe. Units of sigma will scale to units of dist. 
   # 'key' is unit-less
   key <- exp(key)  # exp of density function here, not link.
