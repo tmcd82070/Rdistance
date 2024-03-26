@@ -16,6 +16,27 @@
 #' than passing individual parameters. The list is stored in output 
 #' Rdistance objects. 
 #' 
+#' @examples
+#' 
+#' sparrowDf <- Rdistance::RdistDf(sparrowSiteData
+#'    , sparrowDetectionData
+#'    , by = NULL
+#'    , pointSurvey = FALSE
+#'    , observer = "single"
+#'    , .detectionCol = "detections")
+#'    
+#' ml <- Rdistance::parseModel(sparrowDf
+#'    , formula = dist ~ 1 + observer + groupsize(groupsize)
+#'    , likelihood = "halfnorm"
+#'    , w.lo = 0
+#'    , w.hi = NULL
+#'    , series = "cosine"
+#'    , x.scl = 0
+#'    , g.x.scl = 1
+#'    , outputUnits = "m"
+#'    )
+#'    
+#' 
 #' @export
 parseModel <- function(data
                           , formula = NULL
@@ -156,7 +177,7 @@ parseModel <- function(data
 
   # Put everything in list ----    
   ml <- list(mf = mf
-             , mt = stats::terms(mf)
+             # , mt = stats::terms(mf)
              , formula = formulaAtCall
              , dataName = dataWUnits$dataName
              , likelihood = likelihood

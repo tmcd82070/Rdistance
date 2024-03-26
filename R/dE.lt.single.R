@@ -329,7 +329,8 @@ dE.lt.single <- function(   data
   strt.lims <- Rdistance::startLimits(modelList)
 
   # Perform optimization
-  fit <- mlEstimates( modelList )
+  fit <- mlEstimates( modelList = modelList
+                    , strt.lims = strt.lims)
   
 
   ans <- list(parameters = fit$par,

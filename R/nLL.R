@@ -38,9 +38,10 @@
 #' @examples
 #' set.seed(238642)
 #' 
-#' # Close to what happens in Rdistance
 #' d <- rnorm(1000, mean = 0, sd = 40)
 #' d <- units::set_units(d[0 <= d], "m")
+#' 
+#' # Close to what happens in Rdistance
 #' ml <- list(
 #'     mf = model.frame(d ~ 1) 
 #'   , likelihood = "halfnorm"
@@ -50,7 +51,7 @@
 #' )
 #' nLL(log(40), ml)
 #' 
-#' # A direct way
+#' # Another way
 #' ones <- matrix(1, nrow = length(d), ncol = 1)
 #' l <- halfnorm.like(log(40), d, ones)
 #' scaler <-(pnorm(units::drop_units(ml$w.hi)
@@ -58,8 +59,7 @@
 #'   , sd = l$params) - 0.5) * sqrt(2*pi) * l$params
 #' -sum(log(l$key/scaler))
 #'
-#' # A third direct way, b/c is it half normal and we 
-#' # have pnorm() and dnorm(). 
+#' # A third way, b/c we have pnorm() and dnorm(). 
 #' l2 <- dnorm(units::drop_units(d), mean = 0, sd = 40)
 #' scaler2 <- pnorm(125, mean = 0, sd = 40) - 0.5 
 #' -sum(log(l2/scaler2))
@@ -97,37 +97,18 @@ nLL <- function(a,
              )
   key <- L$key
   
-  # Evaluate the expansions ----
-  # If there are any.
+  # Evaluate and apply the expansions ----
+  exp.terms <- Rdistance::expansionTerms(a, ml)
+  key <- key * exp.terms 
+    
+  # without monotonicity restraints, function can go negative, 
+  # especially in a gap between datapoints. Don't want this in distance
+  # sampling and screws up the convergence. In future, could
+  # apply monotonicity constraint here.
   if( ml$expansions > 0 ){
-    
-    nexp <- ml$expansions
-    w <- ml$w.hi - ml$w.lo  # 'w' has units here, we want this so conversions below happen
-    
-    if (ml$series=="cosine"){
-      dscl <- units::drop_units(dist/w)   # unit conversion here; drop units is safe
-      exp.term <- cosine.expansion( dscl, nexp )
-    } else if (ml$series=="hermite"){
-      dscl <- units::drop_units(dist/sigma) # unit conversion here; drop units is safe
-      exp.term <- hermite.expansion( dscl, nexp )
-    } else if (ml$series == "simple") {
-      dscl <- units::drop_units(dist/w)    # unit conversion here; drop units is safe
-      exp.term <- simple.expansion( dscl, nexp )
-    } else {
-      stop( paste( "Unknown expansion series. Found", ml$series ))
-    }
-    
-    expCoeffs <- a[(length(a)-(nexp-1)):(length(a))]
-    key <- key * (1 + c(exp.term %*% expCoeffs))
-    
-    # without monotonicity restraints, function can go negative, 
-    # especially in a gap between datapoints. Don't want this in distance
-    # sampling and screws up the convergence. In future, could
-    # apply monotonicity constraint here.
     key[ which(key < 0) ] <- 0
-    
-  } 
-  
+  }
+
   # Scale the likelihood ----
   # Scalers should be unique to each observation and equal
   # to integral under distance function for that observation. 
@@ -157,7 +138,7 @@ nLL <- function(a,
   } else {
     # We numerically integrate.  These are integrals we 
     # do not know and any that have expansions
-    key = key / integration.constant(ml)
+    key = key / integration.constant(a, ml)
     
   }
 

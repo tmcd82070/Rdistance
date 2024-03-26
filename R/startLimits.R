@@ -8,8 +8,8 @@
 #'
 #' @param ml A list containing distance function components.  Distance
 #' function components include "likelihood", "w.lo", "w.hi", "expansions", 
-#' and the model frame, which contains the data. See 
-#' \code{\link{parseModel}}
+#' and the model frame, which contains the data. This is typically
+#' produced by a call to \code{\link{parseModel}}
 #' 
 #' @details
 #' 

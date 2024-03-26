@@ -1,5 +1,47 @@
-library(Rdistance)
-# context("Halfnorm distance function")
+# Test halfnorm.like itself
+
+sparrowDf <- Rdistance::RdistDf(sparrowSiteData
+                                , sparrowDetectionData
+                                , by = NULL
+                                , pointSurvey = FALSE
+                                , observer = "single"
+                                , .detectionCol = "detections")
+
+ml <- Rdistance::parseModel(sparrowDf
+                            , formula = dist ~ 1 + groupsize(groupsize)
+                            , likelihood = "halfnorm"
+                            , w.lo = 0
+                            , w.hi = NULL
+                            , series = "cosine"
+                            , x.scl = 0
+                            , g.x.scl = 1
+                            , outputUnits = "m"
+)
+
+a <- c(log(100))
+like <- Rdistance::halfnorm.like(a, ml, scale = TRUE)
+
+like <- Rdistance::halfnorm.like(a, ml, scale = FALSE)
+
+# Internal function to make .like work with stats::integrate ----
+halfnorm <- function(x, a, ml){
+  unitsX <- units(model.response(ml$mf))
+  # offsetCol <- attr(attr(ml$mf, "terms"), "offset")
+  # offsetName <- names(ml$mf)[offsetCol]
+  # offsetName <- gsub("(offset\\(|\\))", "", offsetName)
+  # mlcopy <- ml
+  # names(mlcopy$mf)[offsetCol] <- offsetName
+  # newmf <- stats::model.frame(
+  #     stats::update(terms(mlcopy$mf), x ~ . )
+  #   , data = mlcopy$mf)
+  xWUnits <- units::set_units(x, unitsX, mode = "standard")
+  mlcopy$mf <- data.frame( dist = xWUnits, offset = 1)
+  att <- attributes(ml$mf)
+  att$row.names <- 1:length(x)
+  attributes(mlcopy$mf) <- att
+  fx <- halfnorm.like(a, mlcopy)
+  fx
+}
 
 # Load example sparrow data (line transect survey type)
 data(sparrowDetectionData)

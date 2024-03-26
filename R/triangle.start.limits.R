@@ -1,6 +1,6 @@
 #' @title triangle.start.limits - Start and limit values for triangle distance function
 #' 
-#' @description Compute starting values and limits for the triangle 
+#' @description Compute starting value and limits for the triangle 
 #' distance function. 
 #' 
 #' @inheritParams startLimits
@@ -14,6 +14,7 @@ triangle.start.limits <- function (ml){
   dist <- stats::model.response(ml$mf)  
   
   np <- ncol(X)  
+  expan <- ml$expansions
 
   fuzz <- getOption("Rdistance_fuzz")
   zero <- getOption("Rdistance_zero")
@@ -25,12 +26,30 @@ triangle.start.limits <- function (ml){
   #      highlimit=ml$w.hi,
   #      names="Max")
  
-  start <- c(log(max(dist)*.75)
-             , rep(zero, np - 1))
-  low   <- c(negInf
-             , rep(negInf, np - 1 ))
-  high  <- c(posInf
-             , rep(posInf, np - 1 ))
+  wlo <- ml$w.lo
+  whi <- ml$w.hi
+  w <- whi - wlo
+  
+  # Should not have to convert units.  wlo and whi should 
+  # be in 'outputUnits'. Safe to drop units.
+  # wlo <- units::set_units(wlo, units(w), mode = "standard")
+  # whi <- units::set_units(whi, units(w), mode = "standard")
+  wlo <- units::drop_units(wlo)
+  whi <- units::drop_units(whi)
+  w <- units::drop_units(w)
+  
+  start <- c(log(w*.75)
+             , rep(zero, np - 1)
+             , rep(zero, expan)
+             )
+  low   <- c(log(zero)
+             , rep(negInf, np - 1 )
+             , rep(negInf, expan)
+             )
+  high  <- c(log(w * 2)
+             , rep(posInf, np - 1 )
+             , rep(posInf, expan)
+             )
   nms <- colnames(X)
   
   if(expan > 0){
