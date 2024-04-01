@@ -59,7 +59,7 @@
 
 summary.dfunc <- function( x, criterion="AICc", ... ){
 
-    is.smoothed <- inherits( x$fit, "density" )
+    isSmooth <- is.smoothed(x)
 
     callLine <- deparse(x$call)
     callLine <- paste(callLine, collapse = " ")
@@ -68,34 +68,34 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
     cat(paste0(callLine,"\n"))
     coefMat <- NULL
     convMessOut <- NULL
-    if ( length(coef.dfunc(x)) & !is.smoothed ) {
+    vcDiag <- diag(x$varcovar)
+    if ( length(coef.dfunc(x)) & !isSmooth ) {
       if( x$convergence == 0 ) {
-        vcDiag <- diag(x$varcovar)
         if( any(is.na(vcDiag)) | any(vcDiag < 0.0)) {
           convMessOut <- "FAILURE (singular variance-covariance matrix)"
           convMess <- colorize("FAILURE", bg = "bgYellow")
           convMess <- paste(convMess, "(singular variance-covariance matrix)")
-          seCoef <- rep(NA, length(diag(x$varcovar)))
-          waldZ <- rep(NA, length(diag(x$varcovar)))
+          seCoef <- rep(NA, length(vcDiag))
+          waldZ <- rep(NA, length(vcDiag))
         } else {
           convMessOut <- "Success"
           convMess <- colorize("Success")
-          seCoef <- sqrt(diag(x$varcovar))
+          seCoef <- sqrt(vcDiag)
           waldZ <- coef.dfunc(x) / seCoef
         }
       } else {
         convMessOut <- paste( "FAILURE", "(Exit code=", x$convergence, ", ", x$fit$message, ")")
         convMess <- colorize("FAILURE", col="white", bg = "bgRed")
         convMess <- paste( convMess, "(Exit code=", x$convergence, ", ", x$fit$message, ")")
-        seCoef <- rep(NA, length(diag(x$varcovar)))
-        waldZ <- rep(NA, length(diag(x$varcovar)))
+        seCoef <- rep(NA, length(vcDiag))
+        waldZ <- rep(NA, length(vcDiag))
       }
       pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
       coefMat <- cbind(coef.dfunc(x), seCoef, waldZ, pWaldZ)
       dimnames(coefMat)[[2]] <- c("Estimate", "SE", "z", "p(>|z|)")
       cat("Coefficients:\n")
       print(format(as.data.frame(coefMat)), print.gap = 2, quote = FALSE)
-    } else if( is.smoothed ){
+    } else if( isSmooth ){
       cat(paste(x$fit$call[["kernel"]], "kernel smooth\n"))
       cat(paste(" Bandwidth method:", x$fit$call[["bw"]], "with adjustment factor", 
                   format(x$fit$call[["adjust"]]),"\n"))
@@ -106,7 +106,7 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
 
     cat("\n")
 
-    if( !is.smoothed ){
+    if( !isSmooth ){
       cat(paste("Convergence: ", convMess,  "\n", sep=""))
 
       if( x$expansions==0 ){
@@ -114,7 +114,7 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
       } else {
           mess <- paste( "with", x$expansions, "expansion(s) of", casefold( x$series, upper=TRUE ), "series")
       }
-      cat(paste("Function:", colorize(casefold(x$like.form, upper=TRUE)), mess, "\n") )
+      cat(paste("Function:", colorize(casefold(x$likelihood, upper=TRUE)), mess, "\n") )
     } 
     
     cat(paste("Strip:", colorize(format(x$w.lo)), "to", 
@@ -124,7 +124,7 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
     pDetect <- effDist / (x$w.hi - x$w.lo) 
     pDetect <- units::drop_units(pDetect)  # units of pDetect should always be [1]
     if( is.null(x$covars) ){
-      if(x$pointSurvey){
+      if( is.points(x) ){
         mess <- "Effective detection radius (EDR):"
         pDetect <- pDetect^2
       } else {
@@ -158,7 +158,7 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
                   "\n"))
       }
     } else {
-      if(x$pointSurvey){
+      if( is.points(x) ){
         mess <- "Average effective detection radius (EDR):"
         cat(paste(mess, 
                   colorize(format(mean(effDist))), "\n"))
@@ -210,7 +210,7 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
     cat(paste("Negative log likelihood:", 
               colorize(format(x$loglik)), "\n"))
     
-    if( !is.smoothed ){
+    if( !isSmooth ){
       aic <- AIC.dfunc(x,criterion=criterion) 
       cat(paste0(attr(aic,"criterion"),": ", 
                  colorize(format(aic)), "\n"))

@@ -1,4 +1,21 @@
-mlEstimates <- function( modelList
+#' @title mlEstimates - Distance function maximum likelihood estimates
+#' 
+#' @description
+#' Estimate parameters of a distance function using maximum likelihood.
+#' 
+#' @inheritParams startLimits
+#' 
+#' @param strt.lims A list containing start, low, and high limits for 
+#' parameters of the requested likelihood. This list is typically produced
+#' by a call to \code{\link{startLims}}.
+#' 
+#' @return An Rdistance fitted model object. This object contains the 
+#' raw object returned by the optiminzation routine (e.g., \code{nlming}), 
+#' and additional components specific to Rdistance.
+#' 
+#' @export
+
+mlEstimates <- function( ml
                        , strt.lims
                        ){
 
@@ -7,75 +24,74 @@ mlEstimates <- function( modelList
   
   optimFunc <- getOption("Rdistance_optimizer")
   
-  # pass in dist vector, even though it's in modelList
-  # because don't want to evaluate model.response every  time
-  # likelihood is called.
-  
-  dist <- stats::model.response(modelList$mf)
-  X <- stats::model.matrix(modelList$mf)
-  
+  contRl <- list(trace = 0
+               , eval.max = getOption("Rdistance_evalMax")
+               , iter.max = getOption("Rdistance_maxIters")
+               , rel.tol = getOption("Rdistance_likeTol")
+               , x.tol = getOption("Rdistance_coefTol")
+               )
+
   if (optimFunc == "optim"){
       fit <- optim(
           strt.lims$start
-          , F.nLL
-          , lower = units::drop_units(strt.lims$lowlimit) # safe
-          , upper = units::drop_units(strt.lims$uplimit)
+          , nLL
+          , lower = units::drop_units(strt.lims$low) # safe
+          , upper = units::drop_units(strt.lims$high)
           , hessian = TRUE
-          , control = list(trace = 0,
-              maxit = control$maxIters,
-              factr = control$likeTol,
-              pgtol = control$likeTol)
+          , control = contRl
           , method = c("L-BFGS-B")
-          , dist = dist
-          , ml = modelList
-          , for.optim = T)
+          , ml = ml
+          )
   } else if (optimFunc == "nlminb"){
       fit <- nlminb(
             start = strt.lims$start
-          , objective = F.nLL
-          , lower = strt.lims$lowlimit
-          , upper = strt.lims$uplimit
-          , control = list(trace = 0
-              , eval.max = getOption("evalMax")
-              , iter.max = getOption("maxIters")
-              , rel.tol = getOption("likeTol")
-              , x.tol = getOption("coefTol")
-              )
-          , dist = dist
-          , ml = modelList
-          , for.optim = T
+          , objective = nLL
+          , lower = strt.lims$low
+          , upper = strt.lims$high
+          , control = contRl
+          , ml = ml
+          # , dist = dist
+          # , X = X
           )
-      names(fit)[names(fit) == "evaluations"]<-"counts"
+      # names(fit)[names(fit) == "evaluations"]<-"counts"
   
-      fit$hessian <- secondDeriv(fit$par,
-          F.nLL,
-          eps = getOption("hessEps"),
-          dist = dist,
-          ml = modelList,
-          for.optim = T
+      # cat("\n")
+      # print(fit)
+      # cat(crayon::bgYellow("Calling secondDeriv...\n"))
+      
+      hessian <- secondDeriv(
+            x = fit$par
+          , FUN = nLL
+          , eps = getOption("Rdistance_hessEps")
+          , ml = ml
           )
   } else {
       stop(paste("Unknown optimizer function. Found", optimFunc))
   }
 
-  if (fit$fit$convergence != 0) {
+  if (fit$convergence != 0) {
     if (warn) warning("fit did not converge, or converged to (Inf,-Inf)")
-    varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
-  } else if (!any(is.na(fit$hessian)) & !any(is.infinite(fit$hessian))){
-      qrh <- qr(fit$hessian)
-      if (qrh$rank < nrow(fit$hessian)) {
+    varcovar <- matrix(NaN, nrow(hessian), ncol(hessian))
+  } else if (!any(is.na(hessian)) & !any(is.infinite(hessian))){
+      qrh <- qr(hessian)
+      if (qrh$rank < nrow(hessian)) {
         if (warn) warning("Singular variance-covariance matrix.")
-        varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
+        varcovar <- matrix(NaN, nrow(hessian), ncol(hessian))
       } else {
-        varcovar <- tryCatch(solve(fit$hessian), error = function(e){NaN})
+        varcovar <- tryCatch(solve(hessian), error = function(e){NaN})
         if (length(varcovar) == 1 && is.nan(varcovar)){
           if (warn) warning("Singular variance-covariance matrix.")
-          varcovar <- matrix(NaN, nrow(fit$hessian), ncol(fit$hessian))
+          varcovar <- matrix(NaN, nrow(hessian), ncol(hessian))
         }
       }
   }
+  dimnames(varcovar) <- list(strt.lims$names, strt.lims$names)
+  fit$varcovar <- varcovar
   
+  # final few things ----
+  fit$limits <- strt.lims[c("low", "high")]
   names(fit$par) <- strt.lims$names
+  names(fit)[names(fit) == "objective"] <- "loglik"
  
   fit 
 
