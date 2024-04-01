@@ -11,10 +11,14 @@
 #' from the model estimation routines in \code{Rdistance}.
 #' 
 #' 
-#' @return A list of model parameters such as distances, likelihood, 
-#' w.hi, etc.  Passing this list among routines in 'Rdistance' is simpler
-#' than passing individual parameters. The list is stored in output 
-#' Rdistance objects. 
+#' @return An Rdistance model frame, which is an object of class 
+#' "dfunc". 
+#' Rdistance model frames are lists containing distance 
+#' model components but not estimates.  Model frames contain 
+#' everything necessary to fit an Rdistance mode, such as covariates, 
+#' minimum and maximum distances, the form of the likelihood, 
+#' number of expansions, etc.  Rdistance model frames are a 
+#' subset of an output Rdistance fitted model. 
 #' 
 #' @examples
 #' 
@@ -149,6 +153,7 @@ parseModel <- function(data
                      , dataName = deparse(substitute(data))
   )
   
+  # CHANGE CHECKUNITS TO ACCEPT ML OBJECTS i.e., accept "RdistMl" object
   if( getOption("Rdistance_requireUnits") ){
     dataWUnits <- Rdistance::checkUnits(dataWUnits)
   }
@@ -213,6 +218,8 @@ parseModel <- function(data
           warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
       }
   }
+  
+  class(ml) <- "dfunc"
 
   ml
 }

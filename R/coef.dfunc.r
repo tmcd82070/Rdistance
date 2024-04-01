@@ -1,4 +1,5 @@
-#' @title Coefficients of an estimated detection function
+#' @title coef.dfunc - Coefficients of an estimated detection function
+#' 
 #' @description Extract the coefficients and estimated parameters (if any) from 
 #'   a estimated detection function object.
 #'   
@@ -9,10 +10,10 @@
 #'   \code{dfuncEstim}.
 #' @param \dots Required for compatibility with the general \code{coef} method.  Any 
 #'   extra arguments to this function are ignored.
-#' @details This is an extractor function for the parameters of an estimated detection function. 
-#'   This function is equivalent to \code{obj$parameters} for classical detection functions.
-#' @return The estimated parameter vector for the detection function. Length and interpretation of values 
-#'   in this vector vary depending on the form of the detection function and expansion terms.
+#'   
+#' @return The estimated parameter vector for the detection function. 
+#' Length and interpretation of values in this vector vary 
+#' depending on the form of the detection function and expansion terms.
 #'   
 #' @seealso \code{\link{AIC}}, \code{\link{dfuncEstim}}
 #' 
@@ -34,11 +35,11 @@
 #' @export
 
 coef.dfunc <- function(object, ...){
-  if( inherits(object$fit, "density")){
+  if( object$likelihood == "smu" ){
     # smoothed distance function
     COEF <- NULL
   } else {
-    COEF <- object$parameters
+    COEF <- object$par
   }
   COEF
 }

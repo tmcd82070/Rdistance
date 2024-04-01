@@ -35,14 +35,12 @@
 #' @export
 #' 
 
-huber.like <- function(a, dist, ml){
+huber.like <- function(a, dist, covars){
   
   # Restrictions : 0 < a <= range <= w.hi
   # dist must be >= 0, or this does not work right
   
   # need to somehow add covariates here. 
-  
-  X <- stats::model.matrix(ml$mt, ml$mf)
   
   # etc. The rest of this code is for case without covars
   

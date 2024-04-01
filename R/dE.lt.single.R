@@ -110,7 +110,7 @@
 #' specific factor in the input data frame, use 
 #' \code{contrasts(df$A) <- "contr.sum"} or similar. 
 #' See \code{\link{contrasts}} or the \code{contrasts.arg}
-#' of \code{\link{model.matrix.default}}.
+#' of \code{\link{stats::model.matrix.default}}.
 #' 
 #' @section Transect types: 
 #' \code{Rdistance} accommodates two kinds of transects: continuous and point.  
@@ -329,83 +329,52 @@ dE.lt.single <- function(   data
   strt.lims <- Rdistance::startLimits(modelList)
 
   # Perform optimization
-  fit <- mlEstimates( modelList = modelList
-                    , strt.lims = strt.lims)
+  fit <- mlEstimates( ml = modelList
+                    , strt.lims = strt.lims
+                    )
+
+  # Assemble results
+  ans <- c(fit, modelList)
+  class(ans) <- "dfunc"
+
+  if ( ans$likelihood != "Gamma" ){
+    # not absolutely necessary. 
+    # Could estimate these later in print and plot methods.
+    # but this saves a little time.
+    gx <- gxEstim(ans)
+    ans$x.scl <- gx$x.scl
+    ans$g.x.scl <- gx$g.x.scl
+  } else {
+    # Special case of Gamma
+    ans$x.scl <- x.scl
+    ans$g.x.scl <- g.x.scl
+  }
+
+  # ---- Check parameter boundaries ----
+  fuzz <- getOption("Rdistance_fuzz")
+  low.bound <- ans$par <= (ans$limits$low + fuzz)
+  high.bound <- ans$par >= (ans$limits$high - fuzz)
+  if (ans$convergence != 0) {
+    if (warn) warning(ans$message)
+  }
+  if (any(low.bound)) {
+    ans$convergence <- -1
+    messL <- paste(paste(strt.lims$names[low.bound], "parameter at lower boundary.")
+    , collapse = "; ")
+    ans$message <- messL
+    if (warn) warning(ans$message)
+    } 
+  else {
+    messL <- NULL
+  }
+  if (any(high.bound)) {
+    ans$convergence <- -1
+    messH <- paste(paste(strt.lims$names[high.bound], "parameter at upper boundary.")
+    , collapse = "; ")
+    ans$message <- c(messL, messH)
+    if (warn) warning(ans$message)
+  }
   
-
-  ans <- list(parameters = fit$par,
-    varcovar = varcovar,
-    loglik = fit$value,
-    convergence = fit$convergence,
-    like.form = likelihood,
-    w.lo = w.lo,
-    w.hi = w.hi,
-    detections = data.frame(dist, groupSize),
-    covars = covars,
-    model.frame = mf,
-    siteID.cols = siteID.cols,
-    expansions = expansions,
-    series = series,
-    call = cl,
-    call.x.scl = x.scl,
-    call.g.x.scl = g.x.scl,
-    call.observer = observer,
-    fit = fit,
-    factor.names = factor.names,
-    pointSurvey = pointSurvey,
-    formula = formula,
-    # control = control, # could store options here
-    outputUnits = outUnits)
-
-ans$loglik <- F.nLL(ans$parameters
-, ans$detections$dist
-, covars = ans$covars
-, like = ans$like.form
-, w.lo = ans$w.lo
-, w.hi = ans$w.hi
-, series = ans$series
-, expansions = ans$expansions
-, pointSurvey = ans$pointSurvey
-, for.optim = F)
-
-# Assemble results
-class(ans) <- "dfunc"
-if ( ans$like.form != "Gamma" ){
-# not absolutely necessary. Could estimate these later in print and plot methods.
-# but this saves a little time.
-gx <- F.gx.estim(ans)
-ans$x.scl <- gx$x.scl
-ans$g.x.scl <- gx$g.x.scl
-} else {
-# Special case of Gamma
-ans$x.scl <- x.scl
-ans$g.x.scl <- g.x.scl
-}
-
-# ---- Check parameter boundaries ----
-fuzz <- 1e-06
-low.bound <- fit$par <= (strt.lims$lowlimit + fuzz)
-high.bound <- fit$par >= (strt.lims$uplimit - fuzz)
-if (fit$convergence != 0) {
-if (warn) warning(fit$message)
-}
-if (any(low.bound)) {
-ans$convergence <- -1
-messL <- paste(paste(strt.lims$names[low.bound], "parameter at lower boundary.")
-, collapse = "; ")
-ans$fit$message <- messL
-if (warn) warning(ans$fit$message)
-} else {
-messL <- NULL
-}
-if (any(high.bound)) {
-ans$convergence <- -1
-messH <- paste(paste(strt.lims$names[high.bound], "parameter at upper boundary.")
-, collapse = "; ")
-ans$fit$message <- c(messL, messH)
-if (warn) warning(ans$fit$message)
-}
-
-ans
+  ans
 
 } # end function

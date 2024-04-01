@@ -1,6 +1,7 @@
-#' @title Print a distance function object
+#' @title print.dfunc - Print method for distance function object
 #' 
-#' @description Print method for distance functions produced by \code{dfuncEstim},
+#' @description Print method for distance functions produced 
+#' by \code{dfuncEstim},
 #' which are of class \code{dfunc}.
 #' 
 #' @param x An estimated distance function resulting from a call to \code{dfuncEstim}.
@@ -28,34 +29,39 @@
 
 print.dfunc <- function( x, ... ){
 
-    is.smoothed <- inherits( x$fit, "density" )
+    isSmooth <- is.smoothed(x)
 
     callLine <- deparse(x$call)
     callLine <- paste(callLine, collapse = " ")
     callLine <- strwrap(paste0("Call: ",callLine),exdent=2)
 
     cat(paste0(callLine,"\n"))
-    if ( length(coef.dfunc(x)) & !is.smoothed ) {
+    
+    coefs <- coef(x)
+    if ( length(coefs) & !isSmooth ) {
       if( x$convergence == 0 ) {
         vcDiag <- diag(x$varcovar)
         if( any(is.na(vcDiag)) | any(vcDiag < 0.0)) {
           mess <- colorize("FAILURE", bg = "bgYellow")
           mess <- paste(mess, "(singular variance-covariance matrix)")
-          seCoef <- rep(NA, length(diag(x$varcovar)))
-          waldZ <- rep(NA, length(diag(x$varcovar)))
+          seCoef <- rep(NA, length(coefs))
+          waldZ <- rep(NA, length(coefs))
         } else {
           mess <- colorize("Success")
-          seCoef <- sqrt(diag(x$varcovar))
-          waldZ <- coef.dfunc(x) / seCoef
+          seCoef <- sqrt(vcDiag)
+          waldZ <- coefs / seCoef
         }
       } else {
         mess <- colorize("FAILURE", col="white", bg = "bgRed")
         mess <- paste( mess, "(Exit code=", x$convergence, ", ", x$fit$message, ")")
-        seCoef <- rep(NA, length(diag(x$varcovar)))
-        waldZ <- rep(NA, length(diag(x$varcovar)))
+        seCoef <- rep(NA, length(coefs))
+        waldZ <- rep(NA, length(coefs))
       }
       pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
-      coefMat <- cbind(format(coef.dfunc(x)), format(seCoef), format(waldZ), format(pWaldZ))
+      coefMat <- cbind(format(coefs)
+                       , format(seCoef)
+                       , format(waldZ)
+                       , format(pWaldZ))
       dimnames(coefMat)[[2]] <- c("Estimate", "SE", "z", "p(>|z|)")
       cat("Coefficients:\n")
       print.default(coefMat, print.gap = 2, quote = FALSE)
@@ -63,7 +69,7 @@ print.dfunc <- function( x, ... ){
         cat("\n")
         cat(paste("Convergence: ", mess,  "\n", sep=""))
       }
-    } else if( is.smoothed ){
+    } else if( isSmooth ){
       cat(paste(x$fit$call[["kernel"]], "kernel smooth\n"))
       cat(paste(" Bandwidth method:", x$fit$call[["bw"]], "with adjustment factor", 
                   format(x$fit$call[["adjust"]]),"\n"))

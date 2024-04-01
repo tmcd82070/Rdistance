@@ -17,6 +17,8 @@
 #' 
 checkUnits <- function(ml){
 
+  # If we are here, we assume that requireUnits == TRUE
+  
   # Units for dist ----
   dist <- dplyr::pull(ml$data, ml$respName)
   if ( !inherits(dist, "units") ){
@@ -66,7 +68,20 @@ checkUnits <- function(ml){
   # Again, technically I don't think we need to do this.  Happens automatically in computations
   ml$w.hi <- units::set_units(ml$w.hi, ml$outputUnits, mode = "standard")
 
-  # add checks for x.scl
+  # Units on x.scl ---- 
+  if( !inherits(ml$x.scl, "units") ){
+    if( ml$x.scl[1] != 0 ){
+      stop(paste("Measurement units for x.scl are required.",
+                 "Assign units using either:\n", 
+                 "units::units(x.scl) <- '<units>' or", 
+                 paste0("units::as_units(", x.scl,", <units>) in function call\n"), 
+                 "See units::valid_udunits() for valid symbolic units."))
+    }
+    ml$x.scl <- units::set_units(ml$x.scl, ml$outputUnits, mode = "standard")
+  } else {
+    # if we are here, x.scl has units, convert to the output units
+    ml$x.scl <- units::set_units(ml$x.scl, ml$outputUnits, mode = "standard")
+  }
 
   ml
 

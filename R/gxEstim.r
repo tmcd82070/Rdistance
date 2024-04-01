@@ -1,10 +1,10 @@
-#' @title F.gx.estim - Estimate g(0) or g(x)
+#' @title gxEstim - Estimate g(0) or g(x)
 #' 
-#' @description Estimate g(0) or g(x) for a specified distance function.
+#' @description Estimate distance function scaling factor
+#' , g(0) or g(x), for a specified distance function.
 #' 
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
 #' 
-#'   
 #' @param observer A numeric scalar or text string specifying whether observer 1 
 #'   or observer 2 or both were full-time observers. 
 #'   This parameter dictates which set of observations form the denominator 
@@ -97,71 +97,56 @@
 #'   x <- units::set_units(x, "m")
 #'   un.dfunc <- dfuncEstim( x ~ 1
 #'                        , likelihood = "logistic")    
-#'   F.gx.estim(un.dfunc)
+#'   gxEstim(un.dfunc)
 #'   
 #'   x <- rgamma(1000, shape = 5)
 #'   x <- units::set_units(x, "m")
 #'   gam.dfunc <- dfuncEstim( x ~ 1
 #'                          , likelihood="Gamma")    
-#'   F.gx.estim(gam.dfunc)
+#'   gxEstim(gam.dfunc)
 #'   
 #' @keywords model
 #' @export
 
-F.gx.estim <- function( fit
-                      , x.scl=NULL
-                      , g.x.scl=NULL
-                      , observer=NULL ){
+gxEstim <- function( fit ){
 
   #   Will need measurement units later ----
-  distUnits <- units(fit$detections$dist)
+  distUnits <- fit$outputUnits
   
   #   Compute x (the point to evaluate g() at) ----
-  if( is.null( x.scl ) ){
-      x.scl <- fit$call.x.scl
-  }
+  # if( is.null( fit$x.scl ) ){
+  #     x.scl <- fit$call.x.scl
+  # }
   
   #   Compute height of g() at x.scl ----
-  if( is.null( g.x.scl ) ){
-      g.x.scl <- fit$call.g.x.scl
-  }
+  # if( is.null( g.x.scl ) ){
+  #     g.x.scl <- fit$call.g.x.scl
+  # }
   
   #   Double observers? ----
-  if( is.null( observer ) ){
-      observer <- fit$call.observer
-  }
+  # if( is.null( observer ) ){
+  #     observer <- fit$call.observer
+  # }
+  
+  x.scl <- fit$x.scl
   
   # overide x.scl for Gamma likelihood
   if( !is.character(x.scl) ){
-    if( inherits(x.scl, "units") ){ # this if needed cause drop units does not work on plain vector
+    if( inherits(x.scl, "units") ){ 
+      # this if needed cause drop units does not work on plain vector
       isZero <- units::drop_units(x.scl) == 0 
     } else {
       isZero <- x.scl == 0
     }
-    if( isZero & fit$like.form == "Gamma" ){
+    if( isZero & likelihood == "Gamma" ){
       x.scl <- "max"
       # warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
     }
   }
   
   if( !is.character(x.scl) ){
-  
-      #   x is specified, first make sure w.low < x < w.high, then compute g(x)
-      if( !inherits(x.scl, "units") & fit$control$requireUnits ){
-        if( x.scl[1] != 0 ){
-          stop(paste("Measurement units for x.scl are required.",
-                     "Assign units using either:\n", 
-                     "units::units(x.scl) <- '<units>' or", 
-                     paste0("units::as_units(", x.scl,", <units>) in function call\n"), 
-                     "See units::valid_udunits() for valid symbolic units."))
-        }
-        x.scl <- units::set_units(x.scl, fit$outputUnits, mode = "standard")
-      } else if( fit$control$requireUnits ){
-        # if we are here, x.scl has units and we require units, convert to the output units
-        x.scl <- units::set_units(x.scl, fit$outputUnits, mode = "standard")
-      }
-    
-      if( x.scl < fit$w.lo ){
+    # x is specified, first make sure w.low < x < w.high, then compute g(x)
+    if( x.scl < fit$w.lo ){
           x.scl <- fit$w.lo
           warning(paste("x.scl is less than specified lower limit (w.lo). x.scl has been reset to", fit$w.lo))
       } else if( fit$w.hi < x.scl ) {
@@ -170,22 +155,26 @@ F.gx.estim <- function( fit
       } 
   } else if( x.scl == "max" ){
     #   the x that maximizes g() must be estimated
-    if( fit$like.form == "Gamma" & (fit$expansions == 0) ){
+    if( fit$likelihood == "Gamma" & (fit$expansions == 0) ){
       r <- fit$par[1]
       lam <- fit$par[2]
       b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
       x.scl <- lam * b * (r - 1)   # the Mode = the x that maximizes g() when g is Gamma
-    } else if( fit$like.form == "smu"){
+    } else if( fit$likelihood == "smu"){
       x.scl <- fit$fit$x[which.max(fit$fit$y)]
-    } else if( fit$like.form %in% c("logistic", "halfnorm", "negexp", "hazrate") & fit$expansions == 0 ){
+    } else if( fit$likelihood %in% c("logistic", "halfnorm", "negexp", "hazrate", "triangle", "huber") & 
+               fit$expansions == 0 ){
       # All these are monotonically negative
       x.scl <- fit$w.lo 
     } else {
-      # if we are here, we have a user-defined likelihood, and we don't know 
+      # if we are here, we have an unknown likelihood.
+      # WHAT ABOUT GAMMA WITH EXPANSIONS?
+      # user-defined likelihood, and we don't know 
       # where it's maximum is. Hence, we compute the maximum numerically. 
       # It is on the user to make sure their likelihood is well behaved and 
       # gives a nice maximum.
-      x.scl <- F.maximize.g( fit )
+      # x.scl <- F.maximize.g( fit )
+      stop("unknown likelihood")  # should never happen
     }
     # x.scl came in as "max", we must return one with units attached. 
     # F.maximize.g returns a unitless x.scl
@@ -193,28 +182,29 @@ F.gx.estim <- function( fit
     
   } else {
     x.scl <- units::set_units(NA, fit$outputUnits, mode = "standard")
-    warning("Invalid character string for x.scl specified in F.gx.estim. x.scl set to missing.")
+    warning("Invalid character string for x.scl specified in gxEstim. x.scl set to missing.")
   }
   
   #   --------------------------------------------------------------------------------------
   #   Now compute g(x)
   
-  if( is.data.frame(g.x.scl) ){
+  if( fit$obsType == "double" ){
       #   Compute g(x) from double observer data
-      g.x.scl <- F.double.obs.prob( g.x.scl, observer )
+      g.x.scl <- doubleObsProb( fit )
   } else {
-      #   g(x) is specified, nothing to do except check validity
-      if( length(g.x.scl) > 1 ){
-          g.x.scl <- g.x.scl[1]
+      # Single observer; but, g(x) could be less than 1
+      # g(x) is specified, nothing to do except check validity
+      if( length(fit$g.x.scl) > 1 ){
+          g.x.scl <- fit$g.x.scl[1]
           warning(paste("Vector of g(x) values found in F.gx.estim. Only the first value,", g.x.scl, "has been used."))
       }
       if( g.x.scl < 0 ){
           g.x.scl <- 0
           warning("Impossible g.x.scl < 0 specified in F.gx.estim. g(x) has been reset to 0.")
-      } else if( g.x.scl > 1 ){
+      } else if( fit$g.x.scl > 1 ){
           g.x.scl <- 1
           warning("Impossible g(x) > 1 specified in F.gx.estim. g(x) reset to 1.")
-      } else if( is.character(g.x.scl) ){
+      } else if( is.character(fit$g.x.scl) ){
           stop(paste0("g.x.scl cannot be character valued. Found '", g.x.scl, "'. Convert this to numeric."))
       }
   }

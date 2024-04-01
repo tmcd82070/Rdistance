@@ -294,7 +294,7 @@ plot.dfunc <- function( x,
     newdata <- data.frame(newdata)
     # need to eventually filter model.frame. x$detections$dist has wrong number of rows
     # b/c obs outside strip are not there.
-    origDist <- model.response(x$model.frame) 
+    origDist <- Rdistance::distances(x$mf) 
     inStrip <- (x$w.lo <= origDist) & (origDist <= x$w.hi)
     factor.names <- attr(terms(x$model.frame), "dataClasses")
     factor.names <- names(factor.names)[ factor.names == "factor" ]

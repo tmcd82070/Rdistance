@@ -11,8 +11,8 @@
 #' @export
 negexp.start.limits <- function (ml){
   
-  X <- stats::model.matrix(ml$mt, ml$mf)
-  dist <- stats::model.response(ml$mf)  
+  X <- model.matrix(ml)
+  dist <- Rdistance::distances(ml)  
   
   ncovars <- ncol(X)
 
@@ -71,6 +71,6 @@ negexp.start.limits <- function (ml){
   names(low) <- nms
   names(high) <- nms
   
-  list( start=start, lowlimit=low, uplimit=high, names=nms )
+  list( start=start, low=low, high=high, names=nms )
   
 }

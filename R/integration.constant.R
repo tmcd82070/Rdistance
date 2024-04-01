@@ -68,8 +68,8 @@
 integrationConstant <- function(a, ml){
 
   fx <- match.fun(paste( ml$likelihood, ".like", sep=""))
-  dist <- stats::model.response(ml$mf)
-  X <- stats::model.matrix(stats::terms(ml$mf), ml$mf)
+  dist <- Rdistance::distances(ml$mf)
+  X <- model.matrix(ml)
   w.lo <- ml$w.lo
   w.hi <- ml$w.hi
 

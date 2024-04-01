@@ -72,7 +72,11 @@
 #'
 #' @export
 
-secondDeriv <- function(x, FUN, eps=1e-8, ...){
+secondDeriv <- function(x
+                        , FUN
+                        , eps=1e-8
+                        , ...
+                        ){
   d <- length(x)   # number of dimensions
   if(d > length(eps)){
     eps <- rep(eps,ceiling( d/length(eps) ))[1:d]

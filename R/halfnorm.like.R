@@ -80,6 +80,8 @@ halfnorm.like <- function(a
 
   # covars can be 1 X p or n X p where n = length(dist)
   
+  # cat(paste("In", crayon::red("halfnorm.like"), "\n"))
+      
   if( inherits(covars, "matrix") ){
     q <- ncol(covars)
   } else {

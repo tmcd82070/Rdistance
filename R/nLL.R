@@ -67,8 +67,9 @@
 #' @keywords models
 #' @export
 
-nLL <- function(a,
-                  ml){
+nLL <- function(a
+                , ml
+                ){
   
   # Pull data from input list ----
   # rule is: parameters in 'a' never have units,  
@@ -79,13 +80,20 @@ nLL <- function(a,
   # could move these retrievals outside nLL, which might 
   # speed things a little, but it's more params to pass in.
   f.like <- match.fun(paste( ml$likelihood, ".like", sep=""))
-  dist <- stats::model.response(ml$mf)
-  X <- stats::model.matrix(stats::terms(ml$mf), ml$mf)
-    
+  X <- model.matrix(ml)
+  dist <- Rdistance::distances(ml)
+  
   # Because of na.exclude when building model frame, and 
   # other code in parseModel(), there are no missing distances 
   # in the response, nor are any outside the strip.  
 
+  # cat(crayon::blue("===================="))
+  # cat("\n")
+  # cat(paste("In", crayon::blue("nLL"), "\n"))
+  # print(a)
+  # cat(crayon::blue("---- Calling "))
+  # cat(ml$likelihood)
+  # cat("\n")
       
   # Evaluate the "key" function ----
   # I call Buckland's "key" function just "likelihood".
@@ -115,7 +123,7 @@ nLL <- function(a,
   # Integrals are by defn unit-less.
   if( ml$expansions <= 0 && 
       (ml$likelihood %in% c("halfnorm", "negexp"))){
-    # We know the integral in some cases.  
+    # We know the integral in these cases.  
     # To speed things up, evaluate the integrals we know.
     theta <- L$params # n X (1) matrix of likelihood parameters in these cases
     if( ml$likelihood == "halfnorm"){
@@ -154,6 +162,8 @@ nLL <- function(a,
 
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
+  # cat(paste("Log Likelihood:", crayon::red(nLL), "\n"))
+  
   # Rules: 
   #   RULE 1 FOR LIKELIHOODS: No matter how bad the guess at a, you cannot return Inf, -Inf, NA, or NaN
   #   This means f.like can return NA, but not NaN (div by 0), Inf or -Inf for any row of data
