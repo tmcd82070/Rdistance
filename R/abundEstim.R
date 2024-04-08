@@ -457,6 +457,20 @@ abundEstim <- function(dfunc
         pb <- txtProgressBar(1, R, style=3)
         cat("Computing bootstrap confidence interval on N...\n")
       }
+      
+      # Deal with factors in the model
+      factorsInModel <- attr(terms(dfunc$model.frame), "factors")
+      if( !is.null(factorsInModel) ){
+        factorNames <- dimnames(factorsInModel)[[2]]
+        factorLevels <- vector("list", length(factorNames))
+        names(factorLevels) <- factorNames
+        for(j in 1:length(factorNames)){
+          factorLevels[[j]] <- unique(dfunc$model.frame[, factorNames])
+        }
+      } else {
+        factorNames <- NULL
+      }
+      
 
       # Bootstrap
       lastConvergentDfunc <- dfunc
@@ -493,8 +507,24 @@ abundEstim <- function(dfunc
         # And merge on site-level covariates
         # Not needed if no covars, but cost in time should be negligible
         # Need to merge now to get covars in siteData that has unduplicated siteID.
-        new.mergeData <- merge(new.detectionData, siteData, by="siteID", all.y = TRUE)
+        new.mergeData <- merge(new.detectionData, siteData, by="siteID", all.x = TRUE)
 
+        # If factor in the model and we get only fewer than all levels, 
+        # the model "fails to converge".  Toss it. 
+        if(!is.null(factorNames)){
+          bsFactLevsOK <- rep(TRUE, length(factorLevels))
+          for( j in 1:length(factorLevels)){
+            bsFactorLevels <- unique(new.mergeData[, names(factorLevels)[j]])
+            bsFactLevsOK[j] <- length(bsFactorLevels) == length(factorLevels[[j]])
+          }
+          if( any(!bsFactLevsOK) ){
+            # rather than simply 'next' here, set new.mergedata to NULL
+            # so that progress bar updates at bottom of loop
+            # next
+            new.mergeData <- data.frame(NULL)
+          }
+        }
+        
         #update g(0) or g(x) estimate.
         if (is.data.frame(g.x.scl.orig)) {
           g.x.scl.bs <- g.x.scl.orig[sample(1:nrow(g.x.scl.orig), 
@@ -520,7 +550,7 @@ abundEstim <- function(dfunc
                                observer = dfunc$call.observer,
                                pointSurvey = dfunc$pointSurvey, 
                                warn = FALSE )
-        } else if(nrow(new.detectionData) > 0){
+        } else if(nrow(new.mergeData) > 0){
           dfunc.bs <- dfuncEstim(formula = dfunc$formula,  
                                detectionData = new.mergeData,
                                likelihood = dfunc$like.form, 
