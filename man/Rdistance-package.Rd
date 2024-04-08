@@ -134,6 +134,14 @@ A list of routines can be obtained by loading \code{Rdistance} and issuing
 \code{help(package="Rdistance")}.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/tmcd82070/Rdistance/wiki}
+  \item Report bugs at \url{https://github.com/tmcd82070/Rdistance/issues}
+}
+
+}
 \author{
 Main author and maintainer: Trent McDonald
 <trent@mcdonalddatasciences.com>

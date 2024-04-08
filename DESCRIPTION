@@ -47,6 +47,6 @@ Suggests:
 VignetteBuilder: knitr
 Depends: R (>= 3.5.0)
 Imports: graphics, stats, utils, units, crayon
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Encoding: UTF-8
 Config/testthat/edition: 3
