@@ -10,15 +10,16 @@
       Rdistance_optimizer = "nlminb"
     , Rdistance_evalMax   = 2000
     , Rdistance_maxIters  = 1000
-    , Rdistance_likeTol   = 1e-8
-    , Rdistance_coefTol   = 1.5e-8
-    , Rdistance_hessEps   = 1e-8
+    , Rdistance_likeTol   = (.Machine$double.eps)^(1/1.75)
+    , Rdistance_coefTol   = (.Machine$double.eps)^(1/2)
+    , Rdistance_hessEps   = (.Machine$double.eps)^(1/1.75)
     , Rdistance_requireUnits = TRUE
     , Rdistance_maxBSFailPropForWarning = 0.2
-    , Rdistance_negInf    = .Machine$double.xmin / .Machine$double.eps
-    , Rdistance_posInf    = .Machine$double.xmax * .Machine$double.eps
+    , Rdistance_negInf    = -1 / .Machine$double.neg.eps
+    , Rdistance_posInf    =  1 / .Machine$double.neg.eps
     , Rdistance_fuzz      = .Machine$double.eps
     , Rdistance_zero      = .Machine$double.eps
+    , Rdistance_warn      = FALSE
   )
   toset <- !(names(op.Rdist) %in% names(op))
   if (any(toset)) options(op.Rdist[toset])
@@ -31,18 +32,19 @@
   # un-option Rdist options by full name, not just grep("Rdistance_", names(op))
   # in case user has an options starting with "Rdistance_".
   op.Rdist <- list(
-    "Rdistance_optimizer" = NULL
-    , "Rdistance_evalMax" = NULL
-    , "Rdistance_maxIters" = NULL 
-    , "Rdistance_likeTol" = NULL
-    , "Rdistance_coefTol" = NULL
-    , "Rdistance_hessEps" = NULL
+      "Rdistance_optimizer" = NULL
+    , "Rdistance_evalMax"   = NULL
+    , "Rdistance_maxIters"  = NULL 
+    , "Rdistance_likeTol"   = NULL
+    , "Rdistance_coefTol"   = NULL
+    , "Rdistance_hessEps"   = NULL
     , "Rdistance_requireUnits" = NULL
     , "Rdistance_maxBSFailPropForWarning" = NULL
     , "Rdistance_negInf"    = NULL
     , "Rdistance_posInf"    = NULL
     , "Rdistance_fuzz"      = NULL
     , "Rdistance_zero"      = NULL
+    , "Rdistance_warn"      = NULL
   )
   
   options(op.Rdist)

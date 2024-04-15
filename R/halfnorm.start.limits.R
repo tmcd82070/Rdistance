@@ -14,33 +14,40 @@ halfnorm.start.limits <- function (ml){
   dist <- Rdistance::distances(ml)  
   
   expan <- ml$expansions
-  ncovars <- ncol(X)
+  ncovars <- nCovars(X)
 
   fuzz <- getOption("Rdistance_fuzz")
   zero <- getOption("Rdistance_zero")
   posInf <- getOption("Rdistance_posInf")
-
+  negInf <- getOption("Rdistance_negInf")
+  
   dist2 <- dist - ml$w.lo
-  if( inherits(dist2, "units") ){
-    # Only time dist2 will not have units is when user overides requirement
-    # otherwise this always runs
-    dist2 <- units::drop_units(dist2)
-  }
+  # Only time dist2 will not have units is when user overides requirement
+  # otherwise this always runs
+  dist2 <- units::set_units(dist2, NULL)
   dist2 <- dist2[dist2 > 0]
   sdHalf <- max(sqrt(sum( dist2^2 )/length(dist2)), 10*fuzz)
   
   start <- c(log(sdHalf)
              , rep(zero, ncovars - 1)
-             , rep( posInf, expan)
+             , rep(zero, expan)
              )
-  low <- c(
-    rep(log(zero), ncovars)
-    , rep( posInf, expan)
-  )
-  high  <- c(
-    rep( log(posInf), ncovars )
-    , rep( posInf, expan)
-  )    
+  if( ncovars <= 1 ){
+    # (Intercept)-only model. Use tighter bounds.
+    low <- log(zero)
+    high <- log(posInf)
+  } else {
+    # We have covariates
+    low <- rep(negInf, ncovars)
+    high <- rep(posInf, ncovars)
+  }
+  # Add bounds for expansions
+  low <- c(low
+         , rep(negInf, expan)
+           )
+  high  <- c(high
+           , rep(posInf, expan)
+           )
   nms <- colnames(X)
   
   if(expan > 0){

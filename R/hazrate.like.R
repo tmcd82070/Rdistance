@@ -1,61 +1,8 @@
 #' @title hazrate.like - Hazard rate likelihood 
 #' 
-#' @description Computes the hazard rate likelihood of  
-#' off-transect distances, given parameters. Primarily used as 
-#' a minimization objective during distance function estimation.
-#' 
-#' @param a A vector of likelihood parameter values. Length and meaning 
-#' depend on \code{series} and \code{expansions}. If no expansion terms 
-#' were called for
-#'   (i.e., \code{expansions = 0}), the distance likelihoods contain 
-#'   one or two canonical parameters (see Details). If one or more 
-#'   expansions are called for,
-#'   coefficients for the expansion terms follow coefficients for the 
-#'   canonical parameters.  If \code{p} is the number of canonical 
-#'   parameters, coefficients
-#'   for the expansion terms are \code{a[(p+1):length(a)]}.
-#'   
-#' @param dist A numeric vector containing the observed distances.
-#' 
-#' @param covars Data frame containing values of covariates at 
-#' each observation in \code{dist}.
-#' 
-#' @param w.lo Scalar value of the lowest observable distance.  
-#' This is the \emph{left truncation} of sighting distances in 
-#' \code{dist}. Same units as \code{dist}.
-#' Values less than \code{w.lo} are allowed in \code{dist}, 
-#' but are ignored and their contribution to the likelihood is 
-#' set to \code{NA} in the output.
-#' 
-#' @param w.hi Scalar value of the largest observable distance.  
-#' This is the \emph{right truncation} of sighting distances in 
-#' \code{dist}.  Same units as \code{dist}.
-#' Values greater than \code{w.hi} are allowed in \code{dist}, 
-#' but are ignored and their contribution to the likelihood is 
-#' set to \code{NA} in the output.
-#' 
-#' @param series A string specifying the type of expansion to use.  
-#' Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-#'   \code{\link{dfuncEstim}} about defining other series.
-#'   
-#' @param expansions A scalar specifying the number of terms in 
-#' \code{series}. Depending on the series, this could be 0 through 5.
-#'   The default of 0 equates to no expansion terms of any type.
-#'   
-#' @param scale Logical scalar indicating whether or not to scale 
-#' the likelihood so it integrates to 1. This parameter is used to 
-#' stop recursion in other functions.
-#' If \code{scale} equals TRUE, a numerical integration 
-#' routine (\code{\link{integration.constant}}) is called, which 
-#' in turn calls this likelihood function again
-#' with \code{scale} = FALSE. Thus, this routine knows when its 
-#' values are being used to compute the likelihood and when its 
-#' value is being used to compute the 
-#' constant of integration.  All user defined likelihoods must have 
-#' and use this parameter.
-#' 
-#' @param pointSurvey Boolean. TRUE if \code{dist} is point 
-#' transect data, FALSE if line transect data.
+#' @description Computes the hazard rate distance function. 
+#'
+#' @inheritParams halfnorm.like 
 #' 
 #' @details The hazard rate likelihood is 
 #' \deqn{f(x|\sigma,k) = 1 - \exp(-(x/\sigma)^{-k})}{%
@@ -68,35 +15,9 @@
 #' the valid range for both \eqn{\sigma}{Sigma} and k is
 #' \eqn{\geq 0}{>=0}.  
 #'   
-#'   \bold{Expansion Terms}: If \code{expansions} = e 
-#'   (e > 0), the expansion function specified by 
-#'   \code{series} is called (see for example
-#'   \code{\link{cosine.expansion}}). Assuming 
-#'   \eqn{h_{ij}(x)}{h_ij(x)} is the \eqn{j^{th}}{j-th} 
-#'   expansion term for the \eqn{i^{th}}{i-th} distance and that 
-#'   \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)} are 
-#'   (estimated) coefficients for the expansion terms, the 
-#'   likelihood contribution for the \eqn{i^{th}}{i-th} 
-#'   distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_e) = f(x|a,b)(1 + 
-#'   \sum_{j=1}^{e} c_j h_{ij}(x)).}{%
-#'   f(x|a,b,c_1,c_2,...,c_e) = f(x|a,b)(1 + c(1) h_i1(x) + 
-#'   c(2) h_i2(x) + ... + c(e) h_ik(x)). }
-#'   
-#' @return A numeric vector the same length and order as 
-#' \code{dist} containing the likelihood contribution for 
-#' corresponding distances in \code{dist}. 
-#' Assuming \code{L} is the returned vector from one of these 
-#' functions, the full log likelihood of all the data is 
-#' \code{-sum(log(L), na.rm=T)}. Note that the
-#'   returned likelihood value for distances less than 
-#'   \code{w.lo} or greater than \code{w.hi} is \code{NA}, 
-#'   and thus it is prudent to use \code{na.rm=TRUE} in the
-#'   sum. If \code{scale} = TRUE, the integral of the likelihood 
-#'   from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = 
-#'   FALSE, the integral of the likelihood is
-#'   arbitrary.
-#'   
-#'         
+#'  
+#' @inheritSection halfnorm.like return
+#'  
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{halfnorm.like}},
 #'          \code{\link{uniform.like}},
@@ -107,12 +28,12 @@
 #' x <- seq(0, 100, length=100)
 #' 
 #' # Plots showing effects of changes in sigma
-#' plot(x, hazrate.like(c(20, 5), x), type="l", col="red")
-#' plot(x, hazrate.like(c(40, 5), x), type="l", col="blue")
+#' plot(x, hazrate.like(c(20, 5), x)$key, type="l", col="red")
+#' plot(x, hazrate.like(c(40, 5), x)$key, type="l", col="blue")
 #' 
 #' # Plots showing effects of changes in beta
-#' plot(x, hazrate.like(c(50, 20), x), type="l", col="red")
-#' plot(x, hazrate.like(c(50, 2), x), type="l", col="blue")
+#' plot(x, hazrate.like(c(50, 20), x)$key, type="l", col="red")
+#' plot(x, hazrate.like(c(50, 2), x)$key, type="l", col="blue")
 #' }
 #'          
 #' @keywords models
@@ -120,74 +41,21 @@
 
 hazrate.like <- function(a, 
                          dist, 
-                         covars = NULL, 
-                         w.lo = units::set_units(0,"m"), 
-                         w.hi = max(dist), 
-                         series = "cosine", 
-                         expansions = 0, 
-                         scale = TRUE, 
-                         pointSurvey = FALSE){
+                         covars ){
   
-  # rule is: parameter 'a' never has units.
-  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
-  dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
-
+  
   # What's in a? : 
-  #   If no covariates: a = [Sigma, k, <expansion coef>]
-  #   If covariates:    a = [(Intercept), b1, ..., bp, k, <expansion coef>]
+  #   a = [(Intercept), b1, ..., bp, k, <expansion coef>]
+  q <- Rdistance:::nCovars(covars)
+  beta <- matrix(a[1:q], ncol = 1) # could be expansion coefs after q
+  s <- drop(covars %*% beta)
+  sigma <- exp(s)  # link function here
   
-  if(!is.null(covars)){
-    q <- ncol(covars)
-    beta <- a[1:q]
-    s <- drop( covars %*% beta )
-    s <- exp(s)  # link function here
-  } else {
-    s <- a[1]
-  }
-  
-	K <- a[length(a) - expansions]
-	key <- -(( units::drop_units(dist)/s )^(-K))
-	key <- 1 - exp(key)
-	# Above is safe. Units of sigma will scale to units of dist. 'key' is unit-less
-	dfunc <- key
+  dist <- units::set_units(dist, NULL)
+  K <- a[q + 1]
+  key <- -( dist/sigma )^(-K)
+  key <- 1 - exp(key)
 
-  if(expansions > 0){
+  return( list(key = key, params = c(sigma, K)))  
 
-    w <- w.hi - w.lo
-
-		if (series=="cosine"){
-            dscl = units::drop_units(dist/w)  # unit conversion here; drop units is safe
-            exp.term <- cosine.expansion( dscl, expansions )
-		} else if (series=="hermite"){
-            dscl = units::drop_units(dist/s)
-            exp.term <- hermite.expansion( dscl, expansions )
-		} else if (series == "simple") {
-            dscl = units::drop_units(dist/w)
-            exp.term <- simple.expansion( dscl, expansions )
-    } else {
-            stop( paste( "Unknown expansion series", series ))
-    }
-
-    expCoefs <- a[(length(a)-(expansions-1)):(length(a))]
-    key <- key * (1 + c(exp.term %*% expCoefs))
-    
-    # without monotonicity restraints, function can go negative, 
-    # especially in a gap between datapoints. This makes no sense in distance
-    # sampling and screws up the convergence. 
-    key[ which(key < 0) ] <- 0
-  }
-
-  if( scale ){
-      key = key / integration.constant(dist = dist
-                                     , density = hazrate.like
-                                     , a = a
-                                     , covars = covars
-                                     , w.lo = w.lo
-                                     , w.hi = w.hi
-                                     , series = series
-                                     , expansions = expansions
-                                     , pointSurvey = pointSurvey)
-  }
-  
-  c(key)
 }

@@ -80,7 +80,7 @@ nLL <- function(a
   # could move these retrievals outside nLL, which might 
   # speed things a little, but it's more params to pass in.
   f.like <- match.fun(paste( ml$likelihood, ".like", sep=""))
-  X <- model.matrix(ml)
+  X <- model.matrix(ml)  # this calls model.matrix.dfunc()
   dist <- Rdistance::distances(ml)
   
   # Because of na.exclude when building model frame, and 
@@ -122,9 +122,9 @@ nLL <- function(a
   # to integral under distance function for that observation. 
   # Integrals are by defn unit-less.
   if( ml$expansions <= 0 && 
-      (ml$likelihood %in% c("halfnorm", "negexp"))){
+      (ml$likelihood %in% c("halfnorm", "negexp", "triangle"))){
     # We know the integral in these cases.  
-    # To speed things up, evaluate the integrals we know.
+    # Supposedly, this will speed things up
     theta <- L$params # n X (1) matrix of likelihood parameters in these cases
     if( ml$likelihood == "halfnorm"){
       # We evaluate normal with mean set to w.lo, sd = sigma, from -Inf to w.hi, then
@@ -137,21 +137,21 @@ nLL <- function(a
     } else if( ml$likelihood == "negexp" ){
       # theta = beta (n X 1 vector) in this case
       scaler <- unname(
-        (exp(-theta * units::drop_units(w.lo)) -
-           exp(-theta * units::drop_units(w.hi))) / theta)
-    } 
+        (exp(-theta * units::drop_units(ml$w.lo)) -
+           exp(-theta * units::drop_units(ml$w.hi))) / theta)
+    } else if( ml$likelihood == "triangle" ){
+      scaler <- theta / 2
+    }
     
     key = key / scaler
     
   } else {
     # We numerically integrate.  These are integrals we 
     # do not know and any that have expansions
-    key = key / integration.constant(a, ml)
+    key = key / integrationConstant(a, ml)
     
   }
 
-  
-  
   if( !is.null(getOption("Rdistance_optimizer")) &&
       (getOption("Rdistance_optimizer") == "optim") ){
     key <- key*10^9 # optim likes big numbers

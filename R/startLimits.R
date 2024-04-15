@@ -6,19 +6,21 @@
 #'   other routines in \code{Rdistance}, and is not intended to 
 #'   be called by the user.
 #'
-#' @param ml An Rdistance model frame or fitted object
-#' of class "dfunc". 
-#' Rdistance model frames are lists with a subset of 
-#' componenets of Rdistance fitted objects (e.g.,  
-#' no fitted values or log likelihood).   Rdistance 
-#' model frames are lists containing components of the model. Distance
-#' function components include the "likelihood", "w.lo", "w.hi", "expansions", 
-#' and a linear model frame, with terms, that contains covariates and 
-#' detection distances. Rdistance model frames are typically
-#' produced by calls to \code{\link{parseModel}}.  Rdistance 
-#' fitted objects are Rdistance model frames with additional 
-#' components containing estimated parameters, log likelihood, 
-#' variance covariance, etc. 
+#' @param ml Either a Rdistance 'model frame' or an Rdistance 
+#' 'fitted object'.  Both are of class "dfunc". 
+#' Rdistance 'model frames' are lists containing components 
+#' necessary to estimate a distance function, but no estimates. 
+#' They contain the data, formula, likelihood name, w.lo, w.hi, 
+#' expansions, transect type, output units, etc.  
+#' Rdistance 'model frames' are typically
+#' produced by calls to \code{\link{parseModel}}. 
+#' 
+#' 'Model frames'
+#' get transformed into 'fitted objects' by a call to  
+#' \code{\link{dfuncEstim}}.  'Fitted objects' are 'model frames'
+#' with additional components such as the parameters estimates, 
+#' log likelihood value, convergence information, and the variance-
+#' covariance matrix of the parameters. 
 #' 
 #' @details
 #' 

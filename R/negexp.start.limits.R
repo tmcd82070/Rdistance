@@ -16,49 +16,42 @@ negexp.start.limits <- function (ml){
   
   ncovars <- ncol(X)
 
-  fuzz <- getOption("Rdistance_fuzz")
   zero <- getOption("Rdistance_zero")
   posInf <- getOption("Rdistance_posInf")
   negInf <- getOption("Rdistance_negInf")
   
   expan <- ml$expansions
-  dMin <- max( min(dist), ml$w.lo )
-  dMax <- min( max(dist), ml$w.hi )
-  w <- ml$w.hi - ml$w.lo
-  medDist <- stats::median(dist)
-  if(is.null(medDist) || is.na(medDist) || is.infinite(medDist)){
+
+  # d <- dist[ml$w.lo <= dist & dist <= ml$w.hi]
+  # there should not be any distances outside (w.lo,w.hi)
+  d <- d - ml$w.lo
+  medDist <- stats::median(d)
+  medDist <- units::set_units(medDist, NULL)
+  
+  if(is.null(medDist) || 
+     is.na(medDist) || 
+     is.infinite(medDist) || 
+     (medDist <= zero)){
+    w <- ml$w.hi - ml$w.lo
     medDist <- ml$w.lo + w / 2
-  }
-  if( inherits(dist, "units") ){
-    # Only time dist will not have units is when user overrides requirement
-    # otherwise this always runs
-    dMin <- units::drop_units(dMin)
-    dMax <- units::drop_units(dMax)
-    w <- units::drop_units(w)
-    medDist <- units::drop_units(medDist)
-  }
+    medDist <- units::set_units(medDist, NULL)
+  } 
   
-  logLoWid <- (log(medDist) - log(dMin))
-  logLoWid <- max(logLoWid, fuzz)
-  logLoWid <- 1.0 / logLoWid
+  startIntercept <- -log(medDist) # = log(1/medDist)
   
-  logHiWid <- (log(dMax) - log(medDist))
-  logHiWid <- max(logHiWid, fuzz)
-  logHiWid <- 1.0 / logHiWid
-  
-  startIntercept <-  logLoWid + logHiWid
-  startIntercept <- max(startIntercept, 1)
-  
-  start <- c(log(startIntercept)
+  # 1/medDist is MOM estimate of lambda (lambda = slope of neg exp)
+  # log(1/medDist) is MOM estimate on link scale
+
+  start <- c(startIntercept
              , rep(zero, ncovars - 1)
-             , rep( posInf, expan)
+             , rep(zero, expan)
              )
   low   <- c(negInf
              , rep(negInf, ncovars - 1 )
-             , rep( posInf, expan)
+             , rep(negInf, expan)
              )
-  high  <- c(posInf*w
-             , rep( posInf*w, ncovars - 1 )
+  high  <- c(posInf
+             , rep( posInf, ncovars - 1 )
              , rep( posInf, expan)
              )
   nms <- colnames(X)

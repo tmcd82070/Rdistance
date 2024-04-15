@@ -28,47 +28,38 @@
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
 #'
 #' @examples
-#' set.seed(238642)
-#' 
-#' d <- rnorm(1000, mean = 0, sd = 40)
-#' d <- units::set_units(d[0 <= d], "m")
-#' obs <- factor(rbinom(length(d),1,0.5), labels = c("obs1", "obs2"))
-#' 
 #' # Close to what happens in Rdistance
+#' d <- units::set_units(rep(1,4),"m") # Only units needed, not values
+#' obs <- factor(rep(c("obs1", "obs2"), 2))
 #' ml <- list(
 #'     mf = model.frame(d ~ obs) 
 #'   , likelihood = "halfnorm"
 #'   , expansions = 0
 #'   , w.lo = units::set_units(0, "m")
 #'   , w.hi = units::set_units(125, "m")
+#'   , outputUnits = units(units::set_units(1,"m"))
+#'   , transType = "line"
 #' )
-#' integration.constant(c(log(40), log(.5)), ml)
-
-
-# Can put any number for first argument (1 used here)
-#' scl <- integration.constant(dist=units::set_units(1,"m")
-#'                           , density=logistic.like
-#'                           , covars = NULL
-#'                           , pointSurvey = FALSE
-#'                           , w.lo = units::set_units(0,"m")
-#'                           , w.hi = units::set_units(100,"m")
-#'                           , expansions = 0
-#'                           , a=c(75,25))
-#' print(scl) # Should be 75.1
-#'
-#' x <- units::set_units(seq(0,100,length=200), "m")
-#' y <- logistic.like( c(75,25), x, scale=FALSE ) / scl
-#' int.y <- (x[2]-x[1]) * sum(y[-length(y)]+y[-1]) / 2  # the trapezoid rule, should be 1.0
-#' print(int.y) # Should be 1
+#' class(ml) <- "dfunc"
+#' integrationConstant(c(log(40), log(.5)), ml)
+#' 
+#' # Check:
+#' w.hi <- 125
+#' w.lo <- 0
+#' s1 <- 40
+#' s2 <- exp(log(s1) + log(0.5))
+#' obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
+#' obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
+#' c(obs1Scaler, obs2Scaler)
+#' 
 #'
 #' @keywords models
-#' @importFrom stats integrate
 #' @export
 
 integrationConstant <- function(a, ml){
 
   fx <- match.fun(paste( ml$likelihood, ".like", sep=""))
-  dist <- Rdistance::distances(ml$mf)
+  distUnits <- ml$outputUnits
   X <- model.matrix(ml)
   w.lo <- ml$w.lo
   w.hi <- ml$w.hi
@@ -77,31 +68,21 @@ integrationConstant <- function(a, ml){
   # This is important because we occasionally drop units in integral calculations below. 
   # I cannot think of a case where units(w.lo) != units(dist), 
   # but just in case...
-  if( units(w.lo) != units(dist)){
-    w.lo <- units::set_units(w.lo, units(dist), mode = "standard")
+  
+  if( units(w.lo) != distUnits){
+    w.lo <- units::set_units(w.lo, distUnits, mode = "standard")
   }
   if( units(w.hi) != units(dist)){
-    w.hi <- units::set_units(w.hi, units(dist), mode = "standard")
+    w.hi <- units::set_units(w.hi, distUnits, mode = "standard")
   }
   
   # Now, we can safely compute sequence of x values for numerical integration.
   # This is done below, in each case where its needed. 
-  
-  nTrapazoids <- 200 # number of evaluation points in numerical integration
-
-  # For case is for LINES, COVARS, LIKE in {Logistic, User, Gamma} 
-  # and ALL LIKELIHOODS with expansions > 0
-  #
-  # We could do all likelihoods this way (i.e., numerical integration); but,
-  # the above special cases are faster (I think) and more accurate in some cases because
-  # we know the theoretical integral (i.e., for normal and exponential)
-  #
   # Because we have covariates always, we need to integrate
   # once per row of dist. i.e., each dist could be coming from 
   # a separate distance function defined by separate parameters.
   
-  seqx = seq(w.lo, w.hi, length=nTrapazoids) 
-
+  
   # Find covariate classes ----
   # Rep the integration sequence over covariate rows.
   # i.e., each x sequence will be associated with one set of 
@@ -118,7 +99,22 @@ integrationConstant <- function(a, ml){
     dplyr::ungroup() |> 
     dplyr::select(.rowNumber, .covClsRow)
   
+  # Numerical integration coefficients ----
+  # Here, use composite Simpson's 1/3 rule
+  nEvalPts <- 201 # MUST BE ODD!!!
+  nInts <- nEvalPts - 1 # this will be even if nEvalPts is odd
+  seqx = seq(w.lo, w.hi, length=nEvalPts) 
+  deltax <- units::drop_units(seqx[2] - seqx[1])  # or (w.hi - w.lo) / (nInts)
+
+  # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))  
+  intCoefs <- rep( c(2,4), (nInts/2) )
+  intCoefs[1] <- 1
+  intCoefs <- c(intCoefs, 1)
   
+  # Trapazoid rule would be 
+  # intCoefs <- rep( 2, nEvalPts )
+  # intCoefs[c(1,nEvalPts)] <- 1
+
   # Internal function to evaluate key ----
   # Eval fx for each set of constant covariates (rowid)
   # This is a function to apply density to each row of covariates
@@ -127,7 +123,8 @@ integrationConstant <- function(a, ml){
                       , .y
                       , a
                       , Seqx
-                      , pointSurvey
+                      , ml
+                      , intCoefs
                       ){
     # covars are constant across all rows of Seqx
     covs <- matrix(as.numeric(covs), nrow = 1)
@@ -140,17 +137,18 @@ integrationConstant <- function(a, ml){
     if(ml$expansions > 0){
       # 'if' saves a little compute time if no expansions
       # but not necc. b/c expansionTerms = 1 if none
-      key <- key * expansionTerms(a, mf)
+      seqy <- seqy * Rdistance::expansionTerms(a, ml$mf)
     }
     
-    if(pointSurvey){
-        key <- units::drop_units(Seqx) * key 
+    if(is.points(ml)){
+      seqy <- units::drop_units(Seqx) * seqy 
     }
-      
-    scaler <- units::drop_units(Seqx[2] - Seqx[1]) * 
-      sum(seqy[-length(seqy)] + seqy[-1]) / 2
+ 
+    # Apply numeric integration coefficients
+    # fy <-  h*sum(seqy[-length(seqy)] + seqy[-1]) / 2
+    fy <- sum(intCoefs * seqy)
     
-    data.frame(scaler = scaler)
+    data.frame(integral = fy)
   }
   
   # Call internal evalKey function using group_modify ----
@@ -158,41 +156,22 @@ integrationConstant <- function(a, ml){
     dplyr::group_by(.covClsRow) |> 
     dplyr::group_modify(.f = evalKey
                         , a = a
-                        , Seqx = seqx)
+                        , Seqx = seqx
+                        , ml = ml
+                        , intCoefs = intCoefs)
+  
+  # Do not forget to multiply by interval size and constant
+  scalers <- scalers |> 
+    dplyr::mutate(integral = deltax * integral / 3 )
+    # dplyr::mutate(integral = deltax * integral / 2 ) # if Trapazoid
+  
   
   # This join expands from unique covariate classes
   # to the original size of covars
   scalers <- covClsMap |> 
-    dplyr::left_join(scalers, by = ".covClsRow") |> 
-    dplyr::arrange(.rowNumber) |>   # probably not necc. to sort
-    dplyr::pull(scaler)
+    dplyr::left_join(scalers, by = ".covClsRow") |>
+    dplyr::pull(integral)
 
-   # } else if( pointSurvey ){
-  #   # This case is POINTS - NO Covariates
-  #   seqx = seq(w.lo, w.hi, length=nTrapazoids) 
-  #   seqy <- units::drop_units(seqx) * density( dist = seqx, scale = FALSE, 
-  #                           w.lo = w.lo, w.hi = w.hi, a = a, 
-  #                           expansions = expansions, series=series)
-  # 
-  #   #   trapezoid rule
-  #   scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / (2*units::drop_units(dist))
-  # } else {
-  #   # This case is LINES - NO Covariates
-  #   # Density should return unit-less numbers (height of density function)
-  #   seqx = seq(w.lo, w.hi, length=nTrapazoids) 
-  #   seqy <- density( dist = seqx
-  #                  , scale = FALSE
-  #                  , w.lo = w.lo
-  #                  , w.hi = w.hi
-  #                  , a = a
-  #                  , expansions = expansions
-  #                  , series=series
-  #                  )
-  # 
-  #   #   trapezoid rule
-  #   scaler <- units::drop_units(seqx[2]-seqx[1]) * sum(seqy[-length(seqy)]+seqy[-1]) / 2
-  # }
-  # 
   # there are cases where the guess at parameters is so bad, that the integration
   # constant is 0 (consider pnorm(100,0,2e30)). But, we don't want to return 0
   # because it goes in denominator of likelihood and results in Inf, which is

@@ -4,19 +4,18 @@
 #' here called a likelihood, for 
 #' sighting distances based on covariates.
 #' 
-#' @param a A vector of the likelihood parameter values. Length 
-#' should be (number of covariates, including intercept) + 
-#' (number of expansions). These should all be on a log scale
-#' because link function used is exp. Covariates are related to
-#' standard deviation of the halfnormal distance function. 
+#' @param a A vector of covariate coefficients and other likelihood 
+#' parameter values. Length 
+#' should be (number of covariates including intercept) + 
+#' (number of expansions) + (likelihood %in% c("hazrate","logistic"). 
+#' Coefficients should all be on a log scale
+#' because the link function for all likelihoods is exponential. 
 #' 
 #' @param dist A numeric vector containing 
-#' the observed distances.
+#' the observed detection distances.
 #' 
 #' @param covars A data frame or matrix containing values 
-#' of the covariates for each distance observation. Number of 
-#' columns must match number of parameters (i.e., length of \code{a}).
-#' 
+#' of the covariates for each distance observation. 
 #' 
 #' @details The half-normal distance function is 
 #' \deqn{f(d|s) = \exp(-d^2 / (2*s^2))}{f(d|s) = exp(-d^2 / (2*s^2))}
@@ -25,14 +24,14 @@
 #' \eqn{a} is a vector of the first \code{ncol(covars)} 
 #' values in the input vector of parameters \code{a}.
 #' 
-#' Some authors  
-#' do not use a "2" in the 
-#' denominator of the exponent when defining a half-normal 
-#' distance functions.  \code{Rdistance} uses a 
-#' "2" in the denominator of the exponent to make 
-#' quantiles of this function agree with 
-#' the standard normal. This means \emph{s = exp(x'a)} can be 
-#' interpreted as a normal standard error.  Hence, for example, 
+#' Some authors  do not place a "2" in the 
+#' denominator of the exponent in the half-normal 
+#' distance function.  \code{Rdistance} includes 
+#' "2" in this denominator to make 
+#' quantiles of the half normal agree with 
+#' the standard normal. This means the predicted values 
+#' from an Rdistance model (i.e., \emph{s = exp(x'a)}) can be 
+#' interpreted as normal standard errors.  For example, 
 #' approximately 95\% of distances should 
 #' occur between 0 and 2\emph{s}.
 #' 
@@ -78,22 +77,15 @@ halfnorm.like <- function(a
                           , dist
                           , covars ){
 
-  # covars can be 1 X p or n X p where n = length(dist)
-  
   # cat(paste("In", crayon::red("halfnorm.like"), "\n"))
-      
-  if( inherits(covars, "matrix") ){
-    q <- ncol(covars)
-  } else {
-    q <- length(covars)
-  }
-  beta <- a[1:q] # could be expansion coefs after q
-  s <- drop(covars %*% matrix(beta,ncol=1))
+  
+  # covars can be 1 X p or n X p where n = length(dist)
+  q <- Rdistance:::nCovars(covars)
+  beta <- matrix(a[1:q], ncol = 1) # could be expansion coefs after q
+  s <- drop(covars %*% beta)
   sigma <- exp(s)  # link function here
 
-  if(inherits(dist, "units")){
-    dist <- units::drop_units(dist)
-  }
+  dist <- units::set_units(dist, NULL)
   key <- -(dist*dist)/(2*c(sigma*sigma))  
   # Above is safe. Units of sigma will scale to units of dist. 
   # 'key' is unit-less

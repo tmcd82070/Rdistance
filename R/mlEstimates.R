@@ -50,15 +50,8 @@ mlEstimates <- function( ml
           , upper = strt.lims$high
           , control = contRl
           , ml = ml
-          # , dist = dist
-          # , X = X
           )
-      # names(fit)[names(fit) == "evaluations"]<-"counts"
-  
-      # cat("\n")
-      # print(fit)
-      # cat(crayon::bgYellow("Calling secondDeriv...\n"))
-      
+
       hessian <- secondDeriv(
             x = fit$par
           , FUN = nLL
@@ -69,8 +62,9 @@ mlEstimates <- function( ml
       stop(paste("Unknown optimizer function. Found", optimFunc))
   }
 
+  warn <- getOption("Rdistance_warn")
   if (fit$convergence != 0) {
-    if (warn) warning("fit did not converge, or converged to (Inf,-Inf)")
+    if (warn) warning("Distance function did not converge, or converged to (Inf,-Inf)")
     varcovar <- matrix(NaN, nrow(hessian), ncol(hessian))
   } else if (!any(is.na(hessian)) & !any(is.infinite(hessian))){
       qrh <- qr(hessian)
@@ -84,6 +78,9 @@ mlEstimates <- function( ml
           varcovar <- matrix(NaN, nrow(hessian), ncol(hessian))
         }
       }
+  } else {
+    if (warn) warning("Covariance matrix has Inf or NA elemetns.")
+    varcovar <- matrix(NaN, nrow(hessian), ncol(hessian))
   }
   dimnames(varcovar) <- list(strt.lims$names, strt.lims$names)
   fit$varcovar <- varcovar

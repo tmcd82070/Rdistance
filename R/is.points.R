@@ -13,6 +13,11 @@
 #' @export
 #' 
 is.points <- function(x, ...){
-  x$transType == "point"
+  if(!is.null(x$transType)){
+    return(x$transType == "point")
+  } else {
+    stop(paste("'transType' component of object x missing.  Cannot determine"
+               , "whether data is from point of transect surveys."))
+  }
 }
   

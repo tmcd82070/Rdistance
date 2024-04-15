@@ -36,12 +36,23 @@
 #' See package vignettes for additional options. 
 #' 
 #' @examples 
-#' # Load example sparrow data (line transect survey type)
+#' # Sparrow line transect example
 #' data(sparrowDetectionData)
+#' data(sparrowSiteData)
 #' 
-#' dfunc <- dfuncEstim(formula = dist ~ 1
-#'                   , detectionData = sparrowDetectionData)
+#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' 
+#' dfunc <- dfuncEstim(sparrowDf, 
+#'                     formula = dist ~ 1
+#'                   )
+#'                   
+#' dfunc <- sparrowDf |> 
+#'          dfuncEstim( 
+#'            formula = dist ~ observer
+#'          )
+#'              
 #' dfunc
+#' summary(dfunc)
 #' plot(dfunc)                   
 #'
 #' @keywords model
@@ -52,7 +63,8 @@
 
 dfuncEstim <- function (  data, ... ){
 
-  
+  call <- match.call()
+
   # Dispatch separate estimation functions based on transect and observer types ----
   if( attr(data, "transType") == "point" ){
     # Point transects ----
@@ -75,6 +87,8 @@ dfuncEstim <- function (  data, ... ){
   } else {
     stop(dfuncEstimErrMessage("transect type", "transType"))
   }
+  
+  res$call <- call
   
   res 
 }
