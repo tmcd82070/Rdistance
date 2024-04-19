@@ -72,7 +72,7 @@ integrationConstant <- function(a, ml){
   if( units(w.lo) != distUnits){
     w.lo <- units::set_units(w.lo, distUnits, mode = "standard")
   }
-  if( units(w.hi) != units(dist)){
+  if( units(w.hi) != distUnits){
     w.hi <- units::set_units(w.hi, distUnits, mode = "standard")
   }
   
@@ -132,7 +132,7 @@ integrationConstant <- function(a, ml){
         a = a
       , dist = Seqx
       , covars = covs
-    )$key
+    )$L.unscaled
 
     if(ml$expansions > 0){
       # 'if' saves a little compute time if no expansions
