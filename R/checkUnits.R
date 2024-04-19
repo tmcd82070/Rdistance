@@ -30,11 +30,13 @@ checkUnits <- function(ml){
   # if we are here, dist has units
   # set units for output by converting dist units; 
   # w.lo, w.hi, and x.scl will all be converted later
+  # We want outputUnits to be units(dist), not e.g., string "m"
   if ( !is.null(ml$outputUnits) ){
     ml$data <- ml$data |> 
       dplyr::mutate( !!ml$respName := units::set_units(dist, ml$outputUnits, mode = "standard"))
+    ml$outputUnits <- units(units::set_units(1, ml$outputUnits, mode = "standard"))
   } else {
-      ml$outputUnits <- units(dist)
+    ml$outputUnits <- units(dist)
   }
 
   # Units for w.lo ----
