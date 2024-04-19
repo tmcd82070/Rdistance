@@ -40,20 +40,20 @@ huber.start.limits <- function(ml){
   
   start <- c(log(w*.5)
              , rep(zero, np - 1)
-             , log(w)
+             , 0.5*w
              , rep(zero, expan)
              )
   low   <- c(log(zero)
              , rep(negInf, np - 1 )
-             , log(zero)
+             , zero
              , rep(negInf, expan)
              )
   high  <- c(log(w * 1.5)
              , rep(posInf, np - 1 )
-             , log(w * 2)
+             , w 
              , rep(posInf, expan)
              )
-  nms <- colnames(X)
+  nms <- c(colnames(X), "gamma")
   
   if(expan > 0){
     nms <- c(nms, paste( "a", 1:ml$expansions, sep=""))

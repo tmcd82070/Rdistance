@@ -7,30 +7,45 @@
 #' 
 #' @inheritParams halfnorm.like 
 #' 
-#' @details For \eqn{x > 0}{x > 0}, the triangular likelihood 
+#' @details The triangular likelihood 
 #' is, 
-#' \deqn{f(x|a) = 2a(1 - x/a)}{f(x|a) = 2*a*(1 - x/a)}
-#' for all \eqn{0 <= x <= a}{0 <= x <= a}, and 0 for all
-#' \eqn{x}{x} less than 0 and greater than \eqn{a}{a}.  
-#' Parameter \eqn{a}{a} is related to covariates through 
-#' a log link function.
+#' \deqn{f(d|a) = 1 - \frac{d}{a}}{f(d|a) = 1 - d/a}
+#' for \eqn{0 \leq d \leq a}{0 <= d <= a}, and 0 for all
+#' \eqn{d}{d} less than 0 or greater than \eqn{a}{a}.  
+#' Covariates effect parameter \eqn{a}{a} 
+#' via the log link function, i.e., \eqn{a = exp(x'b)},
+#' where \eqn{x} is the vector of covariate values 
+#' associated with distance \eqn{d} and \eqn{b}
+#' is the vector of estimated coefficients. Area under
+#' the likelihood is \eqn{a/2}.
 #' 
 #' 
-#' @inheritSection halfnorm.like value
+#' @inherit halfnorm.like return seealso
 #'    
-#' @seealso \code{\link{dfuncEstim}},
-#'          \code{\link{halfnorm.like}},
-#'          \code{\link{logistic.like}},
-#'          \code{\link{hazrate.like}},
-#'          \code{\link{Gamma.like}}
 #'          
 #' @examples
 #' 
-#' x <- 0:100
-#' X <- matrix(1,length(x), 1)
-#' y <- triangle.like( log(80), x, X )$key
-#' plot(x,y, type = "l")
+#' d <- seq(0, 100, length=100)
+#' covs <- matrix(1,length(d),1)
+#' triangle.like( log(80), d, covs )
 #' 
+#' plot(d, triangle.like( log(80), d, covs)$L.unscaled, type = "l", col = "blue")
+#' lines(d, triangle.like( log(60), d, covs)$L.unscaled, col = "red")
+#' 
+#' # Likelihood profile for sparrow data
+#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' dist <- tidyr::unnest(sparrowDf, cols = detections)$dist
+#' covs <- matrix(1,length(dist),1)
+#' a <- seq(75, 210, length= 100)
+#' L <- rep(NA, length(a))
+#' for(i in 1:length(a)){
+#'   y <- triangle.like(log(a[i]), dist, covs)$L.unscaled * (2/a[i])
+#'   y[ !is.na(y) & y <= 0] <- .Machine$double.eps
+#'   L[i] <- -sum(log(y), na.rm = TRUE) 
+#' }
+#' plot(a,L)
+#' abline(v = 146)
+#'
 #' @export
 #' 
 triangle.like <- function(a
@@ -50,9 +65,8 @@ triangle.like <- function(a
   key <- 1 - (d / beta)
   key[ key < 0 ] <- 0
 
-  return( list(key = key, params = beta))  
-  
-  # L <- (2/a)*(1 - dist/a)
-  # L[ L < 0 ] <- 0
-  # L
+  return( list(L.unscaled = key, 
+               params = data.frame(par1 = beta))
+  )  
+
 }

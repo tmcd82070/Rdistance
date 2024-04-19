@@ -1,6 +1,6 @@
-#' @title triangle.start.limits - Start and limit values for triangle distance function
+#' @title uniform.start.limits - Start and limit values for uniform distance function
 #' 
-#' @description Compute starting value and limits for the triangle 
+#' @description Compute starting value and limits for the uniform
 #' distance function. 
 #' 
 #' @inheritParams startLimits
@@ -8,7 +8,7 @@
 #' @inherit startLimits return
 #' 
 #' @export
-triangle.start.limits <- function (ml){
+uniform.start.limits <- function (ml){
 
   X <- model.matrix(ml)
   dist <- Rdistance::distances(ml)  
@@ -21,19 +21,23 @@ triangle.start.limits <- function (ml){
   posInf <- getOption("Rdistance_posInf")
   negInf <- getOption("Rdistance_negInf")
   
-  # list(start=max(dist)*.75,
-  #      lowlimit=ml$w.lo,
-  #      highlimit=ml$w.hi,
-  #      names="Max")
- 
+
   # Should not have to convert units.  wlo and whi should 
   # be in 'outputUnits'. Safe to drop units.
   w <- units::set_units(ml$w.hi - ml$w.lo, NULL)
   m <- units::set_units(mean(dist, na.rm = TRUE), NULL)
+  maxD <- units::set_units(max(dist, na.rm = TRUE), NULL)
+  minD <- units::set_units(min(dist, na.rm = TRUE), NULL)
   if(is.na(m) || is.infinite(m) || is.nan(m) || (m <= 0)){
     strt <- log(w * 0.5)
   } else {
     strt <- log(m)
+    strt <- log(w * .9)
+  }
+  if(is.na(minD) || is.infinite(minD) || is.nan(minD) || (minD <= 0)){
+    lowA <- log(getOption("Rdistance_zero"))
+  } else {
+    lowA <- log(minD)
   }
   
   start <- c(strt
@@ -42,8 +46,8 @@ triangle.start.limits <- function (ml){
              )
   if( ncovars <= 1 ){
     # (Intercept)-only model. Use tighter bounds.
-    low <- log(zero)
-    high <- log(2 * w)
+    low <- lowA
+    high <- log(maxD)
   } else {
     # We have covariates
     low <- rep(negInf, ncovars)

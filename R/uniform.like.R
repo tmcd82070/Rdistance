@@ -1,45 +1,69 @@
 #' @title uniform.like - Uniform distance likelihood
 #' 
-#' @description Compute uniform-like distribution for 
-#' distance functions.  This function was present in \code{Rdistance}
-#' version < 2.2.0.  It has been replaced by the more appropriately named
-#' \code{\link{logistic.like}}. 
+#' @description Compute the uniform  
+#' distance functions.   
 #' 
-#' @inheritParams logistic.like
+#' @inheritParams halfnorm.like
 #' 
-#' @inheritSection logistic.like Expansion Terms
+#' @inherit halfnorm.like return seealso
 #' 
-#' @inherit logistic.like return
+#' @details The uniform (or constant) likelihood 
+#' is, 
+#' \deqn{f(d|a) = 1}
+#' for \eqn{0 \leq d \leq a}{0 <= d <= a}, and 0 for all
+#' \eqn{d}{d} less than 0 or greater than \eqn{a}{a}.  
+#' Covariates effect parameter \eqn{a}{a} 
+#' via the log link function, i.e., \eqn{a = exp(x'b)},
+#' where \eqn{x} is the vector of covariate values 
+#' associated with distance \eqn{d} and \eqn{b}
+#' is the vector of estimated coefficients. Area under
+#' the likelihood is \eqn{a}.
+#' 
+#' @examples
+#' 
+#' d <- seq(0, 100, length=100)
+#' covs <- matrix(1,length(d),1)
+#' uniform.like( log(80), d, covs )
+#' 
+#' plot(d, uniform.like( log(80), d, covs)$L.unscaled, type = "l", col = "blue")
+#' 
+#' # Likelihood profile for sparrow data
+#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' dist <- tidyr::unnest(sparrowDf, cols = detections)$dist
+#' covs <- matrix(1,length(dist),1)
+#' a <- seq(75, 210, length= 100)
+#' L <- rep(NA, length(a))
+#' for(i in 1:length(a)){
+#'   y <- uniform.like(log(a[i]), dist, covs)$L.unscaled / a[i]
+#'   y[ !is.na(y) & y <= 0] <- .Machine$double.eps
+#'   L[i] <- -sum(log(y), na.rm = TRUE) 
+#' }
+#' plot(a,L)
+#' abline(v = 146)
 #' 
 #' @export
 #' 
 uniform.like <- function(a
                          , dist
-                         , covars = NULL
-                         , w.lo = 0
-                         , w.hi = max(dist)
-                         , series = "cosine"
-                         , expansions = 0
-                         , scale = TRUE
-                         , pointSurvey = FALSE
-                        ){
+                         , covars 
+                         ){
+  # What's in a? : 
+  #     a = [(Intercept), b1, ..., bp, <expansion coef>]
   
-  .Deprecated(new = "logistic.like"
-            , package = "Rdistance"
-            , old = "uniform.like")
+  q <- nCovars(covars)
   
-  L <- logistic.like(a = a
-                     , dist = dist
-                     , covars = covars
-                     , w.lo = w.lo
-                     , w.hi = w.hi
-                     , series = series
-                     , expansions = expansions
-                     , scale = scale
-                     , pointSurvey = pointSurvey
-  )
-    
-  L
+  beta <- matrix(a[1:q], ncol = 1) 
+  s <- drop( covars %*% beta )      
+  beta <- exp(s)  # link function here
+  
+  d <- units::set_units(dist, NULL)
+  
+  key <- rep(1,length(d))
+  key[ beta <= d ] <- 0
+
+  return( list(L.unscaled = key, 
+               params = data.frame(par1 = beta))
+  )  
   
 }  
   
