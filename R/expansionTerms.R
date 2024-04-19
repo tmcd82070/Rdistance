@@ -1,8 +1,8 @@
 #' @title expansionTerms - Compute distance function expansion terms
 #' 
 #' @description
-#' Computes one of several times of "expansion" terms that 
-#' modify distance functions. 
+#' Computes one of several types of "expansion" terms that 
+#' that can multiplied into a distance function likelihoods. 
 #' 
 #' @inheritParams nLL
 #' 
@@ -12,9 +12,24 @@
 #' Expansion terms modify the "key" function of the 
 #' likelihood multiplicatively.  The modified distance function is,
 #' \code{key * expTerms} where \code{key} is a vector of values in
-#' the base distance function (e.g., \code{halfnorm.like} or 
-#' \code{hazrate.like}) and \code{value} is the vector returned
+#' the base distance function (e.g., \code{halfnorm.like()$key} or 
+#' \code{hazrate.like()$key}) and \code{value} is the vector returned
 #' by this routine. 
+#' 
+#' @section Expansion Terms: 
+#' 
+#' If the number of \code{expansions} = k (k > 0), and assuming 
+#' the expansion terms specified in \code{ml$series} 
+#' are \eqn{h_{ij}(x)}{h_ij(x)} for 
+#' the \eqn{j^{th}}{j-th} expansion of the \eqn{i^{th}}{i-th} 
+#' distance, and that 
+#' \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)} are (estimated) 
+#' coefficients for the expansion terms, the likelihood contribution 
+#' for the \eqn{i^{th}}{i-th} distance is, 
+#'   \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = 
+#'    f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}
+#'    {f(x|a,b,c_1,c_2,...,c_k) = 
+#'    f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 #' 
 #' @return A vector of the expansion terms.  These are
 #' the cyclic expansion terms multiplies by exansion term 

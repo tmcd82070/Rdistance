@@ -165,8 +165,18 @@
 #' attr(sparrowDf, "detectionColumn") <- "detections"
 #' attr(sparrowDf, "obsType") <- "single"
 #' attr(sparrowDf, "transType") <- "line"
-#' class(sparrowDf) <- c("RdistDf", class(sparrowDf))
+#'
+#' # Condensed view - 1 row per transect
+#' sparrowDf
 #' 
+#' # Inspect detection info using tidyr::unnest()
+#' tidyr::unnest(sparrowDf)
+#' 
+#' # Or use dplyr::reframe (e.g., for transect "B3")
+#' sparrowDf |> 
+#'   dplyr::filter(siteID == "B3") |>
+#'   dplyr::reframe(detections)
+#'    
 #' # Point transects
 #' thrasherDf <- RdistDf( thrasherSiteData
 #'                , thrasherDetectionData
