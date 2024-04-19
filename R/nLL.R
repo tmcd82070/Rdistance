@@ -103,7 +103,7 @@ nLL <- function(a
              , dist = dist
              , covars = X
              )
-  key <- L$key
+  key <- L$L.unscaled
   
   # Evaluate and apply the expansions ----
   exp.terms <- Rdistance::expansionTerms(a, ml)
@@ -122,28 +122,41 @@ nLL <- function(a
   # to integral under distance function for that observation. 
   # Integrals are by defn unit-less.
   if( ml$expansions <= 0 && 
-      (ml$likelihood %in% c("halfnorm", "negexp", "triangle"))){
+      (ml$likelihood %in% c("halfnorm"
+                          , "negexp"
+                          , "triangle"
+                          , "uniform"
+                          , "huber"
+                          ))){
     # We know the integral in these cases.  
     # Supposedly, this will speed things up
-    theta <- L$params # n X (1) matrix of likelihood parameters in these cases
+    theta <- L$params # always n X p data frame of canonical likelihood parameters
     if( ml$likelihood == "halfnorm"){
       # We evaluate normal with mean set to w.lo, sd = sigma, from -Inf to w.hi, then
       # subtract 0.5 from result for the area to left of mean (w.lo) 
       # theta = sigma in this case.
+      sig <- theta$par1
       scaler <- (pnorm(units::drop_units(ml$w.hi)
                        , units::drop_units(ml$w.lo)
-                       , theta) - 0.5) * 
-        sqrt(2*pi) * theta
+                       , sig) - 0.5) * 
+        sqrt(2*pi) * sig
     } else if( ml$likelihood == "negexp" ){
-      # theta = beta (n X 1 vector) in this case
+      theta <- theta$par1
       scaler <- unname(
         (exp(-theta * units::drop_units(ml$w.lo)) -
            exp(-theta * units::drop_units(ml$w.hi))) / theta)
     } else if( ml$likelihood == "triangle" ){
-      scaler <- theta / 2
+      scaler <- theta$par1 / 2
+    } else if( ml$likelihood == "uniform" ){
+      scaler <- theta$par1
+    } else if( ml$likelihood == "huber"){
+      # Huber comes pre-scaled
+      scaler <- 1
     }
     
     key = key / scaler
+    
+    # assign("tmpL", data.frame(a = theta$par1, L=key),  pos=.GlobalEnv)
     
   } else {
     # We numerically integrate.  These are integrals we 
@@ -157,12 +170,13 @@ nLL <- function(a
     key <- key*10^9 # optim likes big numbers
   }
   
-  #print(L)
+
   key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")   # happens at very bad values of parameters
 
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
-  # cat(paste("Log Likelihood:", crayon::red(nLL), "\n"))
+  # cat(paste("Parameter:", crayon::red(paste(a, collapse=", ")), "\n"))
+  # cat(paste("Neg Log Likelihood:", crayon::red(nLL), "\n"))
   
   # Rules: 
   #   RULE 1 FOR LIKELIHOODS: No matter how bad the guess at a, you cannot return Inf, -Inf, NA, or NaN
