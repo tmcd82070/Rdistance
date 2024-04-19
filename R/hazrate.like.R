@@ -4,7 +4,8 @@
 #'
 #' @inheritParams halfnorm.like 
 #' 
-#' @details The hazard rate likelihood is 
+#' @details 
+#' The hazard rate likelihood is 
 #' \deqn{f(x|\sigma,k) = 1 - \exp(-(x/\sigma)^{-k})}{%
 #' f(x|Sigma,k) = 1 - exp(-(x/Sigma)^(-k))} 
 #' where \eqn{\sigma}{Sigma} determines location 
@@ -16,25 +17,25 @@
 #' \eqn{\geq 0}{>=0}.  
 #'   
 #'  
-#' @inheritSection halfnorm.like return
-#'  
-#' @seealso \code{\link{dfuncEstim}},
-#'          \code{\link{halfnorm.like}},
-#'          \code{\link{uniform.like}},
-#'          \code{\link{negexp.like}},
-#'          \code{\link{Gamma.like}}
+#' @inherit halfnorm.like return seealso
 #'          
-#' @examples \dontrun{
-#' x <- seq(0, 100, length=100)
+#' @examples
+#' d <- seq(0, 100, length=100)
+#' covs <- matrix(1,length(d),1)
+#' hazrate.like(c(log(20), 5), d, covs)
 #' 
-#' # Plots showing effects of changes in sigma
-#' plot(x, hazrate.like(c(20, 5), x)$key, type="l", col="red")
-#' plot(x, hazrate.like(c(40, 5), x)$key, type="l", col="blue")
+#' # Changing location parameter
+#' plot(d, hazrate.like(c(log(20), 5), d, covs)$L.unscaled, type="l", col="red")
+#' lines(d, hazrate.like(c(log(40), 5), d, covs)$L.unscaled, col="blue")
+#' abline(h = 1 - exp(-1), lty = 2)
+#' abline(v = c(20,40), lty = 2)
 #' 
-#' # Plots showing effects of changes in beta
-#' plot(x, hazrate.like(c(50, 20), x)$key, type="l", col="red")
-#' plot(x, hazrate.like(c(50, 2), x)$key, type="l", col="blue")
-#' }
+#' # Changing slope parameter
+#' plot(d, hazrate.like(c(log(50), 20), d, covs)$L.unscaled, type="l", col="red")
+#' lines(d, hazrate.like(c(log(50), 2), d, covs)$L.unscaled, col="blue")
+#' abline(h = 1 - exp(-1), lty = 2)
+#' abline(v = 50, lty = 2)
+#' 
 #'          
 #' @keywords models
 #' @export
@@ -56,6 +57,9 @@ hazrate.like <- function(a,
   key <- -( dist/sigma )^(-K)
   key <- 1 - exp(key)
 
-  return( list(key = key, params = c(sigma, K)))  
+  return( list(L.unscaled = key, 
+               params = data.frame(par1 = sigma,
+                                   par2 = K))
+          )  
 
 }

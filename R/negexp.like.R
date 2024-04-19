@@ -8,30 +8,17 @@
 #' \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is the 
 #' slope parameter to be estimated. 
 #' 
-#' @inheritSection halfnorm.like return
+#' @inherit halfnorm.like return seealso
 #'    
-#' @seealso \code{\link{dfuncEstim}},
-#'          \code{\link{halfnorm.like}},
-#'          \code{\link{uniform.like}},
-#'          \code{\link{hazrate.like}},
-#'          \code{\link{Gamma.like}}
-#'          
-#' @examples \dontrun{
-#' set.seed(238642)
-#' x <- seq(0, 100, length=100)
+#' @examples
+#' d <- seq(0, 100, length=100)
+#' covs <- matrix(1,length(d),1)
+#' negexp.like(log(0.01), d, covs)
 #' 
-#' # Plots showing effects of changes in parameter Beta
-#' plot(x, negexp.like(0.01, x), type="l", col="red")
-#' plot(x, negexp.like(0.05, x), type="l", col="blue")
+#' # Changing slope parameter
+#' plot(d, negexp.like(log(0.1), d, covs)$L.unscaled, type="l", col="red")
+#' lines(d, negexp.like(log(0.05), d, covs)$L.unscaled, col="blue")
 #' 
-#' # Estimate 'negexp' distance function
-#' Beta <- 0.01
-#' x <- rexp(1000, rate=Beta)
-#' dfunc <- dfuncEstim(x~1, likelihood="negexp")
-#' plot(dfunc)
-#' }
-#'          
-#' @keywords models
 #' @export
 
 negexp.like <- function (a, 
@@ -49,7 +36,9 @@ negexp.like <- function (a,
   
   key = -beta * units::set_units(dist, NULL)
   key <- exp(key)
-
-  return( list(key = key, params = beta))  
   
+  return( list(L.unscaled = key, 
+               params = data.frame(par1 = beta))
+  )  
+
 }

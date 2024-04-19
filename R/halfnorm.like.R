@@ -36,39 +36,44 @@
 #' occur between 0 and 2\emph{s}.
 #' 
 #'   
-#' @return A list containing two numeric vectors. One vector, 
-#' named \code{$key}, is the value of the likelihood at every
-#' input distance.  The second vector, named \code{params},
-#' is a vector of likelihood parameters (i.e., \emph{s} in 
-#' equations of Details section) for every input distance. 
+#' @return A list containing two components. One component, 
+#' named \code{L.unscaled}, is a vector of the likelihood 
+#' values at every
+#' observed distance. L is "unscaled" because it does 
+#' not integrate to one. Scaling happens elsewhere.
+#' 
+#' The second component, named \code{params},
+#' is a data frame of the likelihood's (canonical) parameters 
+#' for every input distance. Columns in the data frame
+#' are named \emph{par1}, \emph{par2}, ..., \emph{parN}. Size
+#' of the data frame is number of observations by number 
+#' of canonical parameters.
+#' 
 #' Assuming \code{L} is the list returned by this function, 
-#' the negative log likelihood is \code{-sum(log(L$key), na.rm=T)}. 
+#' the negative log likelihood is \code{-sum(log(L$L.unscaled / I), na.rm=T)}, 
+#' where \code{I} is the integration constant, or 
+#' area under the likelihood between 
+#' \code{w.lo} and \code{w.hi}. 
 #' Note that returned likelihood values for distances less 
 #' than \code{w.lo} or greater than \code{w.hi} are \code{NA}; 
 #' hence, \code{na.rm=TRUE} in the sum. 
-#' Values in the return are always greater than or equal to zero.
+#' Values in \code{L$L.unscaled} are always greater 
+#' than or equal to zero.
 #'  
 #' @seealso \code{\link{dfuncEstim}},
 #'          \code{\link{hazrate.like}},
 #'          \code{\link{uniform.like}},
 #'          \code{\link{negexp.like}},
-#'          \code{\link{Gamma.like}}
+#'          \code{\link{Gamma.like}},
+#'          \code{\link{triangle.like}}
 #'          
 #' @examples  
-#' x <- seq(0, 100, length=100)
-#' halfnorm.like(log(20), x, 1)
+#' d <- seq(0, 100, length=100)
+#' covs <- matrix(1,length(d),1)
+#' halfnorm.like(log(20), d, covs)
 #' 
-#' # Plots showing effects of changes in parameter Sigma
-#' plot(x, halfnorm.like(log(20), x, 1)$key, type="l", col="red")
-#' lines(x, halfnorm.like(log(40), x, 1)$key, col="blue")
-#' 
-#' # Estimate 'halfnorm' distance function
-#' set.seed(238642)
-#' a <- 5
-#' x <- rnorm(1000, mean=0, sd=a)
-#' x <- x[x >= 0]
-#' dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
-#' plot(dfunc)
+#' plot(d, halfnorm.like(log(20), d, covs)$L.unscaled, type="l", col="red")
+#' lines(d, halfnorm.like(log(40), d, covs)$L.unscaled, col="blue")
 #' 
 #' @keywords models
 #' @export
@@ -80,7 +85,7 @@ halfnorm.like <- function(a
   # cat(paste("In", crayon::red("halfnorm.like"), "\n"))
   
   # covars can be 1 X p or n X p where n = length(dist)
-  q <- Rdistance:::nCovars(covars)
+  q <- nCovars(covars)
   beta <- matrix(a[1:q], ncol = 1) # could be expansion coefs after q
   s <- drop(covars %*% beta)
   sigma <- exp(s)  # link function here
@@ -91,6 +96,8 @@ halfnorm.like <- function(a
   # 'key' is unit-less
   key <- exp(key)  # exp of density function here, not link.
 
-  return( list(key = key, params = sigma))  
-
+  return( list(L.unscaled = key, 
+               params = data.frame(par1 = sigma))
+  )  
+  
 }

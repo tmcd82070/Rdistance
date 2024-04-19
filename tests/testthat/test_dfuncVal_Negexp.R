@@ -15,13 +15,13 @@ sparrowDf <- RdistDf(sparrowSiteData
                    , sparrowDetectionData)
 
 # No covariates ----
-testthat::test_that("Hazrate w/ no covariates, same value",{
+testthat::test_that("negexp w/ no covariates, same value",{
   intercept <- c(
-    "(Intercept)" = 3.774728574,
-    "k"           = 2.405957093    )
-  loglik <- -1631.7955344829936166
+    "(Intercept)" = -3.760954
+    )
+  loglik <- -1630.8929773267443
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
-                                 , likelihood = "hazrate"
+                                 , likelihood = "negexp"
                                  , w.lo = w.lo
                                  , w.hi = w.hi
                                  , expansions = 0
@@ -30,21 +30,21 @@ testthat::test_that("Hazrate w/ no covariates, same value",{
                                  , g.x.scl = 1
                                  , outputUnits = "m"
   )
-  testthat::expect_equal(fit$par, intercept)
+  testthat::expect_equal(round(fit$par,6), 
+                         round(intercept,6))
   testthat::expect_equal(fit$loglik, loglik)}
 )
 
 # Continuous covariate ----
 
-testthat::test_that("hazrate w/ cont covar, same value", {
+testthat::test_that("negexp w/ cont covar, same value", {
   intercept <- c(
-    "(Intercept)" =3.06243871,
-    "bare"        =0.01325053,
-    "k"           =2.54787858
+    "(Intercept)" = -2.98953184,
+    "bare"        = -0.01359075
     )
-  loglik <- -1626.9196695394841754
+  loglik <- -1626.39078111867
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
-                                 , likelihood = "hazrate"
+                                 , likelihood = "negexp"
                                  , w.lo = w.lo
                                  , w.hi = w.hi
                                  , expansions = 0
@@ -53,23 +53,23 @@ testthat::test_that("hazrate w/ cont covar, same value", {
                                  , g.x.scl = 1
                                  , outputUnits = "m"
   )
-  testthat::expect_equal(fit$par, intercept)
+  testthat::expect_equal(round(fit$par, 6), 
+                         round(intercept, 6))
   testthat::expect_equal(fit$loglik, loglik)
   })
 
 # Factor Covariate ----
-testthat::test_that("hazrate w/ factor covar, same value",{
+testthat::test_that("negexp w/ factor covar, same value",{
   intercept <- c(
-  "(Intercept)" =  3.91559222,
-  "observerobs2"=  0.17190182,
-  "observerobs3"=  0.06576075,
-  "observerobs4"= -0.38573689,
-  "observerobs5"= -0.09583888,
-  "k"           =  2.76472117
+  "(Intercept)" =   -3.813825,
+  "observerobs2"= -0.149295,
+  "observerobs3"=  0.048917,
+  "observerobs4"=  0.365778,
+  "observerobs5"=  0.019506
     )
-  loglik <- -1627.508575018499414
+  loglik <- -1628.3243420088
     fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-                                   , likelihood = "hazrate"
+                                   , likelihood = "negexp"
                                    , w.lo = w.lo
                                    , w.hi = w.hi
                                    , expansions = 0
@@ -78,7 +78,8 @@ testthat::test_that("hazrate w/ factor covar, same value",{
                                    , g.x.scl = 1
                                    , outputUnits = "m"
     )
-    testthat::expect_equal(fit$par, intercept)
+    testthat::expect_equal(round(fit$par,6), 
+                           round(intercept,6))
     testthat::expect_equal(fit$loglik, loglik)
 })
 

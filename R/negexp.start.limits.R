@@ -14,7 +14,7 @@ negexp.start.limits <- function (ml){
   X <- model.matrix(ml)
   dist <- Rdistance::distances(ml)  
   
-  ncovars <- ncol(X)
+  ncovars <- nCovars(X)
 
   zero <- getOption("Rdistance_zero")
   posInf <- getOption("Rdistance_posInf")
@@ -22,9 +22,8 @@ negexp.start.limits <- function (ml){
   
   expan <- ml$expansions
 
-  # d <- dist[ml$w.lo <= dist & dist <= ml$w.hi]
   # there should not be any distances outside (w.lo,w.hi)
-  d <- d - ml$w.lo
+  d <- dist - ml$w.lo
   medDist <- stats::median(d)
   medDist <- units::set_units(medDist, NULL)
   

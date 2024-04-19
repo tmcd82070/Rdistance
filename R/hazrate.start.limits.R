@@ -28,14 +28,13 @@ hazrate.start.limits <- function (ml){
   if(is.null(medDist) || is.na(medDist) || is.infinite(medDist)){
     medDist <- ml$w.lo + w / 2
   }
-  if( inherits(dist, "units") ){
-    # Only time dist will not have units is when user overrides requirement
-    # otherwise this always runs
-    dMin <- units::drop_units(dMin)
-    dMax <- units::drop_units(dMax)
-    w <- units::drop_units(w)
-    medDist <- units::drop_units(medDist)
-  }
+  
+  # Only time dist will not have units is when user overrides requirement
+  # Nonetheless, need to remove units b/c likelihood is unitless
+  dMin <- units::set_units(dMin, NULL)
+  dMax <- units::set_units(dMax, NULL)
+  w <- units::set_units(w, NULL)
+  medDist <- units::set_units(medDist, NULL)
   
   start <- c(log(0.8 * medDist)   # Sigma 
              , rep(zero, ncovars-1)    # any covars
@@ -43,7 +42,7 @@ hazrate.start.limits <- function (ml){
              , rep(zero, expan))        # any expansions
   low   <- c(negInf
              , rep(negInf, ncovars-1)
-             , 0.01
+             , 0.5
              , rep(negInf, expan))
   high  <- c(posInf
              , rep( posInf, ncovars-1)
