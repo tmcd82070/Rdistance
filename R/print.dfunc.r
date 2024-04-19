@@ -1,10 +1,10 @@
 #' @title print.dfunc - Print method for distance function object
 #' 
-#' @description Print method for distance functions produced 
-#' by \code{dfuncEstim},
-#' which are of class \code{dfunc}.
+#' @description Print method for distance function objects produced 
+#' by \code{dfuncEstim}.
 #' 
-#' @param x An estimated distance function resulting from a call to \code{dfuncEstim}.
+#' @param x An estimated distance function, usually the result 
+#' of calling to \code{dfuncEstim}.
 #' 
 #' @param \dots Included for compatibility with other print methods.  Ignored here.
 #' 
@@ -18,18 +18,18 @@
 #' data(sparrowDetectionData)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1,
-#'                     detectionData=sparrowDetectionData)
+#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~1)
 #' 
 #' dfunc
 #' 
-#' @keywords models
 #' @export
 #' @importFrom stats pnorm
 
 print.dfunc <- function( x, ... ){
 
     isSmooth <- is.smoothed(x)
+    fuzz <- getOption("Rdistance_fuzz")
 
     callLine <- deparse(x$call)
     callLine <- paste(callLine, collapse = " ")
@@ -39,23 +39,21 @@ print.dfunc <- function( x, ... ){
     
     coefs <- coef(x)
     if ( length(coefs) & !isSmooth ) {
+      vcDiag <- diag(x$varcovar)
+      seCoef <- vcDiag
+      seCoef[seCoef < fuzz] <- NA
+      seCoef <- sqrt(vcDiag)
+      waldZ <- coefs / seCoef
       if( x$convergence == 0 ) {
-        vcDiag <- diag(x$varcovar)
         if( any(is.na(vcDiag)) | any(vcDiag < 0.0)) {
-          mess <- colorize("FAILURE", bg = "bgYellow")
+          mess <- colorize("VARIANCE FAILURE", col = "black", bg = "bgYellow")
           mess <- paste(mess, "(singular variance-covariance matrix)")
-          seCoef <- rep(NA, length(coefs))
-          waldZ <- rep(NA, length(coefs))
         } else {
           mess <- colorize("Success")
-          seCoef <- sqrt(vcDiag)
-          waldZ <- coefs / seCoef
         }
       } else {
         mess <- colorize("FAILURE", col="white", bg = "bgRed")
-        mess <- paste( mess, "(Exit code=", x$convergence, ", ", x$fit$message, ")")
-        seCoef <- rep(NA, length(coefs))
-        waldZ <- rep(NA, length(coefs))
+        mess <- paste0( mess, " (Exit code= ", x$convergence, ", ", x$message, ")")
       }
       pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
       coefMat <- cbind(format(coefs)
@@ -68,7 +66,7 @@ print.dfunc <- function( x, ... ){
       if( !grepl("Success", mess) ){
         cat("\n")
         cat(paste("Convergence: ", mess,  "\n", sep=""))
-      }
+      } 
     } else if( isSmooth ){
       cat(paste(x$fit$call[["kernel"]], "kernel smooth\n"))
       cat(paste(" Bandwidth method:", x$fit$call[["bw"]], "with adjustment factor", 
@@ -78,5 +76,7 @@ print.dfunc <- function( x, ... ){
       cat("No coefficients\n")
     }
 
+    x$coefficients <- coefMat
+    x$convMessage <- mess
     invisible(x)
 }

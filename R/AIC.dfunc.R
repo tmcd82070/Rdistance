@@ -1,14 +1,12 @@
-#' @title AICc and related fit statistics for detection function objects
+#' @title AIC.dfunc - AIC-related fit statistics for detection functions
 #' 
 #' @description Computes AICc, AIC, or BIC for estimated distance functions.
 #' 
-#' @param object An estimated detection function object.  An estimated detection 
-#'   function object has class 'dfunc', and is usually produced by a call to 
-#'   \code{dfuncEstim}.
-#' @param \dots Required for compatibility with the general \code{AIC} method.  Any 
-#'   extra arguments to this function are ignored.
+#' @inheritParams print.dfunc
+#' 
 #' @param criterion String specifying the criterion to compute. Either 
 #'   "AICc", "AIC", or "BIC".
+#'   
 #' @details Regular Akaike's information criterion 
 #'   (\url{https://en.wikipedia.org/wiki/Akaike_information_criterion}) (\eqn{AIC}) is 
 #'   \deqn{AIC = LL + 2p,}{AIC = (LL) + 2p,}
@@ -29,8 +27,7 @@
 #'   The Bayesian Information Criterion (BIC) is
 #'   \deqn{BIC = LL + log(n)p,}{BIC = (LL) + log(n)p}. 
 #'   
-#' @return A scalar. By default, the value of AICc for the 
-#' estimated distance function \code{obj}.
+#' @return A scalar, the requested fit statistic for \code{x}.
 #' 
 #' @references Burnham, K. P., and D. R. Anderson, 2002. 
 #' \emph{Model selection and multi-model inference: 
@@ -44,34 +41,34 @@
 #' @seealso \code{\link{coef}}, \code{\link{dfuncEstim}}
 #' 
 #' @examples 
-#'   data(sparrowDetectionData)
-#'   dfunc <- dfuncEstim(dist~1,
-#'                       detectionData=sparrowDetectionData, 
+#' sparrowDF <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' dfunc <- sparrowDf |> dfuncEstim(dist~1,
 #'                       w.hi=units::set_units(150, "m"))
 #'   
-#'   # Compute fit statistics
-#'   AIC(dfunc)  # AICc
-#'   AIC(dfunc, criterion="AIC")  # AIC
-#'   AIC(dfunc, criterion="BIC")  # BIC
+#' # Fit statistics
+#' AIC(dfunc)  # AICc
+#' AIC(dfunc, criterion="AIC")  # AIC
+#' AIC(dfunc, criterion="BIC")  # BIC
+#' 
 #' @keywords model
 #' @export
 
-AIC.dfunc=function (object, ..., criterion="AICc") 
+AIC.dfunc=function (x, ..., criterion="AICc") 
 {
   if( criterion == "AIC"){
     k <- 2
     n <- Inf
   } else if( criterion == "BIC"){
-    k <- log(nrow(object$detections))
+    k <- log(nrow(x$mf))
     n <- Inf
   } else {
     k <- 2
-    n <- nrow(object$detections)
+    n <- nrow(x$mf)
     criterion <- "AICc"
   }
     
-  p <- length(coef(object))
-  ans <- k*p + 2*object$loglik + (k * p * (p + 1))/(n - p - 1)
+  p <- length(coef(x))
+  ans <- -2*x$loglik + (k*p) + (k * p * (p + 1))/(n - p - 1)
   attr(ans, "criterion") <- criterion
   ans
 }
