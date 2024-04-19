@@ -300,14 +300,14 @@ dE.lt.single <- function(   data
                             , outputUnits = NULL
  ){
 
-  if ( likelihood == "uniform" ){
-    .Deprecated(new = "logistic.like"
-                , package = "Rdistance"
-                , msg = paste("'unform.like' is depricated. Use 'logistic'.\n"
-                              , "Switching to 'logistic' likelihood.")
-                , old = "uniform.like")
-    likelihood <- "logistic"
-  }
+  # if ( likelihood == "uniform" ){
+  #   .Deprecated(new = "logistic.like"
+  #               , package = "Rdistance"
+  #               , msg = paste("'unform.like' is depricated. Use 'logistic'.\n"
+  #                             , "Switching to 'logistic' likelihood.")
+  #               , old = "uniform.like")
+  #   likelihood <- "logistic"
+  # }
 
   # Parse the formula and make a model list ----
   # all parameters go into parseModel because they need to become
