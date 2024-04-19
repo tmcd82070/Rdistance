@@ -88,7 +88,9 @@ mlEstimates <- function( ml
   # final few things ----
   fit$limits <- strt.lims[c("low", "high")]
   names(fit$par) <- strt.lims$names
+  # Flip over objective: object$logLike is true logLike, -LL was minimized
   names(fit)[names(fit) == "objective"] <- "loglik"
+  fit$loglik <- -fit$loglik  
  
   fit 
 
