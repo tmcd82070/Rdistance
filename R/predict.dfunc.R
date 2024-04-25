@@ -1,14 +1,20 @@
-#' @title Predict method for dfunc objects
+#' @title predict.dfunc - Predict distance functions
 #' 
-#' @description Predict likelihood parameters for distance function objects
+#' @description Predict either likelihood parameters for 
+#' actual distance functions from estimated distance function 
+#' objects.
 #' 
-#' @param object An estimated dfunc object.  See \code{dfuncEstim}. 
+#' @param object An estimated detection function, normally 
+#' produced by calling \code{\link{dfuncEstim}}. 
 #' 
 #' @param newdata A data frame containing new values of 
-#' the covariates at which predictions are to be computed. If \code{newdata}
-#' is NULL, predictions are made at values of the observed
-#' covariates and results in one prediction (either parameters or 
-#' distance function, see parameter \code{type}) for every observed distance. 
+#' the covariates at which to evaluate the distance functions. 
+#' If \code{newdata}
+#' is NULL, distance functions are evaluated at values of 
+#' the observed covariates and results in one prediction 
+#' (either parameters or 
+#' distance function, see parameter \code{type}) for 
+#' every observed distance. 
 #' If \code{newdata} is not NULL and the model does not contains covariates, 
 #' this routine returns one prediction (either parameters or 
 #' distance function) for each row in \code{newdata}, but 
@@ -16,45 +22,52 @@
 #' 
 #' @param type The type of predictions desired. 
 #' \itemize{
-#'   \item \bold{If \code{type} = "parameters"}: Return 
-#'     predicted parameters of the likelihood function, one value for each observation
-#'     (row) in \code{newdata}.  If \code{newdata} is NULL, return one predicted parameter
-#'     value for every detection in \code{object$detections}.
-#'   \item \bold{If \code{type} is not "parameters"}: Return  
-#'     scaled distance functions. Distance functions are evaluated at the distances   
-#'     specified in \code{distances}. The number of distance functions returned 
-#'     depends on \code{newdata} and whether \code{object} contains covariates:
+#'   \item \bold{If \code{type} = "parameters"}: Returned values are
+#'     predicted (canonical) parameters of the likelihood function. 
+#'     If \code{newdata} is NULL, return contains one parameter
+#'     value for every detection in \code{object} with a distance.
+#'     If \code{newdata} is not NULL, returned vector has one parameter
+#'     for every row in \code{newdata}.
+#'   \item \bold{If \code{type} is not "parameters"}: Returned  
+#'     value is a matrix of scaled distance functions, 
+#'     one distance function per row. Distance functions 
+#'     are evaluated at distances   
+#'     specified in argument \code{distances}, not at the observed 
+#'     distances in \code{object}. The number of distance functions
+#'     returned depends on \code{newdata}: 
 #'     \itemize{
-#'       \item If \code{object} does NOT contain covariates, the distance 
-#'       function does not vary (by covariate) and only one distance function
-#'       will be returned, even if \code{newdata} is specified.
-#'       \item If \code{object} contains covariates, one distance function 
+#'        \item If \code{newdata} is NULL, one distance function 
+#'        will be returned for every detected target in \code{object}
+#'        that has valid covariate values. 
+
+#'       \item If \code{newdata} is not NULL, one distance function 
 #'       will be returned for each observation (row) in \code{newdata}. 
-#'       If \code{newdata} is NULL, one distance function will be returned 
-#'       for every detection in \code{object$detections}. 
 #'     }
 #'  }
+#'  
 #'  If \code{object} is a smoothed distance function, it does not have parameters
 #'  and this routine will always return a scaled distance function. That is, 
 #'  \code{type} = "parameters" when \code{object} is smoothed 
 #'  does not make sense and the smoothed distance function estimate will be returned. 
 #' 
-#' @param distances A vector of distances when distance functions 
+#' @param distances A vector of distances at which to evaluate 
+#' distance functions, when distance functions 
 #' are requested.  \code{distances} must have measurement units. 
 #' Any distances outside the observation 
 #' strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
-#' \code{distances} is NULL, this routine uses a sequence of 200 evenly 
+#' \code{distances} is NULL, this routine uses a sequence of 201 evenly 
 #' spaced distances between 
-#' \code{object$w.lo} and \code{object$w.hi}, inclusive 
+#' \code{object$w.lo} and \code{object$w.hi}, inclusive. 
 #'
 #' @param \dots Included for compatibility with generic \code{predict} methods.
 #' 
 #' @return A matrix containing one of two types of predictions: 
 #' \itemize{
 #'   \item \bold{If \code{type} is "parameters"}, the returned matrix 
-#'   contains predicted likelihood parameters. The extent of the first dimension (rows) in 
+#'   contains predicted likelihood parameters. The extent of the 
+#'   first dimension (rows) in 
 #'   the returned matrix is equal to either the number of detection distances 
-#'   in \code{object$detections} 
+#'   in \code{object} 
 #'   or number of rows in \code{newdata}. 
 #'   The returned matrix's second dimension (columns) is 
 #'   the number of parameters in the likelihood 
@@ -65,15 +78,14 @@
 #'   for each likelihoods to interpret the returned parameter values.
 #'   
 #'   \item \bold{If \code{type} is not "parameters"}, the returned matrix 
-#'   contains scaled distance functions.  The extent of the first 
-#'   dimension (rows) is either the number of distances specified in \code{distance}
-#'   or 200 if \code{distances} is not specified.
-#'   The extent of the second dimension (columns) is: 
+#'   contains scaled distance functions.  The extent of the second 
+#'   dimension (column) is either the number of distances specified in \code{distance}
+#'   or 201 if \code{distances} is not specified.
+#'   The extent of the first dimension (rows) is: 
 #'     \itemize{
-#'       \item 1: if \code{object} does NOT contain covariates.
-#'       \item the number of detections: if \code{object} contains covariates and \code{newdata} is NULL.
-#'       \item the number of rows in \code{newdata}: if \code{object} contains covariates 
-#'       and \code{newdata} is specified.
+#'       \item the number of detections with distances: if \code{newdata} is NULL.
+#'       \item the number of rows in \code{newdata}: if 
+#'        \code{newdata} is specified.
 #'     }
 #'   All distance functions in columns of the return are scaled 
 #'   to \code{object$g.x.scale} at \code{object$x.scl}.
@@ -84,10 +96,10 @@
 #'   \code{attr(return, "x0")} is the vector of distances at which each 
 #'   distance function in \code{<return>} is scaled. i.e., the vector of 
 #'   \code{x.scl}.
-#'   \code{attr(return, "scaler")} is a vector scaling factors  
+#'   \code{attr(return, "scaler")} is a vector of scaling factors  
 #'   corresponding to each 
 #'   distance function in \code{return}. i.e., the vector of 
-#'   \code{1/f(x.scl)} where \code{f()} is the unscaled distance function. 
+#'   \code{1/f(x.scl)} where \code{f()} is the un-scaled distance function. 
 #'   If \code{object} contains line transects, \code{attr(return, "scaler")}
 #'   is a vector of ESW corresponding to each distance function.
 #' }
@@ -96,6 +108,7 @@
 #' \code{\link{uniform.like}}, \code{\link{hazrate.like}}, \code{\link{Gamma.like}}
 #' 
 #' @examples
+#' !here
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
 #' # No covariates

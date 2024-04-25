@@ -121,6 +121,9 @@
 #' A list of routines can be obtained by loading \code{Rdistance} and issuing
 #' \code{help(package="Rdistance")}.
 #' 
+#' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
+#'   1993. \emph{Distance Sampling: Estimating Abundance of Biological
+#'   Populations}. Chapman and Hall, London.
 #' 
 #' @aliases Rdistance-package distance Rdistance point-transect line-transect
 #' 
