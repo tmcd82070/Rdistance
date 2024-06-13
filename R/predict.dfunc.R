@@ -77,11 +77,12 @@
 #'   one parameter, \code{hazrate} has two). See the help 
 #'   for each likelihoods to interpret the returned parameter values.
 #'   
-#'   \item \bold{If \code{type} is not "parameters"}, the returned matrix 
-#'   contains scaled distance functions.  The extent of the second 
-#'   dimension (column) is either the number of distances specified in \code{distance}
-#'   or 201 if \code{distances} is not specified.
-#'   The extent of the first dimension (rows) is: 
+#'   \item \bold{If \code{type} is not "parameters"}, rows of the 
+#'   returned matrix contain scaled distance functions.  The extent of the second 
+#'   dimension (number of columns) is either the number of distances 
+#'   specified in \code{distance}
+#'   or 200 if \code{distances} is not specified.
+#'   The extent of the first dimension (number of rows) is: 
 #'     \itemize{
 #'       \item the number of detections with distances: if \code{newdata} is NULL.
 #'       \item the number of rows in \code{newdata}: if 
@@ -91,24 +92,23 @@
 #'   to \code{object$g.x.scale} at \code{object$x.scl}.
 #'   
 #'   When \code{type} is not "parameters", the returned matrix has 
-#'   additional attributes containing the distances 
-#'   at which the functions are scaled and ESW's.  
+#'   additional attributes. 
 #'   \code{attr(return, "x0")} is the vector of distances at which each 
-#'   distance function in \code{<return>} is scaled. i.e., the vector of 
+#'   distance function in \code{return} was scaled. i.e., the vector of 
 #'   \code{x.scl}.
 #'   \code{attr(return, "scaler")} is a vector of scaling factors  
 #'   corresponding to each 
 #'   distance function in \code{return}. i.e., the vector of 
 #'   \code{1/f(x.scl)} where \code{f()} is the un-scaled distance function. 
 #'   If \code{object} contains line transects, \code{attr(return, "scaler")}
-#'   is a vector of ESW corresponding to each distance function.
+#'   is the vector of ESW corresponding to each distance function.
 #' }
 #' 
 #' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
 #' \code{\link{uniform.like}}, \code{\link{hazrate.like}}, \code{\link{Gamma.like}}
 #' 
 #' @examples
-#' !here
+#' 
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
 #' # No covariates
@@ -148,31 +148,30 @@ predict.dfunc <- function(object
                         , type = c("parameters")
                         , distances = NULL
                         , ...) {
-  
-  is.smoothed <- class(object$fit) == "density"
-  
+
   if (!inherits(object, "dfunc")){ 
     stop("Object is not a 'dfunc' object")
   }
   
-  hasCovars <- !is.null(object$covars)
+  isSmooth <- Rdistance::is.smoothed(object)
   
-  if (missing(newdata) || is.null(newdata)) {
-    n <- nrow(object$detections)
-  } else {
-    n <- nrow(newdata)
-  }
-  
-  # PARAMETER prediction ----
+
+  # if (missing(newdata) || is.null(newdata)) {
+  #   n <- nrow(object$mf)
+  # } else {
+  #   n <- nrow(newdata)
+  # }
+
+  # Establish the X matrix ----
+  # We ALWAYS have covariates
   # We always need parameters, except for smoothed dfuncs
-  if( hasCovars & !is.smoothed){
-    # X is the covariate matrix for predictions 
+  if( !isSmooth ){
     if (missing(newdata) || is.null(newdata)) {
       # Case: Use original covars
-      X <- object$covars
+      X <- model.matrix(object)
     } else {
       # Pull formula to make covars from NEWDATA
-      Terms <- terms( object$model.frame )
+      Terms <- terms( object$mf )
       Terms <- delete.response( Terms ) # model.frame (below) fails if there's a response, go figure.
       if( !is.null(attr(Terms, "offset")) ){
         # gotta add a fake groupsize to newdata so model.frame (below) works
@@ -181,15 +180,15 @@ predict.dfunc <- function(object
         newdata <- cbind(newdata, data.frame( 1 ))
         names(newdata)[length(names(newdata))] <- gsName
       }
-      xLevs <- lapply( object$model.frame, levels )
+      xLevs <- lapply( object$mf, levels ) # get unspecified levels of factors
       m <- model.frame( Terms, newdata, xlev = xLevs )
-      X <- model.matrix( Terms, m, contrasts.arg = attr(object$covars,"contrasts") )
+      X <- model.matrix( Terms, m, contrasts.arg = attr(object$mf,"contrasts") )
     }
     
     BETA <- coef(object)
     beta <- BETA[1:ncol(X)]   # could be extra parameters tacked on. e.g., knee for logistc or expansion terms
-    params <- X %*% beta
-    params <- exp(params)  # All link functions are exp...thus far
+    paramsLink <- X %*% beta
+    params <- exp(paramsLink)  # All link functions are exp...thus far
     
     if(ncol(X)<length(BETA)){
       extraParams <- matrix(BETA[(ncol(X)+1):length(BETA)]
@@ -198,19 +197,18 @@ predict.dfunc <- function(object
                           , byrow = TRUE)
       params <- cbind(params, extraParams)
     }
-  } else if( !is.smoothed ){
-    params <- coef(object) 
-    params <- matrix(params, nrow=n, ncol=length(params), byrow=TRUE)
-  }
+  } 
     
-  if( type == "parameters" & !is.smoothed ){
+  if( type == "parameters" & !isSmooth ){
     return(params)
   }
 
   # DISTANCE function prediction ----
-
+  
   if( is.null(distances) ){
-    distances <- seq( object$w.lo, object$w.hi, length = 200)
+    distances <- seq( object$w.lo
+                    , object$w.hi
+                    , length = getOption("Rdistance_intEvalPts"))
   } else {
     # check distances have units
     if( !inherits(distances, "units") ){
@@ -220,45 +218,43 @@ predict.dfunc <- function(object
     distances <- units::set_units(distances, object$outputUnits, mode = "standard")
   }
   
-  if( is.smoothed ){
+  
+  if( isSmooth ){
     # unscaled distance function is already stored
     # no covariates.  
+    # NEED TO REVISIT THIS
     y <- stats::approx( object$fit$x, object$fit$y, xout = distances )$y
     y <- matrix( y, nrow = 1) 
   } else {
     # After next apply, y is length(distances) x nrow(parms).  
-    # Each column is a unscaled distance function (f(x))
+    # Each row is a un-scaled distance function (f(x))
+    # We already eval-ed covars, so new X is constant (1), "XIntOnly"
     
-    like <- match.fun( paste( object$like.form, ".like", sep=""))
-    zero <- units::as_units(0, object$outputUnits)
-    
-    if( !hasCovars ){
-      # cut the params down because everything is constant without covars
-      params <- params[1, , drop = FALSE]
-      X <- matrix(1, nrow = 1, ncol = 1) 
-    }
-    
-    y <- apply(X = params
-               , MARGIN = 1
+    like <- match.fun( paste( object$likelihood, ".like", sep=""))
+    XIntOnly <- matrix(1, nrow = length(distances), ncol = 1)
+    y <- lapply(X = paramsLink
                , FUN = like
                , dist = distances - object$w.lo
-               , series = object$series
-               , covars = NULL
-               , expansions = object$expansions
-               , w.lo = zero
-               , w.hi = object$w.hi - object$w.lo
-               , pointSurvey = FALSE
-               , scale = TRUE
+               , covars = XIntOnly
     )  
-      
-    y <- t(y)  # now, each row of y is a dfunc
+    y <- lapply(y, function(x){x$L.unscaled})
+    y <- do.call(rbind, y)  
+    
+    if(object$expansions > 0){
+      # need null model with new responses 
+      ml <- model.frame( distances ~ 1 )
+      obj <- object
+      obj$mf <- ml
+      exp.terms <- Rdistance::expansionTerms(BETA, obj)
+      y <- t( t(y) * exp.terms ) 
+    }
   }
     
   # At this point, we have unscaled distance functions in rows of y.
   
   # SCALE distance functions ----
     
-  if( object$like.form == "Gamma" & !is.smoothed ){
+  if( object$likelihood == "Gamma" & !isSmooth ){
     # This is a pesky special case of scaling. We need different x.scl for 
     # every distance function b.c. only x.scl = max is allowed.  For all other 
     # distance functions there is only one x.scl.
@@ -271,14 +267,11 @@ predict.dfunc <- function(object
     # which change the mode.
     # Must call maximize.g which uses optim to find maximum.
     #
-    maximize.g.reparam <- function( covRow, fit, hasCovars ){
-      if( hasCovars ){
-        # On entry from apply(), covRow is a dimensionless vector. It must be a
-        # matrix when we call the likelihood.
-        covRow <- matrix(covRow, nrow = 1)
-      } else {
-        covRow <- NULL
-      }
+    # THE GAMMA CASE NEEDS CHECKED, MAYBE PUT THIS IN ANOTHER ROUTINE.
+    maximize.g.reparam <- function( covRow, fit ){
+      # On entry from apply(), covRow is a dimensionless vector. It must be a
+      # matrix when we call the likelihood.
+      covRow <- matrix(covRow, nrow = 1)
       F.maximize.g(fit, covars = covRow)
     }
     
@@ -286,31 +279,24 @@ predict.dfunc <- function(object
                      , MARGIN = 1
                      , FUN = maximize.g.reparam
                      , fit = object
-                     , hasCovars = hasCovars
                 )
     # x0 is a distance, needs units
     x0 <- units::set_units(x0, object$outputUnits, mode = "standard")
     
-  } else if( !is.smoothed ){
+  } else if( !isSmooth ){
     # Case:  All likelihoods except Gamma
     x0 <- rep(object$x.scl, nrow(params))
   } 
   
   # Now that we know x0 (either a scaler or a vector), compute f(x0)
-  if( !is.smoothed ){
+  if( !isSmooth ){
     likeAtX0 <- function(i, params, x0, like, fit ){
       fx0 <- like(
           a = params[i,]
         , dist = x0[i] - fit$w.lo
-        , series = fit$series
-        , covars = NULL
-        , expansions = fit$expansions
-        , w.lo = zero
-        , w.hi = fit$w.hi - fit$w.lo
-        , pointSurvey = FALSE 
-        , scale = TRUE
+        , covars = matrix(1,nrow = 1,ncol = 1)
       ) 
-      fx0
+      fx0$L.unscaled
     }
     
     f.at.x0 <- sapply(1:nrow(params)
@@ -320,9 +306,17 @@ predict.dfunc <- function(object
                       , like = like
                       , fit = object
                 )
+
+    if(object$expansions > 0){
+      # need null model with new responses 
+      ml <- model.frame( x0 ~ 1 )
+      obj <- object
+      obj$mf <- ml
+      exp.terms <- Rdistance::expansionTerms(BETA, obj)
+      f.at.x0 <- f.at.x0 * exp.terms
+    }
     
-    # y <- t(y) # for some reason, we go back to columns. Each column is a dfunc, only now scaled.
-    
+
   } else {
     # Case: smoothed distance function.  No covars. 
     # This is so simple we handle everything here
@@ -340,12 +334,8 @@ predict.dfunc <- function(object
   
   y <- y * scaler  # length(scalar) == nrow(y), so this works right
   
-  # Until now, rows of y were distance functions. Because other routines expect it, 
-  # and for matplot ease, return distance functions in columns
-  y <- t(y) 
-  
   attr(y, "x0") <- x0
-  if(is.smoothed){
+  if(isSmooth){
     scaler <- scaler / 2
   }
   attr(y, "scaler") <- scaler
