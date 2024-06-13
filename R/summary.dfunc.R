@@ -87,10 +87,9 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
             colorize(format(x$w.hi)), "\n"))
   
   # Effective distance line ----
-  # effDist <- effectiveDistance(x)
-  effDist <- .5 # DEBUGGING
+  effDist <- effectiveDistance(x)
   pDetect <- effDist / (x$w.hi - x$w.lo) 
-  pDetect <- units::drop_units(pDetect)  # units of pDetect should always be [1]
+  pDetect <- units::set_units(pDetect, NULL)  # units of pDetect should always be [1]
   interceptOnly <- intercept.only(x)
 
   if( is.points(x) ){
@@ -128,11 +127,10 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
       , colorize(format(x$effDistance.ci[2])) 
     ) 
   } else if( !interceptOnly ){
-    ciMess <- paste(
-                  # paste(rep(" ", nchar(mess) - 7), collapse = "")
-                  " (range"
+    ciMess <- paste0(
+                  " (range "
                 , colorize(format(min(effDist)))
-                , "to"
+                , " to "
                 , colorize(format(max(effDist)))
                 , ")"
                 )
@@ -145,11 +143,11 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
   if(interceptOnly){
     if( pDetect[1] > 1 ){
       cat(paste("Probability of detection:"
-                , colorize(format(pDetect), col = "red")
+                , colorize(format(pDetect[1]), col = "red")
                 , colorize("> 1", col = "red")))
     } else {
       cat(paste("Probability of detection:" 
-                , colorize(format(pDetect))
+                , colorize(format(pDetect[1]))
                 ))
     }
   } else {
@@ -162,8 +160,14 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
                          , col = "red")))
       
     } else {
-      cat(paste("Average probability of detection:", 
-                colorize(format(mean(pDetect)))))
+      cat(paste0("Average probability of detection: " 
+                , colorize(format(mean(pDetect)))
+                , " (range "
+                , colorize(format(min(pDetect)))
+                , " to "
+                , colorize(format(max(pDetect)))
+                , ")"
+                ))
     }
   }
   cat("\n")

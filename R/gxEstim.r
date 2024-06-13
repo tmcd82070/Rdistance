@@ -132,13 +132,9 @@ gxEstim <- function( fit ){
   
   # overide x.scl for Gamma likelihood
   if( !is.character(x.scl) ){
-    if( inherits(x.scl, "units") ){ 
-      # this if needed cause drop units does not work on plain vector
-      isZero <- units::drop_units(x.scl) == 0 
-    } else {
-      isZero <- x.scl == 0
-    }
-    if( isZero & likelihood == "Gamma" ){
+    x.scl.xUnits <- units::set_units(x.scl, NULL)
+    isZero <- x.scl.xUnits == 0
+    if( isZero & fit$likelihood == "Gamma" ){
       x.scl <- "max"
       # warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
     }

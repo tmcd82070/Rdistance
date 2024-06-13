@@ -294,7 +294,7 @@ dE.lt.single <- function(   data
                             , w.hi = NULL
                             , expansions = 0
                             , series = "cosine"
-                            , x.scl = units::set_units(0,"m")
+                            , x.scl = w.lo
                             , g.x.scl = 1
                             , warn = TRUE
                             , outputUnits = NULL

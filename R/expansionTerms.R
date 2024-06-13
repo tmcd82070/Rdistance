@@ -67,7 +67,7 @@ expansionTerms <- function(a, ml){
   if( nexp > 0 ){
     dist <- stats::model.response(ml$mf)
     w <- ml$w.hi - ml$w.lo  # 'w' has units here, we want this so conversions below happen
-    dscl <- units::drop_units(dist/w)   # unit conversion here; drop units is safe
+    dscl <- units::set_units(dist/w, NULL)   # unit conversion here; drop units is safe
     
     if (ml$series=="cosine"){
       exp.term <- cosine.expansion( dscl, nexp )
