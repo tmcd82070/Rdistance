@@ -20,6 +20,7 @@
     , Rdistance_fuzz      = .Machine$double.eps
     , Rdistance_zero      = .Machine$double.eps
     , Rdistance_warn      = FALSE
+    , Rdistance_intEvalPts= 101  # MUST BE ODD (for Simpson's rule)
   )
   toset <- !(names(op.Rdist) %in% names(op))
   if (any(toset)) options(op.Rdist[toset])
@@ -45,6 +46,7 @@
     , "Rdistance_fuzz"      = NULL
     , "Rdistance_zero"      = NULL
     , "Rdistance_warn"      = NULL
+    , "Rdidtance_intEvalPts"= NULL
   )
   
   options(op.Rdist)
@@ -60,7 +62,9 @@
   # Startup message
   v <- utils::packageVersion("Rdistance")  # this requires utils package, which is base
   
-  packageStartupMessage(paste0(crayon::red("Rdistance"), " (v", v ,")"))
+  packageStartupMessage(paste0(crayon::bold(
+                                crayon::blue("Rdistance")
+                               ), " (v", v ,")"))
   
   invisible()
 }

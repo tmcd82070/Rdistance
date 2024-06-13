@@ -1,20 +1,28 @@
-#' @title Compute the integration constant for distance density functions
+#' @title integrationConstant - Area under detection functions
 #'
-#' @description Using numerical integration, this function computes
+#' @description Compute
 #' the area under a distance function between two limits (\code{w.lo}
-#' and \code{w.hi}).
+#' and \code{w.hi}) using numerical integration
 #'
 #' @inheritParams nLL
 #' 
 #' @inheritParams startLimits
 #' 
 #'
-#' @details The trapezoid rule is used to numerically integrate
-#' \code{ml$likelihood} from \code{ml$w.lo} to \code{ml$w.hi}. 
-#' Two-hundred (200) equal-sized trapezoids are used in the 
-#' integration.  The number
-#' of trapezoids is fixed and cannot be changed without
-#' re-writing this routine.
+#' @details This routine uses Simpson's composite 1/3 rule 
+#' to numerically integrate
+#' \code{ml$likelihood} from \code{ml$w.lo} to \code{ml$w.hi}
+#' (https://en.wikipedia.org/wiki/Simpson's_rule). 
+#' The distance function is evaluated at 201 equal-spaced locations between 
+#' the limits, {f(x0), f(x1), ..., f(200), f(201)}.  Simpson's composite
+#' approximation to the area under the curve is
+#' \deqn{\frac{1}{3}h(f(x_0) + 4f(x_1) + 2f(x_2) + 
+#'      4f(x_3) + 2f(x_4) + ... + 2f(x_{199}) + 
+#'      4f(x_{200}) + f(x_{201}))}{(1/3)h(f(x0) + 4f(x1) + 2f(x2) + 
+#'      4f(x3) + 2f(x4) + ... + 2f(x199) + 4f(x200) + f(x201))}
+#' where \eqn{h} is the interval size (w.hi - w.lo) / 201.
+#' 
+#' @inheritSection ESW Numeric Integration
 #'
 #' @return A vector of scalars the same length as the 
 #' number of distance observations where each value
@@ -22,7 +30,7 @@
 #' \code{w.lo} and \code{w.hi}.
 #' This scalar can be used (as a divisor) to scale 
 #' likelihood values such that
-#' it integrates to 1.0. i.e., if x = density(\ldots), then
+#' the functions integrate to 1.0. i.e., if x = density(\ldots), then
 #' x / \code{integration.constant(density, \ldots)} will integrate to 1.0.
 #'
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{halfnorm.like}}
@@ -101,10 +109,10 @@ integrationConstant <- function(a, ml){
   
   # Numerical integration coefficients ----
   # Here, use composite Simpson's 1/3 rule
-  nEvalPts <- 201 # MUST BE ODD!!!
+  nEvalPts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) 
   nInts <- nEvalPts - 1 # this will be even if nEvalPts is odd
   seqx = seq(w.lo, w.hi, length=nEvalPts) 
-  deltax <- units::drop_units(seqx[2] - seqx[1])  # or (w.hi - w.lo) / (nInts)
+  deltax <- units::set_units(seqx[2] - seqx[1], NULL)  # or (w.hi - w.lo) / (nInts)
 
   # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))  
   intCoefs <- rep( c(2,4), (nInts/2) )
@@ -141,7 +149,7 @@ integrationConstant <- function(a, ml){
     }
     
     if(is.points(ml)){
-      seqy <- units::drop_units(Seqx) * seqy 
+      seqy <- units::set_units(Seqx, NULL) * seqy 
     }
  
     # Apply numeric integration coefficients

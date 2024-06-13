@@ -1,37 +1,39 @@
 #' @title ESW - Effective Strip Width (ESW) 
 #'   
 #' @description Returns effective strip width (ESW) for 
-#'   line transect detection
-#'   functions. 
+#'   line an estimated line-transect detection functions. 
 #'   See \code{EDR} is for point transects.  
 #'   
 #' @inheritParams effectiveDistance
 #' 
-#' @details Effective strip width (ESW) is the
-#'   integral of the distance function after scaling for g(0). 
-#'   That is, ESW is the area under 
+#' @details ESW is the area under 
 #'   the scaled distance function between its
 #'   left-truncation limit (\code{obj$w.lo}) and its right-truncation 
 #'   limit (\code{obj$w.hi}). \if{latex}{I.e., 
 #'     \deqn{ESW = \int_{w.lo}^{w.hi} g(x)dx,} 
-#'   where \eqn{g(x)} is the height of the distance
-#'   function at distance \eqn{x}, and \eqn{w.lo} and \eqn{w.hi} are the lower
+#'   where \eqn{g(x)} is the distance
+#'   function scaled so that \eqn{g(x.scl) = g.x.scl}
+#'   and \eqn{w.lo} and \eqn{w.hi} are the lower
 #'   and upper truncation limits used during the survey.  }
 #'   
 #'   If detection does not decline with distance, 
 #'   the detection function is flat (horizontal), and 
 #'   area under the detection  
 #'   function is  \eqn{g(0)(w.hi - w.lo)}.  
-#'   If \eqn{g(0) = 1}, effective sampling distance is 
+#'   If, in this case, \eqn{g(0) = 1}, effective sampling distance is 
 #'   the half-width of the surveys, \eqn{(w.hi - w.lo)}
 #'   
 #' @section Numeric Integration: 
-#' Rdistance uses Simpson's compsite 1/3 rule to numerically 
-#' integrate under each distance function. 
-#' Two hundred and one intervals are used in the integration.
-#' In rare cases, this is not enought.  Users should 
-#' modify this function's code and bump \code{seq.length} to 
-#'   a value greater than 200.
+#' Rdistance uses Simpson's composite 1/3 rule to numerically 
+#' integrate under distance functions. The number of points evaluated 
+#' during numerical integration is controlled by 
+#' \code{options(Rdistance_intEvalPts)} (default 101).
+#' Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
+#' requires an even number of intervals (i.e., odd number of points). 
+#' 'Rdistance_intEvalPts' must be >= 5; but, a warning is thrown if 
+#' 'Rdistance_intEvalPts' < 29. Empirical tests by the author 
+#' suggest 'Rdistance_intEvalPts' values >= 101 produce 
+#' identical results in all but pathological cases. 
 #'   
 #' @inherit effectiveDistance return   
 #'   
@@ -47,7 +49,7 @@
 #' @keywords modeling
 #' @export
 
-ESW <- function( object, newdata ){
+ESW <- function( object, newdata = NULL ){
   
   # Issue error if the input detection function was fit to point-transect data
 
@@ -55,9 +57,9 @@ ESW <- function( object, newdata ){
     stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   } 
 
-  nEvalPts <- 201 # MUST BE ODD!!!
+  nEvalPts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) # MUST BE ODD!!!
   nInts <- nEvalPts - 1 # this will be even if nEvalPts is odd
-  seqx = seq(w.lo, w.hi, length=nEvalPts) 
+  seqx = seq(object$w.lo, object$w.hi, length=nEvalPts) 
   dx <- units::set_units(seqx[2] - seqx[1], NULL)  # or (w.hi - w.lo) / (nInts)
 
   y <- stats::predict(object = object
@@ -67,7 +69,10 @@ ESW <- function( object, newdata ){
   )
   
   # Numerical integration ----
-  # Use composite Simpson's 1/3 rule
+  # Apply composite Simpson's 1/3 rule here because calling 
+  # integrationConstant would be too much.  It is specialized for likelihood
+  # evaluation and input is a model.
+  #
   # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))
   # i.e., 1, 4, 2, 4, 2, ..., 2, 4, 1
   intCoefs <- rep( c(2,4), (nInts/2) ) # here we need nInts to be even
