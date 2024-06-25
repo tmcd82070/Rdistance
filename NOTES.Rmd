@@ -2,28 +2,30 @@
 title: Notes
 output: html_document
 ---
-This is where you are:
+Notes and to-do for `s6methods` branch of Rdistance:
 
-## Need to test:  
-1.    [DONE]presence of covariates (point and line)
-2.    [DONE] Testing methods for Point surveys (start with x_test_points_noCovars.R maybe)
-3.    Test methods for all the options in controls$ esp $requireunits
-4.    Test methods for by.site = T in abundEstim
-5.    [DELAY] Test methods that compare to past values, not just for presence of output
-6.    [DONE] Test file for different units to check equality. e.g., set w.hi = "100 m" then w.hi = 100 m in ft and check that answers are same.
-
-## Need To Do:
-1.    Remove requirement of no missing values from `abundEstim`. Missing distances 
-in detection data frame are okay. But, we stop when missing distances show up 
-in `abundEstim`. 
-2.    Include one numerical integration routine.  Maybe use R::integrate().
-Call this routine from integration.constant() and ESW().  Upgrade to 
+# Package Notes:
+1.    Remove requirement of no missing values from `abundEstim`. Missing distances in detection data frame are okay. But, we stop when missing distances show up in `abundEstim`. 
+2.    Check whether we want or need the "1+" in `expansion.terms`.  I.e., you use 1+expanTerms.  I think maybe you want just expanTerms (no 1+).  Check this against `distance::`.
+3.    You use Simpsons 1/3 composite rule in version >4.0.0.  Study precision differences between it and 
 Simpson's alternate composite formula. https://en.wikipedia.org/wiki/Simpson's_rule
-
+$$
 (dx/48) * (17f(x_0) + 59f(x_1) + 43f(x_2) + 49f(x_3) + 48f(x_4) + 48f(x_5) + ...
           + 48f(x_n-4) + 49f(x_n-3) + 43f(x_n-2) + 59f(x_n-1) + 17f(x_n))
+$$
+3.    Consider completely separate function flow for Gamma and smooth likelihoods. 
+4.    _Circles in plots_ : At present, covariates associated with distances are not used to plot circles. This means if distance i is from observer 1, it will get plotted on all drawn distance functions including those from observer 2 or 3.  Consider fixing this and only plot distances from observations associated with covariates being plotted. That is, figure out which observations are associated with the requested covariate classes in `newdata`. If you do this, you could also plot bars associated with the covariate classes. This is complicated because you will need to tidyr::unite covariate values in the `newdata` and the `model.matrix` and figure out which rows from `model.matrix` are associated with which rows in `newdata`.  Factors are easy.  For numeric covariates, you can say a distance is associated with a numeric value of X if it is within 1 standard deviation of X. 
 
-3.    In addition to the above, you know the integral of several likelihoods. 
-Integral of halfnormal is 0.5*sigma*sqrt(pi).  I think you can work out integral 
-of negative exponential. Use numerical integration for the others. 
-4.    Consolidate the help using @inherit methods
+
+# Testing:
+
+You have most of these testing files drafted in `Rdistance/CodeParkingLot/tests/version3.1.1`.
+
+1.    Get big testing loop in `test_dfuncEstim.R` working. 
+2.    Make sure Points are tested
+3.    Test methods for all the options (those set in `onLoad`)
+4.    Test methods for by.site = T in `abundEstim`
+5.    Implement snapshot tests for basic functions. 
+6.    Test units for equality. e.g., set w.hi = "100 m" then w.hi = 100 m in ft and check that answers are same.
+7.    Tests that check against `distance::ds` and other routines.  This should become a vignette or paper. 
+
