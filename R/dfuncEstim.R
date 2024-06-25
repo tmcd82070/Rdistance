@@ -57,27 +57,26 @@
 #'
 #' @keywords model
 #' @export
-#' @importFrom stats nlminb model.response is.empty.model 
-#' @importFrom stats model.matrix contrasts optim
-#' @import units
 
 dfuncEstim <- function (  data, ... ){
 
   call <- match.call()
+  tranType <- attr(data, "transType")
+  obsType <- attr(data, "obsType")
 
   # Dispatch separate estimation functions based on transect and observer types ----
-  if( attr(data, "transType") == "point" ){
+  if( tranType == "point" ){
     # Point transects ----
-    res <- switch( attr(data, "obsType"),
-              "single" = dE.pt.single(data, ...)
+    res <- switch( obsType
+            , "single" = dE.pt.single(data, ...)
             , "1|2"    =
             , "2|1"    =
             , "both"   = dE.pt.multi(data, ...)
             , stop(dfuncEstimErrMessage("observer system", "obsType"))
             )
-  } else if(attr(data, "transType") == "line"){
+  } else if( tranType == "line"){
       # Line transects ----
-      res <- switch( attr(data, "obsType")
+      res <- switch( obsType
             , "single" = dE.lt.single(data, ...)
             , "1|2"    =
             , "2|1"    =
@@ -87,9 +86,33 @@ dfuncEstim <- function (  data, ... ){
   } else {
     stop(dfuncEstimErrMessage("transect type", "transType"))
   }
-  
+
+  # Assign common elements, and class ==== 
   res$call <- call
   
+  # nCovars ----
+  # Can always count number of covariates later, in methods, but store 
+  # here to save some time and code.
+  # nCovars meanings:
+  #   nCovars < 0 : model has 'nCovars' covariates but no intercept, 
+  #                 e.g., dist ~ -1 + observer + height => nCovars = -2
+  #   nCovars == 0 : model has (Intercept) only
+  #   nCovars > 0 : model has 'nCovars' besides intercept,
+  #                 e.g., dist ~ observer + height => nCovars = 2
+
+  nCovars <- length(attr(terms(res$mf), "term.labels"))
+  if( attr(terms(res$mf), "intercept") == 0 ){
+    nCovars <- -nCovars  
+  }
+  res$nCovars <- nCovars
+  
+  # Estimated function type ----
+  if( !( res$likelihood %in% c("Gamma","smu")) ){
+    res$LhoodType <- "parametric" # halfnorm, hazrate, etc., all those
+  } else {
+    res$LhoodType <- res$likelihood  # Gamma and smu
+  }
+
   res 
 }
 
