@@ -35,14 +35,14 @@
 #' @keywords modeling
 #' @export
 
-effectiveDistance <- function(object, newdata = NULL){
+effectiveDistance <- function(x, newdata = NULL){
   
   # call ESW for line transects and EDR for point transects
 
-  if (is.points(object)) {
-    EDR(object, newdata)
+  if (is.points(x)) {
+    EDR(x, newdata)
   } else {
-    ESW(object, newdata)
+    ESW(x, newdata)
   }
 
 }

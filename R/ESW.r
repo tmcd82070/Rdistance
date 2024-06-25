@@ -49,20 +49,20 @@
 #' @keywords modeling
 #' @export
 
-ESW <- function( object, newdata = NULL ){
+ESW <- function( x, newdata = NULL ){
   
   # Issue error if the input detection function was fit to point-transect data
 
-  if(is.points(object)){
+  if(is.points(x)){
     stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   } 
 
   nEvalPts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) # MUST BE ODD!!!
   nInts <- nEvalPts - 1 # this will be even if nEvalPts is odd
-  seqx = seq(object$w.lo, object$w.hi, length=nEvalPts) 
+  seqx = seq(x$w.lo, x$w.hi, length=nEvalPts) 
   dx <- units::set_units(seqx[2] - seqx[1], NULL)  # or (w.hi - w.lo) / (nInts)
 
-  y <- stats::predict(object = object
+  y <- stats::predict(x = x
                      , newdata = newdata
                      , distances = seqx
                      , type = "dfuncs"
