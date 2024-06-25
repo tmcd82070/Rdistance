@@ -19,6 +19,6 @@
 #' @export
 #' 
 model.matrix.dfunc <- function(ml, ...){
-  # object$mf is a regular linear model frame, with terms, so this is easy
+  # ml$mf is a regular linear model frame, with terms, so this is easy
   stats::model.matrix(stats::terms(ml$mf), ml$mf)
 }

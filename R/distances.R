@@ -8,8 +8,8 @@
 #' 
 #' @param ... Ignored
 #' 
-#' @return A vector containing observation distances in the 
-#' the Rdistance model frame.
+#' @return A vector containing observation distances contained
+#' in the Rdistance model frame.
 #' 
 #' @examples
 #' 
@@ -20,6 +20,6 @@
 #' @export
 #' 
 distances <- function(ml, ...){
-  # object$mf is a regular linear model frame, with terms, so this is easy
+  # ml$mf is a regular linear model frame, with terms, so this is easy
   stats::model.response(ml$mf)
 }

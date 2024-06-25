@@ -25,7 +25,6 @@
 #' 
 #' @export
 #' @importFrom stats pnorm
-
 print.dfunc <- function( x, ... ){
 
     isSmooth <- is.smoothed(x)

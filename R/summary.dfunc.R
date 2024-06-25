@@ -13,7 +13,7 @@
 #' Must be one of "AICc" (the default), 
 #' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
 #' 
-#' @details This function first prints the following 
+#' @details This function prints the following 
 #' quantities:
 #' \itemize{  
 #'   \item \samp{Call} : The original function call.
