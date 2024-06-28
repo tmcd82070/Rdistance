@@ -47,7 +47,16 @@
 #' x <- rnorm(1000, mean=0, sd=20)
 #' x <- x[x >= 0]
 #' x <- units::set_units(x, "ft")
-#' dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
+#' Df <- data.frame(transectID = "A"
+#'                , distance = x
+#'                 ) |> 
+#'   dplyr::nest_by( transectID
+#'                , .key = "detections") 
+#' attr(Df, "detectionColumn") <- "detections"
+#' attr(Df, "obsType") <- "single"
+#' attr(Df, "transType") <- "line"
+#' 
+#' dfunc <- Df |> dfuncEstim(distance ~ 1, likelihood="halfnorm")
 #' plot(dfunc)
 #' plot(dfunc, nbins=25)
 #' 
@@ -61,7 +70,7 @@
 #'   , main="Showing plot params")
 #'  
 #' plot(dfunc
-#'    , col="wheat"
+#'    , col="purple"
 #'    , density=30
 #'    , angle=c(-45,0,45)
 #'    , cex.axis=1.5
@@ -84,25 +93,27 @@
 #'    , plotBars=FALSE
 #'    , cex.axis=1.5
 #'    , col.axis="blue")
-#' rug(dfunc$detections$dist)
+#' rug(distances(dfunc))
 #' 
 #' # Plot showing f(0)
-#' hist(dfunc$detections$dist
+#' hist(distances(dfunc)
 #'    , n = 40
 #'    , border = NA
 #'    , prob = TRUE)
 #' x <- seq(dfunc$w.lo, dfunc$w.hi, length=200)
-#' y <- predict(dfunc, type="dfunc", distances = x)
-#' lines(x, c(y)/attr(y, "scaler"))
-#' c(attr(y,"scaler") / y[1], ESW(dfunc))  # 1/f(0) = ESW
+#' g <- predict(dfunc, type="dfunc", distances = x, newdata = data.frame(a=1))
+#' f <- g[1,] / ESW(dfunc)[1]
+#' # Check integration:
+#' sum(diff(x)*(f[-1] + f[-length(f)]) / 2) # Trapazoid rule
+#' lines(x, f) # hence, 1/f(0) = ESW
 #' 
 #' # Covariates: detection by observer
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
-#' dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-#'                      , likelihood = "hazrate"
-#'                      , detectionData = sparrowDetectionData
-#'                      , siteData = sparrowSiteData)
+#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' dfuncObs <- sparrowDf |> 
+#'      dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+#'                , likelihood = "hazrate")
 #' plot(dfuncObs
 #'    , newdata = data.frame(observer = levels(sparrowSiteData$observer))
 #'    , vertLines = FALSE
@@ -112,12 +123,7 @@
 #'    , border=NA
 #'    , main="Detection by observer")
 #' 
-#' @keywords models
 #' @export
-#' @importFrom graphics hist barplot axTicks 
-#' @importFrom graphics axis plot title lines text
-#' @importFrom grDevices rainbow
-
 plot.dfunc <- function( x
                         , ... ){
 

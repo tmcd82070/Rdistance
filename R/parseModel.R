@@ -82,7 +82,6 @@ parseModel <- function(data
   detectionData <- tidyr::unnest(data
                                  , cols = attr(data, "detectionColumn"))
   
-  
   # Fix up formula ----
   # I.e., add offset() if not present; change "groupsize" to "offset" if present.
   # Use "offset" because model.offset works with it. 

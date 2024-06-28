@@ -1,17 +1,20 @@
 #' @aliases lines.dfunc
 #'   
-#' @title lines.dfunc - Lines method for distance (detection) functions
+#' @title lines.dfunc - Line plotting method for distance functions
 #'   
-#' @description Lines method for objects of class '\code{dfunc}'. Distance 
-#' function line methods add distance functions to existing plots. 
+#' @description Line plot method for objects of class '\code{dfunc}' 
+#' that adds distance functions to an existing plot. 
 #'   
 #' @inheritParams plot.dfunc
 #' 
-#' @param \dots Parameters to \code{lines} used to control attributes like 
+#' @param \dots Parameters passed to \code{lines.default} that control attributes like 
 #' color, line width, line type, etc. 
 #'   
 #' @return A data frame containing the x and y coordinates of the 
-#' plotted line(s) is returned invisibly.
+#' plotted line(s) is returned invisibly.  X coordinates in the 
+#' return are names \code{x}. Y coordinates in the return are named 
+#' \code{y1, y2, ..., yn}, i.e., one column per returned 
+#' distance function.  
 #'   
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}},
 #'   \code{\link{print.abund}}
@@ -21,38 +24,54 @@
 #' x <- rnorm(1000, mean=0, sd=20)
 #' x <- x[x >= 0]
 #' x <- units::set_units(x, "mi")
-#' dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
+#' Df <- data.frame(transectID = "A"
+#'                , distance = x
+#'                 ) |> 
+#'   dplyr::nest_by( transectID
+#'                , .key = "detections") 
+#' attr(Df, "detectionColumn") <- "detections"
+#' attr(Df, "obsType") <- "single"
+#' attr(Df, "transType") <- "line"
+#' 
+#' dfunc <- Df |> dfuncEstim(distance ~ 1, likelihood="halfnorm")
 #' plot(dfunc, nbins = 40, col="lightgrey", border=NA, vertLines=FALSE)
-#' lines(dfunc, col="grey", lwd=15)
+#' lines(dfunc, col="grey90", lwd=15)
 #' lines(dfunc, col="black", lwd=5, lty = 2)
 #' 
 #' # Multiple lines 
-#' data(sparrowDetectionData)
-#' data(sparrowSiteData)
-#' dfuncObs <- dfuncEstim(formula = dist ~ observer 
-#'                      , likelihood = "halfnorm"
-#'                      , detectionData = sparrowDetectionData
-#'                      , siteData = sparrowSiteData)
-#' plot(dfuncObs
+#' x2 <- rnorm(1000, mean=0, sd=10)
+#' x2 <- x2[x2 >= 0]
+#' x2 <- units::set_units(x2, "mi")
+#' Df <- data.frame(transectID = c(rep("A", length(x)) 
+#'                               , rep("B", length(x2)))
+#'                , distance = c(x,x2)
+#'                 ) |> 
+#'   dplyr::nest_by( transectID
+#'                , .key = "detections") 
+#' attr(Df, "detectionColumn") <- "detections"
+#' attr(Df, "obsType") <- "single"
+#' attr(Df, "transType") <- "line"
+#' 
+#' dfunc <- Df |> dfuncEstim(formula = distance ~ transectID)
+#' plot(dfunc
 #'    , vertLines = FALSE
 #'    , lty = 0
-#'    , col = c("grey","lightgrey")
-#'    , border=NA
-#'    , main="Detection by observer"
+#'    , plotBars = FALSE
+#'    , main="Detection by transect"
 #'    , legend = FALSE)
-#' y <- lines(dfuncObs
-#'    , newdata = data.frame(observer = levels(sparrowSiteData$observer))
-#'    , col = palette.colors(length(levels(sparrowSiteData$observer)))
+#' y <- lines(dfunc
+#'    , newdata = data.frame(transectID = unique(Df$transectID))
+#'    , col = palette.colors(length(unique(Df$transectID)))
 #'    , lty = 1
 #'    , lwd = 4)
-#' head(y) # values returned, same as predict method
+#' head(y) # values returned, transpose of predict method
 #' 
 #' @export
 lines.dfunc <- function(x
                         , newdata = NULL
                         ,  ...) {
   
-  x.seq <- seq(x$w.lo, x$w.hi, length = 200)
+  x.seq <- seq(x$w.lo, x$w.hi, length = getOption("Rdistance_intEvalPts") )
   g.at.x0 <- x$g.x.scl
   x0 <- x$x.scl
   
@@ -61,7 +80,9 @@ lines.dfunc <- function(x
              , distances = x.seq
              , type = "dfunc")
   
-  if( x$pointSurvey ){
+  # dfuncs are in columns.
+  
+  if( x$transType == "point" ){
     y <- y * units::drop_units(x.seq - x$w.lo)
   }
   

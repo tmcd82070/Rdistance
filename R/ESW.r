@@ -79,7 +79,7 @@ ESW <- function( x, newdata = NULL ){
   intCoefs[1] <- 1
   intCoefs <- matrix(c(intCoefs, 1), ncol = 1)
   
-  esw <- (y %*% intCoefs) * dx / 3
+  esw <- (t(y) %*% intCoefs) * dx / 3
   
   # Trapazoid rule: Computation used in Rdistance version < 0.2.2
   # y1 <- y[,-1,drop=FALSE]

@@ -111,32 +111,51 @@
 #' 
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
-#' # No covariates
-#' dfuncObs <- dfuncEstim(formula = dist ~ 1
-#'                      , detectionData = sparrowDetectionData
-#'                      , w.hi = units::as_units(100, "m"))
-#' predict(dfuncObs)
-#' # values in newdata ignored because no covariates
-#' predict(dfuncObs, newdata = data.frame(x = 1:5)) 
+#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#'
+#' # For dimension checks:
+#' nd <- getOption("Rdistance_intEvalPts")
+#' n  <- nrow(dfuncObs$mf)
 #' 
-#' predict(dfuncObs, type = "dfunc") # one function
+#' # No covariates
+#' dfuncObs <- sparrowDf |> dfuncEstim(formula = dist ~ 1
+#'                      , w.hi = units::as_units(100, "m"))
+#'                      
+#' p <- predict(dfuncObs) # parameters
+#' all(dim(p) == c(nd, 1)) 
+#' 
+#' # values in newdata ignored because no covariates
+#' p <- predict(dfuncObs, newdata = data.frame(x = 1:5))
+#' all(dim(p) == c(5, 1)) 
+#' 
+#' # Distance functions in columns, one per observation
+#' p <- predict(dfuncObs, type = "dfunc") 
+#' all(dim(p) == c(nd, n))
 #' 
 #' d <- units::set_units(c(0, 20, 40), "ft")
-#' predict(dfuncObs, distances = d, type = "dfunc") 
+#' p <- predict(dfuncObs, distances = d, type = "dfunc") 
+#' all(dim(p) == c(3, n))
+#' 
+#' p <- predict(dfuncObs
+#'    , newdata = data.frame(x = 1:5)
+#'    , distances = d
+#'    , type = "dfunc") 
+#' all(dim(p) == c(3, 5))
 #' 
 #' # Covariates
-#' dfuncObs <- dfuncEstim(formula = dist ~ observer
-#'                      , detectionData = sparrowDetectionData
-#'                      , siteData = sparrowSiteData
+#' dfuncObs <- sparrowDf |> dfuncEstim(formula = dist ~ observer
 #'                      , w.hi = units::as_units(100, "m"))
-#' predict(dfuncObs)  # 356 X 1
+#' predict(dfuncObs)  # n X 1
 #' 
 #' Observers <- data.frame(observer = levels(sparrowSiteData$observer))
 #' predict(dfuncObs, newdata = Observers) # 5 X 1
 #' 
-#' predict(dfuncObs, type = "dfunc") # 200 X 356
-#' predict(dfuncObs, newdata = Observers, type = "dfunc") # 200 X 5
-#' predict(dfuncObs, newdata = Observers, distances = d, type = "dfunc") # 3 X 5
+#' predict(dfuncObs, type = "dfunc") # nd X n
+#' predict(dfuncObs, newdata = Observers, type = "dfunc") # nd X 5
+#' predict(dfuncObs
+#'   , newdata = Observers
+#'   , distances = d
+#'   , type = "dfunc") # 3 X 5
 #' 
 #' @export
 #' 
@@ -192,7 +211,7 @@ predict.dfunc <- function(x
     
     if(ncol(X)<length(BETA)){
       extraParams <- matrix(BETA[(ncol(X)+1):length(BETA)]
-                          , nrow = n
+                          , nrow = nrow(params)
                           , ncol = length(BETA)-ncol(X)
                           , byrow = TRUE)
       params <- cbind(params, extraParams)
@@ -238,7 +257,7 @@ predict.dfunc <- function(x
                , covars = XIntOnly
     )  
     y <- lapply(y, function(x){x$L.unscaled})
-    y <- do.call(rbind, y)  
+    y <- do.call(cbind, y)  
     
     if(x$expansions > 0){
       # need null model with new responses 
@@ -246,11 +265,11 @@ predict.dfunc <- function(x
       obj <- x
       obj$mf <- ml
       exp.terms <- Rdistance::expansionTerms(BETA, obj)
-      y <- t( t(y) * exp.terms ) 
+      y <- y * exp.terms  
     }
   }
     
-  # At this point, we have unscaled distance functions in rows of y.
+  # At this point, we have unscaled distance functions in columns of y.
   
   # SCALE distance functions ----
     

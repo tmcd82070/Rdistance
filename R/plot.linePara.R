@@ -110,6 +110,8 @@
 #' 
 #' @inherit plot.dfunc return
 #' 
+#' @seealso [plot.dfunc()]
+#' 
 #' @examples
 #' 
 #' # Example data
@@ -205,7 +207,14 @@ plot.linePara <- function( x,
     # only needed in this case.
     getmode <- function(v) {
       uniqv <- table(v)
-      factor(names(uniqv)[which.max(uniqv)], levels = levels(v))
+      modeVal <- names(uniqv)[which.max(uniqv)] 
+      if( is.factor(v) ){
+        modeVal <- factor(modeVal, levels = levels(v))
+      } 
+      if( is.character(v) ){
+        modeVal <- factor(modeVal, levels = names(uniqv))
+      }
+      modeVal
     }
     
     # Note: x$mf is the model frame. It has only non-missing values between w.lo and w.hi
@@ -221,7 +230,7 @@ plot.linePara <- function( x,
     # origDist <- Rdistance::distances(x) 
     # inStrip <- (x$w.lo <= d) & (d <= x$w.hi)
     factor.names <- attr(terms(x$mf), "dataClasses")
-    factor.names <- names(factor.names)[ factor.names == "factor" ]
+    factor.names <- names(factor.names)[ factor.names %in% c("factor","character") ]
     for( nm in covNames ) {
       if( nm %in% factor.names ) {
         newdata[,nm] <- getmode(x$mf[, nm]) # Use mode to predict
@@ -376,7 +385,7 @@ plot.linePara <- function( x,
   
   # Draw distance functions ----
   for(i in 1:nFunctions){
-    lines( x.seq, y[i,]
+    lines( x.seq, y[,i]
            , col=col.dfunc[i]
            , lwd=lwd.dfunc[i]
            , lty = lty.dfunc[i]
