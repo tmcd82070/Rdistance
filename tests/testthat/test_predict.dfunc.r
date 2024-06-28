@@ -19,15 +19,20 @@ dfuncObs <- dfuncEstim(
                     w.hi = w.hi
                     )
 newdata=data.frame(observer=levels(sparrowSiteData$observer))
-
+nd <- getOption("Rdistance_intEvalPts")
+d  <- units::set_units(c(0,2,4), "m")
 
 x <- 5
 test_that("dfuncEstim(non-dfunc object) generates error", {
-  expect_error(Rdistance:::predict.dfunc(x, newdata, "parameters"), "Object is not a 'dfunc' object")
+  expect_error(Rdistance:::predict.dfunc(x, newdata, "parameters"), "is not a 'dfunc' object")
 })
 
-d <- tidyr::unnest(sparrowDf, "detections")
-nObs <- nrow(d) - sum(d$dist > w.hi) - sum(is.na(d$dist))
+df <- tidyr::unnest(sparrowDf, "detections")
+nObs <- nrow(df) - sum(df$dist > w.hi) - sum(is.na(df$dist))
+
+test_that("Correct sample size", {
+  expect_equal(nObs, nrow(dfuncObs$mf))
+})
 
 test_that("predict defaults", {
   p <- predict(dfuncObs)
@@ -36,7 +41,12 @@ test_that("predict defaults", {
 
 test_that("predict default distances", {
   p <- predict(dfuncObs, type = "distances")
-  expect_equal(dim(p), c(nObs, 200))
+  expect_equal(dim(p), c(nd, nObs))
+})
+
+test_that("predict g(0) = 1", {
+  p <- predict(dfuncObs, type = "distances")
+  expect_true( all(p[1,] == 1) )
 })
 
 test_that("predict set distances no units", {
@@ -47,26 +57,26 @@ test_that("predict set distances no units", {
 test_that("predict set distances", {
   p <- predict(dfuncObs
                        , type = "distances"
-                       , distances = units::set_units(c(0,2,4), "m")
+                       , distances = d
                          )
-  expect_equal(dim(p), c(nObs, 3))
+  expect_equal(dim(p), c(length(d), nObs))
 })
 
 test_that("predict set distances newdata", {
   p <- predict(dfuncObs
                , type = "distances"
-               , distances = units::set_units(c(0,2,4), "m")
+               , distances = d
                , newdata = newdata
   )
-  expect_equal(dim(p), c(nrow(newdata), 3))
+  expect_equal(dim(p), c(length(d), nrow(newdata)))
 })
 
 test_that("predict distinct", {
   p <- predict(dfuncObs
                , type = "distances"
-               , distances = units::set_units(c(0,2,4), "m")
+               , distances = d
                , newdata = newdata
   )
-  expect_equal(sum(duplicated(p[,3])), 0)
+  expect_equal(sum(duplicated(p[,1])), 0)
 })
 

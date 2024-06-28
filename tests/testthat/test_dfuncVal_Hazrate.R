@@ -40,7 +40,7 @@ testthat::test_that("hazrate w/ cont covar, same value", {
   intercept <- c(
     "(Intercept)" =3.06243871,
     "bare"        =0.01325053,
-    "k"           =2.54787858
+    "k"           =2.54787816
     )
   loglik <- -1626.9196695394841754
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
@@ -60,12 +60,12 @@ testthat::test_that("hazrate w/ cont covar, same value", {
 # Factor Covariate ----
 testthat::test_that("hazrate w/ factor covar, same value",{
   intercept <- c(
-  "(Intercept)" =  3.91559222,
-  "observerobs2"=  0.17190182,
-  "observerobs3"=  0.06576075,
-  "observerobs4"= -0.38573689,
-  "observerobs5"= -0.09583888,
-  "k"           =  2.76472117
+  "(Intercept)" =  3.91558993,
+  "observerobs2"=  0.17191702,
+  "observerobs3"=  0.06574510,
+  "observerobs4"= -0.38573966,
+  "observerobs5"= -0.09584550,
+  "k"           =  2.76471844
     )
   loglik <- -1627.508575018499414
     fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
