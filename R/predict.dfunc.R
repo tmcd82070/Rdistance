@@ -215,6 +215,7 @@ predict.dfunc <- function(x
                           , ncol = length(BETA)-ncol(X)
                           , byrow = TRUE)
       params <- cbind(params, extraParams)
+      paramsLink <- cbind(paramsLink, extraParams)
     }
   } 
     
@@ -251,7 +252,8 @@ predict.dfunc <- function(x
     
     like <- match.fun( paste( x$likelihood, ".like", sep=""))
     XIntOnly <- matrix(1, nrow = length(distances), ncol = 1)
-    y <- lapply(X = paramsLink
+    y <- apply(X = paramsLink
+               , MARGIN = 1
                , FUN = like
                , dist = distances - x$w.lo
                , covars = XIntOnly

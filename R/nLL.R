@@ -150,8 +150,11 @@ nLL <- function(a
     } else if( ml$likelihood == "uniform" ){
       scaler <- theta$par1
     } else if( ml$likelihood == "huber"){
-      # Huber comes pre-scaled
-      scaler <- 1
+      beta <- theta$par1
+      range <- theta$par1 + theta$par2
+      integral0a <- (6*beta*range - 4*beta^2) / (6*range - 3*beta)
+      integralar <-  (range^2 / (2*range - beta)) - beta
+      scaler <- integral0a + integralar
     }
     
     key = key / scaler

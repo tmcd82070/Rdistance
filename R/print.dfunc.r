@@ -40,11 +40,11 @@ print.dfunc <- function( x, ... ){
     if ( length(coefs) & !isSmooth ) {
       vcDiag <- diag(x$varcovar)
       seCoef <- vcDiag
-      seCoef[seCoef < fuzz] <- NA
-      seCoef <- sqrt(vcDiag)
+      seCoef[seCoef < fuzz] <- NA # fuzz is positive, so this NAs all negatives
+      seCoef <- sqrt(seCoef)      # Avoids warning re sqrt of negative
       waldZ <- coefs / seCoef
       if( x$convergence == 0 ) {
-        if( any(is.na(vcDiag)) | any(vcDiag < 0.0)) {
+        if( any(is.na(seCoef)) ) {
           mess <- colorize("VARIANCE FAILURE", col = "black", bg = "bgYellow")
           mess <- paste(mess, "(singular variance-covariance matrix)")
         } else {

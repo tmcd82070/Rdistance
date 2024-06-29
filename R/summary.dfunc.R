@@ -68,7 +68,7 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
   
   # Convergence and likelihood line ----
   if( !(isSmooth <- is.smoothed(x)) ){
-    if( x$convergence == 0){
+    if( grepl("Success", x$convMessage) ){
       # b/c FAILURE mess printed in 'print.dfunc', but not Success
       cat("\n")
       cat(paste("Convergence: ", x$convMessage,  "\n", sep=""))

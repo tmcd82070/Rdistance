@@ -50,6 +50,8 @@ uniform.like <- function(a
   # What's in a? : 
   #     a = [(Intercept), b1, ..., bp, <expansion coef>]
   
+  stop("Uniform likelihood is not ready for prime time. Use Logistic or hazrate.")
+  
   q <- nCovars(covars)
   
   beta <- matrix(a[1:q], ncol = 1) 
@@ -58,8 +60,7 @@ uniform.like <- function(a
   
   d <- units::set_units(dist, NULL)
   
-  key <- rep(1,length(d))
-  key[ beta <= d ] <- 0
+  key <- (1 / beta) * (d <= beta) + (1 / (max(d) - beta)) * (beta < d )
 
   return( list(L.unscaled = key, 
                params = data.frame(par1 = beta))

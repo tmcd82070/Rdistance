@@ -51,9 +51,9 @@ hazrate.like <- function(a,
   beta <- matrix(a[1:q], ncol = 1) # could be expansion coefs after q
   s <- drop(covars %*% beta)
   sigma <- exp(s)  # link function here
-  
-  dist <- units::set_units(dist, NULL)
   K <- a[q + 1]
+
+  dist <- units::set_units(dist, NULL)
   key <- -( dist/sigma )^(-K)
   key <- 1 - exp(key)
 

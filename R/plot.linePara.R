@@ -257,7 +257,7 @@ plot.linePara <- function( x,
   # }
   ybarhgts <-  cnts$density * mean(scaler)
   
-  # after here, y is a matrix, rows are distance functions.
+  # after here, y is a matrix, columns are distance functions.
   
   # I DON'T THINK THIS IS NEEDED, BUT MAYBE  
   # if( include.zero & x$like.form == "hazrate" ){
@@ -354,7 +354,7 @@ plot.linePara <- function( x,
   #polygon( x.poly, y.poly, density=15, border="red", lwd=2 )
   
   #   Work out the colors, line types, and line widths ----
-  nFunctions <- nrow(y)
+  nFunctions <- ncol(y)
   if( is.null(col.dfunc) ){
     # rainbow(1) is red, the default for one line
     col.dfunc <- rainbow(nFunctions)
@@ -375,7 +375,7 @@ plot.linePara <- function( x,
   # Plot circles if called for ----
   if(circles){
     d <- Rdistance::distances(x)
-    g <- apply(y, 1, FUN = function(y, x.seq, d){
+    g <- apply(y, 2, FUN = function(y, x.seq, d){
       approx(x.seq, y, xout = d)$y
     }
     , x.seq = x.seq
@@ -397,14 +397,14 @@ plot.linePara <- function( x,
   if(vertLines){
     lines( rep(x.seq[1], 2), c(0,y[1,1]), col=col.dfunc[1], lwd=lwd.dfunc[1],
            lty=lty.dfunc[1])
-    lines( rep(x.seq[length(x.seq)], 2), c(0,y[1,length(x.seq)]), 
+    lines( rep(x.seq[length(x.seq)], 2), c(0,y[length(x.seq), 1]), 
            col=col.dfunc[1], lwd=lwd.dfunc[1],
            lty=lty.dfunc[1] )
   }
   
 
   # Check convergence ----
-  if( (x$like.form != "smu") && x$convergence != 0 ){
+  if( (x$likelihood != "smu") && x$convergence != 0 ){
     if( x$convergence == -1 ){
       mess <- "Solution failure"
     } else {
