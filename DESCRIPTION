@@ -54,8 +54,8 @@ Suggests:
     testthat (>= 3.0.0),
     devtools
 VignetteBuilder: knitr
-Depends: R (>= 3.5.0)
-Imports: graphics, stats, utils, units, crayon, withr, tidyr, dplyr
+Depends: R (>= 3.5.0), units
+Imports: graphics, stats, utils, crayon, withr, tidyr, dplyr
 RoxygenNote: 7.3.1
 Encoding: UTF-8
 Config/testthat/edition: 3
