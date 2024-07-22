@@ -1,7 +1,7 @@
 #' @title ESW - Effective Strip Width (ESW) 
 #'   
 #' @description Returns effective strip width (ESW) for 
-#'   line an estimated line-transect detection functions. 
+#'   line-transect detection functions. 
 #'   See \code{EDR} is for point transects.  
 #'   
 #' @inheritParams effectiveDistance
@@ -14,7 +14,7 @@
 #'   where \eqn{g(x)} is the distance
 #'   function scaled so that \eqn{g(x.scl) = g.x.scl}
 #'   and \eqn{w.lo} and \eqn{w.hi} are the lower
-#'   and upper truncation limits used during the survey.  }
+#'   and upper truncation limits.  }
 #'   
 #'   If detection does not decline with distance, 
 #'   the detection function is flat (horizontal), and 
@@ -29,10 +29,13 @@
 #' during numerical integration is controlled by 
 #' \code{options(Rdistance_intEvalPts)} (default 101).
 #' Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
-#' requires an even number of intervals (i.e., odd number of points). 
-#' 'Rdistance_intEvalPts' must be >= 5; but, a warning is thrown if 
+#' requires an even number of intervals (hence, odd number of points). 
+#' Lower values of 'Rdistance_intEvalPts' increase calculation speeds; 
+#' but, decrease accuracy.
+#' 'Rdistance_intEvalPts' must be >= 5.  A warning is thrown if 
 #' 'Rdistance_intEvalPts' < 29. Empirical tests by the author 
-#' suggest 'Rdistance_intEvalPts' values >= 101 produce 
+#' suggest 'Rdistance_intEvalPts' values >= 30 are accurate 
+#' to several decimal points and that all 'Rdistance_intEvalPts' >= 101 produce 
 #' identical results in all but pathological cases. 
 #'   
 #' @inherit effectiveDistance return   
@@ -58,10 +61,10 @@ ESW <- function( x, newdata = NULL ){
   } 
 
   nEvalPts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) # MUST BE ODD!!!
-  nInts <- nEvalPts - 1 # this will be even if nEvalPts is odd
+  nInts <- nEvalPts - 1 # this will be even profided nEvalPts is odd
   seqx = seq(x$w.lo, x$w.hi, length=nEvalPts) 
-  dx <- units::set_units(seqx[2] - seqx[1], NULL)  # or (w.hi - w.lo) / (nInts)
-
+  dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts)
+  
   y <- stats::predict(x = x
                      , newdata = newdata
                      , distances = seqx
@@ -70,7 +73,7 @@ ESW <- function( x, newdata = NULL ){
   
   # Numerical integration ----
   # Apply composite Simpson's 1/3 rule here because calling 
-  # integrationConstant would be too much.  It is specialized for likelihood
+  # integrationConstant would be too much.  integrationConstant is specialized for likelihood
   # evaluation and input is a model.
   #
   # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))
@@ -80,6 +83,7 @@ ESW <- function( x, newdata = NULL ){
   intCoefs <- matrix(c(intCoefs, 1), ncol = 1)
   
   esw <- (t(y) %*% intCoefs) * dx / 3
+  esw <- drop(esw) # convert from matrix to vector
   
   # Trapazoid rule: Computation used in Rdistance version < 0.2.2
   # y1 <- y[,-1,drop=FALSE]
