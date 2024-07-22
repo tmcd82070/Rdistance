@@ -166,10 +166,10 @@
 #' attr(sparrowDf, "obsType") <- "single"
 #' attr(sparrowDf, "transType") <- "line"
 #'
-#' # Condensed view - 1 row per transect
+#' # Condensed view: 1 row per transect
 #' sparrowDf
 #' 
-#' # Inspect detection info using tidyr::unnest()
+#' # Expand detection info using tidyr::unnest()
 #' tidyr::unnest(sparrowDf)
 #' 
 #' # Or use dplyr::reframe (e.g., for transect "B3")

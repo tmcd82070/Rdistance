@@ -19,15 +19,14 @@
 #' @details Serves as a wrapper for 
 #' \code{\link{ESW}} and \code{\link{EDR}}.
 #' 
-#' @return If \code{newdata} is not missing or NULL and 
-#' covariates are present in \code{x}, returned value is 
-#' a vector with length equal to the number of rows in \code{newdata}. 
-#' If \code{newdata} is missing or NULL and covariates are present
-#' in \code{x}, returned value is a vector with length equal to 
-#' the number of detections in \code{x}. In both cases, 
-#' elements in the returned vector are 
-#' the effective sampling distances for the corresponding set of 
-#' covariates.  
+#' @return If \code{newdata} is present, the returned value is 
+#' a vector of effective sampling distances for values of the 
+#' covariates in \code{newdata} with length equal to 
+#' the number of rows in \code{newdata}. 
+#' If \code{newdata} is NULL, the returned value is a vector of effective
+#' sampling distances for covariate values in \code{x} and has 
+#' the number of detections in \code{x}.  The returned vector 
+#' has measurement units, i.e., \code{x$outputUnits}.
 #' 
 #'      
 #' @seealso \code{\link{dfuncEstim}} \code{\link{ESW}} \code{\link{EDR}}
