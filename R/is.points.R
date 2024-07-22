@@ -13,11 +13,12 @@
 #' @export
 #' 
 is.points <- function(x, ...){
-  if(!is.null(x$transType)){
-    return(x$transType == "point")
+  typ <- Rdistance::transectType(x)
+  if(!is.null(typ)){
+    return(typ == "point")
   } else {
     stop(paste("'transType' component of object x missing.  Cannot determine"
-               , "whether data is from point of transect surveys."))
+               , "whether data is from point or line transect surveys."))
   }
 }
   

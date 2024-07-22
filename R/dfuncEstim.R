@@ -61,8 +61,8 @@
 dfuncEstim <- function (  data, ... ){
 
   call <- match.call()
-  tranType <- attr(data, "transType")
-  obsType <- attr(data, "obsType")
+  tranType <- Rdistance::transectType(data)
+  obsType <- Rdistance::observationType(data)
 
   # Dispatch separate estimation functions based on transect and observer types ----
   if( tranType == "point" ){

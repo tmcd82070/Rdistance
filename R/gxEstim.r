@@ -184,7 +184,7 @@ gxEstim <- function( fit ){
   #   --------------------------------------------------------------------------------------
   #   Now compute g(x)
   
-  if( fit$obsType == "double" ){
+  if( Rdistance::observationType(fit) != "single" ){
       #   Compute g(x) from double observer data
       g.x.scl <- doubleObsProb( fit )
   } else {

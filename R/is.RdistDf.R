@@ -116,7 +116,7 @@ is.RdistDf <- function(df, verbose = FALSE){
   }
   
   # Check for presence and validity of transType ----
-  transType <- attr(df, "transType")[1]
+  transType <- Rdistance::transectType(df)
   hasTransType <- !is.null(transType) &&
     (transType %in% c("line", "point"))
   if( !hasTransType ){
@@ -136,7 +136,7 @@ is.RdistDf <- function(df, verbose = FALSE){
   }
 
   # Check for presence and validity of obsType ----
-  obsType <- attr(df, "obsType")[1]
+  obsType <- Rdistance::observationType(df)
   hasObsType <- !is.null(obsType) &&
     (obsType %in% c("single", "1given2", "2given1", "both"))
   if( !hasObsType ){

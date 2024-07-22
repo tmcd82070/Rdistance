@@ -82,8 +82,8 @@ lines.dfunc <- function(x
   
   # dfuncs are in columns.
   
-  if( x$transType == "point" ){
-    y <- y * units::drop_units(x.seq - x$w.lo)
+  if( is.points(x) ){
+    y <- y * units::set_units(x.seq - x$w.lo, NULL)
   }
   
   if( ncol(y) > 1 ){

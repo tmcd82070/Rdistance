@@ -129,7 +129,8 @@ plot.dfunc <- function( x
 
   # dispatch to other functions as follows
   is.smoothed <- Rdistance::is.smoothed(x)
-  key <- paste0(x$transType, "_", is.smoothed)
+  tType <- Rdistance::transectType(x)
+  key <- paste0(tType, "_", is.smoothed)
   switch(key
        , line_TRUE   = plot.lineSmu(x, ...)
        , point_TRUE  = plot.pointSmu(x, ...)

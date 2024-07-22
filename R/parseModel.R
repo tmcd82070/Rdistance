@@ -192,8 +192,8 @@ parseModel <- function(data
              , x.scl = dataWUnits$x.scl
              , g.x.scl = g.x.scl
              , outputUnits = dataWUnits$outputUnits
-             , transType = attr(data, "transType")
-             , obsType = attr(data, "obsType")
+             , transType = Rdistance::transectType(data)
+             , obsType = Rdistance::observationType(data)
              # , control = control
   )
   
