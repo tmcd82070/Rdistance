@@ -15,7 +15,18 @@ $$
 $$
 3.    Consider completely separate function flow for Gamma and smooth likelihoods. 
 4.    _Circles in plots_ : At present, covariates associated with distances are not used to plot circles. This means if distance i is from observer 1, it will get plotted on all drawn distance functions including those from observer 2 or 3.  Consider fixing this and only plot distances from observations associated with covariates being plotted. That is, figure out which observations are associated with the requested covariate classes in `newdata`. If you do this, you could also plot bars associated with the covariate classes. This is complicated because you will need to tidyr::unite covariate values in the `newdata` and the `model.matrix` and figure out which rows from `model.matrix` are associated with which rows in `newdata`.  Factors are easy.  For numeric covariates, you can say a distance is associated with a numeric value of X if it is within 1 standard deviation of X. 
-
+5.    _Testing Versus Distance_: Check parameter values and log likelihoods of every likelihood against what `distance` gives. 
+6.    _Scaling of logistic_: Check scaling of logistic likelihood when covariates are present.  
+7.    _Two param likelihoods_: At some stage, after Rdistance is out, consider including two equations for parameters of likelihoods with two parameters.  E.g., one formula for 'beta' of Huber likelihood and another for 'gamma', e.g., `beta ~ observer` and `gamma ~ observer`. I think this will require a whole new estimation function. 
+8.   _Uniform likelihood_: Fix this.  I am pretty sure you need to use the EM algorithm. See this [Stack Exchange post](https://stats.stackexchange.com/questions/591598/em-algorithm-on-a-mixture-of-two-uniforms). I have the following:
+$$
+z = 0.5I(w_l < x < \theta)
+$$
+and 
+$$
+\theta = [\sum(z) / n](w_h - w_l) + w_l
+$$
+this is close to correct, but not. I think the $z$ need to change each iteration.
 
 # Testing:
 
