@@ -194,7 +194,7 @@ gxEstim <- function( fit ){
           g.x.scl <- fit$g.x.scl[1]
           warning(paste("Vector of g(x) values found in F.gx.estim. Only the first value,", g.x.scl, "has been used."))
       }
-      if( g.x.scl < 0 ){
+      if( fit$g.x.scl < 0 ){
           g.x.scl <- 0
           warning("Impossible g.x.scl < 0 specified in F.gx.estim. g(x) has been reset to 0.")
       } else if( fit$g.x.scl > 1 ){
@@ -202,8 +202,10 @@ gxEstim <- function( fit ){
           warning("Impossible g(x) > 1 specified in F.gx.estim. g(x) reset to 1.")
       } else if( is.character(fit$g.x.scl) ){
           stop(paste0("g.x.scl cannot be character valued. Found '", g.x.scl, "'. Convert this to numeric."))
+      } else {
+          g.x.scl <- fit$g.x.scl
       }
   }
-    
+
   list( x.scl = x.scl, g.x.scl = g.x.scl )
 }
