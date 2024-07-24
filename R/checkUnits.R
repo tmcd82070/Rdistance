@@ -72,16 +72,19 @@ checkUnits <- function(ml){
 
   # Units on x.scl ---- 
   if( !inherits(ml$x.scl, "units") ){
-    if( ml$x.scl[1] != 0 ){
+    if( (ml$x.scl[1] != 0) && (ml$x.scl[1] != "max")){
       stop(paste("Measurement units for x.scl are required.",
                  "Assign units using either:\n", 
                  "units::units(x.scl) <- '<units>' or", 
-                 paste0("units::as_units(", x.scl,", <units>) in function call\n"), 
+                 paste0("units::set_units(", x.scl,", <units>) in function call\n"), 
                  "See units::valid_udunits() for valid symbolic units."))
     }
-    ml$x.scl <- units::set_units(ml$x.scl, ml$outputUnits, mode = "standard")
+    # if we are here, x.scl is either 0 (w/o units) or "max"
+    if(!is.character(ml$x.scl)){
+      ml$x.scl <- units::set_units(ml$x.scl, ml$outputUnits, mode = "standard")
+    }
   } else {
-    # if we are here, x.scl has units, convert to the output units
+    # if we are here, x.scl has units, is not "max", so we convert to the output units
     ml$x.scl <- units::set_units(ml$x.scl, ml$outputUnits, mode = "standard")
   }
 
