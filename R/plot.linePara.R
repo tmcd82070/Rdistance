@@ -61,6 +61,13 @@
 #' drawn and \code{density != 0}, repeated as necessary to exceed the number
 #' of bars. Also used for the bar borders when
 #' \code{border = TRUE}.
+#' 
+#' @param circles Logical scalar requesting the location of detection distances
+#' be plotted. If TRUE, open circles are plotted at predicted distance 
+#' function heights associated with all detection distances. For computational
+#' simplicity, all distances are plotted for EVERY covariate class even though
+#' observed distances belong to only one covariate class. If FALSE, circles 
+#' are not plotted. 
 #'  
 #' @param border The color of bar borders when bars are plotted, 
 #' repeated as necessary to exceed the number of bars. A 
@@ -255,7 +262,10 @@ plot.linePara <- function( x,
   scaler <- Rdistance::effectiveDistance(x = x
                                        , newdata = newdata)
   # }
-  ybarhgts <-  cnts$density * mean(scaler)
+  # Note: scaler is correct even when g.x.scl != 1. Hence, no need to apply 
+  # an other scaler to bars than 'scaler'. i.e., this works when g.x.scl < 1
+  ybarhgts <-  cnts$density * mean(scaler) 
+  ybarhgts <- units::set_units(ybarhgts, NULL) # scaler has units, but bar hgts should not
   
   # after here, y is a matrix, columns are distance functions.
   
