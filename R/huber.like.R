@@ -22,26 +22,27 @@
 #' Huber loss function scaled and constrained to the interval [0,1]. 
 #' The `huber` likelihood is, 
 #' \deqn{
-#' L(x|\beta,\gamma) = 1 - \frac{h/m}
-#' }{
-#' L(x|b,g) = 1 - h(x)/m
+#'    L(x|b,g) = 1 - h(x)/m
 #' }
 #' where
-#' $$
-#'  m = \beta^2 + \beta\gamma - 0.5\beta^2,
-#' $$
-#' and `h(x)` is Huber loss with a plateau,
-#' $$
-#'  h(x) = 0.5x^2 \text{if } x <  \beta,
-#' $$
-#' $$
-#'  h(x) = \beta(x - 0.5\beta^2) \text{if } \beta < x < \beta + \gamma,
-#' $$ and
-#' $$
-#'  h(x) = m \text{if } x > \beta + \gamma. 
-#' $$ 
-#' The `huber` distance function is quadratic between `w.lo` and $\beta$, 
-#' linear between $\beta$ and $\beta + \gamma$, and 0 after $\beta + \gamma$.
+#' \deqn{
+#'  m = b(0.5b + g)
+#' }
+#' and \emph{h(x)} is Huber loss with a plateau, i.e.,
+#' \deqn{
+#'  h(x) = 0.5x^2 ,
+#' }
+#' for \eqn{x < b}
+#' \deqn{
+#'  h(x) = b(x - 0.5b^2),
+#' }
+#' for \eqn{b < x < (b + g)}, and
+#' \deqn{
+#'  h(x) = m,
+#' }
+#' for \eqn{x > (b + g)}. 
+#' The `huber` distance function is quadratic between \code{w.lo} and \emph{b}, 
+#' linear between \emph{b} and \emph{b + g}, and 0 after \emph{b + g}.
 #' 
 #' @examples
 #' 
