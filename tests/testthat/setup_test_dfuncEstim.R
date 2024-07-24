@@ -81,7 +81,7 @@ test_dfuncEstim <- function( detectParams,
                                      UnitsOnDist, 
                                      mode = "standard")
       param.x.scl.output <- units::set_units(param.x.scl
-                                         , detectParams$outputUnits[i]
+                                         , outUnits
                                          , mode = "standard")
     }
     
@@ -90,13 +90,19 @@ test_dfuncEstim <- function( detectParams,
                                   UnitsOnDist, 
                                   mode = "standard")
     param.w.lo.output <- units::set_units(param.w.lo
-                                        , detectParams$outputUnits[i]
+                                        , outUnits
                                         , mode = "standard")
     
     # ---- w.hi param ----
     if( is.na(detectParams$w.hi[i]) ){
       param.w.hi <- NULL
       param.w.hi.output <- max(exDf[,responseVar], na.rm=TRUE)
+      # Mystery: max(exDf[,responseVar], na.rm=TRUE) should but does not 
+      # bring forward units.  exDf[,responseVar] has units, but param.w.hi.output
+      # does not.  Don't fight the feeling.
+      param.w.hi.output <- units::set_units(param.w.hi.output
+                                            , UnitsOnDist
+                                            , mode = "standard")
     } else {
       param.w.hi = units::set_units(detectParams$w.hi[i], 
                                     UnitsOnDist, 
@@ -104,9 +110,9 @@ test_dfuncEstim <- function( detectParams,
       param.w.hi.output <- param.w.hi
     }
     param.w.hi.output <- units::set_units(param.w.hi.output
-                                          , detectParams$outputUnits[i]
+                                          , outUnits
                                           , mode = "standard")
-    
+
     # ---- param.x.scl < param.w.lo Warning ----
     if( !is.character(param.x.scl) ){
       if( param.x.scl < param.w.lo ){
@@ -134,6 +140,7 @@ test_dfuncEstim <- function( detectParams,
     
     # ---- Fit the distance function ----
     # Beware of warnings; Errors should fail.
+    print(testParams)
     dfuncFit <- suppressWarnings(
       dfuncEstim(data = Df
                  , formula = formula
@@ -161,6 +168,11 @@ test_dfuncEstim <- function( detectParams,
       print(dfuncFit$fit)
       print(names(dfuncFit))
     }
+    
+    test_that(paste(testParams,"Basic print", sep=";"), {
+      expect_output(print(dfuncFit), regexp = "Call: dfuncEstim.+\nCoefficients")
+    })
+    
     
     if( dfuncFit$convergence == 0 ) {
       vcDiag <- diag(dfuncFit$varcovar)
@@ -193,7 +205,7 @@ test_dfuncEstim <- function( detectParams,
       expect_output(summary(dfuncFit), regexp = tstString)
     })
 
-    test_that(paste(testParams,"Strip", sep=";"), {
+    test_that(paste(testParams," Strip", sep=";"), {
       tstString <- paste0("Strip: ", format(param.w.lo.output), " to ", format(param.w.hi.output))
       tstString <- gsub("[\\[\\]]", ".", tstString, perl = T)
       expect_output(summary(dfuncFit), regexp = tstString)
@@ -235,7 +247,7 @@ test_dfuncEstim <- function( detectParams,
       efdString <- format(mean(efd))
       efdString <- gsub("[\\[\\]]", ".", efdString, perl = T)
       efdString <- gsub("\\+", "\\\\+", efdString, perl = T) # incase of value like 4.234e+10
-      if(detectParams$pointSurvey[i]){
+      if(is.points(dfuncFit)){
         tstString <- paste("[E|e]ffective detection radius \\(EDR\\):", efdString)
       } else {
         tstString <- paste("[E|e]ffective strip width \\(ESW\\):", efdString)
@@ -243,13 +255,13 @@ test_dfuncEstim <- function( detectParams,
       if(!is.null(dfuncFit$covars)){
         tstString <- paste("Average", tstString)
       }
-      expect_output(print(dfuncFit), regexp = tstString)
+      expect_output(summary(dfuncFit), regexp = tstString)
     })
     
     if( any(efd > nominalW) ){
       # check that red text is printed
       tstString <- "<- One or more"
-      expect_output(print(dfuncFit), regexp = tstString, label = "Red text re Pr()>1 did not print")
+      expect_output(summary(dfuncFit), regexp = tstString, label = "Red text re Pr()>1 did not print")
     }
     
     test_that(paste(testParams,"Scaling prints", sep=";"), {
@@ -260,7 +272,7 @@ test_dfuncEstim <- function( detectParams,
       }
       x0 <- gsub("[\\[\\]]", ".", x0, perl = T)
       tstString <- paste0("Scaling: g\\(", x0, "\\) = ", detectParams$g.x.scl[i])
-      expect_output(print(dfuncFit), regexp = tstString)
+      expect_output(summary(dfuncFit), regexp = tstString)
     })
     
     # Same deal as effectiveDistance: test first, then rerun to compute
@@ -270,12 +282,12 @@ test_dfuncEstim <- function( detectParams,
     aic <- AIC(dfuncFit)
         
     test_that(paste(testParams,"AICc prints", sep=";"), {
-      expect_output(print(dfuncFit), regexp = paste0("\\nAICc: ", format(aic)))
+      expect_output(summary(dfuncFit), regexp = paste0("\\nAICc: ", format(aic)))
     })
 
     test_that(paste(testParams,"BIC prints", sep=";"), {
       bic <- AIC(dfuncFit, criterion = "BIC")
-      expect_output(print(dfuncFit, criterion = "BIC"), regexp = paste0("\\nBIC: ", format(bic)))
+      expect_output(summary(dfuncFit, criterion = "BIC"), regexp = paste0("\\nBIC: ", format(bic)))
     })
     
     # ---- Test abundance methods for these parameters ----
