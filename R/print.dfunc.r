@@ -73,6 +73,8 @@ print.dfunc <- function( x, ... ){
       cat(paste(" Actual bandwidth =", format(x$fit$bw), "\n"))
     } else {
       cat("No coefficients\n")
+      coefMat <- NULL
+      mess <- "Rdistance data"
     }
 
     x$coefficients <- coefMat
