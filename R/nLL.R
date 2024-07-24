@@ -81,7 +81,7 @@ nLL <- function(a
   # speed things a little, but it's more params to pass in.
   f.like <- match.fun(paste( ml$likelihood, ".like", sep=""))
   X <- model.matrix(ml)  # this calls model.matrix.dfunc()
-  dist <- Rdistance::distances(ml)
+  dist <- Rdistance::distances(ml) - ml$w.lo
   
   # Because of na.exclude when building model frame, and 
   # other code in parseModel(), there are no missing distances 
