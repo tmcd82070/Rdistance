@@ -1,7 +1,7 @@
 #' @title predict.dfunc - Predict distance functions
 #' 
-#' @description Predict either likelihood parameters for 
-#' actual distance functions from estimated distance function 
+#' @description Predict either likelihood parameters or 
+#' distance functions from estimated distance function 
 #' objects.
 #' 
 #' @param x An estimated detection function, normally 
@@ -30,16 +30,15 @@
 #'     for every row in \code{newdata}.
 #'   \item \bold{If \code{type} is not "parameters"}: Returned  
 #'     value is a matrix of scaled distance functions, 
-#'     one distance function per row. Distance functions 
+#'     with distance functions in columns. Distance functions 
 #'     are evaluated at distances   
-#'     specified in argument \code{distances}, not at the observed 
+#'     in argument \code{distances}, not at the observed 
 #'     distances in \code{x}. The number of distance functions
-#'     returned depends on \code{newdata}: 
+#'     returned (i.e., number of columns) depends on \code{newdata}: 
 #'     \itemize{
 #'        \item If \code{newdata} is NULL, one distance function 
-#'        will be returned for every detected target in \code{x}
+#'        will be returned for every detection in \code{x}
 #'        that has valid covariate values. 
-
 #'       \item If \code{newdata} is not NULL, one distance function 
 #'       will be returned for each observation (row) in \code{newdata}. 
 #'     }
@@ -77,31 +76,37 @@
 #'   one parameter, \code{hazrate} has two). See the help 
 #'   for each likelihoods to interpret the returned parameter values.
 #'   
-#'   \item \bold{If \code{type} is not "parameters"}, rows of the 
-#'   returned matrix contain scaled distance functions.  The extent of the second 
-#'   dimension (number of columns) is either the number of distances 
-#'   specified in \code{distance}
-#'   or 200 if \code{distances} is not specified.
-#'   The extent of the first dimension (number of rows) is: 
+#'   \item \bold{If \code{type} is not "parameters"}, columns of the 
+#'   returned matrix contain scaled distance functions (i.e., \emph{g(x)}).  
+#'   The extent of the first 
+#'   dimension (number of rows) is either the number of distances 
+#'   specified in \code{distances}
+#'   or \code{options()$Rdistance_intEvalPts} if \code{distances} is not specified.
+#'   The extent of the second dimension (number of columns) is: 
 #'     \itemize{
 #'       \item the number of detections with distances: if \code{newdata} is NULL.
-#'       \item the number of rows in \code{newdata}: if 
+#'       \item the number of rows in \code{newdata} if 
 #'        \code{newdata} is specified.
 #'     }
 #'   All distance functions in columns of the return are scaled 
-#'   to \code{x$g.x.scale} at \code{x$x.scl}.
-#'   
-#'   When \code{type} is not "parameters", the returned matrix has 
-#'   additional attributes. 
-#'   \code{attr(return, "x0")} is the vector of distances at which each 
-#'   distance function in \code{return} was scaled. i.e., the vector of 
-#'   \code{x.scl}.
-#'   \code{attr(return, "scaler")} is a vector of scaling factors  
-#'   corresponding to each 
-#'   distance function in \code{return}. i.e., the vector of 
-#'   \code{1/f(x.scl)} where \code{f()} is the un-scaled distance function. 
-#'   If \code{x} contains line transects, \code{attr(return, "scaler")}
-#'   is the vector of ESW corresponding to each distance function.
+#'   to \code{x$g.x.scale} at \code{x$x.scl}. The returned matrix has 
+#'   the following additional attributes:
+#'    \itemize{
+#'       \item \code{attr(return, "distances")} is the vector of distances used to 
+#'       predict the function in \code{return}.  Either the input \code{distances} object
+#'       or the computed sequence of distances when \code{distances} is NULL. 
+#'       \item \code{attr(return, "x0")} is the vector of distances at which each 
+#'        distance function in \code{return} was scaled. i.e., the vector of 
+#'        \code{x.scl}.
+#'       \item \code{attr(return, "g.x.scl")} is the height of \emph{g(x)} (the distance 
+#'        function) at \emph{x0}. 
+#'   }
+#   \code{attr(return, "scaler")} is a vector of scaling factors  
+#   corresponding to each 
+#   distance function in \code{return}. i.e., the vector of 
+#   \code{1/f(x.scl)} where \code{f()} is the un-scaled distance function. 
+#   If \code{x} contains line transects, \code{attr(return, "scaler")}
+#   is the vector of ESW corresponding to each distance function.
 #' }
 #' 
 #' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
@@ -351,7 +356,8 @@ predict.dfunc <- function(x
   }
     
 
-  # scaler <- x$g.x.scl * esw # esw = a length n vector, n = nrow(params) 
+  y <- x$g.x.scl * y  # works only if x$g.x.scl is a scalar; otherwise, we'd need to
+                      # evaluate f(x0) for every x0, then multiply.
 
   # Did you know that 'scaler' is ESW?  At least for lines. Makes sense. 1/f(0) = ESW in 
   # the old formulas.
@@ -360,6 +366,7 @@ predict.dfunc <- function(x
   
   # y <- y * scaler  # length(scalar) == nrow(y), so this works right
   
+  attr(y, "distances") <- distances
   attr(y, "x0") <- x0
   attr(y, "g.x.scl") <- x$g.x.scl
   # if(isSmooth){
