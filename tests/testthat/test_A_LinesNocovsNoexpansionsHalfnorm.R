@@ -1,10 +1,3 @@
-
-
-# Load example sparrow data (line transect survey type)
-data("sparrowDetectionData")
-data("sparrowSiteData")
-sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
-
 # This file tests:
 #   Halfnormal,
 #   Line transects,
