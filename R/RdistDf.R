@@ -170,13 +170,23 @@
 #' sparrowDf
 #' 
 #' # Expand detection info using tidyr::unnest()
-#' tidyr::unnest(sparrowDf)
+#' tidyr::unnest(sparrowDf, cols = "detections")
 #' 
 #' # Or use dplyr::reframe (e.g., for transect "B3")
 #' sparrowDf |> 
 #'   dplyr::filter(siteID == "B3") |>
 #'   dplyr::reframe(detections)
-#'    
+#'   
+#' # Zero transects do not unnest   
+#' any( tidyr::unnest(sparrowDf, cols = detections)$siteID == "B2" )
+#' sparrowDf |> 
+#'   dplyr::filter(siteID == "B2") |>
+#'   dplyr::reframe(detections)
+#'
+#' # Detections per transect (can't use dplyr::if_else)
+#' sparrowDf |> 
+#'   dplyr::reframe(nDetections = ifelse(is.null(detections), 0, nrow(detections)))
+#'     
 #' # Point transects
 #' thrasherDf <- RdistDf( thrasherSiteData
 #'                , thrasherDetectionData
