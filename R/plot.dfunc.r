@@ -102,9 +102,9 @@
 #'    , prob = TRUE)
 #' x <- seq(dfunc$w.lo, dfunc$w.hi, length=200)
 #' g <- predict(dfunc, type="dfunc", distances = x, newdata = data.frame(a=1))
-#' f <- g[1,] / ESW(dfunc)[1]
+#' f <- g[,1] / ESW(dfunc)[1]
 #' # Check integration:
-#' sum(diff(x)*(f[-1] + f[-length(f)]) / 2) # Trapazoid rule
+#' sum(diff(x)*(f[-1] + f[-length(f)]) / 2) # Trapazoid rule; should be 1.0
 #' lines(x, f) # hence, 1/f(0) = ESW
 #' 
 #' # Covariates: detection by observer
