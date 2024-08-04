@@ -3,10 +3,6 @@
 #' cause errors.  These other routines do not check that routines arrive
 #' at the same answer. 
 #' 
-library(Rdistance)
-library(testthat)
-data("sparrowDetectionData")
-data("sparrowSiteData")
 
 w.lo <- 0
 w.hi <- units::set_units(150, "m")
@@ -16,8 +12,6 @@ sparrowDf <- RdistDf(sparrowSiteData
 
 # No covariates ----
 testthat::test_that("Halfnorm w/ no covariates, same value",{
-  intercept <- c("(Intercept)" = 3.9094997233683392857)
-  loglik <- -1630.7159607863527526
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
                                  , likelihood = "halfnorm"
                                  , w.lo = w.lo
@@ -28,16 +22,14 @@ testthat::test_that("Halfnorm w/ no covariates, same value",{
                                  , g.x.scl = 1
                                  , outputUnits = "m"
   )
-  testthat::expect_equal(fit$par, intercept)
-  testthat::expect_equal(fit$loglik, loglik)}
-)
+  testthat::expect_snapshot(print.default(fit)
+                          , transform = scrub_environ)
+})
 
 # Continuous covariate ----
 
 testthat::test_that("Halfnorm w/ cont cov, same value", {
-  intercept <- c("(Intercept)" = 3.346183910,
-                 "bare" = 0.009715925)
-  loglik <- -1624.3506723274776959
+
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
                                  , likelihood = "halfnorm"
                                  , w.lo = w.lo
@@ -48,19 +40,12 @@ testthat::test_that("Halfnorm w/ cont cov, same value", {
                                  , g.x.scl = 1
                                  , outputUnits = "m"
   )
-  testthat::expect_equal(fit$par, intercept)
-  testthat::expect_equal(fit$loglik, loglik)
+  testthat::expect_snapshot(print.default(fit)
+                            , transform = scrub_environ)
   })
 
 # Factor Covariate ----
 testthat::test_that("Halfnorm w/ no covariates, same value",{
-  intercept <- c(
-    "(Intercept)" =  3.92800543,
-    "observerobs2"=  0.17073246,
-    "observerobs3"= -0.01647247,
-    "observerobs4"= -0.26739638,
-    "observerobs5"= -0.02839298    )
-  loglik <- -1626.1415857120343844
     fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
                                    , likelihood = "halfnorm"
                                    , w.lo = w.lo
@@ -71,8 +56,8 @@ testthat::test_that("Halfnorm w/ no covariates, same value",{
                                    , g.x.scl = 1
                                    , outputUnits = "m"
     )
-    testthat::expect_equal(fit$par, intercept)
-    testthat::expect_equal(fit$loglik, loglik)
+    testthat::expect_snapshot(print.default(fit)
+                              , transform = scrub_environ)
 })
 
   
