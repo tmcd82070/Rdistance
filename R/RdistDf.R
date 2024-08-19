@@ -177,7 +177,7 @@
 #'   dplyr::filter(siteID == "B3") |>
 #'   dplyr::reframe(detections)
 #'   
-#' # Zero transects do not unnest   
+#' # Zero transects do not appear in unnest   
 #' any( tidyr::unnest(sparrowDf, cols = detections)$siteID == "B2" )
 #' sparrowDf |> 
 #'   dplyr::filter(siteID == "B2") |>
@@ -192,7 +192,7 @@
 #'                , thrasherDetectionData
 #'                , pointSurvey = T
 #'                , by = "siteID"
-#'                , .detectionCol = "birds")
+#'                , .detectionCol = "detections")
 #'                
 #' @export
 #' 

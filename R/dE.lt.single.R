@@ -278,10 +278,10 @@
 #' 
 #' @examples 
 #' # Load example sparrow data (line transect survey type)
-#' data(sparrowDetectionData)
+#' data(sparrowDf)
 #' 
-#' dfunc <- dfuncEstim(formula = dist ~ 1
-#'                   , detectionData = sparrowDetectionData)
+#' dfunc <- dfuncEstim(data = sparrowDf
+#'                   , formula = dist ~ 1)
 #' dfunc
 #' plot(dfunc)                   
 #'
