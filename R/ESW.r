@@ -1,8 +1,8 @@
-#' @title ESW - Effective Strip Width (ESW) 
+#' @title ESW - Effective Strip Width (ESW) for line transects
 #'   
 #' @description Returns effective strip width (ESW) for 
 #'   line-transect detection functions. 
-#'   See \code{EDR} is for point transects.  
+#'   See \code{\link{EDR}} is for point transects.  
 #'   
 #' @inheritParams effectiveDistance
 #' 
@@ -56,7 +56,7 @@ ESW <- function( x, newdata = NULL ){
   
   # Issue error if the input detection function was fit to point-transect data
 
-  if(is.points(x)){
+  if( Rdistance:::is.points(x) ){
     stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   } 
 

@@ -90,7 +90,7 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
   effDist <- effectiveDistance(x)
   pDetect <- effDist / (x$w.hi - x$w.lo) 
   pDetect <- units::set_units(pDetect, NULL)  # units of pDetect should always be [1]
-  interceptOnly <- intercept.only(x)
+  interceptOnly <- Rdistance:::intercept.only(x)
 
   if( is.points(x) ){
     # Points

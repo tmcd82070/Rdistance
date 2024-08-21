@@ -132,10 +132,10 @@ plot.dfunc <- function( x
   tType <- Rdistance::transectType(x)
   key <- paste0(tType, "_", is.smoothed)
   switch(key
+       , point_TRUE  = 
        , line_TRUE   = plot.lineSmu(x, ...)
-       , point_TRUE  = plot.pointSmu(x, ...)
+       , point_FALSE = 
        , line_FALSE  = plot.linePara(x, ...)
-       , point_FALSE = plot.pointPara(x, ...)
        , warning( paste("Unrecognized transect type and smooth indicator. Found", key) )
   )
 

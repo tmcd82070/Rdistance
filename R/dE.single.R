@@ -1,4 +1,4 @@
-#' @title dE.lt.single - Estimate single-observer line-transect distance function
+#' @title dE.single - Estimate single-observer line-transect distance function
 #' 
 #' @description Fits a detection function to off-transect 
 #' distances collected by a single observer. 
@@ -287,7 +287,7 @@
 #'
 #' @keywords model
 #' @export
-dE.lt.single <- function(   data
+dE.single <- function(   data
                             , formula
                             , likelihood = "halfnorm"
                             , w.lo = units::set_units(0,"m")
@@ -315,7 +315,7 @@ dE.lt.single <- function(   data
   # All checking is done in parseModel(), including 
   # check of units (via checkUnits()).
   
-  modelList <- Rdistance::parseModel(data
+  modelList <- Rdistance::parseModel(data = data
                           , formula = formula
                           , likelihood = likelihood
                           , w.lo = w.lo

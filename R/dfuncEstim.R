@@ -2,10 +2,8 @@
 #' 
 #' @description Fits a detection function using maximum likelihood. 
 #'
-#' @inheritDotParams dE.lt.single formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
-#' @inheritDotParams dE.lt.multi  formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
-#' @inheritDotParams dE.pt.single formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
-#' @inheritDotParams dE.pt.multi  formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
+#' @inheritDotParams dE.single formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
+#' @inheritDotParams dE.multi  formula likelihood w.lo w.hi expansions series x.scl g.x.scl warn outputUnits
 #' 
 #' @param data An \code{RdistDf} data frame. \code{RdistDf} data frames 
 #' contain one line per transect and a list-based column. The list-based
@@ -17,15 +15,15 @@
 #' \code{\link{is.RdistDf}} checks whether data frames
 #' are \code{RdistDf}'s. 
 #' 
-#' @inherit dE.lt.single details
+#' @inherit dE.single details
 #' 
-#' @inheritSection dE.lt.single Group Sizes
+#' @inheritSection dE.single Group Sizes
 #' 
-#' @inheritSection dE.lt.single Contrasts
+#' @inheritSection dE.single Contrasts
 #' 
-#' @inheritSection dE.lt.single Measurement Units
+#' @inheritSection dE.single Measurement Units
 #' 
-#' @inherit dE.lt.single return
+#' @inherit dE.single return
 #'     
 #' @references Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
@@ -61,31 +59,16 @@
 dfuncEstim <- function (  data, ... ){
 
   call <- match.call()
-  tranType <- Rdistance::transectType(data)
   obsType <- Rdistance::observationType(data)
 
-  # Dispatch separate estimation functions based on transect and observer types ----
-  if( tranType == "point" ){
-    # Point transects ----
-    res <- switch( obsType
-            , "single" = dE.pt.single(data, ...)
-            , "1|2"    =
-            , "2|1"    =
-            , "both"   = dE.pt.multi(data, ...)
-            , stop(dfuncEstimErrMessage("observer system", "obsType"))
-            )
-  } else if( tranType == "line"){
-      # Line transects ----
-      res <- switch( obsType
-            , "single" = dE.lt.single(data, ...)
-            , "1|2"    =
-            , "2|1"    =
-            , "both"   = dE.lt.multi(data, ...)
-            , stop(dfuncEstimErrMessage("observer system", "obsType"))
-      )
-  } else {
-    stop(dfuncEstimErrMessage("transect type", "transType"))
-  }
+  # Dispatch separate estimation functions based on observer type ----
+  res <- switch( obsType
+          , "single" = dE.single(data, ...)
+          , "1|2"    =
+          , "2|1"    =
+          , "both"   = dE.multi(data, ...)
+          , stop(dfuncEstimErrMessage("observer system", "obsType"))
+          )
 
   # Assign common elements, and class ==== 
   res$call <- call

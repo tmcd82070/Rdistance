@@ -232,7 +232,7 @@ plot.linePara <- function( x,
     colnames(newdata) <- covNames
     newdata <- data.frame(newdata)
     
-    # Watch filtering of in-out strip obserations here
+    # Watch filtering of in-out strip observations here
     
     # origDist <- Rdistance::distances(x) 
     # inStrip <- (x$w.lo <= d) & (d <= x$w.hi)
@@ -248,34 +248,39 @@ plot.linePara <- function( x,
   }
   
   # Predict distance functions ----
+  # after here, y is a matrix, columns are distance functions.
   y <- stats::predict(x = x
                       , newdata = newdata
                       , distances = x.seq
                       , type = "distances"
   )
-  
-  # if( x$pointSurvey ){
-  #   y <- y * units::drop_units(x.seq - x$w.lo)
-  #   scaler <- units::drop_units(x.seq[2]-x.seq[1]) * colSums(y[-nrow(y),,drop = FALSE]+y[-1,,drop = FALSE]) / 2
-  # } else {
-  #   # line transects here
-  scaler <- Rdistance::effectiveDistance(x = x
-                                       , newdata = newdata)
-  # }
-  # Note: scaler is correct even when g.x.scl != 1. Hence, no need to apply 
-  # an other scaler to bars than 'scaler'. i.e., this works when g.x.scl < 1
-  ybarhgts <-  cnts$density * mean(scaler) 
-  ybarhgts <- units::set_units(ybarhgts, NULL) # scaler has units, but bar hgts should not
-  
-  # after here, y is a matrix, columns are distance functions.
-  
+
+  # Compute scaling factors ----
+  if( Rdistance::is.points(x) ){
+    y <- y * units::set_units(x.seq - x$w.lo, NULL)
+    y <- t( t(y) / (colSums(y, na.rm = TRUE) * units::set_units(x.seq[2] - x.seq[1], NULL))) # now y integrates to 1.0
+    # don't need to modify ybarhgts because cnts$density integrates to 1.0 already
+    ybarhgts <- cnts$density
+    y.finite <- y[ y < Inf ]
+     # scaler <- (units::set_units(scaler, NULL) ^ 2) / 2 # = integral of y = sum(y) * (x.seq[2] - x.seq[1])
+     # scaler <- units::drop_units(x.seq[2]-x.seq[1]) * colSums(y[-nrow(y),,drop = FALSE]+y[-1,,drop = FALSE]) / 2
+     # ybarhgts <- ybarhgts * scaler
+    y.lims <- c(0, max( ybarhgts, y.finite, na.rm=TRUE ))
+  } else {
+    scaler <- Rdistance::effectiveDistance(x = x
+                                           , newdata = newdata)
+    # Note: scaler is correct even when g.x.scl != 1. Hence, no need to apply 
+    # another scaler. i.e., this works when g.x.scl < 1
+    ybarhgts <-  cnts$density * units::set_units(mean(scaler), NULL) # now ybarhgts integrates to ESW 
+    y.finite <- y[ y < Inf ]
+    y.lims <- c(0, max( x$g.x.scl, ybarhgts, y.finite, na.rm=TRUE ))
+  }
+
   # I DON'T THINK THIS IS NEEDED, BUT MAYBE  
   # if( include.zero & x$like.form == "hazrate" ){
   #   x.seq[1] <- x$w.lo
   # }
   
-  y.finite <- y[ y < Inf ]
-  y.lims <- c(0, max( x$g.x.scl, ybarhgts, y.finite, na.rm=TRUE ))
   
   if( include.zero ){
     x.limits <- c(zero , max(x.seq))
@@ -291,7 +296,11 @@ plot.linePara <- function( x,
   
   # Default ylab ----
   if(is.null(ylab)){
-    ylab <- "Probability of detection"
+    if( Rdistance::is.points(x)){
+      ylab <- "Observation density"
+    } else {
+      ylab <- "Probability of detection"
+    }
   }
   
   # Main plot ----
@@ -324,7 +333,7 @@ plot.linePara <- function( x,
                          xlab = xlab,
                          ylab = ylab,
                          ... )  
-    xticks <- axTicks(1)
+    # xticks <- axTicks(1)
     axis( 1, at=xticks,  labels=xticks, line=.5, ... )
   } else {
     plot(1,1,type="n",

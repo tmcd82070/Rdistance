@@ -116,6 +116,7 @@ nLL <- function(a
   if( ml$expansions > 0 ){
     key[ which(key < 0) ] <- 0
   }
+  
 
   # Scale the likelihood ----
   # Scalers should be unique to each observation and equal
@@ -127,7 +128,9 @@ nLL <- function(a
                           , "triangle"
                           , "uniform"
                           , "huber"
-                          ))){
+                          )) &&
+      (!Rdistance::is.points(ml))
+      ){
     # We know the integral in these cases.  
     # Supposedly, this will speed things up
     theta <- L$params # always n X p data frame of canonical likelihood parameters
@@ -163,11 +166,21 @@ nLL <- function(a
     
   } else {
     # We numerically integrate.  These are integrals we 
-    # do not know and any that have expansions
+    # do not know 
+    # and any that have expansions
+    # and all point transects (cause x*g(x) unknown)
     key = key / integrationConstant(a, ml)
+
+    # integrationConstant does Int( x*g(x) ) for points
+    #          "          does  Int( g(x) ) for lines
+    # Here, multiply by x in numerator of point transects
+    if( Rdistance::is.points(ml) ){
+      key <- key * units::set_units(dist, NULL)
+    }
     
   }
 
+  
   if( !is.null(getOption("Rdistance_optimizer")) &&
       (getOption("Rdistance_optimizer") == "optim") ){
     key <- key*10^9 # optim likes big numbers

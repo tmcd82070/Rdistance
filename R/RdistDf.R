@@ -87,7 +87,7 @@
 #' \code{transectDf$c} to \code{detectionDf$d}. 
 #' 
 #' 
-#' @inheritSection dE.lt.single Measurement Units
+#' @inheritSection dE.single Measurement Units
 #' 
 #' @return A nested data frame with one row per transect, and detection 
 #' information in a list column.  Technically, the return is 

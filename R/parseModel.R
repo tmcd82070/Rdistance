@@ -4,7 +4,7 @@
 #' Parse an 'Rdistance' formula and produce a list containing all model 
 #' parameters.
 #' 
-#' @inheritParams dE.lt.single
+#' @inheritParams dE.single
 #' 
 #' @details
 #' This routine is not intended to be called by the user.  It is called 

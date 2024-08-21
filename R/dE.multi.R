@@ -1,15 +1,15 @@
-#' @title dE.lt.multi - Estimate multiple-observer line-transect distance functions
+#' @title dE.multi - Estimate multiple-observer line-transect distance functions
 #' 
 #' @description Fits a detection function to off-transect 
 #' distances collected by multiple observers. 
 #' 
-#' @inheritParams dE.lt.single
+#' @inheritParams dE.single
 #' 
-#' @inherit dE.lt.single return
+#' @inherit dE.single return
 #' 
 #' @export
 #' 
-dE.lt.multi <- function( data
+dE.multi <- function( data
                          , formula
                          , likelihood = "halfnorm"
                          , w.lo = units::set_units(0,"m")
