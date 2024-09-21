@@ -92,7 +92,7 @@ is.RdistDf <- function(df, verbose = FALSE){
       ))
     }
     return(FALSE)
-  }
+  } 
   
   # Check for list-based distance column. ----
   # The && are critical here. Must stop evaluating if distColName 
@@ -129,7 +129,7 @@ is.RdistDf <- function(df, verbose = FALSE){
         , crayon::red(paste0("attr("
                              , dfName
                              , ",'transType') <- '<type>'"))
-        , "See help('RdistDf')."
+        , "See help('RdistDf').\n"
       ))
     }
     return(FALSE)
@@ -149,11 +149,72 @@ is.RdistDf <- function(df, verbose = FALSE){
         , crayon::red(paste0("attr("
                              , dfName
                              , ",'obsType') <- '<type>'"))
-        , "See help('RdistDf')."
+        , "See help('RdistDf').\n"
       ))
     }
     return(FALSE)
   }
+
+  # Check for presence and validity of Effort column ----
+  effCol <- attr(df, "effortColumn")
+  hasEffCol <- !is.null(effCol) &&
+    (effCol %in% names(df))
+  if( !hasEffCol ){
+    if(verbose){
+      cat(paste(
+        crayon::red(dfName)
+        , "must have a valid effort column."
+        , "Assign effort with a statement like"
+        , crayon::red(paste0("attr("
+                             , dfName
+                             , ",'effortColumn') <- '<column name>'"))
+        , "See help('RdistDf').\n"
+      ))
+    }
+    return(FALSE)
+  }
+  
+  # Check line length has units, nPoints does not ----
+  effVec <- df |> 
+    dplyr::pull(dplyr::all_of(effCol))
+  if( transType == "line" ){
+    if( !inherits(effVec, "units") ){
+      if(verbose){
+        cat(paste(
+          "Transect type is 'line' but effort column"
+          , crayon::red(effCol)
+          , "does not have units. "
+          , "Set units with a statement like"
+          , crayon::red(paste0(
+            dfName
+            , "$"
+            , effCol
+            , " <- units::set_units( "
+            , dfName
+            , "$"
+            , effCol
+            , ", 'm')\n"
+          ))
+        ))
+      }
+      return(FALSE)
+    }
+  } else {
+    # Transect type is 'point'
+    if( inherits(effVec, "units") || 
+        !is.numeric(effVec)){
+      if(verbose){
+        cat(paste(
+          "Transect type is 'point', but effort column"
+          , crayon::red(effCol)
+          , "either has units or is not numeric. "
+          , "Set effort column to number of points on transects.\n"
+          ))
+      }
+      return(FALSE)
+    }
+  }
+  
   
   # Check for rowwise or grouped data frame ----
   if( !inherits(df, "rowwise_df") && !inherits(df, "grouped_df")){
@@ -162,7 +223,7 @@ is.RdistDf <- function(df, verbose = FALSE){
         crayon::red(dfName)
         , "must be a 'rowwise_df' or 'grouped_df'."
         , "Use dplyr::nest() or run Rdistance::RdistDf()."
-        , "See help('RdistDf')."
+        , "See help('RdistDf').\n"
       ))
     }
     return(FALSE)
@@ -187,7 +248,7 @@ is.RdistDf <- function(df, verbose = FALSE){
         , "Identify duplicate rows using"
         , crayon::red(paste0(dfName, " |> dplyr::summarise(n = dplyr::n())"
         , " |> dplyr::filter(n > 1)."))
-        , "See help('RdistDf')."
+        , "See help('RdistDf').\n"
       ))
     }
     return(FALSE)
@@ -208,7 +269,7 @@ is.RdistDf <- function(df, verbose = FALSE){
         crayon::red(distColName), 
         " column and in the remainder of " 
         , crayon::red(dfName)
-        , ". Make names in detection data frame different unique."
+        , ". Make names in detection data frame unique."
         , " Test: "
         , crayon::red(paste0("tidyr::unnest(", dfName, ")"))
         , " should execute."

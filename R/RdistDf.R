@@ -6,26 +6,27 @@
 #' data frames with one row per transect. Detection 
 #' information for each transect appears in a list-based 
 #' column that itself contains a
-#' data frame. See section `Rdistance Data Frames`. 
+#' data frame. See \bold{Rdistance Data Frames}. 
 #' 
 #' \code{Rdistance} data frames can be constructed using calls to 
 #' \code{dplyr::nest_by} and \code{dplyr::right_jion}, with subsequent 
 #' attribute assignment (see \bold{Examples}). This routine is 
-#' a convenience wrapper for those calls.
+#' a convenient wrapper for those calls.
 #' 
-#' @param transectDf A data frame with one line per transect and 
+#' @param transectDf A data frame with one row per transect and 
 #' columns containing information about the entire transect. 
-#' At a minimum, this data frame must contain the transect's ID (so 
-#' it can be merged with \code{detectionDf}, see parameter \code{by}) 
-#' and the transect's length.  
+#' At a minimum, this data frame must contain the transect's ID so 
+#' it can be merged with \code{detectionDf}, (see parameter \code{by}) 
+#' and the amount of effort the transect represents 
+#' (see parameter \code{.effortCol}).  
 #' All detections are made on a transect, but not all transects 
-#' necessarily have detections. That is, \code{transectDf} 
+#' require detections. That is, \code{transectDf} 
 #' should contain rows, and hence
 #' ID's and lengths, of all surveyed transects, even those on 
 #' which no targets were detected (so-called "zero transects"). 
 #' Transect-level covariates, such 
 #' as habitat type, elevation, or observer IDs, should appear as variables 
-#' in this data frame.
+#' in this data frame. 
 #' 
 #' @param detectionDf A data frame containing   
 #' detection information associated with each transect.  
@@ -33,8 +34,8 @@
 #' frame must contain the following:
 #' \itemize{
 #'   \item \bold{Transect IDs}: The ID of the transect on 
-#'   which a target group was detected. Transect ID must be present 
-#'   so that the detection data frame can be merged with \code{transectDf} 
+#'   which a target group was detected so that the 
+#'   detection data frame can be merged with \code{transectDf} 
 #'   (see parameter \code{by}). Multiple detections on the same transect 
 #'   are possible and hence multiple rows in \code{detectonDf} 
 #'   can contain the same transect ID. 
@@ -45,12 +46,18 @@
 #'   side of \code{formula} in a call to \code{dfuncEstim}.  
 #'   As of Rdistance version 3.0.0, detection distances must have 
 #'   physical measurement units assigned. See 
-#'   Section \bold{Measurment Units}. 
-#'   
+#'   \bold{Measurment Units}. 
 #' }
-#' If group sizes of sighted targets are not all 1, \code{detectionDf} must 
-#' contain a column specifying group sizes. 
-#' Optionally, \code{detectionDf} can contain detection level covariates.
+#' Optional columns in `detectionDf`:
+#' \itemize{
+#'    \item \bold{Group sizes}:If sighted targets vary in size, or group sizes 
+#'          are not all 1, \code{detectionDf} must 
+#'          also contain a column specifying group sizes. Non-unity group sizes 
+#'          are specified using \code{+groupsize(columnName)} on the 
+#'          right-hand-side of \code{formula} in an eventual call to \code{dfuncEstim}. 
+#'          
+#'    \item \bold{Detection Level Covariates}: Such as sex, color, habitat, etc. 
+#' }
 #' 
 #' @param pointSurvey If TRUE, observations were
 #' made from discrete points (i.e., during a point-transect survey) and distances 
@@ -70,6 +77,19 @@
 #' 
 #' @param .detectionCol Name of the list column that will
 #' contain detection data frames. Default name is "detections".
+#' Detection distances (LHS of `dfuncEstim` formula) and 
+#' group sizes are normally 
+#' columns in the nested detection data frames embedded in 
+#' `.detectionCol`. 
+#' 
+#' @param .effortCol For continuous line transects, 
+#' this specifies the name of a column in \code{transectDf} 
+#' containing transect lengths, which must have measurement units.  
+#' For point transects, this specifies the name of a column containing 
+#' the number of points on each transect.  The effort column for point 
+#' transects \emph{cannot} contain 
+#' measurement units. Default is "length" for line-transects, "nPoints" for 
+#' point-transects. See \bold{Transect Lengths}.
 #' 
 #' @param by A character vector of variables to use in the join. The right-hand
 #' side of this join identifies unique transects and will specify unique 
@@ -89,38 +109,47 @@
 #' 
 #' @inheritSection dE.single Measurement Units
 #' 
-#' @return A nested data frame with one row per transect, and detection 
+#' @return A nested tibble (a generalization of base data frames) 
+#' with one row per transect, and detection 
 #' information in a list column.  Technically, the return is 
 #' a grouped \code{tibble} from 
 #' the \code{tibble} package with one row per group, and a list 
 #' column containing detection information. 
-#' Survey type and observer system are recorded 
-#' as attributes (\code{transType} and \code{obsType}, respectfully). 
+#' Survey type, observer system, and name of the effort column 
+#' are recorded 
+#' as attributes (\code{transType}, \code{obsType}, and \code{effortColumn}, respectfully). 
+#' The return prints nicely using methods 
+#' in package \code{tibble}.  If returned objects print strangely, 
+#' attach library \code{tibble}.  A summary method tailored to distance sampling 
+#' is available (i.e., \code{summary(return)}).
 #' 
 #' @section Rdistance Data Frames: 
 #' 
 #' \code{RdistDf} data frames contain the following information:
+#' 
 #' \itemize{
-#'   \item \bold{Transect Information}: At a minimum, each row of the 
-#'   data frame contains transect id and length.  
-#'   Optionally, transect-level covariates(such as habitat or observer
+#'   \item \bold{Transect Information}: Each row of the 
+#'   data frame contains transect id and effort. Effort is 
+#'   transect length for line-transects, and number of points for 
+#'   point-transects.
+#'   Optionally, transect-level covariates (such as habitat or observer
 #'   id) appear on each row. 
-#'   \item \bold{Detection Information}: At a minimum, observation distances
+#'   \item \bold{Detection Information}: Observation distances
 #'   (either perpendicular off-transect or radial off-point) appear 
 #'   in a data frame stored in a list column.  If detected groups
-#'   occasionally included more than one target, group sizes must 
-#'   also be present in the data frame contained in the list column.
+#'   occasionally included more than one target, a group size column must 
+#'   be present in the list-column data frame.
 #'   Optionally, detection-level covariates (such as sex or size)
 #'   can appear in the data frame of the list column.
 #'   \item \bold{Distance Type}: The type of observation distances, either 
-#'   perpendicular off-transect (for line-transects studies) 
-#'       or radial off-point (for point-transect studies) must appear as an 
-#'       attribute of \code{RdistDf}'s. 
+#'   perpendicular off-transect (for line-transects studies) or 
+#'   radial off-point (for point-transect studies) must appear as an 
+#'   attribute of \code{RdistDf}'s. 
 #'   \item \bold{Observer Type}: The type of observation system used, either 
 #'   single observer or one of three types of multiple observer systems, must 
 #'   appear as an attribute of \code{RdistDf}'s.
+#' }
 #'
-#' }  
 #' 
 #' @details 
 #' 
@@ -128,7 +157,7 @@
 #' each row of the nested data frame must represent one transect (more generally, 
 #' one sampling unit), and none should
 #' be duplicated. The combination of transect columns 
-#' in \code{by} (i.e., the RHS of the merge, or "a" and "b" of 
+#' in \code{by} (i.e., the LHS of the merge, or "a" and "b" of 
 #' \code{by = c("a" = "d", "b" = "c")} for example) 
 #' should specify \emph{unique} transects and unique rows of 
 #' \code{transectDf}. \bold{Warning:} If \code{by} 
@@ -149,6 +178,7 @@
 #' points are considered transects of length one. The length of line-transects
 #' must have a physical measurement unit (e.g., 'm' or 'ft').  The length of 
 #' point-transects must be a unit-less integers (i.e., number of points).
+#' 
 #'  
 #' @seealso \code{\link{checkRdistDf}}: check validity of RdistDf data frames;
 #'  \code{\link{dfuncEstim}}: estimate distance function.
@@ -163,10 +193,11 @@
 #'                , .key = "detections") |> 
 #'   dplyr::right_join(sparrowSiteData, by = "siteID") 
 #' attr(sparrowDf, "detectionColumn") <- "detections"
+#' attr(sparrowDf, "effortColumn") <- "length"
 #' attr(sparrowDf, "obsType") <- "single"
 #' attr(sparrowDf, "transType") <- "line"
 #'
-#' # Condensed view: 1 row per transect
+#' # Condensed view: 1 row per transect (make sure tibble is attached)
 #' sparrowDf
 #' 
 #' # Expand detection info using tidyr::unnest()
@@ -202,6 +233,7 @@ RdistDf <- function( transectDf
                    , pointSurvey = FALSE
                    , observer = "single"
                    , .detectionCol = "detections"
+                   , .effortCol = NULL
                    ){
   
   # Check lengths ----
@@ -254,6 +286,28 @@ RdistDf <- function( transectDf
   attr(ans, "detectionColumn") <- .detectionCol
   attr(ans, "obsType") <- as.character(obsType)
   attr(ans, "transType") <- as.character(transType)
+ 
+  # Figure out effort column ----
+  if( is.null(.effortCol) ){
+    if( pointSurvey ){
+      .effortCol <- "numPoints"
+    } else {
+      .effortCol <- "length"
+    }
+  }
+  if( !(.effortCol %in% names(ans)) ){
+    if( pointSurvey ){
+      searchTerm <- "(p|P)(o|O)(i|I)(n|N)(t|T)"
+    } else {
+      searchTerm <- "(l|L)(e|E)(n|N)(g|G)(t|T)(h|H)"
+    }
+    candidates <- grep(searchTerm, names(ans))
+    stop(paste0("Effort column '", .effortCol, "' not found.", 
+                " Specify effort column with .effortCol. ",
+                "Potential effort column(s): ", 
+                paste(names(ans)[candidates], collapse = ", ")))
+  }
+  attr(ans, "effortColumn") <- .effortCol
   
   # Could assign class this way; but, I wish outside ops would preserve
   # the extra classes.  they don't. dplyr::group_by wipes out 
