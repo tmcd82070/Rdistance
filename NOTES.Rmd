@@ -7,7 +7,7 @@ Notes and to-do for `s6methods` branch of Rdistance:
 # Package Notes:
 1.    Remove requirement of no missing values from `abundEstim`. Missing distances in detection data frame are okay. But, we stop when missing distances show up in `abundEstim`. 
 2.    Check whether we want or need the "1+" in `expansion.terms`.  I.e., you use 1+expanTerms.  I think maybe you want just expanTerms (no 1+).  Check this against `distance::`.
-3.    You use Simpsons 1/3 composite rule in version >4.0.0.  Study precision differences between it and 
+3.    You use Simpsons 1/3 composite rule in version >4.0.0.  Study precision differences between it and
 Simpson's alternate composite formula. https://en.wikipedia.org/wiki/Simpson's_rule
 $$
 (dx/48) * (17f(x_0) + 59f(x_1) + 43f(x_2) + 49f(x_3) + 48f(x_4) + 48f(x_5) + ...
@@ -32,11 +32,10 @@ this is close to correct, but not. I think the $z$ need to change each iteration
 
 You have most of these testing files drafted in `Rdistance/CodeParkingLot/tests/version3.1.1`.
 
-1.    Get big testing loop in `test_dfuncEstim.R` working. 
+
 2.    Make sure Points are tested
 3.    Test methods for all the options (those set in `onLoad`)
 4.    Test methods for by.site = T in `abundEstim`
-5.    Implement snapshot tests for basic functions. 
 6.    Test units for equality. e.g., set w.hi = "100 m" then w.hi = 100 m in ft and check that answers are same.
 7.    Tests that check against `distance::ds` and other routines.  This should become a vignette or paper. 
 

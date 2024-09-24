@@ -17,8 +17,11 @@
 #' model components but not estimates.  Model frames contain 
 #' everything necessary to fit an Rdistance mode, such as covariates, 
 #' minimum and maximum distances, the form of the likelihood, 
-#' number of expansions, etc.  Rdistance model frames are a 
-#' subset of an output Rdistance fitted model. 
+#' number of expansions, etc.  Rdistance model frames contain a 
+#' subset of fitted Rdistance model components. 
+#' 
+#' @seealso [RdistDf()], which returns an Rdistance \emph{data} frame;
+#' [dfuncEstim()], which returns an Rdistance \emph{fitted} model.
 #' 
 #' @examples
 #' 
@@ -78,7 +81,7 @@ parseModel <- function(data
 
   # Unnest the data frame ----
   # If a name in list column is the same as another in parent frame, 
-  # unnest will throw an error.
+  # unnest will throw an error; but, this is checked in is.RdistDf.
   detectionData <- tidyr::unnest(data
                                  , cols = attr(data, "detectionColumn"))
   
@@ -138,7 +141,7 @@ parseModel <- function(data
   # A missing case has either missing distance or missing covariates. 
   
   # Check units ----    
-  # We could check that offset, g.x.scl, and expanstions DON'T have units
+  # We could check that offset, g.x.scl, and expansions DON'T have units
   mtNames <- as.character(attr(mt, "variables"))
   respName <- mtNames[ attr(mt, "response") + 1 ]
   offsetName <- mtNames[ attr(mt, "offset") + 1 ]
@@ -179,9 +182,17 @@ parseModel <- function(data
       , na.action = na.exclude
     )    
 
+  # Store a reduced data frame for abundance estimation later ----
+  allVars <- c(all.vars( terms(mf) ) # for covariates
+               , attr(data, "detectionColumn")
+               , attr(data, "effortCol")
+               , dplyr::group_vars(data))
+  modelData <- data |> 
+    dplyr::select(dplyr::any_of(allVars))
+
   # Put everything in list ----    
   ml <- list(mf = mf
-             # , mt = stats::terms(mf)
+             , data = modelData
              , formula = formulaAtCall
              , dataName = dataWUnits$dataName
              , likelihood = likelihood
@@ -192,9 +203,6 @@ parseModel <- function(data
              , x.scl = dataWUnits$x.scl
              , g.x.scl = g.x.scl
              , outputUnits = dataWUnits$outputUnits
-             , transType = Rdistance::transectType(data)
-             , obsType = Rdistance::observationType(data)
-             # , control = control
   )
   
   # Enforce minimum number of spline basis functions ----

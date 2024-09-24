@@ -1,10 +1,11 @@
 #' @title predict.dfunc - Predict distance functions
 #' 
-#' @description Predict either likelihood parameters or 
-#' distance functions from estimated distance function 
+#' @description Predict either likelihood parameters, 
+#' distance functions, site-specific density, or 
+#' site-specific abundance from estimated distance function 
 #' objects.
 #' 
-#' @param x An estimated detection function, normally 
+#' @param x An estimated detection function object, normally 
 #' produced by calling \code{\link{dfuncEstim}}. 
 #' 
 #' @param newdata A data frame containing new values of 
@@ -12,23 +13,20 @@
 #' If \code{newdata}
 #' is NULL, distance functions are evaluated at values of 
 #' the observed covariates and results in one prediction 
-#' (either parameters or 
-#' distance function, see parameter \code{type}) for 
-#' every observed distance. 
+#' per distance or transect (see parameter \code{type}). 
 #' If \code{newdata} is not NULL and the model does not contains covariates, 
-#' this routine returns one prediction (either parameters or 
-#' distance function) for each row in \code{newdata}, but 
+#' this routine returns one prediction for each row in \code{newdata}, but 
 #' columns and values in \code{newdata} are ignored. 
 #' 
 #' @param type The type of predictions desired. 
 #' \itemize{
-#'   \item \bold{If \code{type} = "parameters"}: Returned values are
+#'   \item \bold{If \code{type} == "parameters"}: Returned values are
 #'     predicted (canonical) parameters of the likelihood function. 
 #'     If \code{newdata} is NULL, return contains one parameter
 #'     value for every detection in \code{x} with a distance.
 #'     If \code{newdata} is not NULL, returned vector has one parameter
 #'     for every row in \code{newdata}.
-#'   \item \bold{If \code{type} is not "parameters"}: Returned  
+#'   \item \bold{If \code{type} == "dfuncs"}: Returned  
 #'     value is a matrix of scaled distance functions, 
 #'     with distance functions in columns. Distance functions 
 #'     are evaluated at distances   
@@ -42,12 +40,20 @@
 #'       \item If \code{newdata} is not NULL, one distance function 
 #'       will be returned for each observation (row) in \code{newdata}. 
 #'     }
+#'    \item \bold{If \code{type} == "density"}: Returned object is a data frame
+#'    containing one row per transect and estimated values for density on each 
+#'    transect. 
+#'    \item \bold{If \code{type} == "abundance"}: Returned object is a data frame
+#'    containing one row per transect and estimated values for abundance on each 
+#'    transect. Abundance estimates are density estimates multiplied by the surveyed 
+#'    area of each transect (i.e., length times nominal width = length * 2(w.hi - w.lo)).
 #'  }
 #'  
 #'  If \code{x} is a smoothed distance function, it does not have parameters
 #'  and this routine will always return a scaled distance function. That is, 
 #'  \code{type} = "parameters" when \code{x} is smoothed 
-#'  does not make sense and the smoothed distance function estimate will be returned. 
+#'  does not make sense and the smoothed distance function estimate will be returned
+#'  if \code{type} does not equal "density" or "abundance". 
 #' 
 #' @param distances A vector of distances at which to evaluate 
 #' distance functions, when distance functions 
@@ -76,7 +82,7 @@
 #'   one parameter, \code{hazrate} has two). See the help 
 #'   for each likelihoods to interpret the returned parameter values.
 #'   
-#'   \item \bold{If \code{type} is not "parameters"}, columns of the 
+#'   \item \bold{If \code{type} is "dfuncs"}, columns of the 
 #'   returned matrix contain scaled distance functions (i.e., \emph{g(x)}).  
 #'   The extent of the first 
 #'   dimension (number of rows) is either the number of distances 
@@ -101,12 +107,10 @@
 #'       \item \code{attr(return, "g.x.scl")} is the height of \emph{g(x)} (the distance 
 #'        function) at \emph{x0}. 
 #'   }
-#   \code{attr(return, "scaler")} is a vector of scaling factors  
-#   corresponding to each 
-#   distance function in \code{return}. i.e., the vector of 
-#   \code{1/f(x.scl)} where \code{f()} is the un-scaled distance function. 
-#   If \code{x} contains line transects, \code{attr(return, "scaler")}
-#   is the vector of ESW corresponding to each distance function.
+#'   
+#'   \item \bold{If \code{type} is "density"}...
+#'   
+#'   \item \bold{If \code{type} is "abundance"}...
 #' }
 #' 
 #' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 

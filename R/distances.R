@@ -16,6 +16,7 @@
 #' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
 #' sparrowModel <- parseModel( sparrowDf, dist ~ observer )
 #' model.response(sparrowModel)
+#' distances(sparrrowModel)
 #' 
 #' @export
 #' 

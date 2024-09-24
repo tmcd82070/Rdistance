@@ -1,10 +1,9 @@
-#' @title plot.linePara - Plot parametric line transect distance function
+#' @title plot.dfunc.para - Plot parametric distance functions
 #' 
 #' @description
-#' Plot method for line transects that have a parametric form.
+#' Plot method for parametric line and point transect distance functions. 
 #' 
-#' @param x An estimated distance function resulting from a call to
-#'   \code{dfuncEstim}.
+#' @inheritParams predict.dfunc 
 #'   
 #' @param include.zero Boolean value specifying whether to include 0 on the x-axis 
 #' of the plot.  A value of TRUE will include 0 on the left hand end of the x-axis
@@ -110,7 +109,7 @@
 #'  uses \code{graphics::barplot} to set up the 
 #'  plotting region and plot bars. When bars are not plotted,
 #'  this routine sets up the plot with \code{graphics::plot}.
-#'  \dots can be any other 
+#'  \dots can be any  
 #'  argument to \code{barplot} or \code{plot} EXCEPT  
 #'  \code{width}, \code{ylim}, \code{xlim}, 
 #'  \code{density}, \code{angle}, and \code{space}.
@@ -142,7 +141,7 @@
 #' plot(dfunc)
 #' plot(dfunc, nbins=25)
 #'
-plot.linePara <- function( x, 
+plot.dfunc.para <- function( x, 
                         include.zero=FALSE, 
                         nbins="Sturges", 
                         newdata = NULL, 

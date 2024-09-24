@@ -6,9 +6,11 @@
 #' class '\code{dfunc}' are estimated distance functions produced by 
 #' \code{\link{dfuncEstim}}. 
 #'   
-#' @inheritDotParams plot.linePara include.zero nbins newdata 
+#' @inheritDotParams plot.dfunc.para include.zero nbins newdata 
 #'     legend vertLines plotBars density angle xlab ylab 
 #'     border col col.dfunc lty.dfunc lwd.dfunc 
+#'     
+#' @inheritParams predict.dfunc 
 #' 
 #' @details If \code{plotBars} is TRUE, a scaled histogram is plotted
 #'  and the estimated distance function
@@ -133,9 +135,9 @@ plot.dfunc <- function( x
   key <- paste0(tType, "_", is.smoothed)
   switch(key
        , point_TRUE  = 
-       , line_TRUE   = plot.lineSmu(x, ...)
+       , line_TRUE   = plot.dfunc.smu(x, ...)
        , point_FALSE = 
-       , line_FALSE  = plot.linePara(x, ...)
+       , line_FALSE  = plot.dfunc.para(x, ...)
        , warning( paste("Unrecognized transect type and smooth indicator. Found", key) )
   )
 

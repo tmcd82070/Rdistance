@@ -7,8 +7,8 @@
 #' 
 #' @details 
 #' This function is a simple helper function.  If \code{x} is an
-#' estimated distance object, it polls the \code{x$obsType}
-#' component. If \code{x} is an Rdistance nested data frame, it 
+#' estimated distance object, it polls the \code{obsType}
+#' attribute of the object's Rdistance data frame. If \code{x} is an Rdistance nested data frame, it 
 #' polls the \code{obsType} attribute. 
 #' 
 #' @return One of the following values: 
@@ -19,7 +19,7 @@
 #' @export
 observationType <- function(x){
   if( inherits(x, "dfunc") ){
-    return( x$obsType )
+    return( attr(x$data, "obsType") )
   } else {
     return( attr(x, "obsType") )
   }

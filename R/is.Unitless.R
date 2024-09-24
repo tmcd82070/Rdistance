@@ -1,4 +1,4 @@
-#' @title isUnitless - Test whether object is unitless
+#' @title is.Unitless - Test whether object is unitless
 #' 
 #' @description Tests whether a 'units' object is actually 
 #' unitless.  
@@ -21,12 +21,12 @@
 #' @examples 
 #' a <- units::set_units(2, "m")
 #' b <- a / a
-#' isUnitless(a)
-#' isUnitless(b)
-#' isUnitless(3)
+#' is.Unitless(a)
+#' is.Unitless(b)
+#' is.Unitless(3)
 #' 
 #' @export
-isUnitless <- function(obj){
+is.Unitless <- function(obj){
   
   if(!is.numeric(obj)){
     stop("'obj' must be numeric.")

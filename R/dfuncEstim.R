@@ -43,6 +43,7 @@
 #' dfunc <- dfuncEstim(sparrowDf, 
 #'                     formula = dist ~ 1
 #'                   )
+#' summary(dfunc)
 #'                   
 #' dfunc <- sparrowDf |> 
 #'          dfuncEstim( 
@@ -72,6 +73,7 @@ dfuncEstim <- function (  data, ... ){
 
   # Assign common elements, and class ==== 
   res$call <- call
+  res$dataName <- deparse(substitute(data))
   
   # nCovars ----
   # Can always count number of covariates later, in methods, but store 

@@ -5,10 +5,11 @@
 #' 
 #' @param formula A standard formula object.  For example, \code{dist ~ 1}, 
 #' \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
-#' is the name of the vector containing off-transect distances.  
+#' is the name of the vector containing off-transect or radial detection distances.  
 #' The right-hand side contains the names of covariate 
 #' vectors to fit in the detection
-#' function. Covariates can be either detection level 
+#' function, and potentially group sizes. 
+#' Covariates can be either detection level 
 #' or transect level and can appear in  \code{data} or exist in the 
 #' global working environment. Regular R scoping 
 #' rules apply.  
@@ -164,49 +165,46 @@
 #' 
 #' @return  An object of class 'dfunc'.  Objects of class 'dfunc' 
 #' are lists containing the following components:
-#'   \item{parameters}{The vector of estimated parameter values. 
+#' 
+#'   \item{par}{The vector of estimated parameter values. 
 #'     Length of this vector for built-in likelihoods is one 
 #'     (for the function's parameter) plus the 
 #'     number of expansion terms plus one if the likelihood is 
-#'     either 'hazrate' or 'uniform' (hazrate and uniform have
+#'     either 'hazrate', 'huber, or 'uniform' (which have
 #'     two parameters). }
+#'     
 #'   \item{varcovar}{The variance-covariance matrix for coefficients 
-#'     of the distance function, estimated by the inverse of the Hessian
-#'     of the fit evaluated at the estimates.  There is no guarantee this 
+#'     of the distance function, estimated by the inverse of the fit's Hessian
+#'     evaluated at the estimates.  Rdistance estimates the 
+#'     Hessian as the second derivative of the log likelihood surface 
+#'     at the final estimates, where second derivatives are estimated by 
+#'     numeric differentiation (see \code{\link{secondDeriv}}.  There is no guarantee this 
 #'     matrix is positive-definite and should be viewed with caution.  
 #'     Error estimates derived from bootstrapping are generally 
-#'     more reliable.}   
-#'   \item{loglik}{The maximized value of the log likelihood 
-#'     (more specifically, the minimized value of the negative 
-#'     log likelihood).}
+#'     more reliable. I.e., re-compute coefficient confidence intervals 
+#'     using the bootstrap values in component \code{$B} of an abundance object.}   
+#'     
+#'   \item{loglik}{The maximized value of the log likelihood.}
+#'     
 #'   \item{convergence}{The convergence code. This code 
-#'     is returned by \code{optim}.  Values other than 0 indicate suspect 
+#'     is returned by \code{optim} or \code{nlminb}.  Values other than 0 indicate suspect 
 #'     convergence.}
 #'     
-#'   \item{like.form}{The name of the likelihood. This is 
+#'   \item{likelihood}{The name of the likelihood. This is 
 #'     the value of the argument \code{likelihood}. }
 #'     
 #'   \item{w.lo}{Left-truncation value used during the fit.}
 #'   
 #'   \item{w.hi}{Right-truncation value used during the fit.}
 #'   
-#'   \item{detections}{A data frame of detections within the strip 
+#'   \item{mf}{A modelframe of detections within the strip 
 #'   or circle used in the fit.  Column 'dist' contains the 
 #'   observed distances. 
-#'   Column 'groupSize' contains group sizes associated with 
+#'   Column 'offset(...)' contains group sizes associated with 
 #'   the values of 'dist'. Group 
-#'   sizes are only used in \code{abundEstim}.  This data frame 
-#'   contains only distances between \code{w.lo} and \code{w.hi}. 
-#'   Another component of the returned object, i.e., \code{model.frame} 
-#'   contains all observations in the input data, including those outside the strip.}
+#'   sizes are only used in \code{abundEstim}.  This model frame 
+#'   contains only non-missing distances between \code{w.lo} and \code{w.hi}. }
 #'   
-#'   \item{covars}{Either NULL if no covariates are included in the 
-#'   detection function, or a \code{model.matrix} containing the covariates
-#'     used in the fit. Factors in in the model.matrix version have been expanded
-#'     into 0-1 indicator variables based on R contrasts in effect at the time 
-#'     of the call. Only covariates associated with distances inside the strip 
-#'     or circle are included. }
-#'     
 #'   \item{model.frame}{A \code{model.frame} object containing observed distances 
 #'   (the 'response'), covariates specified in the formula, and group sizes if they
 #'   were specified.  If specified, the name of the group size column is "offset(-variable-)", 

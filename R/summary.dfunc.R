@@ -4,8 +4,7 @@
 #' Distance functions are produced by 
 #' \code{dfuncEstim} (class \code{dfunc}).
 #' 
-#' @param x An estimated distance function resulting 
-#' from a call to \code{dfuncEstim}.
+#' @inheritParams predict.dfunc 
 #' 
 #' @param \dots Included for compatibility with other print methods.  Ignored here.
 #' 

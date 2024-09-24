@@ -55,7 +55,7 @@ Suggests:
     devtools
 VignetteBuilder: knitr
 Depends: R (>= 3.5.0), units
-Imports: graphics, stats, utils, crayon, withr, tidyr, dplyr
+Imports: graphics, stats, utils, crayon, withr, tidyr, dplyr, progress
 RoxygenNote: 7.3.1
 Encoding: UTF-8
 Config/testthat/edition: 3

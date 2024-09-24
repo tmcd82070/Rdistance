@@ -302,10 +302,20 @@ RdistDf <- function( transectDf
       searchTerm <- "(l|L)(e|E)(n|N)(g|G)(t|T)(h|H)"
     }
     candidates <- grep(searchTerm, names(ans))
-    stop(paste0("Effort column '", .effortCol, "' not found.", 
-                " Specify effort column with .effortCol. ",
-                "Potential effort column(s): ", 
-                paste(names(ans)[candidates], collapse = ", ")))
+    if(length(candidates) == 0){
+      # we tried
+      stop(paste0("Effort column '", .effortCol, "' not found.", 
+                  " Specify effort column using .effortCol input parameter. ",
+                  "Potential effort column(s): ", 
+                  paste(names(ans)[candidates], collapse = ", ")))
+    } else if(length(candidates) > 1){
+      warning(paste("Found two or more potential effort columns."
+                  , "Using"
+                  , names(ans)[candidates[1]]
+                  , "as transect length. Specify effort column using .effortCol input parameter."
+                  ))
+    }
+    .effortCol <- names(ans)[candidates[1]]
   }
   attr(ans, "effortColumn") <- .effortCol
   

@@ -15,9 +15,9 @@
 #' Rdistance 'model frames' are typically
 #' produced by calls to \code{\link{parseModel}}. 
 #' 
-#' 'Model frames'
-#' get transformed into 'fitted objects' by a call to  
-#' \code{\link{dfuncEstim}}.  'Fitted objects' are 'model frames'
+#' Rdistance 'fitted objects'
+#' are typically produced by calls to \code{\link{dfuncEstim}}.
+#' 'Fitted objects' are 'model frames'
 #' with additional components such as the parameters estimates, 
 #' log likelihood value, convergence information, and the variance-
 #' covariance matrix of the parameters. 
