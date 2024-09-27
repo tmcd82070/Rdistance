@@ -5,7 +5,9 @@
 #' 
 
 w.lo <- 0
+w.20 <- units::set_units(80, "ft")
 w.hi <- units::set_units(150, "m")
+lhood <- "halfnorm"
 
 sparrowDf <- RdistDf(sparrowSiteData
                    , sparrowDetectionData)
@@ -13,7 +15,7 @@ sparrowDf <- RdistDf(sparrowSiteData
 # No covariates ----
 testthat::test_that("Halfnorm w/ no covariates, same value",{
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
-                                 , likelihood = "halfnorm"
+                                 , likelihood = lhood
                                  , w.lo = w.lo
                                  , w.hi = w.hi
                                  , expansions = 0
@@ -31,7 +33,7 @@ testthat::test_that("Halfnorm w/ no covariates, same value",{
 testthat::test_that("Halfnorm w/ cont cov, same value", {
 
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
-                                 , likelihood = "halfnorm"
+                                 , likelihood = lhood
                                  , w.lo = w.lo
                                  , w.hi = w.hi
                                  , expansions = 0
@@ -47,7 +49,7 @@ testthat::test_that("Halfnorm w/ cont cov, same value", {
 # Factor Covariate ----
 testthat::test_that("Halfnorm w/ no covariates, same value",{
     fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-                                   , likelihood = "halfnorm"
+                                   , likelihood = lhood
                                    , w.lo = w.lo
                                    , w.hi = w.hi
                                    , expansions = 0
@@ -61,47 +63,46 @@ testthat::test_that("Halfnorm w/ no covariates, same value",{
 })
 
   
-# snapshot testing is the way to go here; but, I cannot get the 
-# following to create snapshot files. Hence, cannot test
-# testthat::test_that("Halfnorm no covariates same value",{
-#   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
-#                                  , likelihood = "halfnorm"
-#                                  , w.lo = w.lo
-#                                  , w.hi = w.hi
-#                                  , expansions = 0
-#                                  , series = "cosine"
-#                                  , x.scl = 0
-#                                  , g.x.scl = 1
-#                                  , outputUnits = "m"
-#   )
-#   testthat::expect_snapshot_value(fit, style = "serialize")}
-# )
-# 
-# 
-# # Continuous covariate
-# testthat::expect_snapshot_value({
-#   fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
-#                                  , likelihood = "halfnorm"
-#                                  , w.lo = w.lo
-#                                  , w.hi = w.hi
-#                                  , expansions = 0
-#                                  , series = "cosine"
-#                                  , x.scl = 0
-#                                  , g.x.scl = 1
-#                                  , outputUnits = "m"
-#   )
-# }, style = "json2")
-# 
-# # Factor Covariate
-# testthat::expect_snapshot_value({
-#   fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-#                                  , likelihood = "halfnorm"
-#                                  , w.lo = w.lo
-#                                  , w.hi = w.hi
-#                                  , expansions = 0
-#                                  , series = "cosine"
-#                                  , x.scl = 0
-#                                  , g.x.scl = 1
-#                                  , outputUnits = "m"
-#   )
-# }, style = "serialize")
+testthat::test_that("Halfnorm, no covar, wlo 20, whi 150",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , w.lo = w.20
+                                 , w.hi = w.hi
+                                 , expansions = 0
+                                 , series = "cosine"
+                                 , x.scl = w.20
+                                 , g.x.scl = 1
+                                 , outputUnits = "m"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                          , transform = scrub_environ)
+  }
+)
+
+testthat::test_that("Halfnorm, no covar, wlo 20, whi high",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , w.lo = w.20
+                                 # , w.hi = w.hi
+                                 , expansions = 0
+                                 , series = "cosine"
+                                 , x.scl = w.20
+                                 , g.x.scl = 1
+                                 , outputUnits = "m"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                            , transform = scrub_environ)
+}
+)
+
+testthat::test_that("Halfnorm, no covar, ft",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , outputUnits = "ft"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                            , transform = scrub_environ)
+}
+)
+
+

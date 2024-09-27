@@ -5,34 +5,17 @@
 #' 
 
 w.lo <- 0
+w.20 <- units::set_units(10, "m")
 w.hi <- units::set_units(150, "m")
+lhood <- "hazrate"
 
 sparrowDf <- RdistDf(sparrowSiteData
                    , sparrowDetectionData)
 
 # No covariates ----
 testthat::test_that("Hazrate w/ no covariates, same value",{
-    fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
-                                   , likelihood = "hazrate"
-                                   , w.lo = w.lo
-                                   , w.hi = w.hi
-                                   , expansions = 0
-                                   , series = "cosine"
-                                   , x.scl = 0
-                                   , g.x.scl = 1
-                                   , outputUnits = "m"
-    )
-  
-    testthat::expect_snapshot(print.default(fit)
-                            , transform = scrub_environ)
-  }
-)
-
-# Continuous covariate ----
-
-testthat::test_that("hazrate w/ cont covar, same value", {
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
-                                 , likelihood = "hazrate"
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
                                  , w.lo = w.lo
                                  , w.hi = w.hi
                                  , expansions = 0
@@ -45,10 +28,28 @@ testthat::test_that("hazrate w/ cont covar, same value", {
                           , transform = scrub_environ)
 })
 
+# Continuous covariate ----
+
+testthat::test_that("Hazrate w/ cont cov, same value", {
+
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , w.lo = w.lo
+                                 , w.hi = w.hi
+                                 , expansions = 0
+                                 , series = "cosine"
+                                 , x.scl = 0
+                                 , g.x.scl = 1
+                                 , outputUnits = "m"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                            , transform = scrub_environ)
+  })
+
 # Factor Covariate ----
-testthat::test_that("hazrate w/ factor covar, same value",{
+testthat::test_that("Hazrate w/ no covariates, same value",{
     fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-                                   , likelihood = "hazrate"
+                                   , likelihood = lhood
                                    , w.lo = w.lo
                                    , w.hi = w.hi
                                    , expansions = 0
@@ -60,4 +61,48 @@ testthat::test_that("hazrate w/ factor covar, same value",{
     testthat::expect_snapshot(print.default(fit)
                               , transform = scrub_environ)
 })
+
+  
+testthat::test_that("Hazrate, no covar, wlo 20, whi 150",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , w.lo = w.20
+                                 , w.hi = w.hi
+                                 , expansions = 0
+                                 , series = "cosine"
+                                 , x.scl = w.20
+                                 , g.x.scl = 1
+                                 , outputUnits = "m"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                          , transform = scrub_environ)
+  }
+)
+
+# testthat::test_that("Hazrate, no covar, wlo 20, whi high",{
+#   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+#                                  , likelihood = lhood
+#                                  , w.lo = w.20
+#                                  # , w.hi = w.hi
+#                                  , expansions = 0
+#                                  , series = "cosine"
+#                                  , x.scl = w.20
+#                                  , g.x.scl = 1
+#                                  , outputUnits = "m"
+#   )
+#   testthat::expect_snapshot(print.default(fit)
+#                             , transform = scrub_environ)
+# }
+# )
+
+testthat::test_that("Hazrate, no covar, ft",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , outputUnits = "ft"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                            , transform = scrub_environ)
+}
+)
+
 

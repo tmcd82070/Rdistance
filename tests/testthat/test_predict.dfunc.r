@@ -80,3 +80,13 @@ test_that("predict distinct", {
   expect_equal(sum(duplicated(p[,1])), 0)
 })
 
+
+# Snapshots ----
+
+test_that("predict default snapshot", {
+  p <- predict(dfuncObs)
+  expect_snapshot_value(p
+                        , style = "json2")
+})
+
+

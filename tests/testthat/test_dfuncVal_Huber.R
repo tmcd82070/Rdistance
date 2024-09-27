@@ -5,16 +5,17 @@
 #' 
 
 w.lo <- 0
-w.hi <- units::set_units(207, "m")
+w.20 <- units::set_units(80, "ft")
+w.hi <- units::set_units(150, "m")
+lhood <- "huber"
 
 sparrowDf <- RdistDf(sparrowSiteData
                    , sparrowDetectionData)
 
 # No covariates ----
-testthat::test_that("huber w/ no covariates, same value",{
-
+testthat::test_that("Huber w/ no covariates, same value",{
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
-                                 , likelihood = "huber"
+                                 , likelihood = lhood
                                  , w.lo = w.lo
                                  , w.hi = w.hi
                                  , expansions = 0
@@ -24,14 +25,15 @@ testthat::test_that("huber w/ no covariates, same value",{
                                  , outputUnits = "m"
   )
   testthat::expect_snapshot(print.default(fit)
-                            , transform = scrub_environ)
+                          , transform = scrub_environ)
 })
 
 # Continuous covariate ----
 
-testthat::test_that("huber w/ cont covar, same value", {
+testthat::test_that("Huber w/ cont cov, same value", {
+
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
-                                 , likelihood = "huber"
+                                 , likelihood = lhood
                                  , w.lo = w.lo
                                  , w.hi = w.hi
                                  , expansions = 0
@@ -42,21 +44,65 @@ testthat::test_that("huber w/ cont covar, same value", {
   )
   testthat::expect_snapshot(print.default(fit)
                             , transform = scrub_environ)
-})
+  })
 
 # Factor Covariate ----
-testthat::test_that("huber w/ factor covar, same value",{
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-                                 , likelihood = "huber"
-                                 , w.lo = w.lo
+testthat::test_that("Huber w/ factor covariates, same value",{
+    fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                                   , likelihood = lhood
+                                   , w.lo = w.lo
+                                   , w.hi = w.hi
+                                   , expansions = 0
+                                   , series = "cosine"
+                                   , x.scl = 0
+                                   , g.x.scl = 1
+                                   , outputUnits = "m"
+    )
+    testthat::expect_snapshot(print.default(fit)
+                              , transform = scrub_environ)
+})
+
+  
+testthat::test_that("Huber, no covar, wlo 20, whi 150",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , w.lo = w.20
                                  , w.hi = w.hi
                                  , expansions = 0
                                  , series = "cosine"
-                                 , x.scl = 0
+                                 , x.scl = w.20
+                                 , g.x.scl = 1
+                                 , outputUnits = "m"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                          , transform = scrub_environ)
+  }
+)
+
+testthat::test_that("Huber, no covar, wlo 20, whi high",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , w.lo = w.20
+                                 # , w.hi = w.hi
+                                 , expansions = 0
+                                 , series = "cosine"
+                                 , x.scl = w.20
                                  , g.x.scl = 1
                                  , outputUnits = "m"
   )
   testthat::expect_snapshot(print.default(fit)
                             , transform = scrub_environ)
-})
+}
+)
+
+testthat::test_that("Huber, no covar, ft",{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , outputUnits = "ft"
+  )
+  testthat::expect_snapshot(print.default(fit)
+                            , transform = scrub_environ)
+}
+)
+
 
