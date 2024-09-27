@@ -3,29 +3,24 @@
 #' @description Summarize an object of class \code{c("abund","dfunc")} 
 #' that is output by \code{abundEstim}.
 #' 
-#' @param x An object output by \code{abundEstim}.  This is a distance 
-#' function object augmented with abundance estimates, and has 
-#' class \code{c("abund", "dfunc")}.
-#'   
-#' @param criterion A string specifying the criterion to print.
-#' Must be one of "AICc" (the default), 
-#' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
-#' 
-#' @param maxBSFailPropForWarning The proportion of bootstrap 
-#' iterations that can fail without a warning. If the proportion 
-#' of bootstrap iterations that did not converge exceeds this 
-#' parameter, a warning about the validity of CI's is issued and 
-#' a diagnostic message printed.  Increasing this to a number greater 
-#' than 1 will kill the warning, but ignoring a large number of non-convergent
+#' @inheritParams print.abund
+#'
+#' @inheritParams summary.dfunc
+#'    
+#' @details
+#' If the proportion of bootstrap iterations that failed is 
+#' greater than \code{getOption("Rdistance_maxBSFailPropForWarning")}, 
+#' a warning about the validity of CI's is issued and 
+#' a diagnostic message printed.  Increasing this option to a number greater 
+#' than 1 will kill the warning (e.g., \code{options(Rdistance_maxBSFailPropForWarning = 1.3)}), 
+#' but ignoring a large number of non-convergent
 #' bootstrap iterations may be a bad idea (i.e., validity of the CI is 
-#' questionable). 
+#' questionable). The default value for \code{Rdistance_maxBSFailPropForWarning}
+#' is 0.2.
 #' 
 #' @param \dots Included for compatibility to other print methods.  
 #' Ignored here.
 #' 
-#' @details The default summary method for class 'dfunc' is 
-#' called first, then the abundance estimates are printed.
-#'   
 #' @return 0 is invisibly returned.
 #' 
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 
@@ -34,18 +29,14 @@
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)
-#' data(sparrowDetectionData)
-#' data(sparrowSiteData)
+#' data(sparrowDf)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist ~ 1 + offset(groupsize)
-#'                   , detectionData=sparrowDetectionData)
+#' dfunc <- sparrowDf |> dfuncEstim(formula=dist ~ 1 + offset(groupsize))
 #' 
 #' # Estimate abundance given the detection function
-#' # Note: do more than R=20 bootstrap iterations
+#' # Note: should do more than R=20 bootstrap iterations
 #' fit <- abundEstim(dfunc
-#'                 , detectionData = sparrowDetectionData
-#'                 , siteData = sparrowSiteData
 #'                 , area = units::set_units(4105, "km^2")
 #'                 , R=20
 #'                 , ci=0.95)
@@ -57,14 +48,15 @@
 
 summary.abund <- function( x, 
                          criterion="AICc", 
-                         maxBSFailPropForWarning = RdistanceControls()$maxBSFailPropForWarning,
                          ... ){
   
-  summary.dfunc( x, criterion=criterion )
+  Rdistance:::summary.dfunc( x, criterion=criterion )
   cat("\n")
-  hasCI <- all(!is.null(x$density.ci))
+  hasCI <- !is.null(x$B) && (nrow(x$B) > 0)
+  ests <- x$estimates
   
   # ---- Groupsize printout ----
+  gs <- Rdistance::groupSizes(x)
   mess <- format(c(
                   "Surveyed Units:"
                 , "Individuals seen:"
@@ -72,12 +64,12 @@ summary.abund <- function( x,
                 , "Range:"), justify = "right")
   mess[1] <- paste0(" ", mess[1]) # pesky " " that happens with cat and \n
   avgGs <- c(
-             format(x$surveyedUnits)
-           , paste( format(x$n.seen), "in", format(x$n), "groups")
-           , colorize( format( x$avg.group.size ))
-           , paste(colorize(format( x$rng.group.size[1] ))
+             colorize(format(ests$surveyedUnits))
+           , paste( colorize(format(ests$nSeen)), "in", colorize(format(ests$nGroups)), "groups")
+           , colorize( format( ests$avgGroupSize ))
+           , paste(colorize(format( min(gs) ))
                           , "to"
-                          , colorize(format( x$rng.group.size[2] ))))
+                          , colorize(format( max(gs) ))))
   mess <- paste(mess, avgGs)
   cat(paste(mess, "\n"))
   
@@ -87,17 +79,17 @@ summary.abund <- function( x,
   
   # ---- Density printout ----
   if( hasCI ){
-    mess <- c("Density in sampled area:", paste0(x$alpha*100, "% CI:"))
+    mess <- c("Density in sampled area:", paste0(x$ci*100, "% CI:"))
     mess <- format(mess, justify = "right")
     mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
-    ci <- paste( colorize(format(x$density.ci[1])), 
+    ci <- paste( colorize(format(ests$density_lo)), 
                  "to", 
-                 colorize(format(x$density.ci[2])) )
-    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+                 colorize(format(ests$density_hi)) )
+    ptEst <- colorize( colorize(format(ests$density)), col = "bold" )
     mess <- paste(mess, c(ptEst, ci))
   } else {
     mess <- c("Density in sampled area:")
-    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+    ptEst <- colorize( colorize(format(ests$density)), col = "bold" )
     mess <- paste(mess, ptEst)
   }
   cat(paste0(mess, "\n"))
@@ -107,33 +99,34 @@ summary.abund <- function( x,
     cat("\n")  # blank line between for readability
   }
   if( hasCI ){
-    mess <- c(paste0( "Abundance in ", format(x$area), " study area:"), 
-                      paste0(x$alpha*100, "% CI:"))
+    mess <- c(paste0( "Abundance in ", format(ests$area), " study area:"), 
+                      paste0(x$ci*100, "% CI:"))
     mess <- format(mess, justify = "right")
     mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
-    ci <- paste( colorize(format(x$n.hat.ci[1])), 
+    ci <- paste( colorize(format(ests$abundance_lo)), 
                  "to", 
-                 colorize(format(x$n.hat.ci[2])) )
-    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+                 colorize(format(ests$abundance_hi)) )
+    ptEst <- colorize( colorize(format(ests$abundance)), col = "bold" )
     mess <- paste(mess, c(ptEst, ci))
   } else {
-    mess <- paste0( "Abundance in ", format(x$area), " study area:")
-    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+    mess <- paste0( "Abundance in ", format(ests$area), " study area:")
+    ptEst <- colorize( colorize(format(ests$abundance)), col = "bold" )
     mess <- paste(mess, ptEst)
   }
   cat(paste0(mess, "\n"))
   
-  if(!is.null(x$nItersConverged)){
-    if(x$nItersConverged < nrow(x$B)) {
-      cat(paste("CI based on", x$nItersConverged, "of", nrow(x$B), 
+  if( hasCI ){
+    nItersConverged <- sum(!is.na(x$B$density))
+    if(nItersConverged < nrow(x$B)) {
+      cat(paste("CI based on", nItersConverged, "of", nrow(x$B), 
                 "successful bootstrap iterations\n"))
-      convRatio <- x$nItersConverged / nrow(x$B)
-      if((1.0-convRatio) > maxBSFailPropForWarning) {
+      convRatio <- nItersConverged / nrow(x$B)
+      if((1.0-convRatio) > getOption("Rdistance_maxBSFailPropForWarning")) {
         warning("The proportion of non-convergent bootstrap iterations is high.", immediate. = TRUE)
         cat(paste0("The proportion of non-convergent bootstrap iterations exceeds ",
-                  maxBSFailPropForWarning, ".\n",
-                  "You should figure out why this happened (low detections, unstable dfunc form, etc.),\n",
-                  "inspect the $B component of the abundance object (e.g., hist(x$B)), and decide whether the bootstrap CI is valid.\n"))
+                  getOption("Rdistance_maxBSFailPropForWarning"), ".\n",
+                  "It would be good to figure out why this happened (low detections, unstable dfunc form, etc.),\n",
+                  "inspect the $B component of the abundance object (e.g., hist(x$B$density)), and decide whether the bootstrap CI is valid.\n"))
       }
     }
   }
