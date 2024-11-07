@@ -356,11 +356,7 @@ display: none;
 <p>Notes and to-do for <code>s6methods</code> branch of Rdistance:</p>
 <div id="package-notes" class="section level1">
 <h1>Package Notes:</h1>
-<ol style="list-style-type: decimal">
-<li>Remove requirement of no missing values from
-<code>abundEstim</code>. Missing distances in detection data frame are
-okay. But, we stop when missing distances show up in
-<code>abundEstim</code>.</li>
+<ol start="2" style="list-style-type: decimal">
 <li>Check whether we want or need the “1+” in
 <code>expansion.terms</code>. I.e., you use 1+expanTerms. I think maybe
 you want just expanTerms (no 1+). Check this against
@@ -391,24 +387,107 @@ within 1 standard deviation of X.</li>
 <li><em>Testing Versus Distance</em>: Check parameter values and log
 likelihoods of every likelihood against what <code>distance</code>
 gives.</li>
+<li><em>Scaling of logistic</em>: Check scaling of logistic likelihood
+when covariates are present.<br />
+</li>
+<li><em>Two param likelihoods</em>: At some stage, after Rdistance is
+out, consider including two equations for parameters of likelihoods with
+two parameters. E.g., one formula for ‘beta’ of Huber likelihood and
+another for ‘gamma’, e.g., <code>beta ~ observer</code> and
+<code>gamma ~ observer</code>. I think this will require a whole new
+estimation function.</li>
+<li><em>Uniform likelihood</em>: Fix this. I am pretty sure you need to
+use the EM algorithm. See this <a href="https://stats.stackexchange.com/questions/591598/em-algorithm-on-a-mixture-of-two-uniforms">Stack
+Exchange post</a>. I have the following: <span class="math display">\[
+z = 0.5I(w_l &lt; x &lt; \theta)
+\]</span> and <span class="math display">\[
+\theta = [\sum(z) / n](w_h - w_l) + w_l
+\]</span> this is close to correct, but not. I think the <span class="math inline">\(z\)</span> need to change each iteration.</li>
 </ol>
 </div>
 <div id="testing" class="section level1">
 <h1>Testing:</h1>
 <p>You have most of these testing files drafted in
 <code>Rdistance/CodeParkingLot/tests/version3.1.1</code>.</p>
-<ol style="list-style-type: decimal">
-<li>Get big testing loop in <code>test_dfuncEstim.R</code> working.</li>
+<ol start="2" style="list-style-type: decimal">
 <li>Make sure Points are tested</li>
 <li>Test methods for all the options (those set in
 <code>onLoad</code>)</li>
 <li>Test methods for by.site = T in <code>abundEstim</code></li>
-<li>Implement snapshot tests for basic functions.</li>
 <li>Test units for equality. e.g., set w.hi = “100 m” then w.hi = 100 m
 in ft and check that answers are same.</li>
 <li>Tests that check against <code>distance::ds</code> and other
 routines. This should become a vignette or paper.</li>
+<li>Test NA distances in data set. These should not appear in the
+distance function but the observation (groupsize) should count toward
+abundance.</li>
+<li>Test NA transect lengths. These should contribute distance
+observations, but not count toward abundance.</li>
 </ol>
+</div>
+<div id="missing-values" class="section level1">
+<h1>Missing values:</h1>
+<p>Missing values in a particular observation</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Distance</th>
+<th align="center">Group Size</th>
+<th align="center">Transect len</th>
+<th align="center">Contributes to:</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">present</td>
+<td align="center">present</td>
+<td align="center">present</td>
+<td align="center">dfunc; abundance</td>
+</tr>
+<tr class="even">
+<td align="center">MISSING</td>
+<td align="center">present</td>
+<td align="center">present</td>
+<td align="center">abundance</td>
+</tr>
+<tr class="odd">
+<td align="center">present</td>
+<td align="center">MISSING</td>
+<td align="center">present</td>
+<td align="center">dfunc</td>
+</tr>
+<tr class="even">
+<td align="center">present</td>
+<td align="center">present</td>
+<td align="center">MISSING</td>
+<td align="center">dfunc</td>
+</tr>
+<tr class="odd">
+<td align="center">MISSING</td>
+<td align="center">MISSING</td>
+<td align="center">present</td>
+<td align="center">dfunc</td>
+</tr>
+<tr class="even">
+<td align="center">present</td>
+<td align="center">MISSING</td>
+<td align="center">MISSING</td>
+<td align="center">dfunc</td>
+</tr>
+<tr class="odd">
+<td align="center">MISSING</td>
+<td align="center">present</td>
+<td align="center">MISSING</td>
+<td align="center"><em>ignored</em></td>
+</tr>
+<tr class="even">
+<td align="center">MISSING</td>
+<td align="center">MISSING</td>
+<td align="center">MISSING</td>
+<td align="center"><em>doesn’t happen</em></td>
+</tr>
+</tbody>
+</table>
 </div>
 
 

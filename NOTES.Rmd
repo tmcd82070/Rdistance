@@ -5,7 +5,7 @@ output: html_document
 Notes and to-do for `s6methods` branch of Rdistance:
 
 # Package Notes:
-1.    Remove requirement of no missing values from `abundEstim`. Missing distances in detection data frame are okay. But, we stop when missing distances show up in `abundEstim`. 
+
 2.    Check whether we want or need the "1+" in `expansion.terms`.  I.e., you use 1+expanTerms.  I think maybe you want just expanTerms (no 1+).  Check this against `distance::`.
 3.    You use Simpsons 1/3 composite rule in version >4.0.0.  Study precision differences between it and
 Simpson's alternate composite formula. https://en.wikipedia.org/wiki/Simpson's_rule
@@ -38,4 +38,27 @@ You have most of these testing files drafted in `Rdistance/CodeParkingLot/tests/
 4.    Test methods for by.site = T in `abundEstim`
 6.    Test units for equality. e.g., set w.hi = "100 m" then w.hi = 100 m in ft and check that answers are same.
 7.    Tests that check against `distance::ds` and other routines.  This should become a vignette or paper. 
+8.    Test NA distances in data set.  These should not appear in the distance function but the observation (groupsize) should count toward abundance.
+9.    Test NA transect lengths.  These should contribute distance observations, but not count toward abundance. 
+
+# Missing values:
+
+Missing values in a particular observation
+
+```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+tabl <- "
+| Distance        | Group Size  | Transect len  | Contributes to:  |
+|:---------------:|:-----------:|:-------------:|:----------------:|
+|  present        |   present   |   present     | dfunc; abundance |
+|  MISSING        |   present   |   present     | abundance        |
+|  present        |   MISSING   |   present     | dfunc            |
+|  present        |   present   |   MISSING     | dfunc            |
+|  MISSING        |   MISSING   |   present     | dfunc            |
+|  present        |   MISSING   |   MISSING     | dfunc            |
+|  MISSING        |   present   |   MISSING     | *ignored*        |
+|  MISSING        |   MISSING   |   MISSING     | *doesn't happen* |
+"
+
+cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
+```
 
