@@ -100,6 +100,7 @@ parseModel <- function(data
     formulaChar[3] <- gsub( gsFormulaTxt, "offset(", formulaChar[3] )
   } else {
     # "groupsize" not specified; add it.
+    effColumn <- attr(data, "effortColumn")
     offsetVar <- withr::with_preserve_seed({
       set.seed(Sys.time())
       formatC(trunc(runif(1, max = 10000000))
@@ -110,8 +111,7 @@ parseModel <- function(data
       })
     offsetVar <- paste0("gs_",offsetVar)
     formulaChar[3] <- paste0(formulaChar[3], " + offset(", offsetVar, ")")
-    detectionData <- detectionData |> 
-      dplyr::mutate( !!offsetVar := 1 ) 
+    detectionData[[offsetVar]] <- ifelse(is.na(detectionData[[effColumn]]), NA, 1)
   }
   formula <- formula( paste(formulaChar[c(2,1,3)], collapse = " ") )
 
@@ -127,7 +127,7 @@ parseModel <- function(data
     formula = formula
     , data = detectionData
     , drop.unused.levels = TRUE
-    , na.action = na.exclude
+    , na.action = na.pass
   )
 
   # A note on missing values  ----
@@ -135,11 +135,11 @@ parseModel <- function(data
   # a target for which crew did not get a distance. Happens. 
   # These count toward "n" when computing density, but not 
   # when estimating distance functions.
-  # Using na.exclude in model.frame excludes missing distances 
-  # from the fitting frame, but attr(mf, "na.action") stores the 
-  # line numbers of rows in the original data set with missing cases. 
-  # A missing case has either missing distance or missing covariates. 
-  
+  # Using na.pass preserves all missings in the model frame, 
+  # this includes missing group sizes (for obs on missing transects). 
+  # All of Rdistance must keep in mind that missing responses (distances)
+  # could happen.
+
   # Check units ----    
   # We could check that offset, g.x.scl, and expansions DON'T have units
   mtNames <- as.character(attr(mt, "variables"))
@@ -162,24 +162,23 @@ parseModel <- function(data
   
 
   # Truncate for w.lo and w.hi ----
-  # This is second evaluation of model.frame
-  # Re-do model.frame so that distances outside strip are set to NA, but 
-  # row is kept. Do this here, rather than above, because we've check all units here.
-  # Use ml because checkUnits may have changed units, so original mf (and mt) may
+  # This physically removes observations outside the strip. 
+  # But, it keeps missing values of distances because their group sizes 
+  # may count toward abundance. 
+  # Use dataWUnits because checkUnits may have changed units, so original mf (and mt) may
   # not be good.
-  d <- dplyr::pull(dataWUnits$data, dataWUnits$respName)
-  ind <- (dataWUnits$w.lo <= d) & (d <= dataWUnits$w.hi)  # could be NA's here
-  ind <- ind & !is.na(ind)
-  if( any(!ind) ){
-    missDist <- units::set_units(NA_real_, dataWUnits$outputUnits, mode="standard")
-    dataWUnits$data[!ind, dataWUnits$respName] <- missDist
+  d <- dplyr::pull(dataWUnits$data, dataWUnits$respName)  
+  ind <- (dataWUnits$w.lo <= d) & (d <= dataWUnits$w.hi)  # could be NA's here from missing distances
+  # ind <- ind & !is.na(ind)
+  if( any(!ind, na.rm = TRUE) ){
+    dataWUnits$data <- dataWUnits$data[is.na(ind) | ind, ]  
   }
 
   mf <- stats::model.frame(
       formula = formula
       , data = dataWUnits$data
       , drop.unused.levels = TRUE
-      , na.action = na.exclude
+      , na.action = na.pass
     )    
 
   # Store a reduced data frame for abundance estimation later ----

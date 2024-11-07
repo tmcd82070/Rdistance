@@ -33,7 +33,9 @@ checkUnits <- function(ml){
   # We want outputUnits to be units(dist), not e.g., string "m"
   if ( !is.null(ml$outputUnits) ){
     ml$data <- ml$data |> 
-      dplyr::mutate( !!ml$respName := units::set_units(dist, ml$outputUnits, mode = "standard"))
+      dplyr::mutate(dplyr::across(.cols = ml$respName
+                                , .fns = ~ units::set_units(.x, ml$outputUnits, mode = "standard")))
+      # dplyr::mutate( !!ml$respName := units::set_units(!!ml$respName, ml$outputUnits, mode = "standard"))
     ml$outputUnits <- units(units::set_units(1, ml$outputUnits, mode = "standard"))
   } else {
     ml$outputUnits <- units(dist)

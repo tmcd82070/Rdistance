@@ -21,5 +21,6 @@
 #' @export
 #' 
 groupSizes <- function(ml, ...){
-  ml$mf[, attr(terms(ml$mf), "offset")]
+  #ml$mf[, attr(terms(ml$mf), "offset")]
+  stats::model.offset(ml$mf)
 }

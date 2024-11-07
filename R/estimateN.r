@@ -59,9 +59,15 @@ estimateN <- function(x
   w <- x$w.hi - x$w.lo
   
   # ---- Find observations on NA length transects inside the strip ----
-  groupSz <- Rdistance::groupSizes(x)
-  eff <- Rdistance::effort(x)
-    
+  # We need these regardless whether dfunc converges or not
+  groupSz <- Rdistance::groupSizes(x) # length = num distance obs (could include NA)
+  eff <- Rdistance::effort(x) # length = num non-missing plus missing transects
+  totSurveyedUnits <- sum(eff, na.rm = TRUE) # na.rm CRITICAL here: remove transects with NA length
+  if(units(totSurveyedUnits) != x$outputUnits){
+    # w has units we want; but, sum of effort came from user and has not been converted yet
+    totSurveyedUnits <- units::set_units(totSurveyedUnits, x$outputUnits, mode="standard")
+  }
+  
   # ---- Estimate numerator of abundance ----
   if( x$convergence == 0 ){
     # REMEMBER: component $mf is the model frame and has been truncated to (w.lo, w.hi) and
@@ -86,19 +92,27 @@ estimateN <- function(x
     nhat <- groupSz / phat # inflated counts one per detection
     
     # ---- Compute density ----
-    totSurveyedUnits <- sum(eff)
     if(Rdistance::is.points(x)){
-      dens <- sum(nhat) / (pi * w^2 * totSurveyedUnits)
+      dens <- sum(nhat, na.rm = TRUE) / (pi * w^2 * totSurveyedUnits) # na.rm CRITICAL here; missing groupsizes on missing transects
     } else {
-      dens <- sum(nhat) / (surveyedSides * w * totSurveyedUnits)
+      dens <- sum(nhat, na.rm = TRUE) / (surveyedSides * w * totSurveyedUnits)
     }
     
     # ---- Compute abundance ----
+    oneSqUnit <- units::set_units(1, x$outputUnits, mode = "standard")^2 
     if( is.null(area) ){
-      area <- units::set_units(1, x$outputUnits, mode = "standard")^2
+      area <- oneSqUnit
+    } else if( units(area) != units(oneSqUnit) ){
+      area <- units::set_units(area, units(oneSqUnit), mode="standard")
     }
+    
     nhat.df <- dens * area
-    nhat.df <- units::set_units(nhat.df, NULL)
+    if( units(nhat.df) != units(units::set_units(1, "1"))){
+      warning(paste("Units on N are not 1 (unitless). Manually convert all measurements"
+                    , "to the same units outside Rdistance."))
+    } else {
+      nhat.df <- units::set_units(nhat.df, NULL)
+    }
     
   } else {
     # if we are here, x did not converge
@@ -110,12 +124,12 @@ estimateN <- function(x
   # ---- Make output data frame ----
   nhat.df <- list(density = dens
                   , abundance = nhat.df
-                  , n.groups = length(groupSz)
-                  , n.seen = sum(groupSz)
+                  , n.groups = sum(!is.na(groupSz))
+                  , n.seen = sum(groupSz, na.rm = TRUE)
                   , area = area
                   , surveyedUnits = totSurveyedUnits
                   , surveyedSides = surveyedSides
-                  , avg.group.size = mean(groupSz)
+                  , avg.group.size = mean(groupSz, na.rm = TRUE)
                   # , range.group.size = range(groupSz)
                   , w = w
                   , pDetection = phat

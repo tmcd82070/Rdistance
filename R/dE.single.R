@@ -351,12 +351,16 @@ dE.single <- function(   data
 
   # ---- Check parameter boundaries ----
   fuzz <- getOption("Rdistance_fuzz")
-  low.bound <- ans$par <= (ans$limits$low + fuzz)
-  high.bound <- ans$par >= (ans$limits$high - fuzz)
   if (ans$convergence != 0) {
     if (warn) warning(ans$message)
+    low.bound <- FALSE
+    high.bound <- FALSE
+  } else {
+    low.bound <- ans$par <= (ans$limits$low + fuzz)
+    high.bound <- ans$par >= (ans$limits$high - fuzz)
   }
   if (any(low.bound)) {
+    # if we are here, model converged but to limit
     ans$convergence <- -1
     messL <- paste(paste(strt.lims$names[low.bound], "parameter at lower boundary.")
     , collapse = "; ")

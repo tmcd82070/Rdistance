@@ -19,8 +19,11 @@ mlEstimates <- function( ml
                        , strt.lims
                        ){
 
-  # there are no missing distances because stats::model.frame 
-  # dropped them CHECK THIS!!!
+  # Missing observations: 
+  #  (1) there can be missing responses (distances); but, Rdistance::distances drops them
+  #      i.e., model.response(ml$mf) has missings (potentially), but Rdistance::distances(ml) does not
+  #  (2) There are missing group sized in the model frame for transects with missing lengths. 
+  #      These don't matter here.
   
   optimFunc <- getOption("Rdistance_optimizer")
   

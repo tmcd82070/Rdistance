@@ -68,7 +68,7 @@ oneBsIter <- function(indexDf
                          g.x.scl = g.x.scl,
                          outputUnits = outputUnits,
                          warn = warn)
-  
+
   # Note: Convergence is checked in estimateN. If nonConvergent, nEst$density returns NA
   nEst <- Rdistance::estimateN(
       dfunc.bs

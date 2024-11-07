@@ -407,7 +407,7 @@ abundEstim <- function(x
       dplyr::select(id, dplyr::starts_with("density"), dplyr::starts_with("abundance"), dplyr::starts_with("avgEffDistance"), dplyr::everything())
     
     if ((x$LhoodType == "parametric") && (any(is.na(bsEsts$density))) && showProgress){
-      cat(paste( R - sum(is.na(bsEsts$density)), "of", R, "iterations did not converge.\n"))
+      cat(paste( sum(is.na(bsEsts$density)), "of", R, "iterations did not converge.\n"))
     }
   }
 
