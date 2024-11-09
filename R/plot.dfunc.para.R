@@ -332,7 +332,7 @@ plot.dfunc.para <- function( x,
                          xlab = xlab,
                          ylab = ylab,
                          ... )  
-    # xticks <- axTicks(1)
+    xticks <- axTicks(1)
     axis( 1, at=xticks,  labels=xticks, line=.5, ... )
   } else {
     plot(1,1,type="n",

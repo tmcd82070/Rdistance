@@ -21,6 +21,7 @@ by \code{dfuncEstim}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
+data(sparrowSiteData)
 data(sparrowDetectionData)
 
 # Fit half-normal detection function

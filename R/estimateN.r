@@ -63,9 +63,11 @@ estimateN <- function(x
   groupSz <- Rdistance::groupSizes(x) # length = num distance obs (could include NA)
   eff <- Rdistance::effort(x) # length = num non-missing plus missing transects
   totSurveyedUnits <- sum(eff, na.rm = TRUE) # na.rm CRITICAL here: remove transects with NA length
-  if(units(totSurveyedUnits) != x$outputUnits){
-    # w has units we want; but, sum of effort came from user and has not been converted yet
-    totSurveyedUnits <- units::set_units(totSurveyedUnits, x$outputUnits, mode="standard")
+  if( !Rdistance::is.points(dfunc) ){
+    if(units(totSurveyedUnits) != x$outputUnits){
+      # w has units we want; but, effort came from user and has not been converted yet
+      totSurveyedUnits <- units::set_units(totSurveyedUnits, x$outputUnits, mode="standard")
+    }
   }
   
   # ---- Estimate numerator of abundance ----
@@ -107,9 +109,10 @@ estimateN <- function(x
     }
     
     nhat.df <- dens * area
-    if( units(nhat.df) != units(units::set_units(1, "1"))){
-      warning(paste("Units on N are not 1 (unitless). Manually convert all measurements"
-                    , "to the same units outside Rdistance."))
+    if( units(nhat.df) != units(units::set_units(1, "1")) ){
+      warning(paste("Units on N are not 1 (unitless). Some units did not convert correctly."
+                    , "Manually convert all measurements"
+                    , "to the same units outside Rdistance, and re-run."))
     } else {
       nhat.df <- units::set_units(nhat.df, NULL)
     }

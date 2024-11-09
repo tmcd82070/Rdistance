@@ -22,17 +22,20 @@
 #' data(sparrowSiteData)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist ~ 1 + offset(groupsize)
-#'                   , detectionData=sparrowDetectionData)
+#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~1)
 #' 
 #' # Estimate abundance given a detection function
-#' # Note: a person should do more than R=20 bootstrap iterations
-#' fit <- abundEstim(dfunc
-#'                 , detectionData = sparrowDetectionData
-#'                 , siteData = sparrowSiteData
+#' # Do more than R=20 bootstraps!
+#' fit <- abundEstim(x = dfunc
 #'                 , area = units::set_units(4105, "km^2")
-#'                 , ci = NULL)
+#'                 , singleSided = FALSE
+#'                 , ci = 0.95
+#'                 , R = 20
+#'                 , plot.bs = FALSE
+#'                 , showProgress = TRUE)
 #' print(fit)
+#' summary(fit)
 #' 
 #' @keywords models
 #' @export
