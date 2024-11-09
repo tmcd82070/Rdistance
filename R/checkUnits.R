@@ -47,7 +47,9 @@ checkUnits <- function(ml){
           stop(paste("Measurement units required on minimum distance (w.lo).",
               "Assign units by attaching 'units' package then:",
               "units(w.lo) <- '<units>' or",
-              paste0("units::set_units(", ml$w.lo,", <units>) in function call."),
+              paste0("units::set_units(", 
+                     ifelse(is.function(ml$w.lo), "<value>", ml$w.lo),
+                     ", <units>) in function call."),
               "See units::valid_udunits() for valid symbolic units."))
       }
       # if we are here, w.lo is 0, it has no units, and we require units
@@ -65,7 +67,9 @@ checkUnits <- function(ml){
       stop(paste("Measurement units required on maximum distance (w.hi).",
           "Assign units by attaching 'units' package then:",
           "units(w.hi) <- '<units>' or",
-          paste0("units::set_units(", ml$w.hi,", <units>) in function call."),
+          paste0("units::set_units(", 
+                 ifelse(is.function(ml$w.hi), "<value>", ml$w.hi),
+                 ", <units>) in function call."),
           "See units::valid_udunits() for valid symbolic units."))
   } 
   # if we are here, w.hi has units and we require them, convert to output units
@@ -78,7 +82,9 @@ checkUnits <- function(ml){
       stop(paste("Measurement units for x.scl are required.",
                  "Assign units using either:\n", 
                  "units::units(x.scl) <- '<units>' or", 
-                 paste0("units::set_units(", x.scl,", <units>) in function call\n"), 
+                 paste0("units::set_units(", 
+                        ifelse(is.function(x.scl), "<value>", x.scl),
+                        ", <units>) in function call\n"), 
                  "See units::valid_udunits() for valid symbolic units."))
     }
     # if we are here, x.scl is either 0 (w/o units) or "max"

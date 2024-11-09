@@ -105,8 +105,15 @@ containing transect lengths, which must have measurement units.
 For point transects, this specifies the name of a column containing 
 the number of points on each transect.  The effort column for point 
 transects \emph{cannot} contain 
-measurement units. Default is "length" for line-transects, "nPoints" for 
-point-transects. See \bold{Transect Lengths}.}
+measurement units. Default is "length" for line-transects, "numPoints" for 
+point-transects. If those names are not found, the first column
+in the merged data frame whose name contains 'point' 
+(for point transects) or 'length' (for line transects)
+is used and a message is printed. Matching is case insensitive, 
+so for example, 'nPoints' and 
+'N_point' and "numberOfPoints" will all be matched.   If two or more column 
+names match the effort column search terms, a warning is issued. 
+See \bold{Transect Lengths} for a description of point and line transects.}
 }
 \value{
 A nested tibble (a generalization of base data frames) 

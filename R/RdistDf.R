@@ -88,8 +88,15 @@
 #' For point transects, this specifies the name of a column containing 
 #' the number of points on each transect.  The effort column for point 
 #' transects \emph{cannot} contain 
-#' measurement units. Default is "length" for line-transects, "nPoints" for 
-#' point-transects. See \bold{Transect Lengths}.
+#' measurement units. Default is "length" for line-transects, "numPoints" for 
+#' point-transects. If those names are not found, the first column
+#' in the merged data frame whose name contains 'point' 
+#' (for point transects) or 'length' (for line transects)
+#' is used and a message is printed. Matching is case insensitive, 
+#' so for example, 'nPoints' and 
+#' 'N_point' and "numberOfPoints" will all be matched.   If two or more column 
+#' names match the effort column search terms, a warning is issued. 
+#' See \bold{Transect Lengths} for a description of point and line transects.
 #' 
 #' @param by A character vector of variables to use in the join. The right-hand
 #' side of this join identifies unique transects and will specify unique 
@@ -298,8 +305,10 @@ RdistDf <- function( transectDf
   if( !(.effortCol %in% names(ans)) ){
     if( pointSurvey ){
       searchTerm <- "(p|P)(o|O)(i|I)(n|N)(t|T)"
+      torp <- "number of points"
     } else {
       searchTerm <- "(l|L)(e|E)(n|N)(g|G)(t|T)(h|H)"
+      torp <- "transect length"
     }
     candidates <- grep(searchTerm, names(ans))
     if(length(candidates) == 0){
@@ -309,11 +318,21 @@ RdistDf <- function( transectDf
                   "Potential effort column(s): ", 
                   paste(names(ans)[candidates], collapse = ", ")))
     } else if(length(candidates) > 1){
-      warning(paste("Found two or more potential effort columns."
-                  , "Using"
+      warning(paste0("Found two or more potential effort columns. "
+                  , "Using "
                   , names(ans)[candidates[1]]
-                  , "as transect length. Specify effort column using .effortCol input parameter."
+                  , " as "
+                  , torp
+                  , ". Specify a differnt effort column using the .effortCol input parameter."
                   ))
+    } else {
+      cat(paste0(
+                 "Using "
+                , colorize(names(ans)[candidates[1]])
+                , " as "
+                , torp
+                , ". Specify a differnt effort column using the .effortCol input parameter."
+      ))
     }
     .effortCol <- names(ans)[candidates[1]]
   }

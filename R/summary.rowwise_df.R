@@ -13,7 +13,7 @@
 #' 
 #' @return If \code{object} is an \code{RdistDf}, a data frame 
 #' containing summary statistics relevant to distance sampling is returned
-#' invisably.
+#' invisibly.
 #' If \code{formula} is not specified, the number of distance observations
 #' and target detections is not returned because the distances, group sizes,
 #' and covariates are not known. 
@@ -90,6 +90,8 @@ summary.rowwise_df <- function(object
                  , crayon::red(c(nGroups, nTargets))
                  , "\n"))
       
+    } else {
+      cat(crayon::blue("Specify 'formula' to obtain distances, groups, and individuals counts."))
     }
     
     res <- data.frame(

@@ -42,7 +42,7 @@ See examples in the help for \code{set_units}.}
 \value{
 If \code{object} is an \code{RdistDf}, a data frame 
 containing summary statistics relevant to distance sampling is returned
-invisably.
+invisibly.
 If \code{formula} is not specified, the number of distance observations
 and target detections is not returned because the distances, group sizes,
 and covariates are not known. 

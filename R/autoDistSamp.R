@@ -130,7 +130,7 @@ autoDistSamp <- function (data
         sep1 <- "\t"
       } 
       cat(paste(like, sep1, ser, "\t", expan, "\t", conv.str, 
-              "\t\t", scl.ok, "\t", Rdistance::colorize(round(aic, 4)), sep = ""))
+              "\t\t", scl.ok, "\t", colorize(round(aic, 4)), sep = ""))
     }
     
     if (plot) {
