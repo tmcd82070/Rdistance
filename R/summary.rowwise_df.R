@@ -91,7 +91,7 @@ summary.rowwise_df <- function(object
                  , "\n"))
       
     } else {
-      cat(crayon::blue("Specify 'formula' to obtain distances, groups, and individuals counts."))
+      cat(crayon::blue("Specify 'formula', 'w.lo', and 'w.hi' to obtain distances, groups, and individuals."))
     }
     
     res <- data.frame(

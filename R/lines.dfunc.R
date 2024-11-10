@@ -7,6 +7,13 @@
 #'   
 #' @inheritParams plot.dfunc
 #' 
+#' @param prob Logical scaler for whether to scale the distance function 
+#' to be a density (integrates to one). Default behavior is designed 
+#' to be compatible with the plot method for distance functions 
+#' (\code{\link{plot.dfunc}}). By default, line transect distance 
+#' functions are not scaled to a density and integrate to the effective strip width. 
+#' By default, point transects distance functions are scaled to be densities. 
+#' 
 #' @param \dots Parameters passed to \code{lines.default} that control attributes like 
 #' color, line width, line type, etc. 
 #'   
@@ -69,6 +76,7 @@
 #' @export
 lines.dfunc <- function(x
                         , newdata = NULL
+                        , prob = NULL
                         ,  ...) {
   
   x.seq <- seq(x$w.lo, x$w.hi, length = getOption("Rdistance_intEvalPts") )
@@ -83,7 +91,14 @@ lines.dfunc <- function(x
   # dfuncs are in columns.
   
   if( is.points(x) ){
-    y <- y * units::set_units(x.seq - x$w.lo, NULL)
+    y <- y * units::set_units(x.seq - x$w.lo, NULL) # integrate to > 1
+    if( is.null(prob) || (prob) ){
+      y <- t( t(y) / (colSums(y, na.rm = TRUE) * units::set_units(x.seq[2] - x.seq[1], NULL))) # now y integrates to 1.0
+    }
+  } else {
+    if( !is.null(prob) && prob ){
+      y <- t( t(y) / (colSums(y, na.rm = TRUE) * units::set_units(x.seq[2] - x.seq[1], NULL))) # now y integrates to 1.0
+    }
   }
   
   if( ncol(y) > 1 ){

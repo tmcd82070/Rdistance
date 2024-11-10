@@ -433,8 +433,8 @@ plot.dfunc.para <- function( x,
   }
   
   # Check for Probabilities > 1 ----
-  if( any(y > 1) ){
-    # some g(x) > 1, should'nt happen
+  if( !is.points(x) && any(y > 1) ){
+    # some g(x) > 1, should'nt happen for line transects
     mess <- "Probabilities > 1"
     text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
     mess <- "g(x) > 1 should not happen"
