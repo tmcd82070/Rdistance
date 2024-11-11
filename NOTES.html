@@ -403,6 +403,12 @@ z = 0.5I(w_l &lt; x &lt; \theta)
 \]</span> and <span class="math display">\[
 \theta = [\sum(z) / n](w_h - w_l) + w_l
 \]</span> this is close to correct, but not. I think the <span class="math inline">\(z\)</span> need to change each iteration.</li>
+<li><em>Stepwise variable selection</em>: Write <code>add1</code> and
+<code>drop1</code> and <code>extractAIC</code> so that <code>step</code>
+function will work with distance function objects.</li>
+<li>Check the scaling of likelihoods with and without expansion terms.
+E.g., <code>autoDistSample</code> seems to be using vastly different
+scaling when expansion factors are present. Run it and look at AIC.</li>
 </ol>
 </div>
 <div id="testing" class="section level1">
@@ -427,14 +433,24 @@ observations, but not count toward abundance.</li>
 </div>
 <div id="missing-values" class="section level1">
 <h1>Missing values:</h1>
-<p>Missing values in a particular observation</p>
+<p>Missing values in an observation contribute to either distance
+function estimation (‘dfunc’) or abundance estimation (‘abundance’) as
+follows:</p>
 <table>
+<colgroup>
+<col width="18%" />
+<col width="14%" />
+<col width="16%" />
+<col width="20%" />
+<col width="30%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="center">Distance</th>
 <th align="center">Group Size</th>
 <th align="center">Transect len</th>
 <th align="center">Contributes to:</th>
+<th align="center">Comment</th>
 </tr>
 </thead>
 <tbody>
@@ -443,51 +459,61 @@ observations, but not count toward abundance.</li>
 <td align="center">present</td>
 <td align="center">present</td>
 <td align="center">dfunc; abundance</td>
+<td align="center">usual observation</td>
 </tr>
 <tr class="even">
 <td align="center">MISSING</td>
 <td align="center">present</td>
 <td align="center">present</td>
 <td align="center">abundance</td>
+<td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="center">present</td>
 <td align="center">MISSING</td>
 <td align="center">present</td>
-<td align="center">dfunc</td>
+<td align="center">dfunc; abundance</td>
+<td align="center">for abundance, length only</td>
 </tr>
 <tr class="even">
 <td align="center">present</td>
 <td align="center">present</td>
 <td align="center">MISSING</td>
 <td align="center">dfunc</td>
+<td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="center">MISSING</td>
 <td align="center">MISSING</td>
 <td align="center">present</td>
-<td align="center">dfunc</td>
+<td align="center">abundance</td>
+<td align="center">so-called zero transect</td>
 </tr>
 <tr class="even">
 <td align="center">present</td>
 <td align="center">MISSING</td>
 <td align="center">MISSING</td>
 <td align="center">dfunc</td>
+<td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="center">MISSING</td>
 <td align="center">present</td>
 <td align="center">MISSING</td>
+<td align="center">nothing</td>
 <td align="center"><em>ignored</em></td>
 </tr>
 <tr class="even">
 <td align="center">MISSING</td>
 <td align="center">MISSING</td>
 <td align="center">MISSING</td>
-<td align="center"><em>doesn’t happen</em></td>
+<td align="center">nothing</td>
+<td align="center"><em>does not happen</em></td>
 </tr>
 </tbody>
 </table>
+<p>Group size values never contribute to distance function estimation.
+Distance functions are estimated from distances only.</p>
 </div>
 
 

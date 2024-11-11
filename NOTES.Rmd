@@ -27,6 +27,8 @@ $$
 \theta = [\sum(z) / n](w_h - w_l) + w_l
 $$
 this is close to correct, but not. I think the $z$ need to change each iteration.
+9.  *Stepwise variable selection*: Write `add1` and `drop1` and `extractAIC` so that `step` function will work with distance function objects. 
+10. Check the scaling of likelihoods with and without expansion terms. E.g., `autoDistSample` seems to be using vastly different scaling when expansion factors are present. Run it and look at AIC.
 
 # Testing:
 
@@ -43,22 +45,23 @@ You have most of these testing files drafted in `Rdistance/CodeParkingLot/tests/
 
 # Missing values:
 
-Missing values in a particular observation
+Missing values in an observation contribute to either distance function estimation ('dfunc') or abundance estimation ('abundance') as follows: 
 
 ```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 tabl <- "
-| Distance        | Group Size  | Transect len  | Contributes to:  |
-|:---------------:|:-----------:|:-------------:|:----------------:|
-|  present        |   present   |   present     | dfunc; abundance |
-|  MISSING        |   present   |   present     | abundance        |
-|  present        |   MISSING   |   present     | dfunc            |
-|  present        |   present   |   MISSING     | dfunc            |
-|  MISSING        |   MISSING   |   present     | dfunc            |
-|  present        |   MISSING   |   MISSING     | dfunc            |
-|  MISSING        |   present   |   MISSING     | *ignored*        |
-|  MISSING        |   MISSING   |   MISSING     | *doesn't happen* |
+| Distance        | Group Size  | Transect len  | Contributes to:  | Comment                   |
+|:---------------:|:-----------:|:-------------:|:----------------:|:-------------------------:|
+|  present        |   present   |   present     | dfunc; abundance | usual observation         |
+|  MISSING        |   present   |   present     | abundance        |                           |
+|  present        |   MISSING   |   present     | dfunc; abundance |for abundance, length only |
+|  present        |   present   |   MISSING     | dfunc            |                           |
+|  MISSING        |   MISSING   |   present     | abundance        |   so-called zero transect |
+|  present        |   MISSING   |   MISSING     | dfunc            |                           |
+|  MISSING        |   present   |   MISSING     | nothing          | *ignored*                 |
+|  MISSING        |   MISSING   |   MISSING     | nothing          | *does not happen*         |
 "
 
 cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
+Group size values never contribute to distance function estimation. Distance functions are estimated from distances only. 

@@ -272,10 +272,10 @@ is.RdistDf <- function(df, verbose = FALSE){
         , ". Make names in detection data frame unique."
         , " Test: "
         , crayon::red(paste0("tidyr::unnest(", dfName, ")"))
-        , " should execute."
-        , " Duplicate names found: "
-        , crayon::red(intersect(namesOutList, namesInList))
-      ))
+        , " should execute."))
+      cat(" Duplicate names found: ")
+      cat(crayon::red(intersect(namesOutList, namesInList)))
+      cat("\n")
     }
     return(FALSE)
   }
