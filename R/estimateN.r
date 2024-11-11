@@ -63,12 +63,12 @@ estimateN <- function(x
   groupSz <- Rdistance::groupSizes(x) # length = num distance obs (could include NA)
   eff <- Rdistance::effort(x) # length = num non-missing plus missing transects
   totSurveyedUnits <- sum(eff, na.rm = TRUE) # na.rm CRITICAL here: remove transects with NA length
-  if( !Rdistance::is.points(dfunc) ){
+  if( !Rdistance::is.points(x) ){
     if(units(totSurveyedUnits) != x$outputUnits){
       # w has units we want; but, effort came from user and has not been converted yet
       totSurveyedUnits <- units::set_units(totSurveyedUnits, x$outputUnits, mode="standard")
     }
-  }
+  }  # Point effort vector has no units b/c it's number of points
   
   # ---- Estimate numerator of abundance ----
   if( x$convergence == 0 ){

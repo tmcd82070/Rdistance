@@ -92,7 +92,7 @@ autoDistSamp <- function (data
     
     esw <- Rdistance::effectiveDistance(dfunc)
     
-    if (!is.na(esw) & (esw > dfunc$w.hi)) {
+    if (any(!is.na(esw) & (esw > dfunc$w.hi))) {
       scl.ok <- "Not ok"
       scl.ok.flag <- 0
       aic <- NA

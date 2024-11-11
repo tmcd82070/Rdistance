@@ -374,7 +374,7 @@ abundEstim <- function(x
 
   # ---- Plot original fit again (over bs lines) ----
   if (plot.bs) {
-    lines(dfunc
+    lines(x
           , newdata = plotObj$predCovValues
           , col = "red"
           , lwd = 3)

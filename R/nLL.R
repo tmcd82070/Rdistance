@@ -131,7 +131,7 @@ nLL <- function(a
   # Scalers should be unique to each observation and equal
   # to integral under distance function for that observation. 
   # Integrals are by defn unit-less.
-  if( ml$expansions <= 0 && 
+  if( ml$expansions <= -1 && 
       (ml$likelihood %in% c("halfnorm"
                           , "negexp"
                           , "triangle"

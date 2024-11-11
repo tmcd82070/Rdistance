@@ -145,7 +145,7 @@ integrationConstant <- function(a, ml){
     if(ml$expansions > 0){
       # 'if' saves a little compute time if no expansions
       # but not necc. b/c expansionTerms = 1 if none
-      seqy <- seqy * Rdistance::expansionTerms(a, ml$mf)
+      seqy <- seqy * Rdistance::expansionTerms(a, ml)
     }
     
     if(is.points(ml)){

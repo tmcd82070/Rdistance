@@ -37,7 +37,7 @@ summary.rowwise_df <- function(object
     tranType <- Rdistance::transectType(object)
     effVec <- Rdistance::effort(object)
     nTrans <- sum(!is.na(effVec))
-    lenTrans <- sum(effVec)
+    lenTrans <- sum(effVec, na.rm = TRUE)
     if( !is.null(formula) ){
       mf <- Rdistance::parseModel(data = object
                                , formula = formula
