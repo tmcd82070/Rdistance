@@ -31,8 +31,8 @@
 #' Suppress all intermediate output using \code{plot.bs=FALSE}, 
 #' \code{showProgress=FALSE}, and \code{plot=FALSE}. 
 #' 
-#' The returned abundance estimate object containing 
-#' the fit table (a list of models fitted and 
+#' The returned abundance estimate object contains
+#' an additional component, the fitting table (a list of models fitted and 
 #' criterion values) in component \code{$fitTable}.
 #' 
 #' @inherit abundEstim return
@@ -47,7 +47,8 @@
 #' sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
 #' autoDistSamp(data = sparrowDf
 #'     , formula = dist ~ 1 + groupsize(groupsize)
-#'     , area = units::set_units(4105, "km^2")
+#'     , ci = NULL
+#'     , area = units::set_units(1, "hectare")
 #' )     
 #' 
 #'            
@@ -148,10 +149,6 @@ autoDistSamp <- function (data
     list(results = results, k = k)
   }
   
-  
-  
-  
-  
   # Fit detection functions (dfuncEstim appears 4 times below)
   
   wwarn <- options()$warn
@@ -230,6 +227,7 @@ autoDistSamp <- function (data
     
   fit.table$aic <- ifelse(fit.table$converge == 0, fit.table$aic, Inf)
   fit.table <- fit.table[order(fit.table$aic), ]
+  fit.table$deltaAIC <- fit.table$aic - min(fit.table$aic, na.rm = TRUE)
 
   # Refit best dfunc
   dfunc <- Rdistance::dfuncEstim(

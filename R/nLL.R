@@ -115,8 +115,16 @@ nLL <- function(a
   key <- L$L.unscaled
   
   # Evaluate and apply the expansions ----
-  exp.terms <- Rdistance::expansionTerms(a, ml)
-  key <- key * exp.terms 
+  if( ml$expansions > 0 ){
+    # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
+    # but, this may save a tiny bit of time when ml$expansions = 0
+    exp.terms <- Rdistance::expansionTerms(a = a
+                                         , d = dist
+                                         , series = ml$series
+                                         , nexp = ml$expansions
+                                         , w = ml$w.hi - ml$w.lo)
+    key <- key * exp.terms
+  }
     
   # without monotonicity restraints, function can go negative, 
   # especially in a gap between datapoints. Don't want this in distance
@@ -198,6 +206,12 @@ nLL <- function(a
 
   key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")   # happens at very bad values of parameters
 
+  # # debugging...Key should integrate to 1.0 every iteration
+  # tmpx <- seq(min(dist), max(dist), length = 100)
+  # tmpy <- approx(dist, key, xout = tmpx)$y
+  # intarea <- (tmpx[2] - tmpx[1]) * sum(tmpy * c(1, rep(2, length(tmpy)-2), 1)) / 2
+  # cat(paste("In nLL: Integral of key vector =", intarea, "\n"))
+  
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
   # cat(paste("Parameter:", crayon::red(paste(a, collapse=", ")), "\n"))

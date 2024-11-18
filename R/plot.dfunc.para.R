@@ -106,17 +106,17 @@
 #' to the required length. Default is 2 for all lines.  
 #' 
 #' @param \dots When bars are plotted, this routine 
-#'  uses \code{graphics::barplot} to set up the 
-#'  plotting region and plot bars. When bars are not plotted,
+#'  uses \code{graphics::barplot} to draw the 
+#'  plotting region and bars. When bars are not plotted,
 #'  this routine sets up the plot with \code{graphics::plot}.
-#'  \dots can be any  
-#'  argument to \code{barplot} or \code{plot} EXCEPT  
+#'  \dots can be any argument to \code{barplot} or \code{plot} EXCEPT  
 #'  \code{width}, \code{ylim}, \code{xlim}, 
-#'  \code{density}, \code{angle}, and \code{space}.
+#'  \code{density}, \code{angle}, and \code{space}. For example, 
+#'  set the main title with \code{main = "Main Title"}.
 #' 
 #' @inherit plot.dfunc return
 #' 
-#' @seealso [plot.dfunc()]
+#' @seealso \code{\link{plot.dfunc}}
 #' 
 #' @examples
 #' 
@@ -343,33 +343,6 @@ plot.dfunc.para <- function( x,
          bty = "n",
          ...)
   }
-  
-  
-  # Default main ----
-  if( !("main" %in% names(list(...))) ){
-    # Put up a default title containing likelihood description
-    # if( x$likelihood == "smu" ){
-    #   title(main=paste( x$fit$call[["kernel"]], "kernel smooth"))
-    #   mtext(paste0("Bandwidth ", x$fit$call[["bw"]], 
-    #                "; Adjust ", format(x$fit$call[["adjust"]])), 
-    #         side=3, cex=.75, line=0.8)
-    # } else 
-    if( x$expansions == 0 ){
-      title(main=paste( x$like.form, sep=""))
-    } else {
-      if( x$expansions == 1 ){
-        expText <- "expansion"
-      } else {
-        expText <- "expansions"
-      }
-      title(main=paste0( x$like.form, ", ", x$expansions, " ", x$series, " ", expText, sep=""))
-    }
-  }
-  
-  #   These 3 lines plot a polygon for the density function
-  #x.poly <- c(0, x, x[length(x)] )
-  #y.poly <- c(0, y, 0)
-  #polygon( x.poly, y.poly, density=15, border="red", lwd=2 )
   
   #   Work out the colors, line types, and line widths ----
   nFunctions <- ncol(y)

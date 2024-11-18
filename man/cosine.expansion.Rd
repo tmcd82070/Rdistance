@@ -36,10 +36,10 @@ There are, in general, several expansions that can be called cosine. The cosine 
   The maximum number of expansion terms computed is 5.
 }
 \examples{
-set.seed(33328)
-  x <- rnorm(1000) * 100
-  x <- x[ 0 < x & x < 100 ]
-  cos.expn <- cosine.expansion(x, 5)
+x <- seq(0, 1, length = 200)
+cos.expn <- cosine.expansion(x, 5)
+plot(range(x), range(cos.expn), type="n")
+matlines(x, cos.expn, col=rainbow(5), lty = 1)
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 

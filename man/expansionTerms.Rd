@@ -4,7 +4,7 @@
 \alias{expansionTerms}
 \title{expansionTerms - Compute distance function expansion terms}
 \usage{
-expansionTerms(a, ml)
+expansionTerms(a, d, series, nexp, w)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and 
@@ -16,25 +16,19 @@ expansion terms follow coefficients for the canonical parameters.
 i.e., length of this vector must be 
   \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate", "logistic", "huber"))}.}
 
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
-They contain the data, formula, likelihood name, w.lo, w.hi, 
-expansions, transect type, output units, etc.  
-Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
+\item{d}{A vector of distances at which to evaluate the expansion 
+terms. This vector should be distances above w.lo, i.e., if w.lo > 0, 
+this vector should be (distances - w.lo). Parameters \code{d} and \code{w}
+must have compatible measurement units.}
 
-Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
-'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
-log likelihood value, convergence information, and the variance-
-covariance matrix of the parameters.}
+\item{nexp}{Number of expansion terms.  Integer from 0 to 5.}
+
+\item{w}{Strip width, i.e., range of \code{d} is 0 to \code{w}.
+Parameters \code{d} and \code{w} must have compatible measurement units.}
 }
 \value{
 A vector of the expansion terms.  These are
-the cyclic expansion terms multiplies by exansion term 
+the cyclic expansion terms multiplied by expansion term 
 coefficients in \code{a}.
 }
 \description{
@@ -45,15 +39,16 @@ that can multiplied into a distance function likelihoods.
 Expansion terms modify the "key" function of the 
 likelihood multiplicatively.  The modified distance function is,
 \code{key * expTerms} where \code{key} is a vector of values in
-the base distance function (e.g., \code{halfnorm.like()$key} or 
-\code{hazrate.like()$key}) and \code{value} is the vector returned
+the base distance function (e.g., \code{halfnorm.like()$L.unscaled} or 
+\code{hazrate.like()$L.unscaled}) and \code{expTerms} is the vector returned
 by this routine.
 }
 \section{Expansion Terms}{
  
 
-If the number of \code{expansions} = k (k > 0), and assuming 
-the expansion terms specified in \code{ml$series} 
+If the number of expansions (\code{nexp}) is k, k is greater 
+than 0, and assuming 
+the expansion terms specified in \code{series} 
 are \eqn{h_{ij}(x)}{h_ij(x)} for 
 the \eqn{j^{th}}{j-th} expansion of the \eqn{i^{th}}{i-th} 
 distance, and that 
@@ -61,33 +56,26 @@ distance, and that
 coefficients for the expansion terms, the likelihood contribution 
 for the \eqn{i^{th}}{i-th} distance is, 
   \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = 
-   f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}
+   f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(d/w)).}
    {f(x|a,b,c_1,c_2,...,c_k) = 
-   f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
+   f(x|a,b)(1 + c(1) h_i1(d/w) + c(2) h_i2(d/w) + ... + c(k) h_ik(d/w)). }
 }
 
 \examples{
 a1 <- c(log(40), 0.5, -.5)
 a2 <- c(log(40), 0.25, -.5)
 dists <- units::set_units(seq(0, 100, length = 100), "m")
+w = units::set_units(100, "m")
 
-ml <- list(
-    mf = model.frame(dists ~ 1)
-  , expansions = 2
-  , w.lo = units::set_units(0, "m")
-  , w.hi = units::set_units(100, "m")
-  , series = "cosine"
-  , likelihood = "halfnorm"
-)
-expTerms1 <- expansionTerms(a1, ml)
-expTerms2 <- expansionTerms(a2, ml)
-plot(dists, expTerms1)
-points(dists, expTerms2, pch = 16)
+expTerms1 <- expansionTerms(a1, dists, "cosine", 2, w)
+expTerms2 <- expansionTerms(a2, dists, "cosine", 2, w)
+plot(dists, expTerms1 / (1 + sum(a1[2:3])))
+points(dists, expTerms2 / (1 + sum(a2[2:3])), pch = 16)
 
 # Showing key and expansions
-key <- halfnorm.like(log(40), dists, 1)$key
+key <- halfnorm.like(log(40), dists, 1)$L.unscaled
 plot(dists, key, type = "l", col = "blue", ylim=c(0,1.5))
-lines(dists, key * expTerms1 / expTerms1[1], col = "red")
-lines(dists, key * expTerms2 / expTerms2[1], col = "purple")
+lines(dists, key * expTerms1 / sum(a1[-1]), col = "red")
+lines(dists, key * expTerms2 / sum(a2[-1]), col = "purple")
 
 }

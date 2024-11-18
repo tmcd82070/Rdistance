@@ -250,8 +250,8 @@ values of \code{likelihoods}, \code{series}, and \code{expansions}.
 Suppress all intermediate output using \code{plot.bs=FALSE}, 
 \code{showProgress=FALSE}, and \code{plot=FALSE}. 
 
-The returned abundance estimate object containing 
-the fit table (a list of models fitted and 
+The returned abundance estimate object contains
+an additional component, the fitting table (a list of models fitted and 
 criterion values) in component \code{$fitTable}.
 }
 \examples{
@@ -263,7 +263,8 @@ data(sparrowSiteData)
 sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
 autoDistSamp(data = sparrowDf
     , formula = dist ~ 1 + groupsize(groupsize)
-    , area = units::set_units(4105, "km^2")
+    , ci = NULL
+    , area = units::set_units(1, "hectare")
 )     
 
            

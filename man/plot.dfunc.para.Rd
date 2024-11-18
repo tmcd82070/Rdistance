@@ -124,13 +124,13 @@ by specifying \code{lty.dfunc = c(1,2)}. Etc.}
 to the required length. Default is 2 for all lines.}
 
 \item{\dots}{When bars are plotted, this routine 
-uses \code{graphics::barplot} to set up the 
-plotting region and plot bars. When bars are not plotted,
+uses \code{graphics::barplot} to draw the 
+plotting region and bars. When bars are not plotted,
 this routine sets up the plot with \code{graphics::plot}.
-\dots can be any  
-argument to \code{barplot} or \code{plot} EXCEPT  
+\dots can be any argument to \code{barplot} or \code{plot} EXCEPT  
 \code{width}, \code{ylim}, \code{xlim}, 
-\code{density}, \code{angle}, and \code{space}.}
+\code{density}, \code{angle}, and \code{space}. For example, 
+set the main title with \code{main = "Main Title"}.}
 }
 \value{
 The input distance function is returned, with two additional
@@ -173,5 +173,5 @@ plot(dfunc, nbins=25)
 
 }
 \seealso{
-[plot.dfunc()]
+\code{\link{plot.dfunc}}
 }

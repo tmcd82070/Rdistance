@@ -27,25 +27,16 @@
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
 #'   of user defined likelihoods in \code{\link{dfuncEstim}}.
 #'   
-#' @examples set.seed(33328)
-#'   x <- rnorm(1000) * 100
-#'   x <- x[ 0 < x & x < 100 ]
-#'   cos.expn <- cosine.expansion(x, 5)
+#' @examples 
+#' x <- seq(0, 1, length = 200)
+#' cos.expn <- cosine.expansion(x, 5)
+#' plot(range(x), range(cos.expn), type="n")
+#' matlines(x, cos.expn, col=rainbow(5), lty = 1)
 #' @keywords models
 #' @export
 
 cosine.expansion <- function(x, expansions){
-# Calculates cosine expansion for detection function.
-# Input:
-#       x = distances / w
-#       expansions = number of expansion terms (1 - 5)
-#
-# Output:
-#       expansion = a matrix with columns
-#                   expansion[,1] = expansion for the 1st term,
-#                   expansion[,2] = expansion for the 2nd, and so on.  
-# changed 1st coeff to 2 - even function - jg
-   
+
     if (expansions > 5){
         warning("Too many Cosine polynomial expansion terms. Only 5 used.")
         expansions = 5

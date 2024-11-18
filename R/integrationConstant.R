@@ -66,7 +66,7 @@
 
 integrationConstant <- function(a, ml){
 
-  fx <- match.fun(paste( ml$likelihood, ".like", sep=""))
+  fx <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")
   distUnits <- ml$outputUnits
   X <- model.matrix(ml)
   w.lo <- ml$w.lo
@@ -109,7 +109,7 @@ integrationConstant <- function(a, ml){
   
   # Numerical integration coefficients ----
   # Here, use composite Simpson's 1/3 rule
-  nEvalPts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) 
+  nEvalPts <- Rdistance:::checkNEvalPts(getOption("Rdistance_intEvalPts")) 
   nInts <- nEvalPts - 1 # this will be even if nEvalPts is odd
   seqx = seq(w.lo, w.hi, length=nEvalPts) 
   deltax <- units::set_units(seqx[2] - seqx[1], NULL)  # or (w.hi - w.lo) / (nInts)
@@ -145,7 +145,11 @@ integrationConstant <- function(a, ml){
     if(ml$expansions > 0){
       # 'if' saves a little compute time if no expansions
       # but not necc. b/c expansionTerms = 1 if none
-      seqy <- seqy * Rdistance::expansionTerms(a, ml)
+      seqy <- seqy * Rdistance::expansionTerms(a = a
+                                             , d = Seqx
+                                             , series = ml$series
+                                             , nexp = ml$expansions
+                                             , w = ml$w.hi - ml$w.lo)
     }
     
     if(is.points(ml)){

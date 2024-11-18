@@ -28,7 +28,6 @@ $$
 $$
 this is close to correct, but not. I think the $z$ need to change each iteration.
 9.  *Stepwise variable selection*: Write `add1` and `drop1` and `extractAIC` so that `step` function will work with distance function objects. 
-10. Check the scaling of likelihoods with and without expansion terms. E.g., `autoDistSample` seems to be using vastly different scaling when expansion factors are present. Run it and look at AIC.
 
 # Testing:
 

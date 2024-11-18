@@ -239,8 +239,11 @@ to make sure inputs are scaled correctly and that output units are known.
 }
 
 \examples{
+data(sparrowSiteData)
+data(sparrowDetectionData)
 
 sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+is.RdistDf(sparrowDf, verbose = T)
 
 # Equivalent to above: 
 sparrowDf <- sparrowDetectionData |> 
@@ -251,27 +254,30 @@ attr(sparrowDf, "detectionColumn") <- "detections"
 attr(sparrowDf, "effortColumn") <- "length"
 attr(sparrowDf, "obsType") <- "single"
 attr(sparrowDf, "transType") <- "line"
+is.RdistDf(sparrowDf, verbose = T)
 
 # Condensed view: 1 row per transect (make sure tibble is attached)
 sparrowDf
 
-# Expand detection info using tidyr::unnest()
-tidyr::unnest(sparrowDf, cols = "detections")
+# Expansion methods:
+# (1) use Rdistance::unnest (includes zero transects)
+df1 <- unnest(sparrowDf)
+any( df1$siteID == "B2" )  # TRUE
 
-# Or use dplyr::reframe (e.g., for transect "B3")
+# Use tidyr::unnest(); but, no zero transects
+df2 <- tidyr::unnest(sparrowDf, cols = "detections")
+any( df2$siteID == "B2" )  # FALSE
+
+# Use dplyr::reframe for specific transects (e.g., for transect "B3")
 sparrowDf |> 
   dplyr::filter(siteID == "B3") |>
   dplyr::reframe(detections)
   
-# Zero transects do not appear in unnest   
-any( tidyr::unnest(sparrowDf, cols = detections)$siteID == "B2" )
-sparrowDf |> 
-  dplyr::filter(siteID == "B2") |>
-  dplyr::reframe(detections)
-
-# Detections per transect (can't use dplyr::if_else)
-sparrowDf |> 
+# Count detections per transect (can't use dplyr::if_else)
+df3 <- sparrowDf |> 
   dplyr::reframe(nDetections = ifelse(is.null(detections), 0, nrow(detections)))
+sum(df3$nDetections) # Number of detections
+sum(df3$nDetections == 0) # Number of zero transects
     
 # Point transects
 thrasherDf <- RdistDf( thrasherSiteData

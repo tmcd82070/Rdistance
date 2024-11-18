@@ -259,7 +259,7 @@ predict.dfunc <- function(x
     # Each row is a un-scaled distance function (f(x))
     # We already eval-ed covars, so new X is constant (1), "XIntOnly"
     
-    like <- match.fun( paste( x$likelihood, ".like", sep=""))
+    like <- utils::getFromNamespace(paste0( x$likelihood, ".like"), "Rdistance")    
     XIntOnly <- matrix(1, nrow = length(distances), ncol = 1)
     y <- apply(X = paramsLink
                , MARGIN = 1
@@ -271,11 +271,11 @@ predict.dfunc <- function(x
     y <- do.call(cbind, y)  
     
     if(x$expansions > 0){
-      # need null model with new responses 
-      ml <- model.frame( distances ~ 1 )
-      obj <- x
-      obj$mf <- ml
-      exp.terms <- Rdistance::expansionTerms(BETA, obj)
+      exp.terms <- Rdistance::expansionTerms(a = BETA
+                                           , d = distances
+                                           , series = x$series
+                                           , nexp = x$expansions
+                                           , w = x$w.hi - x$w.lo)
       y <- y * exp.terms  
     }
   }
@@ -322,32 +322,41 @@ predict.dfunc <- function(x
   
   if( !isSmooth ){
   
-    # Likelihood functions return g(x). This is what we want.
-    # likeAtX0 <- function(i, params, x0, like, fit ){
-    #   fx0 <- like(
-    #       a = params[i,]
-    #     , dist = x0[i] - fit$w.lo
-    #     , covars = matrix(1,nrow = 1,ncol = 1)
-    #   ) 
-    #   fx0$L.unscaled
-    # }
-    # 
-    # f.at.x0 <- sapply(1:nrow(params)
-    #                   , FUN = likeAtX0
-    #                   , params = params
-    #                   , x0 = x0
-    #                   , like = like
-    #                   , fit = x
-    #             )
-    # 
-    # if(x$expansions > 0){
-    #   # need null model with new responses 
-    #   ml <- model.frame( x0 ~ 1 )
-    #   obj <- x
-    #   obj$mf <- ml
-    #   exp.terms <- Rdistance::expansionTerms(BETA, obj)
-    #   f.at.x0 <- f.at.x0 * exp.terms
-    # }
+    # Likelihood functions return g(x). This is what we want, 
+    # except that if there are expansions, g(0) != 1
+    # Gotta loop here because like() assumes a = params is a vector, 
+    # not a matrix (could re-write likelihoods to accept matricies of parameters).
+    
+    likeAtX0 <- function(i, params, x0, like, fit ){
+      fx0 <- like(
+          a = params[i,]
+        , dist = x0[i] - fit$w.lo
+        , covars = matrix(1,nrow = 1,ncol = 1)
+      )
+      fx0$L.unscaled
+    }
+
+    f.at.x0 <- sapply(1:nrow(params)
+                      , FUN = likeAtX0
+                      , params = params
+                      , x0 = x0
+                      , like = like
+                      , fit = x
+                )
+
+    if(x$expansions > 0){
+      # need null model with new responses, this is how you'd do that
+      # ml <- model.frame( x0 ~ 1 )
+      # obj <- x
+      # obj$mf <- ml
+      # Rdistance::expansionTerms(BETA, obj)
+      exp.terms <- Rdistance::expansionTerms(a = BETA
+                                             , d = x0
+                                             , series = x$series
+                                             , nexp = x$expansions
+                                             , w = x$w.hi - x$w.lo)
+      f.at.x0 <- f.at.x0 * exp.terms
+    }
     
 
   } else {
@@ -360,8 +369,8 @@ predict.dfunc <- function(x
   }
     
 
-  y <- x$g.x.scl * y  # works only if x$g.x.scl is a scalar; otherwise, we'd need to
-                      # evaluate f(x0) for every x0, then multiply.
+  y <- x$g.x.scl * y / f.at.x0  # works only if x$g.x.scl is a scalar; otherwise, we'd need to
+                                # evaluate f(x0) for every x0, then multiply.
 
   # Did you know that 'scaler' is ESW?  At least for lines. Makes sense. 1/f(0) = ESW in 
   # the old formulas.
