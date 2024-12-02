@@ -40,7 +40,11 @@ colorize <- function(STR, col=NULL, bg = NULL){
     if( is.null(col) ){
       col <- "green"
     }
-    uLoc <- regexpr("\\[(?:.(?!\\[))+\\]", STR, perl = TRUE)  # last occurrence of [ to end of string
+    if(!is.na(STR)){
+      uLoc <- regexpr("\\[(?:.(?!\\[))+\\]", STR, perl = TRUE)  # last occurrence of [ to end of string
+    } else {
+      uLoc <- 0
+    }
     if(uLoc > 0){
       u <- substring(STR, uLoc, uLoc + attr(uLoc, "match.length"))
       STR <- substring(STR, 1, uLoc - 1)
