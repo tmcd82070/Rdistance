@@ -33,5 +33,5 @@ checkNEvalPts <- function(nEvalPts){
                     ))
   }
   
-  nEvalPts
+  invisible(nEvalPts)
 }
