@@ -334,6 +334,8 @@ abundEstim <- function(x
         , clear = FALSE
       )
     }
+  } else {
+    ci <- NA
   }
 
   # --- Apply estimation to each ID group ----
@@ -383,10 +385,10 @@ abundEstim <- function(x
   # ---- Compute confidence intervals ----      
   if( bootstrapping ){
     vec2df <- function(x, nm){
-      data.frame(x) |> 
-        dplyr::arrange(x) |> 
-        dplyr::mutate(rowname = c("lo", "hi")) |>  
-        tidyr::pivot_wider(names_from = rowname, values_from = x, names_prefix = paste0(nm, "_")) 
+      # only for vectors of length 2, not general but fast
+      xx <- data.frame(lo = x[1], hi = x[2])
+      names(xx) <- paste0(nm, "_", names(xx))
+      xx
     }
     abCI <- Rdistance:::bcCI(bsEsts$abundance, ests$abundance, ci)
     dnCI <- Rdistance:::bcCI(bsEsts$density, ests$density, ci)
