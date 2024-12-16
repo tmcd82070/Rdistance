@@ -276,7 +276,14 @@ predict.dfunc <- function(x
                                            , series = x$series
                                            , nexp = x$expansions
                                            , w = x$w.hi - x$w.lo)
-      y <- y * exp.terms  
+      y <- y * exp.terms
+      
+      # without monotonicity restraints, function can go negative, 
+      # especially in a gap between datapoints. Don't want this in distance
+      # sampling and screws up the convergence. In future, could
+      # apply monotonicity constraint here.
+      y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
+
     }
   }
     
@@ -356,6 +363,7 @@ predict.dfunc <- function(x
                                              , nexp = x$expansions
                                              , w = x$w.hi - x$w.lo)
       f.at.x0 <- f.at.x0 * exp.terms
+      f.at.x0[ !is.na(f.at.x0) & (f.at.x0 <= 0) ] <- getOption("Rdistance_zero")
     }
     
 

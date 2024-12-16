@@ -71,6 +71,7 @@ nLL <- function(a
                 , ml
                 ){
   
+  
   # Pull data from input list ----
   # rule is: parameters in 'a' never have units,  
   # even though they could (e.g., sigma of halfnorm)
@@ -81,7 +82,7 @@ nLL <- function(a
   # speed things a little, but it's more params to pass in.
   
   # f.like <- match.fun(paste( ml$likelihood, ".like", sep="")) # requires Rdistance to be attached
-  f.like <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")
+  # f.like <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")
   
   # Because of na.pass when building model frame, and 
   # other code in parseModel(), there could be missing distances 
@@ -89,12 +90,12 @@ nLL <- function(a
   # on an observation). Observations outside the strip are not present 
   # in the model frame. model.frame returns rows for missing responses. 
   # check and reduce X if necessary.
-  X <- model.matrix(ml)  # this calls model.matrix.dfunc()
-  dist <- Rdistance::distances(ml, na.rm = FALSE) - ml$w.lo
-  if(any(is.na(dist))){
-    X <- X[ !is.na(dist), , drop = FALSE]
-    dist <- dist[ !is.na(dist) ]
-  }
+  # X <- model.matrix(ml)  # this calls model.matrix.dfunc()
+  # dist <- Rdistance::distances(ml, na.rm = FALSE) - ml$w.lo
+  # if(any(is.na(dist))){
+  #   X <- X[ !is.na(dist), , drop = FALSE]
+  #   dist <- dist[ !is.na(dist) ]
+  # }
 
   # cat(crayon::blue("===================="))
   # cat("\n")
@@ -108,95 +109,102 @@ nLL <- function(a
   # I call Buckland's "key" function just "likelihood".
   # Returns one value per observation. Expansions, if any, 
   # are applied below, after this.
-  L <- f.like( a = a
-             , dist = dist
-             , covars = X
-             )
-  key <- L$L.unscaled
+  # L <- f.like( a = a
+  #            , dist = dist
+  #            , covars = X
+  #            )
+  # key <- L$L.unscaled
   
   # Evaluate and apply the expansions ----
-  if( ml$expansions > 0 ){
-    # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
-    # but, this may save a tiny bit of time when ml$expansions = 0
-    exp.terms <- Rdistance::expansionTerms(a = a
-                                         , d = dist
-                                         , series = ml$series
-                                         , nexp = ml$expansions
-                                         , w = ml$w.hi - ml$w.lo)
-    key <- key * exp.terms
-  }
+  # if( ml$expansions > 0 ){
+  #   # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
+  #   # but, this may save a tiny bit of time when ml$expansions = 0
+  #   exp.terms <- Rdistance::expansionTerms(a = a
+  #                                        , d = dist
+  #                                        , series = ml$series
+  #                                        , nexp = ml$expansions
+  #                                        , w = ml$w.hi - ml$w.lo)
+  #   key <- key * exp.terms
+  # }
     
   # without monotonicity restraints, function can go negative, 
   # especially in a gap between datapoints. Don't want this in distance
   # sampling and screws up the convergence. In future, could
   # apply monotonicity constraint here.
-  if( ml$expansions > 0 ){
-    key[ which(key < 0) ] <- 0
-  }
+  # if( ml$expansions > 0 ){
+  #   key[ which(key < 0) ] <- 0
+  # }
   
 
   # Scale the likelihood ----
   # Scalers should be unique to each observation and equal
   # to integral under distance function for that observation. 
   # Integrals are by defn unit-less.
-  if( ml$expansions <= -1 && 
-      (ml$likelihood %in% c("halfnorm"
-                          , "negexp"
-                          , "triangle"
-                          , "uniform"
-                          , "huber"
-                          )) &&
-      (!Rdistance::is.points(ml))
-      ){
-    # We know the integral in these cases.  
-    # Supposedly, this will speed things up
-    theta <- L$params # always n X p data frame of canonical likelihood parameters
-    if( ml$likelihood == "halfnorm"){
-      # We evaluate normal with mean set to w.lo, sd = sigma, from -Inf to w.hi, then
-      # subtract 0.5 from result for the area to left of mean (w.lo) 
-      # theta = sigma in this case.
-      sig <- theta$par1
-      scaler <- (pnorm(units::drop_units(ml$w.hi)
-                       , units::drop_units(ml$w.lo)
-                       , sig) - 0.5) * 
-        sqrt(2*pi) * sig
-    } else if( ml$likelihood == "negexp" ){
-      theta <- theta$par1
-      scaler <- unname(
-        (exp(-theta * units::drop_units(ml$w.lo)) -
-           exp(-theta * units::drop_units(ml$w.hi))) / theta)
-    } else if( ml$likelihood == "triangle" ){
-      scaler <- theta$par1 / 2
-    } else if( ml$likelihood == "uniform" ){
-      scaler <- theta$par1
-    } else if( ml$likelihood == "huber"){
-      beta <- theta$par1
-      range <- theta$par1 + theta$par2
-      integral0a <- (6*beta*range - 4*beta^2) / (6*range - 3*beta)
-      integralar <-  (range^2 / (2*range - beta)) - beta
-      scaler <- integral0a + integralar
-    }
-    
-    key = key / scaler
-    
-    # assign("tmpL", data.frame(a = theta$par1, L=key),  pos=.GlobalEnv)
-    
-  } else {
-    # We numerically integrate.  These are integrals we 
-    # do not know 
-    # and any that have expansions
-    # and all point transects (cause x*g(x) unknown)
-    key = key / integrationConstant(a, ml)
+  # COULD MOVE THIS SPEED-UP TO ESW.
+  # if( ml$expansions <= -1 && 
+  #     (ml$likelihood %in% c("halfnorm"
+  #                         , "negexp"
+  #                         , "triangle"
+  #                         , "uniform"
+  #                         , "huber"
+  #                         )) &&
+  #     (!Rdistance::is.points(ml))
+  #     ){
+  #   # We know the integral in these cases.  
+  #   # Supposedly, this will speed things up
+  #   theta <- L$params # always n X p data frame of canonical likelihood parameters
+  #   if( ml$likelihood == "halfnorm"){
+  #     # We evaluate normal with mean set to w.lo, sd = sigma, from -Inf to w.hi, then
+  #     # subtract 0.5 from result for the area to left of mean (w.lo) 
+  #     # theta = sigma in this case.
+  #     sig <- theta$par1
+  #     scaler <- (pnorm(units::drop_units(ml$w.hi)
+  #                      , units::drop_units(ml$w.lo)
+  #                      , sig) - 0.5) * 
+  #       sqrt(2*pi) * sig
+  #   } else if( ml$likelihood == "negexp" ){
+  #     theta <- theta$par1
+  #     scaler <- unname(
+  #       (exp(-theta * units::drop_units(ml$w.lo)) -
+  #          exp(-theta * units::drop_units(ml$w.hi))) / theta)
+  #   } else if( ml$likelihood == "triangle" ){
+  #     scaler <- theta$par1 / 2
+  #   } else if( ml$likelihood == "uniform" ){
+  #     scaler <- theta$par1
+  #   } else if( ml$likelihood == "huber"){
+  #     beta <- theta$par1
+  #     range <- theta$par1 + theta$par2
+  #     integral0a <- (6*beta*range - 4*beta^2) / (6*range - 3*beta)
+  #     integralar <-  (range^2 / (2*range - beta)) - beta
+  #     scaler <- integral0a + integralar
+  #   }
+  #   
+  #   key = key / scaler
+  #   
+  #   # assign("tmpL", data.frame(a = theta$par1, L=key),  pos=.GlobalEnv)
+  #   
+  # } else {
+  #   # We numerically integrate.  These are integrals we 
+  #   # do not know 
+  #   # and any that have expansions
+  #   # and all point transects (cause x*g(x) unknown)
+  #   key = key / integrationConstant(a, ml)
+  # 
+  #   # integrationConstant does Int( x*g(x) ) for points
+  #   #          "          does  Int( g(x) ) for lines
+  #   # Here, multiply by x in numerator of point transects
+  #   if( Rdistance::is.points(ml) ){
+  #     key <- key * units::set_units(dist, NULL)
+  #   }
+  #   
+  # }
 
-    # integrationConstant does Int( x*g(x) ) for points
-    #          "          does  Int( g(x) ) for lines
-    # Here, multiply by x in numerator of point transects
-    if( Rdistance::is.points(ml) ){
-      key <- key * units::set_units(dist, NULL)
-    }
-    
-  }
-
+  ml$par <- a
+  key <- diag(stats::predict(ml,
+                           type = "dfunc",
+                           distances = distances(ml)))
+  intgral <- effectiveDistance(ml)
+  key <- key / intgral
   
   if( !is.null(getOption("Rdistance_optimizer")) &&
       (getOption("Rdistance_optimizer") == "optim") ){
@@ -204,7 +212,8 @@ nLL <- function(a
   }
   
 
-  key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")   # happens at very bad values of parameters
+  # Given check in predict.dfunc, this is not needed here
+  # key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")   # happens at very bad values of parameters
 
   # # debugging...Key should integrate to 1.0 every iteration
   # tmpx <- seq(min(dist), max(dist), length = 100)

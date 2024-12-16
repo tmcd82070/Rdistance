@@ -65,24 +65,26 @@
 #' @export
 
 integrationConstant <- function(a, ml){
+  
+  ml$par <- a
 
-  fx <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")
-  distUnits <- ml$outputUnits
-  X <- model.matrix(ml)
-  w.lo <- ml$w.lo
-  w.hi <- ml$w.hi
+  # fx <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")
+  # distUnits <- ml$outputUnits
+  # X <- model.matrix(ml)
+  # w.lo <- ml$w.lo
+  # w.hi <- ml$w.hi
 
   # We need w.lo, w.hi, and dist to have same units. 
   # This is important because we occasionally drop units in integral calculations below. 
   # I cannot think of a case where units(w.lo) != units(dist), 
   # but just in case...
   
-  if( units(w.lo) != distUnits){
-    w.lo <- units::set_units(w.lo, distUnits, mode = "standard")
-  }
-  if( units(w.hi) != distUnits){
-    w.hi <- units::set_units(w.hi, distUnits, mode = "standard")
-  }
+  # if( units(w.lo) != distUnits){
+  #   w.lo <- units::set_units(w.lo, distUnits, mode = "standard")
+  # }
+  # if( units(w.hi) != distUnits){
+  #   w.hi <- units::set_units(w.hi, distUnits, mode = "standard")
+  # }
   
   # Now, we can safely compute sequence of x values for numerical integration.
   # This is done below, in each case where its needed. 
@@ -95,94 +97,100 @@ integrationConstant <- function(a, ml){
   # Rep the integration sequence over covariate rows.
   # i.e., each x sequence will be associated with one set of 
   # covariates from one row. This makes a big data frame.
-  uniqueX <- data.frame(X) |>
-    dplyr::mutate(.covClsRow = dplyr::row_number()) |> 
-    dplyr::distinct( dplyr::across(-.covClsRow)
-                     , .keep_all = TRUE )
-
-  covClsMap <- data.frame(X) |> 
-    dplyr::mutate(.rowNumber = dplyr::row_number()) |> 
-    dplyr::group_by(dplyr::across(-.rowNumber)) |> 
-    dplyr::mutate( .covClsRow = dplyr::first(.rowNumber)) |> 
-    dplyr::ungroup() |> 
-    dplyr::select(.rowNumber, .covClsRow)
+  # uniqueX <- data.frame(X) |>
+  #   dplyr::mutate(.covClsRow = dplyr::row_number()) |> 
+  #   dplyr::distinct( dplyr::across(-.covClsRow)
+  #                    , .keep_all = TRUE )
+  # 
+  # covClsMap <- data.frame(X) |> 
+  #   dplyr::mutate(.rowNumber = dplyr::row_number()) |> 
+  #   dplyr::group_by(dplyr::across(-.rowNumber)) |> 
+  #   dplyr::mutate( .covClsRow = dplyr::first(.rowNumber)) |> 
+  #   dplyr::ungroup() |> 
+  #   dplyr::select(.rowNumber, .covClsRow)
   
   # Numerical integration coefficients ----
   # Here, use composite Simpson's 1/3 rule
-  nEvalPts <- Rdistance:::checkNEvalPts(getOption("Rdistance_intEvalPts")) 
-  nInts <- nEvalPts - 1 # this will be even if nEvalPts is odd
-  seqx = seq(w.lo, w.hi, length=nEvalPts) 
-  deltax <- units::set_units(seqx[2] - seqx[1], NULL)  # or (w.hi - w.lo) / (nInts)
-
   # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))  
-  intCoefs <- rep( c(2,4), (nInts/2) )
+  nInts <- getOption("Rdistance_intEvalPts") - 1 # this will be even if intEvalPts is odd
+  intCoefs <- c(rep( c(2,4), (nInts/2) ), 1)
   intCoefs[1] <- 1
-  intCoefs <- c(intCoefs, 1)
-  
+
   # Trapazoid rule would be 
   # intCoefs <- rep( 2, nEvalPts )
   # intCoefs[c(1,nEvalPts)] <- 1
 
-  # Internal function to evaluate key ----
-  # Eval fx for each set of constant covariates (rowid)
-  # This is a function to apply density to each row of covariates
-  # designed for dplyr::group_modify()
-  evalKey <- function(covs
-                      , .y
-                      , a
-                      , Seqx
-                      , ml
-                      , intCoefs
-                      ){
-    # covars are constant across all rows of Seqx
-    covs <- matrix(as.numeric(covs), nrow = 1)
-    seqy <- fx(
-        a = a
-      , dist = Seqx
-      , covars = covs
-    )$L.unscaled
+  # Distance function evaluation ----
+  # Eval fx for each set of covariates
+  # Default distances is seq(ml$w.lo, ml$w.hi, getOption("Rdistance_intEvalPts")), 
+  # which is evaluated in predict.dfunc
+  
+  scalers <- Rdistance:::predict.dfunc(x = ml
+                                     , type = "dfuncs"
+                                     )
+  
+  # contrary to ESW/EDR, we don't want units on scalers because f(x) is unitless.
+  deltax <- attr(scalers, "distances")
+  deltax <- units::set_units(deltax[2] - deltax[1], NULL)  # or (w.hi - w.lo) / (nInts)
+  
+  scalers <- c( (t(scalers) %*% intCoefs) * ( deltax / 3 ) )
 
-    if(ml$expansions > 0){
-      # 'if' saves a little compute time if no expansions
-      # but not necc. b/c expansionTerms = 1 if none
-      seqy <- seqy * Rdistance::expansionTerms(a = a
-                                             , d = Seqx
-                                             , series = ml$series
-                                             , nexp = ml$expansions
-                                             , w = ml$w.hi - ml$w.lo)
-    }
-    
-    if(is.points(ml)){
-      seqy <- units::set_units(Seqx, NULL) * seqy 
-    }
- 
-    # Apply numeric integration coefficients
-    # fy <-  h*sum(seqy[-length(seqy)] + seqy[-1]) / 2
-    fy <- sum(intCoefs * seqy)
-    
-    data.frame(integral = fy)
-  }
-  
-  # Call internal evalKey function using group_modify ----
-  scalers <- uniqueX |> 
-    dplyr::group_by(.covClsRow) |> 
-    dplyr::group_modify(.f = evalKey
-                        , a = a
-                        , Seqx = seqx
-                        , ml = ml
-                        , intCoefs = intCoefs)
-  
-  # Do not forget to multiply by interval size and constant
-  scalers <- scalers |> 
-    dplyr::mutate(integral = deltax * integral / 3 )
-    # dplyr::mutate(integral = deltax * integral / 2 ) # if Trapazoid
-  
-  
-  # This join expands from unique covariate classes
-  # to the original size of covars
-  scalers <- covClsMap |> 
-    dplyr::left_join(scalers, by = ".covClsRow") |>
-    dplyr::pull(integral)
+  # evalKey <- function(covs
+  #                     , .y
+  #                     , a
+  #                     , Seqx
+  #                     , ml
+  #                     , intCoefs
+  #                     ){
+  #   # covars are constant across all rows of Seqx
+  #   covs <- matrix(as.numeric(covs), nrow = 1)
+  #   seqy <- fx(
+  #       a = a
+  #     , dist = Seqx
+  #     , covars = covs
+  #   )$L.unscaled
+  # 
+  #   if(ml$expansions > 0){
+  #     # 'if' saves a little compute time if no expansions
+  #     # but not necc. b/c expansionTerms = 1 if none
+  #     seqy <- seqy * Rdistance::expansionTerms(a = a
+  #                                            , d = Seqx
+  #                                            , series = ml$series
+  #                                            , nexp = ml$expansions
+  #                                            , w = ml$w.hi - ml$w.lo)
+  #   }
+  #   
+  #   if(is.points(ml)){
+  #     seqy <- units::set_units(Seqx, NULL) * seqy 
+  #   }
+  # 
+  #   # Apply numeric integration coefficients
+  #   # fy <-  h*sum(seqy[-length(seqy)] + seqy[-1]) / 2
+  #   fy <- sum(intCoefs * seqy)
+  #   
+  #   data.frame(integral = fy)
+  # }
+  # 
+  # # Call internal evalKey function using group_modify ----
+  # scalers <- uniqueX |> 
+  #   dplyr::group_by(.covClsRow) |> 
+  #   dplyr::group_modify(.f = evalKey
+  #                       , a = a
+  #                       , Seqx = seqx
+  #                       , ml = ml
+  #                       , intCoefs = intCoefs)
+  # 
+  # # Do not forget to multiply by interval size and constant
+  # scalers <- scalers |> 
+  #   dplyr::mutate(integral = deltax * integral / 3 )
+  #   # dplyr::mutate(integral = deltax * integral / 2 ) # if Trapazoid
+  # 
+  # 
+  # # This join expands from unique covariate classes
+  # # to the original size of covars
+  # scalers <- covClsMap |> 
+  #   dplyr::left_join(scalers, by = ".covClsRow") |>
+  #   dplyr::pull(integral)
 
   # there are cases where the guess at parameters is so bad, that the integration
   # constant is 0 (consider pnorm(100,0,2e30)). But, we don't want to return 0

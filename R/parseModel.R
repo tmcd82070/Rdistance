@@ -65,6 +65,7 @@ parseModel <- function(data
   # Control parameters ----
   # if you want, could save control options in output object.
   # control <- options()[grep("Rdist_", names(options()))]
+  Rdistance:::checkNEvalPts(getOption("Rdistance_intEvalPts"))
   
   # Check for a response ----
   # Otherwise, as.character(formula) is length 2, not 3
