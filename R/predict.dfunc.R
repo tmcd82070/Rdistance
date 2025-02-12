@@ -20,77 +20,105 @@
 #' 
 #' @param type The type of predictions desired. 
 #' \itemize{
-#'   \item \bold{If \code{type} == "parameters"}: Returned values are
-#'     predicted (canonical) parameters of the likelihood function. 
-#'     If \code{newdata} is NULL, return contains one parameter
-#'     value for every detection in \code{x} with a distance.
-#'     If \code{newdata} is not NULL, returned vector has one parameter
-#'     for every row in \code{newdata}.
+#'   \item \bold{If \code{type} == "parameters"}: Returned value is 
+#'     a matrix of predicted (canonical) parameters of the 
+#'     likelihood function. If \code{newdata} is NULL, return contains 
+#'     one parameter value for every non-missing detection distance
+#'     in \code{x}. If \code{newdata} is not NULL, returned vector 
+#'     has one parameter for every row in \code{newdata}. Parameter 
+#'     \code{distances} is ignored in this case. Canonical parameters 
+#'     (non-expansion terms)
+#'     are returned on the response (inverse-link) scale.  Raw 
+#'     canonical parameters in \code{x$par} are stored in 
+#'     the link scale.  Expansion term parameters use the identity 
+#'     link, so their value in the output equals their value 
+#'     in \code{x$par}. 
+#'     
+#'   \item \bold{If \code{type} == "likelihood"}: Returned value is a 
+#'     matrix of \bold{unscaled} likelihood values for all non-missing 
+#'     observed distances in \code{x}, i.e., raw distance functions
+#'     evaluated at the observed distances.  Parameters \code{newdata} and 
+#'     \code{distances} are ignored when \code{type} is "likelihood". 
+#'     The negative log likelihood of the full data set is
+#'     \code{-sum(log(predict(x,type="likelihood") / effectiveDistance(x)))}. 
+#'     
 #'   \item \bold{If \code{type} == "dfuncs"}: Returned  
-#'     value is a matrix of scaled distance functions, 
-#'     with distance functions in columns. Distance functions 
-#'     are evaluated at distances   
+#'     value is a matrix whose columns contain scaled distance functions. 
+#'     The distance functions in each column are evaluated at distances   
 #'     in argument \code{distances}, not at the observed 
 #'     distances in \code{x}. The number of distance functions
-#'     returned (i.e., number of columns) depends on \code{newdata}: 
+#'     returned (i.e., number of columns) depends on \code{newdata} 
+#'     as follows: 
 #'     \itemize{
 #'        \item If \code{newdata} is NULL, one distance function 
 #'        will be returned for every detection in \code{x}
-#'        that has valid covariate values. 
+#'        that has valid covariate values. Observation distances 
+#'        in \code{x} are ignored in this case; hence, a distance 
+#'        function is estimated for all observations, even
+#'        those with missing detection distances.   
 #'       \item If \code{newdata} is not NULL, one distance function 
 #'       will be returned for each observation (row) in \code{newdata}. 
 #'     }
+#'     
 #'    \item \bold{If \code{type} == "density"}: Returned object is a data frame
-#'    containing one row per transect and estimated values for density on each 
-#'    transect. 
-#'    \item \bold{If \code{type} == "abundance"}: Returned object is a data frame
-#'    containing one row per transect and estimated values for abundance on each 
-#'    transect. Abundance estimates are density estimates multiplied by the surveyed 
-#'    area of each transect (i.e., length times nominal width = length * 2(w.hi - w.lo)).
-#'  }
+#'    containing one row per transect. Columns in the data frame include 
+#'    transect ID, which identifies transects, and estimated density on 
+#'    the area sampled by the transect. 
+#'    
+#'    \item \bold{If \code{type} == "abundance"}: Returned object is 
+#'    a data frame containing one row per transect and 
+#'    estimated values for abundance on each transect. 
+#'    Abundance estimates are density on the transect's sampled 
+#'    area multiplied by size of the sampled area (i.e., 
+#'    length times nominal width = length(!singleSided+1)(w.hi - w.lo)).
+#'  }  
 #'  
 #'  If \code{x} is a smoothed distance function, it does not have parameters
-#'  and this routine will always return a scaled distance function. That is, 
+#'  and this routine will only return scaled distance functions, densities, or 
+#'  abundances. That is, 
 #'  \code{type} = "parameters" when \code{x} is smoothed 
-#'  does not make sense and the smoothed distance function estimate will be returned
-#'  if \code{type} does not equal "density" or "abundance". 
+#'  does not make sense and the smoothed distance function estimate 
+#'  will be returned if \code{type} does not equal "density" or "abundance". 
 #' 
-#' @param distances A vector of distances at which to evaluate 
+#' @param distances A vector or matrix of distances at which to evaluate 
 #' distance functions, when distance functions 
 #' are requested.  \code{distances} must have measurement units. 
 #' Any distances outside the observation 
 #' strip (\code{x$w.lo} to \code{x$w.hi}) are discarded.  If 
-#' \code{distances} is NULL, this routine uses a sequence of 201 evenly 
+#' \code{distances} is NULL, this routine predicts at a sequence 
+#' of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
 #' spaced distances between 
 #' \code{x$w.lo} and \code{x$w.hi}, inclusive. 
+#' 
+#' @inheritParams abundEstim
 #'
 #' @param \dots Included for compatibility with generic \code{predict} methods.
 #' 
-#' @return A matrix containing one of two types of predictions: 
+#' @return A matrix containing predictions: 
 #' \itemize{
 #'   \item \bold{If \code{type} is "parameters"}, the returned matrix 
-#'   contains predicted likelihood parameters. The extent of the 
-#'   first dimension (rows) in 
-#'   the returned matrix is equal to either the number of detection distances 
-#'   in \code{x} 
-#'   or number of rows in \code{newdata}. 
+#'   contains likelihood parameters. The extent of the 
+#'   first dimension (rows) in the returned matrix is equal to 
+#'   either the number of detection distances 
+#'   in \code{x} or number of rows in \code{newdata}. 
 #'   The returned matrix's second dimension (columns) is 
 #'   the number of parameters in the likelihood 
-#'   plus the number of expansion terms.  Without expansion terms, the number 
-#'   of columns in the returned matrix 
-#'   is either 1 or 2 depending on the likelihood (e.g., \code{halfnorm} has 
-#'   one parameter, \code{hazrate} has two). See the help 
-#'   for each likelihoods to interpret the returned parameter values.
+#'   plus the number of expansion terms.  
+#'   See the help for each likelihoods to interpret  
+#'   returned parameter values. All parameters are returned 
+#'   on the inverse-link scale; i.e., \emph{exponential} for canonical 
+#'   parameters and \emph{identity} for expansion terms. 
 #'   
 #'   \item \bold{If \code{type} is "dfuncs"}, columns of the 
-#'   returned matrix contain scaled distance functions (i.e., \emph{g(x)}).  
+#'   returned matrix contains detection functions (i.e., \emph{g(x)}).  
 #'   The extent of the first 
 #'   dimension (number of rows) is either the number of distances 
 #'   specified in \code{distances}
-#'   or \code{options()$Rdistance_intEvalPts} if \code{distances} is not specified.
+#'   or \code{options()$Rdistance_intEvalPts} if \code{distances} is 
+#'   not specified.
 #'   The extent of the second dimension (number of columns) is: 
 #'     \itemize{
-#'       \item the number of detections with distances: if \code{newdata} is NULL.
+#'       \item the number of detections with non-missing distances: if \code{newdata} is NULL.
 #'       \item the number of rows in \code{newdata} if 
 #'        \code{newdata} is specified.
 #'     }
@@ -175,6 +203,7 @@ predict.dfunc <- function(x
                         , newdata = NULL
                         , type = c("parameters")
                         , distances = NULL
+                        , singleSided = FALSE
                         , ...) {
 
   if (!inherits(x, "dfunc")){ 
@@ -183,18 +212,11 @@ predict.dfunc <- function(x
   
   isSmooth <- Rdistance::is.smoothed(x)
   
-
-  # if (missing(newdata) || is.null(newdata)) {
-  #   n <- nrow(x$mf)
-  # } else {
-  #   n <- nrow(newdata)
-  # }
-
   # Establish the X matrix ----
   # We ALWAYS have covariates
   # We always need parameters, except for smoothed dfuncs
   if( !isSmooth ){
-    if ( is.null(newdata) ) {
+    if ( is.null(newdata) | (type == "likelihood") ) {
       # Case: Use original covars
       X <- model.matrix(x)
     } else {
@@ -214,187 +236,42 @@ predict.dfunc <- function(x
     }
     
     BETA <- coef(x)
-    beta <- BETA[1:ncol(X)]   # could be extra parameters tacked on. e.g., knee for logistc or expansion terms
-    paramsLink <- X %*% beta
-    params <- exp(paramsLink)  # All link functions are exp...thus far
+    p <- length(BETA)
+    q <- ncol(X)
+    paramsLink <- X %*% BETA[1:q] # could be extra parameters tacked on. e.g., knee for logistc or expansion terms
     
-    if(ncol(X)<length(BETA)){
-      extraParams <- matrix(BETA[(ncol(X)+1):length(BETA)]
-                          , nrow = nrow(params)
-                          , ncol = length(BETA)-ncol(X)
+    if(q < p){
+      extraParams <- matrix(BETA[(q+1):p]
+                          , nrow = nrow(paramsLink)
+                          , ncol = p-q
                           , byrow = TRUE)
-      params <- cbind(params, extraParams)
       paramsLink <- cbind(paramsLink, extraParams)
     }
   } 
-    
-  if( type == "parameters" & !isSmooth ){
-    return(params)
-  }
 
-  # DISTANCE function prediction ----
-  
-  if( is.null(distances) ){
-    distances <- seq( x$w.lo
-                    , x$w.hi
-                    , length = getOption("Rdistance_intEvalPts"))
-  } else {
-    # check distances have units
-    if( !inherits(distances, "units") ){
-      stop("Distances must have measurement units.")
-    }
-    # Make sure input distances are converted properly b.c. likelihoods drop units.
-    distances <- units::set_units(distances, x$outputUnits, mode = "standard")
+  # Dispatch functions to deal with 'type' ----
+  if(type == "parameters" & isSmooth ){
+    type = "dfuncs"  # smoothed dfuncs have no parameters
   }
   
-  
-  if( isSmooth ){
-    # unscaled distance function is already stored
-    # no covariates.  
-    # NEED TO REVISIT THIS
-    y <- stats::approx( x$fit$x, x$fit$y, xout = distances )$y
-    y <- matrix( y, nrow = 1) 
-  } else {
-    # After next apply, y is length(distances) x nrow(parms).  
-    # Each row is a un-scaled distance function (f(x))
-    # We already eval-ed covars, so new X is constant (1), "XIntOnly"
-    
-    like <- utils::getFromNamespace(paste0( x$likelihood, ".like"), "Rdistance")    
-    XIntOnly <- matrix(1, nrow = length(distances), ncol = 1)
-    y <- apply(X = paramsLink
-               , MARGIN = 1
-               , FUN = like
-               , dist = distances - x$w.lo
-               , covars = XIntOnly
-    )  
-    y <- lapply(y, function(x){x$L.unscaled})
-    y <- do.call(cbind, y)  
-    
-    if(x$expansions > 0){
-      exp.terms <- Rdistance::expansionTerms(a = BETA
-                                           , d = distances
-                                           , series = x$series
-                                           , nexp = x$expansions
-                                           , w = x$w.hi - x$w.lo)
-      y <- y * exp.terms
-      
-      # without monotonicity restraints, function can go negative, 
-      # especially in a gap between datapoints. Don't want this in distance
-      # sampling and screws up the convergence. In future, could
-      # apply monotonicity constraint here.
-      y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
-
-    }
-  }
-    
-  # At this point, we have unscaled distance functions in columns of y.
-  
-  # SCALE distance functions ----
-    
-  if( x$likelihood == "Gamma" & !isSmooth ){
-    # This is a pesky special case of scaling. We need different x.scl for 
-    # every distance function b.c. only x.scl = max is allowed.  For all other 
-    # distance functions there is only one x.scl.
-    # We could do all distance functions this way, i.e., call F.gx.estim
-    # for every value of params, but it is faster not to. For all but Gamma,
-    # we computed x.scl in dfuncEstim and it's constant.
-    #
-    # Cannot take apply(y,1,max) because maybe only 1 or 2 distances are predicted.
-    # Cannot compute mode of Gamma (lam * b * (r-1)) because there might be extensions,
-    # which change the mode.
-    # Must call maximize.g which uses optim to find maximum.
-    #
-    # THE GAMMA CASE NEEDS CHECKED, MAYBE PUT THIS IN ANOTHER ROUTINE.
-    maximize.g.reparam <- function( covRow, fit ){
-      # On entry from apply(), covRow is a dimensionless vector. It must be a
-      # matrix when we call the likelihood.
-      covRow <- matrix(covRow, nrow = 1)
-      F.maximize.g(fit, covars = covRow)
-    }
-    
-    x0 <- apply(X = X
-                     , MARGIN = 1
-                     , FUN = maximize.g.reparam
-                     , fit = x
-                )
-    # x0 is a distance, needs units
-    x0 <- units::set_units(x0, x$outputUnits, mode = "standard")
-    
-  } else if( !isSmooth ){
-    # Case:  All likelihoods except Gamma
-    x0 <- rep(x$x.scl, nrow(params))
-  } 
-  
-  # Now that we know x0 (either a scaler or a vector), compute f(x0)
-  
-  if( !isSmooth ){
-  
-    # Likelihood functions return g(x). This is what we want, 
-    # except that if there are expansions, g(0) != 1
-    # Gotta loop here because like() assumes a = params is a vector, 
-    # not a matrix (could re-write likelihoods to accept matricies of parameters).
-    
-    likeAtX0 <- function(i, params, x0, like, fit ){
-      fx0 <- like(
-          a = params[i,]
-        , dist = x0[i] - fit$w.lo
-        , covars = matrix(1,nrow = 1,ncol = 1)
-      )
-      fx0$L.unscaled
-    }
-
-    f.at.x0 <- sapply(1:nrow(params)
-                      , FUN = likeAtX0
-                      , params = params
-                      , x0 = x0
-                      , like = like
-                      , fit = x
-                )
-
-    if(x$expansions > 0){
-      # need null model with new responses, this is how you'd do that
-      # ml <- model.frame( x0 ~ 1 )
-      # obj <- x
-      # obj$mf <- ml
-      # Rdistance::expansionTerms(BETA, obj)
-      exp.terms <- Rdistance::expansionTerms(a = BETA
-                                             , d = x0
-                                             , series = x$series
-                                             , nexp = x$expansions
-                                             , w = x$w.hi - x$w.lo)
-      f.at.x0 <- f.at.x0 * exp.terms
-      f.at.x0[ !is.na(f.at.x0) & (f.at.x0 <= 0) ] <- getOption("Rdistance_zero")
-    }
-    
-
-  } else {
-    # Case: smoothed distance function.  No covars. 
-    # This is so simple we handle everything here
-    # I THINK WE JUST NEED TO INTEGRATE UNDER Y, SO I DON'T THINK 
-    # WE NEED THIS SPECIAL CASE, BUT CHECK.
-    x0 <- x$x.scl
-    f.at.x0 <- stats::approx(distances, y, xout = x0)$y 
-  }
-    
-
-  y <- x$g.x.scl * y / f.at.x0  # works only if x$g.x.scl is a scalar; otherwise, we'd need to
-                                # evaluate f(x0) for every x0, then multiply.
-
-  # Did you know that 'scaler' is ESW?  At least for lines. Makes sense. 1/f(0) = ESW in 
-  # the old formulas.
-  # For smoothed distance functions, we extended the range of dist by approx 2, and scaler
-  # is twice too big. i.e., esw for smu's is approx scaler / 2.
-  
-  # y <- y * scaler  # length(scalar) == nrow(y), so this works right
-  
-  attr(y, "distances") <- distances
-  attr(y, "x0") <- x0
-  attr(y, "g.x.scl") <- x$g.x.scl
-  # if(isSmooth){
-  #   scaler <- scaler / 2
-  # }
-  # attr(y, "scaler") <- scaler
-
-  
-  return( y )  
+  return(
+    switch(type,
+           dfuncs = predict.dfunc.dfuncs(x = x
+                                         , params = paramsLink
+                                         , distances = distances
+                                         , isSmooth = isSmooth) , 
+           likelihood = predict.dfunc.likelihood(x = x
+                                               , params = paramsLink
+                                               ) , 
+           abundance = ,
+           density = predict.dfunc.density(x = x
+                                         , params = paramsLink
+                                         , type = type
+                                         ) , 
+           {  # the default = parameters
+             cbind(exp(paramsLink[,1:q]), # All link functions are exp...thus far
+                   extraParams )
+           }
+    )
+  )
 }
