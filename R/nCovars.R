@@ -16,7 +16,7 @@
 #' # do not export
 nCovars <- function(X){
   
-  if( inherits(X, "matrix") ){
+  if( is.matrix(X) ){
     q <- ncol(X)
   } else {
     q <- length(X)

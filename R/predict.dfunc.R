@@ -80,15 +80,16 @@
 #'  does not make sense and the smoothed distance function estimate 
 #'  will be returned if \code{type} does not equal "density" or "abundance". 
 #' 
-#' @param distances A vector or matrix of distances at which to evaluate 
+#' @param distances A vector or 1-column matrix of 
+#' distances at which to evaluate 
 #' distance functions, when distance functions 
 #' are requested.  \code{distances} must have measurement units. 
 #' Any distances outside the observation 
 #' strip (\code{x$w.lo} to \code{x$w.hi}) are discarded.  If 
-#' \code{distances} is NULL, this routine predicts at a sequence 
+#' \code{distances} is NULL, a sequence 
 #' of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
 #' spaced distances between 
-#' \code{x$w.lo} and \code{x$w.hi}, inclusive. 
+#' \code{x$w.lo} and \code{x$w.hi} (inclusive) is used. 
 #' 
 #' @inheritParams abundEstim
 #'
@@ -246,7 +247,10 @@ predict.dfunc <- function(x
                           , ncol = p-q
                           , byrow = TRUE)
       paramsLink <- cbind(paramsLink, extraParams)
+    } else {
+      extraParams <- NULL
     }
+    
   } 
 
   # Dispatch functions to deal with 'type' ----
@@ -255,21 +259,22 @@ predict.dfunc <- function(x
   }
   
   return(
-    switch(type,
-           dfuncs = predict.dfunc.dfuncs(x = x
+    switch(type
+         , dfunc = 
+         , dfuncs = predict.dfunc.dfuncs(x = x
                                          , params = paramsLink
                                          , distances = distances
-                                         , isSmooth = isSmooth) , 
-           likelihood = predict.dfunc.likelihood(x = x
+                                         , isSmooth = isSmooth) 
+         , likelihood = predict.dfunc.likelihood(x = x
                                                , params = paramsLink
-                                               ) , 
-           abundance = ,
-           density = predict.dfunc.density(x = x
+                                               ) 
+         , abundance = 
+         , density = predict.dfunc.density(x = x
                                          , params = paramsLink
                                          , type = type
-                                         ) , 
-           {  # the default = parameters
-             cbind(exp(paramsLink[,1:q]), # All link functions are exp...thus far
+                                         )  
+         , {  # the default = parameters
+             cbind(exp(paramsLink[,1]), # All link functions are exp...thus far
                    extraParams )
            }
     )

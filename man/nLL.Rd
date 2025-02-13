@@ -10,10 +10,10 @@ nLL(a, ml)
 \item{a}{A vector of likelihood parameter values. Length and 
 meaning depend on \code{ml$series} and \code{ml$expansions}. If no expansion 
 terms were called for (i.e., \code{ml$expansions = 0}), the distance 
-likelihoods contain one or two canonical parameters (see Details). 
+likelihood contain one or two canonical parameters (see Details). 
 If one or more expansions are called for, coefficients for the 
 expansion terms follow coefficients for the canonical parameters.  
-i.e., length of this vector must be 
+i.e., length of this vector is 
   \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate", "logistic", "huber"))}.}
 
 \item{ml}{Either a Rdistance 'model frame' or an Rdistance 
@@ -34,12 +34,12 @@ covariance matrix of the parameters.}
 }
 \value{
 A scalar, the negative of the log likelihood evaluated at 
-parameters \code{a}, including expansion terms.
+parameters \code{a}.
 }
 \description{
 Return the negative log likelihood of 
-a vector of observed distances given a specified likelihood, 
-  number of expansion terms, and estimated parameters.
+observed detection distances given a likelihood
+  and the estimated parameters.
 }
 \details{
 \bold{Expansion Terms}: If \code{ml$expansions} = k (k > 0), 

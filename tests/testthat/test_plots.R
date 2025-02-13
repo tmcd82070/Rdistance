@@ -94,3 +94,46 @@ test_that("plot covariates with newdata", {
   )
 })
 
+# ---- Plot with w.hi and w.lo and expansions ----
+
+dfuncObs <- sparrowDf |> 
+  dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+             , likelihood = "halfnorm"
+             , expansions = 2
+             , series = "cosine"
+             , w.lo = units::set_units(20,"m")
+             , w.hi = units::set_units(150,"m")
+             )
+
+
+test_that("w.lo w.hi plot covariates default", {
+  expect_snapshot_plot("halfNormWExtDefault", 
+                       {
+                         plot(dfuncObs)
+                       }
+  )
+})
+
+test_that("w.lo w.hi plot covariates nondefaults", {
+  expect_snapshot_plot("halfNormWExtDefault02", 
+                       {
+                         plot(dfuncObs
+                            , newdata = data.frame(bare = c(40,50,60))
+                            , include.zero = TRUE
+                            , col = "purple"
+                            , col.dfunc = c("yellow", "blue", "red")
+                            , lwd.dfunc = 3
+                            , vertLines = FALSE
+                            , nbins="FD" 
+                            , circles = TRUE
+                            , density = -1
+                            , angle = 50
+                            , xlab = "Test Plot"
+                            , ylab = "Probability"
+                            , border = FALSE
+                            , lty.dfunc=2
+                            , main = "A test of w.lo, w.hi, extentions"
+                            )
+                       }
+  )
+})

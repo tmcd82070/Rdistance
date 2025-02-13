@@ -6,8 +6,12 @@ Notes and to-do for `s6methods` branch of Rdistance:
 
 # Package Notes:
 
-2.    Check whether we want or need the "1+" in `expansion.terms`.  I.e., you use 1+expanTerms.  I think maybe you want just expanTerms (no 1+).  Check this against `distance::`.
-3.    You use Simpsons 1/3 composite rule in version >4.0.0.  Study precision differences between it and
+
+1.    _Expansion Terms_: Figure out what's going on with the hermite 
+and simple expansion terms.  I think you are missing a scaling factor or
+something.  I think ALL expansion terms should have intercept 1; hence, 
+maybe you should scale all of them by their first element. Or, better yet, or in addition to, you should figure out the b-spline expansions and use them. 
+3.    _Note_: You use Simpsons 1/3 composite rule in version >4.0.0.  Study precision differences between it and
 Simpson's alternate composite formula. https://en.wikipedia.org/wiki/Simpson's_rule
 $$
 (dx/48) * (17f(x_0) + 59f(x_1) + 43f(x_2) + 49f(x_3) + 48f(x_4) + 48f(x_5) + ...
@@ -26,8 +30,11 @@ and
 $$
 \theta = [\sum(z) / n](w_h - w_l) + w_l
 $$
-this is close to correct, but not. I think the $z$ need to change each iteration.
+this is close to correct, but not. I think the $z$ need to change each iteration.  See papers Mukai sent you.
 9.  *Stepwise variable selection*: Write `add1` and `drop1` and `extractAIC` so that `step` function will work with distance function objects. 
+10.  *Less than full circle sampled*: Implement parameter that allows 
+adjustment when less than a full circle is sampled (for points).  Suggest
+replacing 'singleSided' in abundEstim and predict.dfunc with a numeric value, something like propAreaSurveyed = 1 or .5 (for lines) and some number X for lines. 
 
 # Testing:
 

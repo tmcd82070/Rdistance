@@ -80,24 +80,42 @@
 
 halfnorm.like <- function(a
                           , dist
-                          , covars ){
+                          , covars
+                          ){
 
   # cat(paste("In", crayon::red("halfnorm.like"), "\n"))
   
-  # covars can be 1 X p or n X p where n = length(dist)
+  # dist can be vector length n or nX1 matrix
+  # covars can be 1 X q or n X q where n = length(dist)|nrow(dist)
+  # a (coefficients) can be a vector length p (>=q) or matrix k X p
+  #  where k = nrow(a) = number of coefficient vectors to evaluate
+  # output is n X k
+  if(length(dim(dist)) >= 2 && dim(dist)[2] != 1 ){ 
+    stop(paste("Argument 'dist' must be a vector.",
+            "Found array with", length(dim(dist)), "dimensions."))
+  }
   q <- nCovars(covars)
-  beta <- matrix(a[1:q], ncol = 1) # could be expansion coefs after q
-  s <- drop(covars %*% beta)
+  if(is.matrix(a)){
+    beta <- a[,1:q, drop = FALSE]  # k X q
+  } else {
+    beta <- matrix(a[1:q], nrow = 1) # 1 X q
+  }
+  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   sigma <- exp(s)  # link function here
 
-  dist <- units::set_units(dist, NULL)
-  key <- -(dist*dist)/(2*c(sigma*sigma))  
-  # Above is safe. Units of sigma will scale to units of dist. 
+  # Dropping units of dist is save b/c checked already
   # 'key' is unit-less
+  dist <- units::set_units(dist, NULL)
+  dist <- matrix(dist
+            , nrow = length(dist)
+            , ncol = ncol(sigma)
+            ) 
+  # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
+  key <- -(dist*dist)/(2*c(sigma*sigma))  
   key <- exp(key)  # exp of density function here, not link.
 
   return( list(L.unscaled = key, 
-               params = data.frame(par1 = sigma))
-  )  
+               params = sigma))
+    
   
 }

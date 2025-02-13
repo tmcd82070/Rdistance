@@ -356,14 +356,16 @@ display: none;
 <p>Notes and to-do for <code>s6methods</code> branch of Rdistance:</p>
 <div id="package-notes" class="section level1">
 <h1>Package Notes:</h1>
-<ol start="2" style="list-style-type: decimal">
-<li>Check whether we want or need the “1+” in
-<code>expansion.terms</code>. I.e., you use 1+expanTerms. I think maybe
-you want just expanTerms (no 1+). Check this against
-<code>distance::</code>.</li>
-<li>You use Simpsons 1/3 composite rule in version &gt;4.0.0. Study
-precision differences between it and Simpson’s alternate composite
-formula. <a href="https://en.wikipedia.org/wiki/Simpson&#39;s_rule" class="uri">https://en.wikipedia.org/wiki/Simpson&#39;s_rule</a> <span class="math display">\[
+<ol style="list-style-type: decimal">
+<li><em>Expansion Terms</em>: Figure out what’s going on with the
+hermite and simple expansion terms. I think you are missing a scaling
+factor or something. I think ALL expansion terms should have intercept
+1; hence, maybe you should scale all of them by their first element. Or,
+better yet, or in addition to, you should figure out the b-spline
+expansions and use them.</li>
+<li><em>Note</em>: You use Simpsons 1/3 composite rule in version
+&gt;4.0.0. Study precision differences between it and Simpson’s
+alternate composite formula. <a href="https://en.wikipedia.org/wiki/Simpson&#39;s_rule" class="uri">https://en.wikipedia.org/wiki/Simpson&#39;s_rule</a> <span class="math display">\[
 (dx/48) * (17f(x_0) + 59f(x_1) + 43f(x_2) + 49f(x_3) + 48f(x_4) +
 48f(x_5) + ...
     + 48f(x_n-4) + 49f(x_n-3) + 43f(x_n-2) + 59f(x_n-1) + 17f(x_n))
@@ -402,10 +404,16 @@ Exchange post</a>. I have the following: <span class="math display">\[
 z = 0.5I(w_l &lt; x &lt; \theta)
 \]</span> and <span class="math display">\[
 \theta = [\sum(z) / n](w_h - w_l) + w_l
-\]</span> this is close to correct, but not. I think the <span class="math inline">\(z\)</span> need to change each iteration.</li>
+\]</span> this is close to correct, but not. I think the <span class="math inline">\(z\)</span> need to change each iteration. See
+papers Mukai sent you.</li>
 <li><em>Stepwise variable selection</em>: Write <code>add1</code> and
 <code>drop1</code> and <code>extractAIC</code> so that <code>step</code>
 function will work with distance function objects.</li>
+<li><em>Less than full circle sampled</em>: Implement parameter that
+allows adjustment when less than a full circle is sampled (for points).
+Suggest replacing ‘singleSided’ in abundEstim and predict.dfunc with a
+numeric value, something like propAreaSurveyed = 1 or .5 (for lines) and
+some number X for lines.</li>
 </ol>
 </div>
 <div id="testing" class="section level1">

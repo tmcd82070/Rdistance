@@ -157,6 +157,7 @@ parseModel <- function(data
   )
   
   # CHANGE CHECKUNITS TO ACCEPT ML OBJECTS i.e., accept "RdistMl" object
+  # so user can call directly more easier.
   if( getOption("Rdistance_requireUnits") ){
     dataWUnits <- Rdistance::checkUnits(dataWUnits)
   }
@@ -213,17 +214,24 @@ parseModel <- function(data
 
   # Override x.scl for Gamma likelihood ----
   if ( !is.character(ml$x.scl) ){
-      if ( inherits(ml$x.scl, "units") ){ 
-          # this case is needed cause drop units does 
-          # not work on plain vector
-          isZero <- units::drop_units(ml$x.scl) == 0
-      } else {
-          isZero <- ml$x.scl == 0
-      }
+      isZero <- units::set_units(ml$x.scl, NULL) == 0
       if ( isZero & ml$likelihood == "Gamma" ){
           ml$x.scl <- "max"
           warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
       }
+  }
+
+  # Check that x.scl >= w.lo ----
+  if ( ml$x.scl < ml$w.lo ){
+    ml$x.scl <- ml$w.lo
+    warning(paste0("x.scl must be >= w.lo. x.scl set to "
+                 , format(ml$x.scl)
+                 , " i.e., g("
+                 , format(ml$x.scl)
+                 , ") = "
+                 , format(ml$g.x.scl)
+                 , " in the model."
+                ))
   }
   
   class(ml) <- "dfunc"

@@ -60,16 +60,16 @@ ESW <- function( x, newdata = NULL ){
     stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   } 
 
-  nInts <- nEvalPts - 1 # this will be even profided nEvalPts is odd
-  seqx = seq(x$w.lo, x$w.hi, length=nEvalPts) 
-  dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts)
-  
+  nInts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) - 1 # nInts MUST BE even!!!
+  seqx = seq(x$w.lo, x$w.hi, length=nInts + 1)
+
   # Default distances used in predict.dfunc is seq(ml$w.lo, ml$w.hi, getOption("Rdistance_intEvalPts")), 
   y <- stats::predict(x = x
                      , newdata = newdata
+                     , distances = seqx
                      , type = "dfuncs"
   )
-  dx <- attr(y, "distances")
+  dx <- attr(y, "distances") # these are 0 to w, but no matter.
   dx <- dx[2] - dx[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
   
   
@@ -80,7 +80,6 @@ ESW <- function( x, newdata = NULL ){
   #
   # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))
   # i.e., 1, 4, 2, 4, 2, ..., 2, 4, 1
-  nInts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) - 1 # nInts MUST BE even!!!
   intCoefs <- c(rep( c(2,4), (nInts/2) ), 1) # here is where we need nInts to be even
   intCoefs[1] <- 1
   intCoefs <- matrix(intCoefs, ncol = 1)

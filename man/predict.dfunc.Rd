@@ -89,15 +89,16 @@ columns and values in \code{newdata} are ignored.}
  does not make sense and the smoothed distance function estimate 
  will be returned if \code{type} does not equal "density" or "abundance".}
 
-\item{distances}{A vector or matrix of distances at which to evaluate 
+\item{distances}{A vector or 1-column matrix of 
+distances at which to evaluate 
 distance functions, when distance functions 
 are requested.  \code{distances} must have measurement units. 
 Any distances outside the observation 
 strip (\code{x$w.lo} to \code{x$w.hi}) are discarded.  If 
-\code{distances} is NULL, this routine predicts at a sequence 
+\code{distances} is NULL, a sequence 
 of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
 spaced distances between 
-\code{x$w.lo} and \code{x$w.hi}, inclusive.}
+\code{x$w.lo} and \code{x$w.hi} (inclusive) is used.}
 
 \item{singleSided}{Logical scalar equal to TRUE if only one side of the transect was 
 observed. If both sides of line-transects were 

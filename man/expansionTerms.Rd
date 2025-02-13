@@ -2,65 +2,72 @@
 % Please edit documentation in R/expansionTerms.R
 \name{expansionTerms}
 \alias{expansionTerms}
-\title{expansionTerms - Compute distance function expansion terms}
+\title{expansionTerms - Distance function expansion terms}
 \usage{
 expansionTerms(a, d, series, nexp, w)
 }
 \arguments{
-\item{a}{A vector of likelihood parameter values. Length and 
-meaning depend on \code{ml$series} and \code{ml$expansions}. If no expansion 
-terms were called for (i.e., \code{ml$expansions = 0}), the distance 
-likelihoods contain one or two canonical parameters (see Details). 
-If one or more expansions are called for, coefficients for the 
-expansion terms follow coefficients for the canonical parameters.  
-i.e., length of this vector must be 
-  \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate", "logistic", "huber"))}.}
+\item{a}{A vector or matrix of (estimated) coefficients. 
+\code{a} has length \eqn{p} + \code{nexp} (if a vector) or dimension
+(\eqn{k}, \eqn{p} + \code{nexp}), where \eqn{p} is the number 
+of canonical parameters in the likeihood and \eqn{k} is the 
+number of coefficient vectors to evaluate. The first \eqn{p}
+elements of \code{a}, or the first \eqn{p} columns if \code{a}
+is a matrix, are ignored. I.e., Expansion 
+term coefficients are the last \code{nexp} elements or columns 
+of \code{a}.}
 
-\item{d}{A vector of distances at which to evaluate the expansion 
-terms. This vector should be distances above w.lo, i.e., if w.lo > 0, 
-this vector should be (distances - w.lo). Parameters \code{d} and \code{w}
+\item{d}{A vector or 1-column matrix of 
+distances at which to evaluate 
+the expansion terms.  \code{d} should be distances 
+above w.lo, i.e., distances - w.lo. 
+Parameters \code{d} and \code{w}
 must have compatible measurement units.}
+
+\item{series}{If \code{expansions} > 0, this string 
+specifies the type of expansion to use. Valid values at 
+present are 'simple', 'hermite', and 'cosine'.}
 
 \item{nexp}{Number of expansion terms.  Integer from 0 to 5.}
 
-\item{w}{Strip width, i.e., range of \code{d} is 0 to \code{w}.
-Parameters \code{d} and \code{w} must have compatible measurement units.}
+\item{w}{Strip width, i.e., \code{w.hi} - \code{w.low} = 
+range of \code{d}. Parameters \code{d} and \code{w} must 
+have compatible measurement units.}
 }
 \value{
-A vector of the expansion terms.  These are
-the cyclic expansion terms multiplied by expansion term 
-coefficients in \code{a}.
+If \code{nexp} equals 0, 1 is returned. 
+If \code{nexp} is greater than 0, a matrix of 
+size \eqn{n}X\eqn{k} containing expansion terms, 
+where \eqn{n} = \code{length(d)} and \eqn{k} = \code{nrow(a)}. The 
+expansion series associated with row \eqn{j} of \code{a} 
+are in column \eqn{j} of the return. i.e., 
+element (\eqn{i},\eqn{j}) of the return is 
+  \deqn{1 + \sum_{k=1}^{m} a_{jk} h_{k}(x_{i}/w).}{(1 + a(j1) h_1(x(i)/w) + ... + a(jm) h_m(x(i)/w)) }
+(see Details).
 }
 \description{
-Computes one of several types of "expansion" terms that 
-that can multiplied into a distance function likelihoods.
+Compute "expansion" terms that modify the shape of 
+a base distance function.
 }
 \details{
 Expansion terms modify the "key" function of the 
 likelihood multiplicatively.  The modified distance function is,
 \code{key * expTerms} where \code{key} is a vector of values in
-the base distance function (e.g., \code{halfnorm.like()$L.unscaled} or 
-\code{hazrate.like()$L.unscaled}) and \code{expTerms} is the vector returned
-by this routine.
-}
-\section{Expansion Terms}{
- 
+the base likelihood function (e.g., \code{halfnorm.like()$L.unscaled} 
+or \code{hazrate.like()$L.unscaled}) and \code{expTerms} is the 
+matrix returned by this routine. 
 
-If the number of expansions (\code{nexp}) is k, k is greater 
-than 0, and assuming 
-the expansion terms specified in \code{series} 
-are \eqn{h_{ij}(x)}{h_ij(x)} for 
-the \eqn{j^{th}}{j-th} expansion of the \eqn{i^{th}}{i-th} 
-distance, and that 
-\eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)} are (estimated) 
-coefficients for the expansion terms, the likelihood contribution 
-for the \eqn{i^{th}}{i-th} distance is, 
-  \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = 
-   f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(d/w)).}
-   {f(x|a,b,c_1,c_2,...,c_k) = 
-   f(x|a,b)(1 + c(1) h_i1(d/w) + c(2) h_i2(d/w) + ... + c(k) h_ik(d/w)). }
+Let the number of expansions (\code{nexp}) be \eqn{m} (\eqn{m} > 0),
+assume the raw cyclic expansion terms of \code{series} 
+are \eqn{h_{j}(x)}{h_j(x)} for 
+the \eqn{j^{th}}{j-th} expansion of distance \eqn{x}, and that 
+\eqn{a_1, a_2, \dots, a_m}{a(1), a(2), ..., a(m)} are (estimated) 
+coefficients for the expansion terms, then the likelihood contribution 
+for the \eqn{i^{th}}{i-th} distance \eqn{x_i}{x(i)} is, 
+  \deqn{f(x_i|\beta,a_1,a_2,\dots,a_m) = 
+   f(x_i|\beta)(1 + \sum_{k=1}^{m} a_k h_{k}(x_i/w)).}{f(x(i)|beta,a_1,a_2,...,a_k) = 
+   f(x(i)|beta)(1 + a(1) h_1(x(i)/w) + a(2) h_2(x(i)/w) + ... + a(m) h_m(x(i)/w)). }
 }
-
 \examples{
 a1 <- c(log(40), 0.5, -.5)
 a2 <- c(log(40), 0.25, -.5)
@@ -69,13 +76,18 @@ w = units::set_units(100, "m")
 
 expTerms1 <- expansionTerms(a1, dists, "cosine", 2, w)
 expTerms2 <- expansionTerms(a2, dists, "cosine", 2, w)
-plot(dists, expTerms1 / (1 + sum(a1[2:3])))
-points(dists, expTerms2 / (1 + sum(a2[2:3])), pch = 16)
+plot(dists, expTerms2, ylim = c(0,2.5))
+points(dists, expTerms1, pch = 16)
+
+# Same as above
+a <- rbind(a1, a2)
+expTerms <- expansionTerms(a, dists, "cosine", 2, w)
+matlines(dists, expTerms, lwd=2, col=c("red", "blue"), lty=1)
 
 # Showing key and expansions
 key <- halfnorm.like(log(40), dists, 1)$L.unscaled
 plot(dists, key, type = "l", col = "blue", ylim=c(0,1.5))
-lines(dists, key * expTerms1 / sum(a1[-1]), col = "red")
-lines(dists, key * expTerms2 / sum(a2[-1]), col = "purple")
+lines(dists, key * expTerms1, col = "red")
+lines(dists, key * expTerms2, col = "purple")
 
 }

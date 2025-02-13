@@ -15,17 +15,18 @@
 #' @param isSmooth Logical.  TRUE if the distance function 
 #' is smoothed (and hence has no parameters).
 #' 
-#' @return A matrix of distance functions.  Distance 
-#' functions are in column.  Distances go across rows. 
-#' i.e., can use matplot(d,return) to plot all distance 
-#' functions. 
+#' @return A matrix of distance function values, of size 
+#' length(distances) X nrow(params).  Each row of params
+#' is associated with a column, i.e., a different distance 
+#' function.  Distances are associated with rows, 
+#' i.e., use matplot(d,return) to plot values on separate distance 
+#' functions specified by rows of params.
 #' 
 #' 
 predict.dfunc.dfuncs <- function(x
                                , params
                                , distances
                                , isSmooth
-                               
                                ){
   # DISTANCE function prediction ----
   
@@ -55,28 +56,24 @@ predict.dfunc.dfuncs <- function(x
     # We already eval-ed covars, so new X is constant (1), "XIntOnly"
     
     like <- utils::getFromNamespace(paste0( x$likelihood, ".like"), "Rdistance")    
-    XIntOnly <- matrix(1, nrow = length(distances), ncol = 1)
-    # XIntOnly <- diag(nD)
-    nD <- length(distances)
-    nP <- nrow(params)
-    d <- matrix(distances - x$w.lo
-              , nrow = nP
-              , ncol = nD
-              , byrow = TRUE)  
+    d <- distances - x$w.lo
+    XIntOnly <- matrix(1, nrow = length(d), ncol = 1)
     y <- like(
              a = params
            , dist = d
            , covars = XIntOnly
     )
-    y <- t(y$L.unscaled)
+    y <- y$L.unscaled # (nXk) = (length(d) X nrow(params))
 
     if(x$expansions > 0){
+      # expansion terms are always constant across distances
+      # Hence, length of params does not matter, return n = length(d) vector
       exp.terms <- Rdistance::expansionTerms(a = params
-                                             , d = d[1,] # b/c w.lo subtracted
+                                             , d = d 
                                              , series = x$series
                                              , nexp = x$expansions
                                              , w = x$w.hi - x$w.lo)
-      y <- y * exp.terms
+      y <- y * exp.terms # (nXk) * (nXk)
       
       # without monotonicity restraints, function can go negative, 
       # especially in a gap between datapoints. Don't want this in distance
@@ -122,7 +119,7 @@ predict.dfunc.dfuncs <- function(x
     
   } else if( !isSmooth ){
     # Case:  All likelihoods except Gamma
-    x0 <- rep(x$x.scl, nrow(params))
+    x0 <- x$x.scl
   } 
   
   # Now that we know x0 (either a scaler or a vector), compute f(x0)
@@ -134,24 +131,22 @@ predict.dfunc.dfuncs <- function(x
     # Gotta loop here because like() assumes a = params is a vector, 
     # not a matrix (could re-write likelihoods to accept matricies of parameters).
 
-    d <- matrix(x0 - x$w.lo
-              , nrow = length(x0)
-              , ncol = 1)
-    XIntOnly <- matrix(1, nrow = nrow(d), ncol = 1)
+    d <- x0 - x$w.lo
+    XIntOnly <- matrix(1, nrow = length(d), ncol = 1)
     
-    # here, length(x0) == nrow(params) == nrow(d) 
+    # here, length(x0) == nrow(d) == 1
     f.at.x0 <- like(a = params
                   , dist = d
                   , covars = XIntOnly)    
-    f.at.x0 <- t(f.at.x0$L.unscaled)
-
+    f.at.x0 <- f.at.x0$L.unscaled  # (1Xk)
+    
     if(x$expansions > 0){
       exp.terms <- Rdistance::expansionTerms(a = params
                                              , d = d
                                              , series = x$series
                                              , nexp = x$expansions
                                              , w = x$w.hi - x$w.lo)
-      f.at.x0 <- f.at.x0 * exp.terms
+      f.at.x0 <- f.at.x0 * exp.terms # (1Xk) * (1)
       f.at.x0[ !is.na(f.at.x0) & (f.at.x0 <= 0) ] <- getOption("Rdistance_zero")
     }
     
@@ -165,11 +160,9 @@ predict.dfunc.dfuncs <- function(x
     f.at.x0 <- stats::approx(distances, y, xout = x0)$y 
   }
   
-  # length(f.at.x0) must equal ncol(y)
-  # use t() twice b/c I assume R's internal expansion of f.at.x0
-  # to apply to all columns of y is more efficient than expanding 
-  # f.at.x0 to a full matrix
-  y <- x$g.x.scl * t(t(y) / drop(f.at.x0))
+  # ncol(f.at.x0) must equal ncol(y), or error here
+  f.at.x0 <- matrix(f.at.x0, nrow(y), length(f.at.x0), byrow = TRUE)
+  y <- x$g.x.scl * (y / f.at.x0)
   # the above works only if x$g.x.scl is a scalar; 
   # otherwise, we'd need to
   # evaluate f(x0) for every x0, then multiply.
