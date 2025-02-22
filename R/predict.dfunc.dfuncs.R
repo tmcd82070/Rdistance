@@ -89,12 +89,9 @@ predict.dfunc.dfuncs <- function(x
   # SCALE distance functions ----
   
   if( x$likelihood == "Gamma" & !isSmooth ){
-    # This is a pesky special case of scaling. We need different x.scl for 
-    # every distance function b.c. only x.scl = max is allowed.  For all other 
-    # distance functions there is only one x.scl.
-    # We could do all distance functions this way, i.e., call F.gx.estim
-    # for every value of params, but it is faster not to. For all but Gamma,
-    # we computed x.scl in dfuncEstim and it's constant.
+    # Gamma case. Only x.scl allowed is 'max'. 
+    # If there are covariates, we need different x.scl for 
+    # every distance function.  
     #
     # Cannot take apply(y,1,max) because maybe only 1 or 2 distances are predicted.
     # Cannot compute mode of Gamma (lam * b * (r-1)) because there might be extensions,
@@ -106,7 +103,7 @@ predict.dfunc.dfuncs <- function(x
       # On entry from apply(), covRow is a dimensionless vector. It must be a
       # matrix when we call the likelihood.
       covRow <- matrix(covRow, nrow = 1)
-      F.maximize.g(fit, covars = covRow)
+      maximize.g(fit, covars = covRow)
     }
     
     x0 <- apply(X = X
@@ -117,6 +114,15 @@ predict.dfunc.dfuncs <- function(x
     # x0 is a distance, needs units
     x0 <- units::set_units(x0, x$outputUnits, mode = "standard")
     
+  } else if( is.character(x$x.scl) && (x$x.scl == "max") ){
+    # Technically, we could do this. Just like Gamma, we could 
+    # estimate x.max for every distance function in y
+    # something like...
+    # full.df <- predict.dfunc(x, type="dfuncs", newdata = newdata)
+    # maxPos <- apply(full.df, 2, which.max)
+    # x0 <- attr(full.df, "distances")[maxPos]
+    
+    stop(paste0("x.scl = 'max' not currently implemented for non-Gamma likelihoods."))
   } else if( !isSmooth ){
     # Case:  All likelihoods except Gamma
     x0 <- x$x.scl
@@ -128,8 +134,6 @@ predict.dfunc.dfuncs <- function(x
     
     # Likelihood functions return g(x). This is what we want, 
     # except that if there are expansions, g(0) != 1
-    # Gotta loop here because like() assumes a = params is a vector, 
-    # not a matrix (could re-write likelihoods to accept matricies of parameters).
 
     d <- x0 - x$w.lo
     XIntOnly <- matrix(1, nrow = length(d), ncol = 1)

@@ -17,7 +17,8 @@ Rows are observations, columns contain the set of parameters
 \value{
 A vector of distance function values, of length 
 n = number of observed distances = length(distances(x)). 
-Each observation is associated with one element
+Elements in \code{distances(x)} correspond, in order, 
+to values in the returned vector.
 }
 \description{
 An internal prediction function to predict (compute) 
@@ -29,4 +30,14 @@ appropriate for likelihood computation.
 This version allows for matrix inputs and 
 uses matrix operations, and is thus faster than earlier
 looping versions.
+}
+\details{
+Assuming \code{L} is the vector returned by this function, 
+the negative log likelihood is \code{-sum(log(L / I), na.rm=T)}, 
+where \code{I} is the integration constant, or 
+area under the likelihood between 
+\code{w.lo} and \code{w.hi}. 
+Note that returned likelihood values for distances less 
+than \code{w.lo} or greater than \code{w.hi} are \code{NA}; 
+hence, \code{na.rm=TRUE} in the sum.
 }

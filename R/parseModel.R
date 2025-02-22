@@ -214,24 +214,27 @@ parseModel <- function(data
 
   # Override x.scl for Gamma likelihood ----
   if ( !is.character(ml$x.scl) ){
-      isZero <- units::set_units(ml$x.scl, NULL) == 0
-      if ( isZero & ml$likelihood == "Gamma" ){
-          ml$x.scl <- "max"
-          warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
-      }
-  }
+    isZero <- units::set_units(ml$x.scl, NULL) == 0
+    if ( isZero & ml$likelihood == "Gamma" ){
+        ml$x.scl <- "max"
+        warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
+    }
 
-  # Check that x.scl >= w.lo ----
-  if ( ml$x.scl < ml$w.lo ){
-    ml$x.scl <- ml$w.lo
-    warning(paste0("x.scl must be >= w.lo. x.scl set to "
-                 , format(ml$x.scl)
-                 , " i.e., g("
-                 , format(ml$x.scl)
-                 , ") = "
-                 , format(ml$g.x.scl)
-                 , " in the model."
-                ))
+    # Check that x.scl >= w.lo ----
+    if ( ml$x.scl < ml$w.lo ){
+      ml$x.scl <- ml$w.lo
+      warning(paste0("x.scl must be >= w.lo. x.scl set to "
+                   , format(ml$x.scl)
+                   , " i.e., g("
+                   , format(ml$x.scl)
+                   , ") = "
+                   , format(ml$g.x.scl)
+                   , " in the model."
+                  ))
+    }
+  } else if( ml$x.scl != "max"){
+    stop(paste0("x.scl must either be a number (with units) or string 'max'. Found "
+                , ml$x.scl))
   }
   
   class(ml) <- "dfunc"

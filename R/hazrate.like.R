@@ -40,26 +40,45 @@
 #' @keywords models
 #' @export
 
-hazrate.like <- function(a, 
-                         dist, 
-                         covars ){
+hazrate.like <- function(a 
+                       , dist 
+                       , covars ){
   
+  if(length(dim(dist)) >= 2 && dim(dist)[2] != 1 ){ 
+    stop(paste("Argument 'dist' must be a vector or single-column matrix.",
+               "Found array with", length(dim(dist)), "dimensions."))
+  }
   
   # What's in a? : 
   #   a = [(Intercept), b1, ..., bp, k, <expansion coef>]
   q <- Rdistance:::nCovars(covars)
-  beta <- matrix(a[1:q], ncol = 1) # could be expansion coefs after q
-  s <- drop(covars %*% beta)
+  if(is.matrix(a)){
+    beta <- a[, 1:q, drop = FALSE]  # k X q
+    K <- a[, q+1, drop = FALSE]     # k X 1
+  } else {
+    beta <- matrix(a[1:q], nrow = 1) # 1 X q
+    K <- matrix(a[q+1], nrow = 1)     # 1 X 1
+  }
+  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   sigma <- exp(s)  # link function here
-  K <- a[q + 1]
 
   dist <- units::set_units(dist, NULL)
-  key <- -( dist/sigma )^(-K)
+  dist <- matrix(dist
+                 , nrow = length(dist)
+                 , ncol = ncol(sigma)
+  ) 
+  K <- matrix(K
+            , nrow = nrow(dist)
+            , ncol = ncol(sigma)
+            , byrow = TRUE
+            )
+  key <- -( dist/sigma )^(-K)  # (nXk / nXk) ^ (kX1)
   key <- 1 - exp(key)
 
+  sigma <- array(c(sigma, K)
+               , dim = c(nrow(dist), ncol(sigma), 2))
   return( list(L.unscaled = key, 
-               params = data.frame(par1 = sigma,
-                                   par2 = K))
+               params = sigma)
           )  
 
 }

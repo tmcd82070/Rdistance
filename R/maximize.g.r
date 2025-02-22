@@ -1,10 +1,10 @@
-#' @title Find the coordinate of the maximum of a distance function
+#' @title maximize.g - Find coordinate of function maximum 
 #' 
 #' @description Find the x coordinate that maximizes g(x).
 #' 
 #' @param fit An estimated 'dfunc' object produced by \code{dfuncEstim}.
 #' 
-#' @param covars Covariate values to calculate maximum for.
+#' @param covars Covariate values to calculate g(x).
 #' 
 #' @return The value of x that maximizes g(x) in \code{fit}.
 #' 
@@ -17,7 +17,7 @@
 #' 
 #' fit <- dfuncEstim( x, likelihood="Gamma", x.scl="max" )
 #' 
-#' F.maximize.g( fit )  # should be near 10.
+#' maximize.g( fit )  # should be near 10.
 #' fit$x.scl            # same thing
 #' }
 #' 
@@ -25,7 +25,7 @@
 #' @export
 #' @importFrom stats optim 
 
-F.maximize.g <- function( fit, covars = NULL ){
+maximize.g <- function( fit, covars = NULL ){
 
 g.neg <-  function(x, 
                    params, 
@@ -37,7 +37,7 @@ g.neg <-  function(x,
                    expansions=0, 
                    pointSurvey = F,
                    correctUnits){
-    f.like <- match.fun(paste( like, ".like", sep=""))
+    f.like <- utils::getFromNamespace(paste0( x$likelihood, ".like"), "Rdistance")
 
     if( x < w.lo ){
       x <- w.lo # somehow, optim occasionally passes in -4.1e-15, essentially zero, but 
@@ -77,8 +77,8 @@ correctUnits <- fit$outputUnits
 wlo <- units::set_units(fit$w.lo, correctUnits, mode = "standard")
 whi <- units::set_units(fit$w.hi, correctUnits, mode = "standard")
 
-wlo <- units::drop_units(wlo)
-whi <- units::drop_units(whi)
+wlo <- units::set_units(wlo, NULL)
+whi <- units::set_units(whi, NULL)
 
 x.start <- (wlo + whi) / 10 + wlo
 

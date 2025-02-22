@@ -14,11 +14,22 @@
 #' @inheritParams predict.dfunc 
 #' @inheritParams predict.dfunc.dfuncs
 #' 
+#' @details
+#' 
+#' Assuming \code{L} is the vector returned by this function, 
+#' the negative log likelihood is \code{-sum(log(L / I), na.rm=T)}, 
+#' where \code{I} is the integration constant, or 
+#' area under the likelihood between 
+#' \code{w.lo} and \code{w.hi}. 
+#' Note that returned likelihood values for distances less 
+#' than \code{w.lo} or greater than \code{w.hi} are \code{NA}; 
+#' hence, \code{na.rm=TRUE} in the sum. 
 #' 
 #' @return A vector of distance function values, of length 
 #' n = number of observed distances = length(distances(x)). 
-#' Each observation is associated with one element
-#' 
+#' Elements in \code{distances(x)} correspond, in order, 
+#' to values in the returned vector.
+#'  
 #' 
 predict.dfunc.likelihood <- function(x
                                , params

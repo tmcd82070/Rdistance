@@ -6,7 +6,7 @@
 #' 
 #' @details The negative exponential likelihood is 
 #' \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is the 
-#' slope parameter to be estimated. 
+#' slope parameter. 
 #' 
 #' @inherit halfnorm.like return seealso
 #'    
@@ -27,18 +27,31 @@ negexp.like <- function (a,
 
   # What's in a? : 
   #     a = [(Intercept), b1, ..., bp, <expansion coef>]
+  if(length(dim(dist)) >= 2 && dim(dist)[2] != 1 ){ 
+    stop(paste("Argument 'dist' must be a vector or single-column matrix.",
+               "Found array with", length(dim(dist)), "dimensions."))
+  }
   
-  q <- Rdistance:::nCovars(covars)
+  q <- nCovars(covars)
+  if(is.matrix(a)){
+    beta <- a[,1:q, drop = FALSE]  # k X q
+  } else {
+    beta <- matrix(a[1:q], nrow = 1) # 1 X q
+  }
+  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
+  sigma <- exp(s)  # link function here
+
+  dist <- units::set_units(dist, NULL)
+  dist <- matrix(dist
+                 , nrow = length(dist)
+                 , ncol = ncol(sigma)
+  ) 
   
-  beta <- matrix(a[1:q], ncol = 1) 
-  s <- drop( covars %*% beta )      
-  beta <- exp(s)  # link function here
-  
-  key = -beta * units::set_units(dist, NULL)
+  key = -sigma * dist  # (nXk) * (nXk)
   key <- exp(key)
   
   return( list(L.unscaled = key, 
-               params = data.frame(par1 = beta))
+               params = sigma)
   )  
 
 }
