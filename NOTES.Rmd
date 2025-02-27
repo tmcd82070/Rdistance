@@ -6,8 +6,8 @@ Notes and to-do for `s6methods` branch of Rdistance:
 
 # Package Notes:
 
-
-1.    _Expansion Terms_: Figure out what's going on with the hermite 
+1.    _Where were you?_: On 13Feb24, you needed to (1) implement matrix calculations for non-halfnorm likelihoods; (2) implement predict.dfunc.density and predict.dfunc.abundance. 
+2.    _Expansion Terms_: Figure out what's going on with the hermite 
 and simple expansion terms.  I think you are missing a scaling factor or
 something.  I think ALL expansion terms should have intercept 1; hence, 
 maybe you should scale all of them by their first element. Or, better yet, or in addition to, you should figure out the b-spline expansions and use them. 

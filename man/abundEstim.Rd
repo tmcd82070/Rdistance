@@ -7,7 +7,7 @@
 abundEstim(
   x,
   area = NULL,
-  singleSided = FALSE,
+  propUnitSurveyed = 1,
   ci = 0.95,
   R = 500,
   plot.bs = FALSE,
@@ -32,17 +32,14 @@ units on area must be convertible to "foo^2" by the \code{units}
 package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
 
-\item{singleSided}{Logical scalar equal to TRUE if only one side of the transect was 
-observed. If both sides of line-transects were 
-observed, \code{singleSided} = FALSE. Some surveys
-observe only one side of transect lines for a variety of logistical reasons. 
-For example, some aerial line-transect surveys place observers on only one
-side of the aircraft. This parameter only effects line-transects. For point transects, 
-\code{Rdistance} does not currently have a mechanism to adjust estimates when less than a full 
-circle is observed.   When 
-\code{singleSided} = TRUE, surveyed area is halved and the density 
-estimator's denominator (see \bold{Details})
-is \eqn{(ESW)(L)}, not \eqn{2(ESW)(L)}.}
+\item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
+The proportion of the default sampling unit that 
+  was surveyed.  If both sides of line transects were observed, 
+  \code{propUnitSurveyed}
+  = 1.  If only a single side of line transects were observed, set 
+  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
+  the proportion of each circle that was observed. Length must either be
+  1 or the total number of transects in \code{x}.}
 
 \item{ci}{A scalar indicating the confidence level of confidence intervals. 
 Confidence intervals are computed using a bias corrected bootstrap
@@ -250,14 +247,14 @@ The abundance estimate for line-transect surveys (if no covariates
 
 \examples{
 # Load example sparrow data (line transect survey type)
-sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+# sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
 data(sparrowDf)
 
 # Fit half-normal detection function
 dfunc <- sparrowDf |> 
   dfuncEstim(formula=dist ~ groupsize(groupsize)
            , likelihood="halfnorm"
-           , w.hi=units::set_units(100, "m")
+           , w.hi=units::set_units(150, "m")
   )
 
 # Estimate abundance - Convenient for programming 

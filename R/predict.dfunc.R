@@ -60,17 +60,12 @@
 #'       will be returned for each observation (row) in \code{newdata}. 
 #'     }
 #'     
-#'    \item \bold{If \code{type} == "density"}: Returned object is a data frame
+#'    \item \bold{If \code{type} == "density" or "abundance"}: Returned object is a data frame
 #'    containing one row per transect. Columns in the data frame include 
-#'    transect ID, which identifies transects, and estimated density on 
+#'    transect ID, which identifies transects, number of individuals seen
+#'    ('individualsSeen'), average probability of detection ('avgPdetect'),
+#'    area surveyed ('effort'), estimated density, and estimate abundance on 
 #'    the area sampled by the transect. 
-#'    
-#'    \item \bold{If \code{type} == "abundance"}: Returned object is 
-#'    a data frame containing one row per transect and 
-#'    estimated values for abundance on each transect. 
-#'    Abundance estimates are density on the transect's sampled 
-#'    area multiplied by size of the sampled area (i.e., 
-#'    length times nominal width = length(!singleSided+1)(w.hi - w.lo)).
 #'  }  
 #'  
 #'  If \code{x} is a smoothed distance function, it does not have parameters
@@ -204,7 +199,8 @@ predict.dfunc <- function(x
                         , newdata = NULL
                         , type = c("parameters")
                         , distances = NULL
-                        , singleSided = FALSE
+                        , propUnitSurveyed = 1.0
+                        , area = NULL
                         , ...) {
 
   if (!inherits(x, "dfunc")){ 
@@ -270,8 +266,7 @@ predict.dfunc <- function(x
                                                ) 
          , abundance = 
          , density = predict.dfunc.density(x = x
-                                         , params = paramsLink
-                                         , type = type
+                                         , propUnitSurveyed = propUnitSurveyed
                                          )  
          , {  # the default = parameters
              cbind(exp(paramsLink[,1]), # All link functions are exp...thus far

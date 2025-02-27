@@ -282,6 +282,7 @@ is.RdistDf <- function(df, verbose = FALSE){
   
   # could pull and save the site ID's that identify rows. Columns that 
   # produce unique rows (i.e., the Site ID columns) are: 
+  # grps <- dplyr::group_data(df)
   # names(grps)[ names(grps) != ".rows"]
   # But, I don't think we need the actual name of the columns provided 
   # groups of one row each are defined. 

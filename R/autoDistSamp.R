@@ -68,7 +68,7 @@ autoDistSamp <- function (data
                           , outputUnits = NULL
                           
                           , area = NULL
-                          , singleSided = FALSE
+                          , propUnitSurveyed = 1.0
                           , ci = 0.95
                           , R = 500
                           , plot.bs = FALSE
@@ -251,7 +251,7 @@ autoDistSamp <- function (data
   
   abund <- abundEstim(x = dfunc
               , area = area
-              , singleSided = singleSided
+              , propUnitSurveyed = propUnitSurveyed
               , ci = ci
               , R = R
               , plot.bs = plot.bs

@@ -23,18 +23,6 @@
 #' package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 #' others are acceptable.  
 #'   
-#' @param singleSided Logical scalar equal to TRUE if only one side of the transect was 
-#' observed. If both sides of line-transects were 
-#' observed, \code{singleSided} = FALSE. Some surveys
-#' observe only one side of transect lines for a variety of logistical reasons. 
-#' For example, some aerial line-transect surveys place observers on only one
-#' side of the aircraft. This parameter only effects line-transects. For point transects, 
-#' \code{Rdistance} does not currently have a mechanism to adjust estimates when less than a full 
-#' circle is observed.   When 
-#' \code{singleSided} = TRUE, surveyed area is halved and the density 
-#' estimator's denominator (see \bold{Details})
-#' is \eqn{(ESW)(L)}, not \eqn{2(ESW)(L)}.
-#' 
 #' @param ci A scalar indicating the confidence level of confidence intervals. 
 #'   Confidence intervals are computed using a bias corrected bootstrap
 #'   method. If \code{ci = NULL} or \code{ci == NA}, confidence intervals 
@@ -45,6 +33,15 @@
 #'   
 #' @param plot.bs A logical scalar indicating whether to plot individual
 #'   bootstrap iterations.
+#'   
+#' @param propUnitSurveyed A scalar or vector of real numbers between 0 and 1.  
+#' The proportion of the default sampling unit that 
+#'   was surveyed.  If both sides of line transects were observed, 
+#'   \code{propUnitSurveyed}
+#'   = 1.  If only a single side of line transects were observed, set 
+#'   \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
+#'   the proportion of each circle that was observed. Length must either be
+#'   1 or the total number of transects in \code{x}.
 #'   
 #' @param showProgress A logical indicating whether to show a text-based
 #'   progress bar during bootstrapping. Default is \code{TRUE}. 
@@ -242,14 +239,14 @@
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' # sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
 #' data(sparrowDf)
 #' 
 #' # Fit half-normal detection function
 #' dfunc <- sparrowDf |> 
 #'   dfuncEstim(formula=dist ~ groupsize(groupsize)
 #'            , likelihood="halfnorm"
-#'            , w.hi=units::set_units(100, "m")
+#'            , w.hi=units::set_units(150, "m")
 #'   )
 #' 
 #' # Estimate abundance - Convenient for programming 
@@ -267,7 +264,7 @@
 #' @export
 abundEstim <- function(x
                      , area = NULL
-                     , singleSided = FALSE
+                     , propUnitSurveyed = 1.0
                      , ci = 0.95
                      , R = 500
                      , plot.bs = FALSE
@@ -280,13 +277,10 @@ abundEstim <- function(x
   bootstrapping <- !is.null(ci) && !is.na(ci)
   
   # Initial setup for plotting ----
-  if (plot.bs) {
+  if (bootstrapping && plot.bs) {
     par( xpd=TRUE )
     plotObj <- plot(x)
   }
-  
-  # ---- Set number of sides ----
-  surveyedSides <- as.numeric(!singleSided) + 1  # 2 = dbl sided; 1 = single
   
   # ---- Set Area ----
   if( is.null(area) ){
@@ -354,7 +348,7 @@ abundEstim <- function(x
                       , outputUnits = x$outputUnits
                       , warn = FALSE
                       , area = area
-                      , surveyedSides = surveyedSides
+                      , propUnitSurveyed = propUnitSurveyed
                       , pb = pb
                       , plot.bs = plot.bs
                       , plotCovValues = plotObj$predCovValues
@@ -375,7 +369,7 @@ abundEstim <- function(x
           )
 
   # ---- Plot original fit again (over bs lines) ----
-  if (plot.bs) {
+  if (bootstrapping && plot.bs) {
     lines(x
           , newdata = plotObj$predCovValues
           , col = "red"

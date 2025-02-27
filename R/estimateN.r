@@ -6,12 +6,7 @@
 #' bootstrapping.
 #' 
 #' @inheritParams predict.dfunc 
-#' 
-#' @param surveyedSides The number of sides of the transect that were surveyed. Either 
-#' 1 or 2.  Only applies to line transects. 
-#' 
 #' @inheritParams abundEstim
-#' 
 #' @inheritParams dfuncEstim  
 #'  
 #' @inherit abundEstim details
@@ -43,7 +38,7 @@
 #'    \item{pDetection}{Probability of detection.}
 #'    
 #' For line-transects that do not involve covariates, x$density  
-#' is x$n.seen / (x$surveyedSides * x$w * x$pDetection * x$surveyedUnits)
+#' is x$n.seen / (2 * propUnitSurveyed * x$w * x$pDetection * x$surveyedUnits)
 #'    
 #'         
 #'    
@@ -53,7 +48,7 @@
 
 estimateN <- function(x
                       , area = NULL
-                      , surveyedSides = 2
+                      , propUnitSurveyed = 1.0
                       ){
 
   w <- x$w.hi - x$w.lo
@@ -77,7 +72,6 @@ estimateN <- function(x
     #           component $data has NOT been truncated to the strip
   
     # esw is always a vector of length n. 
-    # If dfunc is pointSurveys, esw is EDR.  If line surveys, esw is ESW.
     esw <- effectiveDistance(x)
     
     if (Rdistance::is.points(x)) {
@@ -95,9 +89,9 @@ estimateN <- function(x
     
     # ---- Compute density ----
     if(Rdistance::is.points(x)){
-      dens <- sum(nhat, na.rm = TRUE) / (pi * w^2 * totSurveyedUnits) # na.rm CRITICAL here; missing groupsizes on missing transects
+      dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * pi * w^2 * totSurveyedUnits) # na.rm CRITICAL here; missing groupsizes on missing transects
     } else {
-      dens <- sum(nhat, na.rm = TRUE) / (surveyedSides * w * totSurveyedUnits)
+      dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * 2 * w * totSurveyedUnits)
     }
     
     # ---- Compute abundance ----

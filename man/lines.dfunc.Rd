@@ -11,11 +11,12 @@
 produced by calling \code{\link{dfuncEstim}}.}
 
 \item{prob}{Logical scaler for whether to scale the distance function 
-to be a density (integrates to one). Default behavior is designed 
+to be a density function (integrates to one). Default behavior is designed 
 to be compatible with the plot method for distance functions 
 (\code{\link{plot.dfunc}}). By default, line transect distance 
 functions are not scaled to a density and integrate to the effective strip width. 
-By default, point transects distance functions are scaled to be densities.}
+In contrast, point transects distance functions are scaled to be densities 
+by default.}
 
 \item{\dots}{Parameters passed to \code{lines.default} that control attributes like 
 color, line width, line type, etc.}

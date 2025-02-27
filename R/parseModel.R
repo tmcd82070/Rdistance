@@ -116,7 +116,7 @@ parseModel <- function(data
   }
   formula <- formula( paste(formulaChar[c(2,1,3)], collapse = " ") )
 
-  
+
   # Evaluate model frame ----
   # Will evaluate model frame twice: here, to get response and offset from formula
   # so that we can check units. Later, to exclude observations outside the strip.
@@ -212,7 +212,18 @@ parseModel <- function(data
       if (warn) warning("Minimum spline expansions = 2. Proceeding with 2.")
   }
 
-  # Override x.scl for Gamma likelihood ----
+  # Check x.scl, and override x.scl for Gamma likelihood ----
+  if ( length(ml$x.scl) > 1 ){
+    # at this point in the process, x.scl can only be a scaler or "max"
+    warning(paste0("x.scl cannot have length >1. "
+                 , "Found length "
+                 , length(ml$x.scl)
+                 , ". Only first element will used. "
+                 , " x.scl has been set to "
+                 , ml$x.scl[1]))
+    ml$x.scl <- ml$x.scl[1]
+  }
+  
   if ( !is.character(ml$x.scl) ){
     isZero <- units::set_units(ml$x.scl, NULL) == 0
     if ( isZero & ml$likelihood == "Gamma" ){

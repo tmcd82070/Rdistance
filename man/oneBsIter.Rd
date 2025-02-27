@@ -19,7 +19,7 @@ oneBsIter(
   outputUnits,
   warn,
   area,
-  surveyedSides,
+  propUnitSurveyed,
   pb,
   plot.bs,
   plotCovValues
@@ -138,6 +138,15 @@ For example, if output units are "foo",
 units on area must be convertible to "foo^2" by the \code{units}
 package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
+
+\item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
+The proportion of the default sampling unit that 
+  was surveyed.  If both sides of line transects were observed, 
+  \code{propUnitSurveyed}
+  = 1.  If only a single side of line transects were observed, set 
+  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
+  the proportion of each circle that was observed. Length must either be
+  1 or the total number of transects in \code{x}.}
 
 \item{pb}{A progress bar created with \code{progress::progress_bar$new()}.}
 

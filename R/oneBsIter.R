@@ -49,7 +49,7 @@ oneBsIter <- function(indexDf
                       , outputUnits
                       , warn
                       , area 
-                      , surveyedSides 
+                      , propUnitSurveyed
                       , pb
                       , plot.bs
                       , plotCovValues
@@ -73,7 +73,7 @@ oneBsIter <- function(indexDf
   nEst <- Rdistance::estimateN(
       dfunc.bs
     , area = area
-    , surveyedSides = surveyedSides
+    , propUnitSurveyed = propUnitSurveyed
   )
 
   Coefs <- data.frame(matrix(coef(dfunc.bs), nrow = 1))

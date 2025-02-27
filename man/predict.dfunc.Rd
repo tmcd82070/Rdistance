@@ -9,7 +9,8 @@
   newdata = NULL,
   type = c("parameters"),
   distances = NULL,
-  singleSided = FALSE,
+  propUnitSurveyed = 1,
+  area = NULL,
   ...
 )
 }
@@ -69,17 +70,12 @@ columns and values in \code{newdata} are ignored.}
       will be returned for each observation (row) in \code{newdata}. 
     }
     
-   \item \bold{If \code{type} == "density"}: Returned object is a data frame
+   \item \bold{If \code{type} == "density" or "abundance"}: Returned object is a data frame
    containing one row per transect. Columns in the data frame include 
-   transect ID, which identifies transects, and estimated density on 
+   transect ID, which identifies transects, number of individuals seen
+   ('individualsSeen'), average probability of detection ('avgPdetect'),
+   area surveyed ('effort'), estimated density, and estimate abundance on 
    the area sampled by the transect. 
-   
-   \item \bold{If \code{type} == "abundance"}: Returned object is 
-   a data frame containing one row per transect and 
-   estimated values for abundance on each transect. 
-   Abundance estimates are density on the transect's sampled 
-   area multiplied by size of the sampled area (i.e., 
-   length times nominal width = length(!singleSided+1)(w.hi - w.lo)).
  }  
  
  If \code{x} is a smoothed distance function, it does not have parameters
@@ -100,15 +96,28 @@ of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly
 spaced distances between 
 \code{x$w.lo} and \code{x$w.hi} (inclusive) is used.}
 
-\item{singleSided}{Logical scalar equal to TRUE if only one side of the transect was 
-observed. If both sides of line-transects were 
-observed, \code{singleSided} = FALSE. This parameter only 
-affects line-transects. For point transects, 
-\code{Rdistance} does not currently have a mechanism to adjust estimates 
-when less than a full circle is observed.   When 
-\code{singleSided} = TRUE, surveyed area is halved and the density 
-estimator's denominator (see \bold{Details})
-is \eqn{(ESW)(L)}, not \eqn{2(ESW)(L)}.}
+\item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
+The proportion of the default sampling unit that 
+  was surveyed.  If both sides of line transects were observed, 
+  \code{propUnitSurveyed}
+  = 1.  If only a single side of line transects were observed, set 
+  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
+  the proportion of each circle that was observed. Length must either be
+  1 or the total number of transects in \code{x}.}
+
+\item{area}{A scalar containing the total area of inference. Usually, this is 
+study area size.  If \code{area} is NULL (the default), 
+\code{area} will be set to 1 square unit of the output units and density estimates
+will be produced. 
+If \code{area} is not NULL, it must have measurement units 
+assigned by the \code{units} package. 
+The units on \code{area} must be convertible
+to squared output units. Units 
+on \code{area} must be two-dimensional. 
+For example, if output units are "foo", 
+units on area must be convertible to "foo^2" by the \code{units}
+package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
+others are acceptable.}
 
 \item{\dots}{Included for compatibility with generic \code{predict} methods.}
 }

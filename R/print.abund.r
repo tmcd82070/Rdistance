@@ -29,7 +29,7 @@
 #' # Do more than R=20 bootstraps!
 #' fit <- abundEstim(x = dfunc
 #'                 , area = units::set_units(4105, "km^2")
-#'                 , singleSided = FALSE
+#'                 , propUnitSurveyed = 0.5
 #'                 , ci = 0.95
 #'                 , R = 20
 #'                 , plot.bs = FALSE

@@ -61,7 +61,7 @@ summary.abund <- function( x,
                   "Surveyed Units:"
                 , "Individuals seen:"
                 , "Average group size:"
-                , "Range:"), justify = "right")
+                , "Group size range:"), justify = "right")
   mess[1] <- paste0(" ", mess[1]) # pesky " " that happens with cat and \n
   avgGs <- c(
              colorize(format(ests$surveyedUnits))
