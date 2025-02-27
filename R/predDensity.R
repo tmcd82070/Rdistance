@@ -1,4 +1,4 @@
-#' @title predict.dfunc.density - Density on transects
+#' @title predDensity - Density on transects
 #' 
 #' @description
 #' An internal prediction method for computing density 
@@ -11,10 +11,10 @@
 #' to fit the distance function, plus an additional column
 #' containing the density of individuals on each transect. 
 #'  
-#' 
-predict.dfunc.denisty <- function(x = x
-                                  , propUnitSurveyed = 1.0
-                               ){
+#' @export
+predDensity <- function(x = x
+                      , propUnitSurveyed = 1.0
+                       ){
   
   if( any(0 > propUnitSurveyed) | any(propUnitSurveyed > 1) ){
     stop(paste0("Proportion of unit surveyed must be between 0 and 1. "
@@ -23,7 +23,7 @@ predict.dfunc.denisty <- function(x = x
               , " values outside this range."
         ))
   }
-  if( length(propUnitSurveyed) != 1 | length(propUnitSurveyed) != nrow(x$data) ){
+  if( length(propUnitSurveyed) != 1 && length(propUnitSurveyed) != nrow(x$data) ){
     stop(paste0("Length of 'propUnitSurveyed' must either be 1 or "
               , nrow(x$data)
               , ". Found length "

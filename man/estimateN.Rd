@@ -51,8 +51,8 @@ A list containing the following components:
    for line-transects or number of points for point-transects. This total transect
    length does not include transects with missing lengths.}
    
-   \item{surveyedSides}{Number of sides (1 or 2) of transects surveyed. 
-   Only relevant for line-transects.}
+   \item{propUnitSurveyed}{Proportion of the standard survey unit
+   that was observed}
    
    \item{avg.group.size}{Average group size on non-NA transects}
    

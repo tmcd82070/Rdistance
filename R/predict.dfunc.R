@@ -257,17 +257,17 @@ predict.dfunc <- function(x
   return(
     switch(type
          , dfunc = 
-         , dfuncs = predict.dfunc.dfuncs(x = x
-                                         , params = paramsLink
-                                         , distances = distances
-                                         , isSmooth = isSmooth) 
-         , likelihood = predict.dfunc.likelihood(x = x
-                                               , params = paramsLink
-                                               ) 
+         , dfuncs = predDfuncs(x = x
+                             , params = paramsLink
+                             , distances = distances
+                             , isSmooth = isSmooth) 
+         , likelihood = predLikelihood(x = x
+                                     , params = paramsLink
+                                      ) 
          , abundance = 
-         , density = predict.dfunc.density(x = x
-                                         , propUnitSurveyed = propUnitSurveyed
-                                         )  
+         , density = predDensity(x = x
+                               , propUnitSurveyed = propUnitSurveyed
+                                )  
          , {  # the default = parameters
              cbind(exp(paramsLink[,1]), # All link functions are exp...thus far
                    extraParams )

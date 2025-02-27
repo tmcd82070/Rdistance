@@ -1,4 +1,4 @@
-#' @title predict.dfunc.dfuncs - Predict distance functions
+#' @title predDfuncs - Predict distance functions
 #' 
 #' @description
 #' An internal prediction function to predict a distance 
@@ -22,12 +22,12 @@
 #' i.e., use matplot(d,return) to plot values on separate distance 
 #' functions specified by rows of params.
 #' 
-#' 
-predict.dfunc.dfuncs <- function(x
-                               , params
-                               , distances
-                               , isSmooth
-                               ){
+#' @export
+predDfuncs <- function(x
+                     , params
+                     , distances
+                     , isSmooth
+                       ){
   # DISTANCE function prediction ----
   
   if( is.null(distances) ){

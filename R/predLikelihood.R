@@ -1,9 +1,9 @@
-#' @title predict.dfunc.likelihood - Distance function values at observations
+#' @title predLikelihood - Distance function values at observations
 #' 
 #' @description
 #' An internal prediction function to predict (compute) 
 #' the values of distance functions at a set of observed values. 
-#' Unlike \code{predict.dfunc.dfuncs}, which evaluates distance
+#' Unlike \code{predDfuncs}, which evaluates distance
 #' functions at EVERY input distance, this routine evaluates 
 #' distance functions at only ONE distance. This is what's 
 #' appropriate for likelihood computation.
@@ -12,7 +12,7 @@
 #' looping versions.
 #' 
 #' @inheritParams predict.dfunc 
-#' @inheritParams predict.dfunc.dfuncs
+#' @inheritParams predDfuncs
 #' 
 #' @details
 #' 
@@ -30,16 +30,16 @@
 #' Elements in \code{distances(x)} correspond, in order, 
 #' to values in the returned vector.
 #'  
-#' 
-predict.dfunc.likelihood <- function(x
-                               , params
-                               ){
+#' @export
+predLikelihood <- function(x
+                         , params
+                          ){
   
   d <- Rdistance::distances(x) # these should have the right units, don't check
 
-  # Note: w.lo is subtracted in predict.dfunc.dfuncs
+  # Note: w.lo is subtracted in predDfuncs
   
-  # This call to predict.dfunc.dfuncs results in application of 
+  # This call to predDfuncs results in application of 
   # all params to all distances, i.e., an n X n matrix.  We only 
   # want the diagonal of this matrix for the likelihood. This 
   # method computes way too many values (all the off-diagonals)
@@ -47,7 +47,7 @@ predict.dfunc.likelihood <- function(x
   # resorting to a loop and keeping the predict dfuncs methods.
   # This is something that could be modified in the future.
   
-  y <- Rdistance:::predict.dfunc.dfuncs(x = x
+  y <- Rdistance::predDfuncs(x = x
                                 , params = params
                                 , distances = d
                                 , isSmooth = is.smoothed(x))
