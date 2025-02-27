@@ -28,8 +28,8 @@
 #'    for line-transects or number of points for point-transects. This total transect
 #'    length does not include transects with missing lengths.}
 #'    
-#'    \item{surveyedSides}{Number of sides (1 or 2) of transects surveyed. 
-#'    Only relevant for line-transects.}
+#'    \item{propUnitSurveyed}{Proportion of the standard survey unit
+#'    that was observed}
 #'    
 #'    \item{avg.group.size}{Average group size on non-NA transects}
 #'    
@@ -125,7 +125,7 @@ estimateN <- function(x
                   , n.seen = sum(groupSz, na.rm = TRUE)
                   , area = area
                   , surveyedUnits = totSurveyedUnits
-                  , surveyedSides = surveyedSides
+                  , propUnitSurveyed = propUnitSurveyed
                   , avg.group.size = mean(groupSz, na.rm = TRUE)
                   # , range.group.size = range(groupSz)
                   , w = w
