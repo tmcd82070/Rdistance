@@ -67,9 +67,9 @@ summary.abund <- function( x,
              colorize(format(ests$surveyedUnits))
            , paste( colorize(format(ests$nSeen)), "in", colorize(format(ests$nGroups)), "groups")
            , colorize( format( ests$avgGroupSize ))
-           , paste(colorize(format( min(gs) ))
+           , paste(colorize(format( min(gs, na.rm = TRUE) ))
                           , "to"
-                          , colorize(format( max(gs) ))))
+                          , colorize(format( max(gs, na.rm = TRUE) ))))
   mess <- paste(mess, avgGs)
   cat(paste(mess, "\n"))
   
