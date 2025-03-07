@@ -5,8 +5,8 @@
 #' abundance using the best fitting likelihood, expansion, and series. 
 #' 
 #' @inheritParams dE.single
-#' 
 #' @inheritParams abundEstim
+#' @inheritParams dfuncEstim
 #' 
 #' @param plot Logical scalar specifying whether to plot models during model selection. 
 #'   If \code{TRUE}, a histogram with fitted distance function is plotted for every model. 
@@ -18,6 +18,8 @@
 #' of this criterion.  This must be one of "AICc" (the default), 
 #' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
 #'   
+#' @param likelihoods String vector specifying the likelihoods to fit. 
+#' See 'likelihood' parameter of \code{\link{dfuncEstim}}.
 #'   
 #' @details During distance function selection, all combinations of likelihoods, series, and 
 #' number of expansions is fitted. For example, if \code{likelihoods} has 3 elements, 
@@ -40,19 +42,28 @@
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
 #' @examples 
 #' # Load example sparrow data (line transect survey type)
-#' data(sparrowDetectionData)
-#' data(sparrowSiteData)
+#' data(sparrowDf)
 #' 
-#' # Estimate density and abundance from 'best' detection function
-#' sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+#' autoDistSamp(data = sparrowDf
+#'            , formula = dist ~ groupsize(groupsize)
+#'            , likelihoods = c("halfnorm","negexp")
+#'            , expansions = 0
+#'            , plot = FALSE
+#'            , ci = NULL
+#'            , area = units::set_units(1, "hectare")
+#' )
+#' 
+#' \dontrun{
 #' autoDistSamp(data = sparrowDf
 #'     , formula = dist ~ 1 + groupsize(groupsize)
-#'     , ci = NULL
+#'     , ci = 0.95
 #'     , area = units::set_units(1, "hectare")
 #' )     
+#' }
 #' 
 #'            
 #' @keywords model
+#' @importFrom graphics mtext
 #' @export
 
 autoDistSamp <- function (data
@@ -76,7 +87,7 @@ autoDistSamp <- function (data
                           
                           , plot = TRUE
                           , criterion = "AICc"
-                          , ...){
+                          ){
   
 
   if(any(!(criterion %in% c("AIC","AICc","BIC")))) stop(paste0(criterion, " criterion not supported."))
@@ -173,7 +184,7 @@ autoDistSamp <- function (data
                           , g.x.scl = 1
                           , warn = TRUE
                           , outputUnits = NULL
-                          , ...)
+                          )
       ser <- ""  
       expan <- 0
       fit.table <- f.save.result(fit.table, dfunc, like, 
@@ -244,12 +255,12 @@ autoDistSamp <- function (data
     , outputUnits = NULL)
   if (plot) {
     plot(dfunc)
-    mtext("BEST FITTING FUNCTION", side = 3, cex = 1.5, line = 3)
+    graphics::mtext("BEST FITTING FUNCTION", side = 3, cex = 1.5, line = 3)
   }
 
   # Estimate abundance ----
   
-  abund <- abundEstim(x = dfunc
+  abund <- abundEstim(object = dfunc
               , area = area
               , propUnitSurveyed = propUnitSurveyed
               , ci = ci

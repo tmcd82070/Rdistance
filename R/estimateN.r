@@ -7,7 +7,6 @@
 #' 
 #' @inheritParams predict.dfunc 
 #' @inheritParams abundEstim
-#' @inheritParams dfuncEstim  
 #'  
 #' @inherit abundEstim details
 #'   
@@ -37,8 +36,8 @@
 #'    
 #'    \item{pDetection}{Probability of detection.}
 #'    
-#' For line-transects that do not involve covariates, x$density  
-#' is x$n.seen / (2 * propUnitSurveyed * x$w * x$pDetection * x$surveyedUnits)
+#' For line-transects that do not involve covariates, object$density  
+#' is object$n.seen / (2 * propUnitSurveyed * object$w * object$pDetection * object$surveyedUnits)
 #'    
 #'         
 #'    
@@ -46,35 +45,35 @@
 #' 
 #' @export 
 
-estimateN <- function(x
+estimateN <- function(object
                       , area = NULL
                       , propUnitSurveyed = 1.0
                       ){
 
-  w <- x$w.hi - x$w.lo
+  w <- object$w.hi - object$w.lo
   
   # ---- Find observations on NA length transects inside the strip ----
   # We need these regardless whether dfunc converges or not
-  groupSz <- Rdistance::groupSizes(x) # length = num distance obs (could include NA)
-  eff <- Rdistance::effort(x) # length = num non-missing plus missing transects
+  groupSz <- Rdistance::groupSizes(object) # length = num distance obs (could include NA)
+  eff <- Rdistance::effort(object) # length = num non-missing plus missing transects
   totSurveyedUnits <- sum(eff, na.rm = TRUE) # na.rm CRITICAL here: remove transects with NA length
-  if( !Rdistance::is.points(x) ){
-    if(units(totSurveyedUnits) != x$outputUnits){
+  if( !Rdistance::is.points(object) ){
+    if(units(totSurveyedUnits) != object$outputUnits){
       # w has units we want; but, effort came from user and has not been converted yet
-      totSurveyedUnits <- units::set_units(totSurveyedUnits, x$outputUnits, mode="standard")
+      totSurveyedUnits <- units::set_units(totSurveyedUnits, object$outputUnits, mode="standard")
     }
   }  # Point effort vector has no units b/c it's number of points
   
   # ---- Estimate numerator of abundance ----
-  if( x$convergence == 0 ){
+  if( object$convergence == 0 ){
     # REMEMBER: component $mf is the model frame and has been truncated to (w.lo, w.hi) and
     #           potentially has distance observations from transects without lengths
     #           component $data has NOT been truncated to the strip
   
     # esw is always a vector of length n. 
-    esw <- effectiveDistance(x)
+    esw <- effectiveDistance(object)
     
-    if (Rdistance::is.points(x)) {
+    if (Rdistance::is.points(object)) {
       phat <- (esw / w)^2  # for points
     } else {
       phat <- esw / w  # for lines
@@ -88,14 +87,14 @@ estimateN <- function(x
     nhat <- groupSz / phat # inflated counts one per detection
     
     # ---- Compute density ----
-    if(Rdistance::is.points(x)){
+    if(Rdistance::is.points(object)){
       dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * pi * w^2 * totSurveyedUnits) # na.rm CRITICAL here; missing groupsizes on missing transects
     } else {
       dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * 2 * w * totSurveyedUnits)
     }
     
     # ---- Compute abundance ----
-    oneSqUnit <- units::set_units(1, x$outputUnits, mode = "standard")^2 
+    oneSqUnit <- units::set_units(1, object$outputUnits, mode = "standard")^2 
     if( is.null(area) ){
       area <- oneSqUnit
     } else if( units(area) != units(oneSqUnit) ){
@@ -112,7 +111,7 @@ estimateN <- function(x
     }
     
   } else {
-    # if we are here, x did not converge
+    # if we are here, object did not converge
     dens <- NA
     nhat.df <- NA
     phat <- NA

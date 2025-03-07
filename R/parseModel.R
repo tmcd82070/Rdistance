@@ -4,6 +4,7 @@
 #' Parse an 'Rdistance' formula and produce a list containing all model 
 #' parameters.
 #' 
+#' @inheritParams dfuncEstim
 #' @inheritParams dE.single
 #' 
 #' @details
@@ -45,6 +46,7 @@
 #'    
 #' 
 #' @export
+#' @importFrom stats terms.formula model.frame runif na.pass
 parseModel <- function(data
                           , formula = NULL
                           , likelihood = "halfnorm"
@@ -65,7 +67,7 @@ parseModel <- function(data
   # Control parameters ----
   # if you want, could save control options in output object.
   # control <- options()[grep("Rdist_", names(options()))]
-  Rdistance:::checkNEvalPts(getOption("Rdistance_intEvalPts"))
+  checkNEvalPts(getOption("Rdistance_intEvalPts")) # In Rdistance, not exported
   
   # Check for a response ----
   # Otherwise, as.character(formula) is length 2, not 3
@@ -104,7 +106,7 @@ parseModel <- function(data
     effColumn <- attr(data, "effortColumn")
     offsetVar <- withr::with_preserve_seed({
       set.seed(Sys.time())
-      formatC(trunc(runif(1, max = 10000000))
+      formatC(trunc(stats::runif(1, max = 10000000))
               , format="f"
               , digits=0
               , width = 7
@@ -128,7 +130,7 @@ parseModel <- function(data
     formula = formula
     , data = detectionData
     , drop.unused.levels = TRUE
-    , na.action = na.pass
+    , na.action = stats::na.pass
   )
 
   # A note on missing values  ----
@@ -209,7 +211,7 @@ parseModel <- function(data
   # Enforce minimum number of spline basis functions ----
   if (ml$expansions < 2 & ml$series == "bspline"){
       ml$expansions <- 2
-      if (warn) warning("Minimum spline expansions = 2. Proceeding with 2.")
+      warning("Minimum spline expansions = 2. Proceeding with 2.")
   }
 
   # Check x.scl, and override x.scl for Gamma likelihood ----

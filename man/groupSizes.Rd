@@ -11,11 +11,8 @@ groupSizes(ml, ...)
 'fitted object'.  Both are of class "dfunc". 
 Rdistance 'model frames' are lists containing components 
 necessary to estimate a distance function, but no estimates. 
-They contain the data, formula, likelihood name, w.lo, w.hi, 
-expansions, transect type, output units, etc.  
 Rdistance 'model frames' are typically
 produced by calls to \code{\link{parseModel}}. 
-
 Rdistance 'fitted objects'
 are typically produced by calls to \code{\link{dfuncEstim}}.
 'Fitted objects' are 'model frames'
@@ -35,9 +32,9 @@ an Rdistance model frame.
 }
 \examples{
 
-sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+data("sparrowDf")
 sparrowModel <- parseModel( sparrowDf, dist ~ observer )
-model.response(sparrowModel)
-distances(sparrrowModel)
+stats::model.offset(sparrowModel$mf)
+groupSizes(sparrowModel)  # same, but future-proof
 
 }

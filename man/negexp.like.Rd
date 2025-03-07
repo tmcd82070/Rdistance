@@ -30,7 +30,7 @@ associated with distances in argument \code{d}}
 \value{
 A list containing the following two components:
 \itemize{
-  \item \code{\bold{L.unscaled}}: A matrix of size $n$X$k$X$b$ 
+  \item \bold{L.unscaled}: A matrix of size $n$X$k$X$b$ 
    containing likelihood values evaluated at 
    distances in \code{dist}.
     Each row is associated with 
@@ -40,7 +40,7 @@ A list containing the following two components:
    not integrate to one. Values in \code{L.unscaled} 
    are always greater than or equal to zero.
    
- \item \code{\bold{params}}: A $n$X$k$X$b$ array of the 
+ \item \bold{params}: A $n$X$k$X$b$ array of the 
  likelihood's (canonical) parameters, First page contains 
  parameter values related to covariates (i.e., $s = exp(x'a)$),
  while subsequent pages contain other parameters. 
@@ -71,8 +71,5 @@ lines(d, negexp.like(log(0.05), d, covs)$L.unscaled, col="blue")
 \seealso{
 \code{\link{dfuncEstim}},
          \code{\link{hazrate.like}},
-         \code{\link{uniform.like}},
-         \code{\link{negexp.like}},
-         \code{\link{Gamma.like}},
-         \code{\link{triangle.like}}
+         \code{\link{negexp.like}}
 }

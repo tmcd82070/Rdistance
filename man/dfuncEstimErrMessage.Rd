@@ -9,7 +9,7 @@ dfuncEstimErrMessage(txt, attri)
 \arguments{
 \item{txt}{A text string describing the error.}
 
-\item{attr}{An attribute to report.}
+\item{attri}{An attribute to report.}
 }
 \value{
 A string

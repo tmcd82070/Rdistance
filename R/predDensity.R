@@ -12,7 +12,7 @@
 #' containing the density of individuals on each transect. 
 #'  
 #' @export
-predDensity <- function(x = x
+predDensity <- function(object
                       , propUnitSurveyed = 1.0
                        ){
   
@@ -23,33 +23,33 @@ predDensity <- function(x = x
               , " values outside this range."
         ))
   }
-  if( length(propUnitSurveyed) != 1 && length(propUnitSurveyed) != nrow(x$data) ){
+  if( length(propUnitSurveyed) != 1 && length(propUnitSurveyed) != nrow(object$data) ){
     stop(paste0("Length of 'propUnitSurveyed' must either be 1 or "
-              , nrow(x$data)
+              , nrow(object$data)
               , ". Found length "
               , length(propUnitSurveyed)
               , "."))
   }
   
   # Get siteId column(s) ----
-  siteIDs <- x$data |> dplyr::group_vars()
+  siteIDs <- object$data |> dplyr::group_vars()
 
   # Merge counts ----
-  # Note: We would like to use x$mf which has observations ONLY
-  # inside the observation window (w.hi - w.lo). But, x$mf
+  # Note: We would like to use object$mf which has observations ONLY
+  # inside the observation window (w.hi - w.lo). But, object$mf
   # does not have the siteID columns nor does it have missing 
-  # missing distances.  So, we use unnest(x$data), which has 
+  # missing distances.  So, we use unnest(object$data), which has 
   # all observations, and we filter to the right ones. 
   
-  mt <- terms(x$mf)
+  mt <- terms(object$mf)
   distVar <- all.vars(mt)[attributes(mt)$response]
   groupSizeVar <- all.vars(mt)[attributes(mt)$offset]
   
-  df <- Rdistance::unnest(x$data) 
+  df <- Rdistance::unnest(object$data) 
   
   # Add group size if not specified in formula. ----
-  #  If not specified (assumed 1), fake groupsizes are in x$mf
-  #  but not in x$data. 
+  #  If not specified (assumed 1), fake groupsizes are in object$mf
+  #  but not in object$data. 
   
   # Note: to use the [missing distance but sighted group] functionality,
   # users must specify groupsize() in the formula. i.e., set some groupsizes
@@ -71,7 +71,7 @@ predDensity <- function(x = x
   # at this point, df contains missing distances.
   # missing distances are zero transects and missing distances 
   # coupled with non-missing group sizes
-  effDist <- Rdistance::effectiveDistance(x
+  effDist <- Rdistance::effectiveDistance(object
                          , newdata = df)
   
   # Now can rename distance column for convienience
@@ -84,12 +84,12 @@ predDensity <- function(x = x
     dplyr::filter( 
       (is.na(..distances..) & !is.na(..groupSizes..)) 
       |
-      ((x$w.lo <= ..distances..) & (..distances.. <= x$w.hi))
+      ((object$w.lo <= ..distances..) & (..distances.. <= object$w.hi))
                  ) 
   # Counts by transect
-  effVar <- attr(x$data, "effortColumn")
-  w <- x$w.hi - x$w.lo
-  if(is.points(x)){
+  effVar <- attr(object$data, "effortColumn")
+  w <- object$w.hi - object$w.lo
+  if(is.points(object)){
     deCounts <- instrip |>
       dplyr::mutate( 
           pDetect = (effDist / w)^2
@@ -132,7 +132,7 @@ predDensity <- function(x = x
   
   # Remove units from unitless columns ----
   deCounts <- deCounts |> 
-    dplyr::mutate(dplyr::across(where(is.numeric),
+    dplyr::mutate(dplyr::across(tidyselect::where(is.numeric),
                                 .fns = drop1Units))
   
   return( deCounts )  

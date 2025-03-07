@@ -4,11 +4,11 @@
 \alias{predDensity}
 \title{predDensity - Density on transects}
 \usage{
-predDensity(x = x, propUnitSurveyed = 1)
+predDensity(object, propUnitSurveyed = 1)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
 The proportion of the default sampling unit that 

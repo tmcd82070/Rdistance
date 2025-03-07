@@ -49,13 +49,6 @@
 #'   progress bar if running this within another function. Otherwise, 
 #'   it is handy to see progress of the bootstrap iterations.
 #'   
-#' @param bySite A logical variable indicating whether to estimate density and abundance 
-#'   for individual transects. If TRUE, density and abundance are estimated for every 
-#'   row in the input data frame (which is the \code{$data} component of a fitted model). 
-#'   If \code{bySite == TRUE}, transect lengths are used to inflate density, \code{area} 
-#'   is ignored, and no bootstrap re-sampling takes place.  
-#'   If FALSE, density and abundance are estimated on the study area (of size \code{area})
-#'   and bootstrap CI estimates are computed if \code{ci} is not NULL. 
 #'   
 #' @details The abundance estimate for line-transect surveys (if no covariates
 #'    are included in the detection function and both sides of the transect 
@@ -82,12 +75,11 @@
 #'  Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
 #'     suppresses all intermediate output.  
 #'     
-#'  Estimation of site-specific density (e.g., on every transect) is accomplished using 
-#'  \code{\link{predict.dfunc(x, type = "density")}}, while estimation of 
-#'  site-specific abundance is accomplished using 
-#'  \code{\link{predict.dfunc(x, type = "abundance")}} (\code{x} is an Rdistance 
-#'  fitted model). 
-#'     
+#'  Estimation of site-specific density (e.g., on every transect) is accomplished by 
+#'  \code{predict(x, type = "density")}, which returns a 
+#'  tibble containing density and abundance on the area surveyed by every
+#'  transect. 
+#'   
 #' @section Bootstrap Confidence Intervals:
 #' 
 #'   Rdistance's nested data frames (produced by \code{\link{RdistDf}})
@@ -162,70 +154,22 @@
 #'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
 #'   object (see \code{\link{dfuncEstim}}), plus the following: 
 #'   
-#'   \item{density}{Estimated density on the sampled area with units. The \emph{effectively}
-#'   sampled area is 2*L*ESW (not 2*L*w.hi). Density has squared units of the 
-#'   requested output units.  Convert density to other units with  
-#'   \code{units::set_units(x$density, "<units>").}} 
-#'   
-#'   \item{n.hat}{Estimated abundance on the study area (if \code{area} >
-#'   1) or estimated density on the study area (if \code{area} = 1), without units.}
-#'  
-#'   \item{n}{The number of detections (not individuals) 
-#'   on non-NA length transects
-#'   used to compute density and abundance.}
-#'   
-#'   \item{n.seen}{The total number of individuals seen on transects with non-NA
-#'   length. Sum of group sizes used 
-#'   to estimate density and abundance.}
-#'  
-#'   \item{area}{Total area of inference in squared output units.}
-#'   
-#'   \item{surveyedUnits}{The total length of sampled transect with units. This is the sum 
-#'   of the \code{lengthColumn} column of \code{siteData}. }
-#'   
-#'   \item{avg.group.size}{Average group size on transects with non-NA length transects.}
-#'   
-#'   \item{rng.group.size}{Minimum and maximum groupsizes observed on non-NA length transects.}
-#'   
-#'   \item{effDistance}{A vector containing effective sample distance.  If covariates
-#'   are not included, length of this vector is 1 because effective sampling distance 
-#'   is constant over detections. If covariates are included, this vector has length
-#'   equal to the number of detections (i.e., \code{x$n}).  This vector was produced 
-#'   by a call to \code{effectiveDistance()} with \code{newdata} set to NULL.}
-#'   
-#'   \item{n.hat.ci}{A vector containing the lower and upper limits of the 
-#'   bias corrected bootstrap confidence interval for
-#'   abundance. } 
-#'   
-#'   \item{density.ci}{A vector containing the lower and upper limits of the 
-#'   bias corrected bootstrap confidence interval for
-#'   density, with units.
-#'   }
-#'
-#'   \item{effDistance.ci}{A vector containing the lower and upper limits of the 
-#'   bias corrected bootstrap confidence interval for \emph{average}
-#'   effective sampling distance.
+#'   \item{estimates}{A tibble containing number of groups seen, number 
+#'   of individuals seen, study area size, surveyed area, density, and abundance.
+#'   Density applies to the sampled area. Abundance applies to the entire 
+#'   study area.
 #'   }
 #'   
-#'   \item{B}{A data frame containing bootstrap values of coefficients, 
+#'   \item{B}{If confidence intervals are requested, a tibble 
+#'   containing bootstrap values of coefficients, 
 #'   density, and effective distances.  Number of rows is always 
 #'   \code{R}, the requested number of bootstrap 
-#'   iterations.  If a particular iteration fails, the
+#'   iterations.  If an iteration fails, the
 #'   corresponding row in \code{B} is \code{NA} (hence, use 'na.rm = TRUE' 
 #'   when computing summaries). Columns 1 through \code{length(coef(dfunc))}
 #'   contain bootstrap realizations of the distance function's coefficients. 
-#'   The second to last column contains bootstrap values of
-#'   density (with units).  The last column of B contains bootstrap 
-#'   values of effective sampling distance or radius (with units). If the 
-#'   distance function contains covariates,
-#'   the effective sampling distance column is the average 
-#'   effective distance over detections 
-#'   used during the associated bootstrap iteration. }
+#'   }
 #'   
-#'   \item{nItersConverged}{The number of bootstrap iterations that converged.  }
-#'   
-#'   \item{alpha}{The (scalar) confidence level of the
-#'   confidence interval for \code{n.hat}.} 
 #'
 #'   
 #' @references Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
@@ -262,7 +206,8 @@
 #'                 )
 #'          
 #' @export
-abundEstim <- function(x
+#' @importFrom graphics lines par
+abundEstim <- function(object
                      , area = NULL
                      , propUnitSurveyed = 1.0
                      , ci = 0.95
@@ -278,18 +223,18 @@ abundEstim <- function(x
   
   # Initial setup for plotting ----
   if (bootstrapping && plot.bs) {
-    par( xpd=TRUE )
-    plotObj <- plot(x)
+    graphics::par( xpd=TRUE )
+    plotObj <- plot(object)
   }
   
   # ---- Set Area ----
   if( is.null(area) ){
     # doing this here saves a tiny sliver of time in estimateN
-    area <- units::set_units(1, x$outputUnits, mode = "standard")^2
+    area <- units::set_units(1, object$outputUnits, mode = "standard")^2
   }
   
   # ---- Construct Indices to Original data frame ----
-  nDataRows <- nrow(x$data)
+  nDataRows <- nrow(object$data)
   bsData <- data.frame(id = "Original",
                        rowIndex = 1:nDataRows)
 
@@ -335,17 +280,17 @@ abundEstim <- function(x
   # --- Apply estimation to each ID group ----
   bsEsts <- bsData |> 
     dplyr::group_by(id) |> 
-    dplyr::group_modify(.f = Rdistance:::oneBsIter
-                      , data = x$data
-                      , formula = x$formula  
-                      , likelihood = x$likelihood 
-                      , w.lo = x$w.lo
-                      , w.hi = x$w.hi
-                      , expansions = x$expansions
-                      , series = x$series
-                      , x.scl = x$x.scl 
-                      , g.x.scl = x$g.x.scl
-                      , outputUnits = x$outputUnits
+    dplyr::group_modify(.f = oneBsIter # In Rdistance, not exported
+                      , data = object$data
+                      , formula = object$formula  
+                      , likelihood = object$likelihood 
+                      , w.lo = object$w.lo
+                      , w.hi = object$w.hi
+                      , expansions = object$expansions
+                      , series = object$series
+                      , x.scl = object$x.scl 
+                      , g.x.scl = object$g.x.scl
+                      , outputUnits = object$outputUnits
                       , warn = FALSE
                       , area = area
                       , propUnitSurveyed = propUnitSurveyed
@@ -357,20 +302,20 @@ abundEstim <- function(x
   # ---- Construct output object ----
   ests <- bsEsts |> 
     dplyr::filter(id == "Original")
+
   if( bootstrapping ){
     B <- bsEsts |> 
       dplyr::filter( id != "Original" )
   } else {
     B <- NULL
   }
-  ans <- c(x
+  ans <- c(object
           , estimates = list(ests)
           , B = list(B)
           )
-
   # ---- Plot original fit again (over bs lines) ----
   if (bootstrapping && plot.bs) {
-    lines(x
+    graphics::lines(object
           , newdata = plotObj$predCovValues
           , col = "red"
           , lwd = 3)
@@ -384,9 +329,9 @@ abundEstim <- function(x
       names(xx) <- paste0(nm, "_", names(xx))
       xx
     }
-    abCI <- Rdistance:::bcCI(bsEsts$abundance, ests$abundance, ci)
-    dnCI <- Rdistance:::bcCI(bsEsts$density, ests$density, ci)
-    efCI <- Rdistance:::bcCI(bsEsts$avgEffDistance, ests$avgEffDistance, ci) 
+    abCI <- Rdistance::bcCI(bsEsts$abundance, ests$abundance, ci)
+    dnCI <- Rdistance::bcCI(bsEsts$density, ests$density, ci)
+    efCI <- Rdistance::bcCI(bsEsts$avgEffDistance, ests$avgEffDistance, ci) 
     abCI <- vec2df(abCI, "abundance") 
     dnCI <- vec2df(dnCI, "density") 
     efCI <- vec2df(efCI, "avgEffDistance") 
@@ -402,14 +347,14 @@ abundEstim <- function(x
     B <- B |> 
       dplyr::select(id, dplyr::starts_with("density"), dplyr::starts_with("abundance"), dplyr::starts_with("avgEffDistance"), dplyr::everything())
     
-    if ((x$LhoodType == "parametric") && (any(is.na(bsEsts$density))) && showProgress){
+    if ((object$LhoodType == "parametric") && (any(is.na(bsEsts$density))) && showProgress){
       cat(paste( sum(is.na(bsEsts$density)), "of", R, "iterations did not converge.\n"))
     }
   }
 
   # Output
   ans$ci <- ci
-  class(ans) <- c("abund", class(x))
+  class(ans) <- c("abund", class(object))
     
   return(ans)
 } 

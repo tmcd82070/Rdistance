@@ -3,6 +3,8 @@
 #' @description Fits a detection function to off-transect 
 #' distances collected by a single observer. 
 #' 
+#' @inheritParams dfuncEstim
+#' 
 #' @param formula A standard formula object.  For example, \code{dist ~ 1}, 
 #' \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
 #' is the name of the vector containing off-transect or radial detection distances.  
@@ -16,8 +18,7 @@
 #' 
 #' 
 #' @param likelihood String specifying the likelihood to fit. Built-in 
-#' likelihoods at present are "logistic", "halfnorm", 
-#' "hazrate", "negexp", and "Gamma". 
+#' likelihoods at present are "halfnorm", "hazrate", and "negexp". 
 #' 
 #' @param w.lo Lower or left-truncation limit of the distances in distance data. 
 #' This is the minimum possible off-transect distance. Default is 0.  If 
@@ -111,7 +112,7 @@
 #' specific factor in the input data frame, use 
 #' \code{contrasts(df$A) <- "contr.sum"} or similar. 
 #' See \code{\link{contrasts}} or the \code{contrasts.arg}
-#' of \code{\link{stats::model.matrix.default}}.
+#' of \code{\link{model.matrix}}.
 #' 
 #' @section Transect types: 
 #' \code{Rdistance} accommodates two kinds of transects: continuous and point.  

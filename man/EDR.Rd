@@ -4,21 +4,21 @@
 \alias{EDR}
 \title{EDR - Effective Detection Radius (EDR) for point transects}
 \usage{
-EDR(x, newdata = NULL)
+EDR(object, newdata = NULL)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
-\item{newdata}{A data frame containing new values for 
-covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{x} contains covariates, the  
-  covariates stored in
-  \code{x} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+\item{newdata}{A data frame containing new values of 
+the covariates at which to evaluate the distance functions. 
+If \code{newdata}
+is NULL, distance functions are evaluated at values of 
+the observed covariates and results in one prediction 
+per distance or transect (see parameter \code{type}). 
+If \code{newdata} is not NULL and the model does not contains covariates, 
+this routine returns one prediction for each row in \code{newdata}, but 
+columns and values in \code{newdata} are ignored.}
 }
 \value{
 If \code{newdata} is present, the returned value is 
@@ -26,9 +26,9 @@ a vector of effective sampling distances for values of the
 covariates in \code{newdata} with length equal to 
 the number of rows in \code{newdata}. 
 If \code{newdata} is NULL, the returned value is a vector of effective
-sampling distances for covariate values in \code{x} and has 
-the number of detections in \code{x}.  The returned vector 
-has measurement units, i.e., \code{x$outputUnits}.
+sampling distances associated with covariate values in \code{object} and has 
+the same number of detected groups.  The returned vector 
+has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
 Computes Effective Detection Radius (EDR) for estimated 
@@ -66,11 +66,12 @@ identical results in all but pathological cases.
 data(thrasherDf)
 
 # Fit half-normal detection function
-dfunc <- thrasherDf |> dfuncEstim(formula=dist~1)
+dfunc <- thrasherDf |> dfuncEstim(formula=dist~bare)
 
 # Compute effective detection radius (EDR)
-EDR(dfunc)
+EDR(dfunc) # vector length 192
 effectiveDistance(dfunc) # same
+EDR(dfunc, newdata = data.frame(bare=30)) # vector length 1
   
 }
 \seealso{

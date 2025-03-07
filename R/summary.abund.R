@@ -46,17 +46,17 @@
 #' @keywords models
 #' @export
 
-summary.abund <- function( x, 
-                         criterion="AICc", 
-                         ... ){
+summary.abund <- function( object
+                         , criterion="AICc"
+                         , ... ){
   
-  Rdistance:::summary.dfunc( x, criterion=criterion )
+  Rdistance:::summary.dfunc( object = object, criterion=criterion )
   cat("\n")
-  hasCI <- !is.null(x$B) && (nrow(x$B) > 0)
-  ests <- x$estimates
+  hasCI <- !is.null(object$B) && (nrow(object$B) > 0)
+  ests <- object$estimates
   
   # ---- Groupsize printout ----
-  gs <- Rdistance::groupSizes(x)
+  gs <- Rdistance::groupSizes(object)
   mess <- format(c(
                   "Surveyed Units:"
                 , "Individuals seen:"
@@ -79,7 +79,7 @@ summary.abund <- function( x,
   
   # ---- Density printout ----
   if( hasCI ){
-    mess <- c("Density in sampled area:", paste0(x$ci*100, "% CI:"))
+    mess <- c("Density in sampled area:", paste0(object$ci*100, "% CI:"))
     mess <- format(mess, justify = "right")
     mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
     ci <- paste( colorize(format(ests$density_lo)), 
@@ -100,7 +100,7 @@ summary.abund <- function( x,
   }
   if( hasCI ){
     mess <- c(paste0( "Abundance in ", format(ests$area), " study area:"), 
-                      paste0(x$ci*100, "% CI:"))
+                      paste0(object$ci*100, "% CI:"))
     mess <- format(mess, justify = "right")
     mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
     ci <- paste( colorize(format(ests$abundance_lo)), 
@@ -116,17 +116,17 @@ summary.abund <- function( x,
   cat(paste0(mess, "\n"))
   
   if( hasCI ){
-    nItersConverged <- sum(!is.na(x$B$density))
-    if(nItersConverged < nrow(x$B)) {
-      cat(paste("CI based on", nItersConverged, "of", nrow(x$B), 
+    nItersConverged <- sum(!is.na(object$B$density))
+    if(nItersConverged < nrow(object$B)) {
+      cat(paste("CI based on", nItersConverged, "of", nrow(object$B), 
                 "successful bootstrap iterations\n"))
-      convRatio <- nItersConverged / nrow(x$B)
+      convRatio <- nItersConverged / nrow(object$B)
       if((1.0-convRatio) > getOption("Rdistance_maxBSFailPropForWarning")) {
         warning("The proportion of non-convergent bootstrap iterations is high.", immediate. = TRUE)
         cat(paste0("The proportion of non-convergent bootstrap iterations exceeds ",
                   getOption("Rdistance_maxBSFailPropForWarning"), ".\n",
                   "It would be good to figure out why this happened (low detections, unstable dfunc form, etc.),\n",
-                  "inspect the $B component of the abundance object (e.g., hist(x$B$density)), and decide whether the bootstrap CI is valid.\n"))
+                  "inspect the $B component of the abundance object (e.g., hist(object$B$density)), and decide whether the bootstrap CI is valid.\n"))
       }
     }
   }

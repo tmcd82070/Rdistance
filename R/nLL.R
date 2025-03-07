@@ -41,23 +41,29 @@
 #' d <- rnorm(1000, mean = 0, sd = 40)
 #' d <- units::set_units(d[0 <= d], "m")
 #' 
-#' # Close to what happens in Rdistance
+#' # Min info in model list to compute likelihood
 #' ml <- list(
 #'     mf = model.frame(d ~ 1) 
 #'   , likelihood = "halfnorm"
 #'   , expansions = 0
 #'   , w.lo = units::set_units(0, "m")
 #'   , w.hi = units::set_units(125, "m")
+#'   , outputUnits = units(units::set_units(1,"m"))
+#'   , x.scl = units::set_units(0,"m")
+#'   , g.x.scl = 1
+#'   , data = 1
 #' )
+#' attr(ml$data, "transType") <- "line"
+#' class(ml) <- "dfunc"
 #' nLL(log(40), ml)
 #' 
-#' # Another way
+#' # Another way, b/c we have pnorm()
 #' ones <- matrix(1, nrow = length(d), ncol = 1)
 #' l <- halfnorm.like(log(40), d, ones)
 #' scaler <-(pnorm(units::drop_units(ml$w.hi)
 #'   , units::drop_units(ml$w.lo)
 #'   , sd = l$params) - 0.5) * sqrt(2*pi) * l$params
-#' -sum(log(l$key/scaler))
+#' -sum(log(l$L.unscaled/scaler))
 #'
 #' # A third way, b/c we have pnorm() and dnorm(). 
 #' l2 <- dnorm(units::drop_units(d), mean = 0, sd = 40)
@@ -66,6 +72,7 @@
 #'  
 #' @keywords models
 #' @export
+#' @importFrom stats predict
 
 nLL <- function(a
                 , ml
@@ -201,7 +208,7 @@ nLL <- function(a
 
   ml$par <- a
   key <- stats::predict(
-            x = ml
+            object = ml
           , type = "likelihood"
   )
   intgral <- effectiveDistance(ml)
@@ -224,6 +231,10 @@ nLL <- function(a
   # intarea <- (tmpx[2] - tmpx[1]) * sum(tmpy * c(1, rep(2, length(tmpy)-2), 1)) / 2
   # cat(paste("In nLL: Integral of key vector =", intarea, "\n"))
   
+  # likelihoods are unitless, and we've done all the conversions we need.
+  # I.e., effectiveDistance (called above) has units of distances.
+  key <- units::set_units(key, NULL)
+  
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
   # cat(paste("Parameter:", crayon::red(paste(a, collapse=", ")), "\n"))
@@ -242,5 +253,6 @@ nLL <- function(a
     nLL <- getOption("Rdistance_posInf") # positive b/c already flipped over by -1
   }
   
+  # cat(paste("nLL =", format(nLL), "\n"))
   nLL
 }

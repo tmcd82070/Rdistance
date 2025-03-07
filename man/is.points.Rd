@@ -4,10 +4,12 @@
 \alias{is.points}
 \title{is.points - Tests for point surveys}
 \usage{
-is.points(x, ...)
+is.points(x)
 }
 \arguments{
-\item{x}{An Rdistance model frame or fitted distance function.}
+\item{x}{Either an estimated distance function, output by 
+\code{dfuncEstim}, or an Rdistance nested data frame, output by 
+\code{RdistDf}.}
 }
 \value{
 TRUE if the model frame or fitted distance function 

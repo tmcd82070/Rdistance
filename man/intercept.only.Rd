@@ -4,14 +4,15 @@
 \alias{intercept.only}
 \title{intercept.only - Detect intercept-only distance function}
 \usage{
-intercept.only(x)
+intercept.only(object)
 }
 \arguments{
-\item{x}{An Rdistance model frame or fitted distance function.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 }
 \value{
-TRUE if \code{x} contains an intercept-only.
-FALSE if \code{x} contains at least one detection-level 
+TRUE if \code{object} contains an intercept-only.
+FALSE if \code{object} contains at least one detection-level 
 or transect-level covariate in the detection function.
 }
 \description{

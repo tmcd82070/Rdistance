@@ -6,6 +6,9 @@
 #' 
 #' @inheritParams dfuncEstim
 #' 
+#' @param ... Additional arguments passed to \code{tidyr::unnest} if
+#' \code{data} is not an RdistDf.  
+#' 
 #' @return An expanded data frame, without embedded data frames. Rows 
 #' in the return represent with one detection or one transect.  If multiple
 #' detections were made on one transect, the transect will appear on multiple
@@ -26,27 +29,28 @@
 #' any(fullDf$siteID == "B2")
 #' 
 #' @export
-unnest <- function(x, ...){
+unnest <- function(data, ...){
   
-  if( Rdistance::is.RdistDf(x) ){
+  if( Rdistance::is.RdistDf(data) ){
     
-    detectionCol <- attr(x, "detectionColumn")
-    rowID <- x |> dplyr::group_vars()
-    isNull <- x |> 
+    detectionCol <- attr(data, "detectionColumn")
+    rowID <- data |> dplyr::group_vars()
+    isNull <- data |> 
       dplyr::mutate(dplyr::across(dplyr::all_of(detectionCol)
                                            , ~ is.null(.x))) |> 
       dplyr::pull(dplyr::all_of(detectionCol))
     
-    fullDf <- x |> 
+    fullDf <- data |> 
       dplyr::ungroup() |> 
       dplyr::filter(isNull) |> # zero transects
       dplyr::select(-dplyr::all_of(detectionCol)) |> 
-      dplyr::bind_rows(tidyr::unnest(data = x, cols = dplyr::all_of(detectionCol))) |> 
+      dplyr::bind_rows(tidyr::unnest(data = data
+                                   , cols = dplyr::all_of(detectionCol))) |> 
       dplyr::arrange(dplyr::across(dplyr::all_of(rowID)))  
     
   } else {
     warning("Rdistance::unnest called with a non-RdistDf data frame. tidyr::unnest() applied instead.")
-    fullDf <- tidyr::unnest(x, ...)
+    fullDf <- tidyr::unnest(data, ...)
   }
   
   fullDf

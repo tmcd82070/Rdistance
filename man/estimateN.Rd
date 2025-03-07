@@ -4,11 +4,11 @@
 \alias{estimateN}
 \title{estimateN - Abundance point estimates}
 \usage{
-estimateN(x, area = NULL, propUnitSurveyed = 1)
+estimateN(object, area = NULL, propUnitSurveyed = 1)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{area}{A scalar containing the total area of inference. Usually, this is 
 study area size.  If \code{area} is NULL (the default), 
@@ -60,8 +60,8 @@ A list containing the following components:
    
    \item{pDetection}{Probability of detection.}
    
-For line-transects that do not involve covariates, x$density  
-is x$n.seen / (2 * propUnitSurveyed * x$w * x$pDetection * x$surveyedUnits)
+For line-transects that do not involve covariates, object$density  
+is object$n.seen / (2 * propUnitSurveyed * object$w * object$pDetection * object$surveyedUnits)
 }
 \description{
 Estimate abundance from an Rdistance fitted model. 
@@ -95,11 +95,10 @@ The abundance estimate for line-transect surveys (if no covariates
  Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
     suppresses all intermediate output.  
     
- Estimation of site-specific density (e.g., on every transect) is accomplished using 
- \code{\link{predict.dfunc(x, type = "density")}}, while estimation of 
- site-specific abundance is accomplished using 
- \code{\link{predict.dfunc(x, type = "abundance")}} (\code{x} is an Rdistance 
- fitted model).
+ Estimation of site-specific density (e.g., on every transect) is accomplished by 
+ \code{predict(x, type = "density")}, which returns a 
+ tibble containing density and abundance on the area surveyed by every
+ transect.
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}

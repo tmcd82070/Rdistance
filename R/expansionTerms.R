@@ -94,7 +94,7 @@ expansionTerms <- function(a, d, series, nexp, w){
     } else if (series == "simple") {
       exp.term <- simple.expansion( dscl, nexp )
     } else {
-      stop( paste( "Unknown expansion series. Found", ml$series ))
+      stop( paste( "Unknown expansion series", series, "requested." ))
     }
 
     if(is.matrix(a)){

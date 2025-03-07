@@ -6,7 +6,6 @@ Notes and to-do for `s6methods` branch of Rdistance:
 
 # Package Notes:
 
-1.    _Where were you?_: On 13Feb24, you needed to (1) implement matrix calculations for non-halfnorm likelihoods; (2) implement predict.dfunc.density and predict.dfunc.abundance. 
 2.    _Expansion Terms_: Figure out what's going on with the hermite 
 and simple expansion terms.  I think you are missing a scaling factor or
 something.  I think ALL expansion terms should have intercept 1; hence, 
@@ -22,6 +21,8 @@ $$
 5.    _Testing Versus Distance_: Check parameter values and log likelihoods of every likelihood against what `distance` gives. 
 6.    _Scaling of logistic_: Check scaling of logistic likelihood when covariates are present.  
 7.    _Two param likelihoods_: At some stage, after Rdistance is out, consider including two equations for parameters of likelihoods with two parameters.  E.g., one formula for 'beta' of Huber likelihood and another for 'gamma', e.g., `beta ~ observer` and `gamma ~ observer`. I think this will require a whole new estimation function. 
+1.    _Logistic, Uniform, Triangle, and Huber Likelihoods_: Implement logistic and uniform likelihoods.  You took them out of version 4.0.0. I think you need to use the EM algorithm. See next note. You placed the old versions in `CodeParkingLot/OtherLikelihoods`.
+
 8.   _Uniform likelihood_: Fix this.  I am pretty sure you need to use the EM algorithm. See this [Stack Exchange post](https://stats.stackexchange.com/questions/591598/em-algorithm-on-a-mixture-of-two-uniforms). I have the following:
 $$
 z = 0.5I(w_l < x < \theta)
@@ -32,9 +33,7 @@ $$
 $$
 this is close to correct, but not. I think the $z$ need to change each iteration.  See papers Mukai sent you.
 9.  *Stepwise variable selection*: Write `add1` and `drop1` and `extractAIC` so that `step` function will work with distance function objects. 
-10.  *Less than full circle sampled*: Implement parameter that allows 
-adjustment when less than a full circle is sampled (for points).  Suggest
-replacing 'singleSided' in abundEstim and predict.dfunc with a numeric value, something like propAreaSurveyed = 1 or .5 (for lines) and some number X for lines. 
+
 
 # Testing:
 

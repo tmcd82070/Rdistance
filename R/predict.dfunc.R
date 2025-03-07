@@ -5,8 +5,8 @@
 #' site-specific abundance from estimated distance function 
 #' objects.
 #' 
-#' @param x An estimated detection function object, normally 
-#' produced by calling \code{\link{dfuncEstim}}. 
+#' @param object An Rdistance model frame or fitted distance function,
+#' normally produced by a call to \code{\link{dfuncEstim}}. 
 #' 
 #' @param newdata A data frame containing new values of 
 #' the covariates at which to evaluate the distance functions. 
@@ -23,55 +23,52 @@
 #'   \item \bold{If \code{type} == "parameters"}: Returned value is 
 #'     a matrix of predicted (canonical) parameters of the 
 #'     likelihood function. If \code{newdata} is NULL, return contains 
-#'     one parameter value for every non-missing detection distance
-#'     in \code{x}. If \code{newdata} is not NULL, returned vector 
+#'     one parameter value for every detection distance
+#'     in \code{object$mf} (distances in \code{object$mf} are between 
+#'     \code{object$w.lo} and \code{object$w.hi} and non-missing). 
+#'     If \code{newdata} is not NULL, returned vector 
 #'     has one parameter for every row in \code{newdata}. Parameter 
-#'     \code{distances} is ignored in this case. Canonical parameters 
-#'     (non-expansion terms)
+#'     \code{distances} is ignored when \code{type} == "parameters". 
+#'     Canonical parameters (non-expansion terms)
 #'     are returned on the response (inverse-link) scale.  Raw 
-#'     canonical parameters in \code{x$par} are stored in 
+#'     canonical parameters in \code{object$par} are stored in 
 #'     the link scale.  Expansion term parameters use the identity 
 #'     link, so their value in the output equals their value 
-#'     in \code{x$par}. 
+#'     in \code{object$par}. 
 #'     
 #'   \item \bold{If \code{type} == "likelihood"}: Returned value is a 
-#'     matrix of \bold{unscaled} likelihood values for all non-missing 
-#'     observed distances in \code{x}, i.e., raw distance functions
+#'     matrix of \bold{unscaled} likelihood values for all  
+#'     observed distances in \code{object$mf}, i.e., raw distance functions
 #'     evaluated at the observed distances.  Parameters \code{newdata} and 
 #'     \code{distances} are ignored when \code{type} is "likelihood". 
 #'     The negative log likelihood of the full data set is
-#'     \code{-sum(log(predict(x,type="likelihood") / effectiveDistance(x)))}. 
+#'     \code{-sum(log(predict(object,type="likelihood") / 
+#'     effectiveDistance(object)))}. 
 #'     
-#'   \item \bold{If \code{type} == "dfuncs"}: Returned  
+#'   \item \bold{If \code{type} == "dfuncs" or "dfunc"}: Returned  
 #'     value is a matrix whose columns contain scaled distance functions. 
 #'     The distance functions in each column are evaluated at distances   
 #'     in argument \code{distances}, not at the observed 
-#'     distances in \code{x}. The number of distance functions
+#'     distances in \code{object$mf}. The number of distance functions
 #'     returned (i.e., number of columns) depends on \code{newdata} 
 #'     as follows: 
 #'     \itemize{
 #'        \item If \code{newdata} is NULL, one distance function 
-#'        will be returned for every detection in \code{x}
-#'        that has valid covariate values. Observation distances 
-#'        in \code{x} are ignored in this case; hence, a distance 
-#'        function is estimated for all observations, even
-#'        those with missing detection distances.   
+#'        will be returned for every detection in \code{object$mf}
+#'        that has valid covariate values.    
 #'       \item If \code{newdata} is not NULL, one distance function 
 #'       will be returned for each observation (row) in \code{newdata}. 
 #'     }
 #'     
-#'    \item \bold{If \code{type} == "density" or "abundance"}: Returned object is a data frame
-#'    containing one row per transect. Columns in the data frame include 
-#'    transect ID, which identifies transects, number of individuals seen
-#'    ('individualsSeen'), average probability of detection ('avgPdetect'),
-#'    area surveyed ('effort'), estimated density, and estimate abundance on 
-#'    the area sampled by the transect. 
+#'    \item \bold{If \code{type} == "density" or "abundance"}: Returned 
+#'    object is a tibble containing predicted density and abundance 
+#'    on the area surveyed by each transect. 
 #'  }  
 #'  
-#'  If \code{x} is a smoothed distance function, it does not have parameters
+#'  If \code{object} is a smoothed distance function, it does not have parameters
 #'  and this routine will only return scaled distance functions, densities, or 
 #'  abundances. That is, 
-#'  \code{type} = "parameters" when \code{x} is smoothed 
+#'  \code{type} = "parameters" when \code{object} is smoothed 
 #'  does not make sense and the smoothed distance function estimate 
 #'  will be returned if \code{type} does not equal "density" or "abundance". 
 #' 
@@ -80,11 +77,11 @@
 #' distance functions, when distance functions 
 #' are requested.  \code{distances} must have measurement units. 
 #' Any distances outside the observation 
-#' strip (\code{x$w.lo} to \code{x$w.hi}) are discarded.  If 
+#' strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
 #' \code{distances} is NULL, a sequence 
 #' of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
 #' spaced distances between 
-#' \code{x$w.lo} and \code{x$w.hi} (inclusive) is used. 
+#' \code{object$w.lo} and \code{object$w.hi} (inclusive) is used. 
 #' 
 #' @inheritParams abundEstim
 #'
@@ -96,7 +93,7 @@
 #'   contains likelihood parameters. The extent of the 
 #'   first dimension (rows) in the returned matrix is equal to 
 #'   either the number of detection distances 
-#'   in \code{x} or number of rows in \code{newdata}. 
+#'   in the observed strip or number of rows in \code{newdata}. 
 #'   The returned matrix's second dimension (columns) is 
 #'   the number of parameters in the likelihood 
 #'   plus the number of expansion terms.  
@@ -105,7 +102,7 @@
 #'   on the inverse-link scale; i.e., \emph{exponential} for canonical 
 #'   parameters and \emph{identity} for expansion terms. 
 #'   
-#'   \item \bold{If \code{type} is "dfuncs"}, columns of the 
+#'   \item \bold{If \code{type} is "dfuncs" or "dfunc"}, columns of the 
 #'   returned matrix contains detection functions (i.e., \emph{g(x)}).  
 #'   The extent of the first 
 #'   dimension (number of rows) is either the number of distances 
@@ -114,12 +111,13 @@
 #'   not specified.
 #'   The extent of the second dimension (number of columns) is: 
 #'     \itemize{
-#'       \item the number of detections with non-missing distances: if \code{newdata} is NULL.
+#'       \item the number of detections with non-missing distances: 
+#'       if \code{newdata} is NULL.
 #'       \item the number of rows in \code{newdata} if 
 #'        \code{newdata} is specified.
 #'     }
 #'   All distance functions in columns of the return are scaled 
-#'   to \code{x$g.x.scale} at \code{x$x.scl}. The returned matrix has 
+#'   to \code{object$g.x.scale} at \code{object$x.scl}. The returned matrix has 
 #'   the following additional attributes:
 #'    \itemize{
 #'       \item \code{attr(return, "distances")} is the vector of distances used to 
@@ -132,30 +130,38 @@
 #'        function) at \emph{x0}. 
 #'   }
 #'   
-#'   \item \bold{If \code{type} is "density"}...
-#'   
-#'   \item \bold{If \code{type} is "abundance"}...
+#'   \item \bold{If \code{type} is "density" or "abundance"}, the return is a 
+#'   tibble containing density and abundance estimates by transect.  
+#'   All transects in the input data (i.e., \code{object$data}) are 
+#'   included, even those with missing lengths. 
+#'    Columns in the tibble are:
+#'    \itemize{
+#'      \item transect ID: the grouping factor of the original RdistDf object.
+#'      \item individualsSeen: sum of non-missing group sizes on that transect.
+#'      \item avgPdetect: average probability of detection over groups sighted on that transect.
+#'      \item effort: size of the area surveyed by that transect.
+#'      \item density: density of individuals in the area surveyed by the transect.
+#'      \item abundance: abundance of individuals in the area surveyed by the transect.
+#'    } 
 #' }
 #' 
 #' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
-#' \code{\link{uniform.like}}, \code{\link{hazrate.like}}, \code{\link{Gamma.like}}
+#' \code{\link{hazrate.like}}
 #' 
 #' @examples
 #' 
-#' data(sparrowDetectionData)
-#' data(sparrowSiteData)
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' data("sparrowDf")
 #'
 #' # For dimension checks:
 #' nd <- getOption("Rdistance_intEvalPts")
-#' n  <- nrow(dfuncObs$mf)
 #' 
 #' # No covariates
 #' dfuncObs <- sparrowDf |> dfuncEstim(formula = dist ~ 1
 #'                      , w.hi = units::as_units(100, "m"))
 #'                      
+#' n  <- nrow(dfuncObs$mf)
 #' p <- predict(dfuncObs) # parameters
-#' all(dim(p) == c(nd, 1)) 
+#' all(dim(p) == c(n, 1)) 
 #' 
 #' # values in newdata ignored because no covariates
 #' p <- predict(dfuncObs, newdata = data.frame(x = 1:5))
@@ -195,7 +201,7 @@
 #' 
 #' @importFrom stats terms as.formula delete.response model.frame model.matrix coef
 #' 
-predict.dfunc <- function(x
+predict.dfunc <- function(object
                         , newdata = NULL
                         , type = c("parameters")
                         , distances = NULL
@@ -203,11 +209,11 @@ predict.dfunc <- function(x
                         , area = NULL
                         , ...) {
 
-  if (!inherits(x, "dfunc")){ 
-    stop("Argument 'x' is not a 'dfunc' object")
+  if (!inherits(object, "dfunc")){ 
+    stop("Argument 'object' is not a 'dfunc' object")
   }
   
-  isSmooth <- Rdistance::is.smoothed(x)
+  isSmooth <- Rdistance::is.smoothed(object)
   
   # Establish the X matrix ----
   # We ALWAYS have covariates
@@ -215,10 +221,10 @@ predict.dfunc <- function(x
   if( !isSmooth ){
     if ( is.null(newdata) | (type == "likelihood") ) {
       # Case: Use original covars
-      X <- model.matrix(x)
+      X <- model.matrix(object)
     } else {
       # Pull formula to make covars from NEWDATA
-      Terms <- terms( x$mf )
+      Terms <- terms( object$mf )
       Terms <- delete.response( Terms ) # model.frame (below) fails if there's a response, go figure.
       if( !is.null(attr(Terms, "offset")) ){
         # gotta add a fake groupsize to newdata so model.frame (below) works
@@ -227,16 +233,16 @@ predict.dfunc <- function(x
         newdata <- cbind(newdata, data.frame( 1 ))
         names(newdata)[length(names(newdata))] <- gsName
       }
-      xLevs <- lapply( x$mf, levels ) # get unspecified levels of factors
+      xLevs <- lapply( object$mf, levels ) # get unspecified levels of factors
       m <- model.frame( Terms, newdata, xlev = xLevs )
-      X <- model.matrix( Terms, m, contrasts.arg = attr(x$mf,"contrasts") )
+      X <- model.matrix( Terms, m, contrasts.arg = attr(object$mf,"contrasts") )
     }
     
-    BETA <- coef(x)
+    BETA <- coef(object)
     p <- length(BETA)
     q <- ncol(X)
     paramsLink <- X %*% BETA[1:q] # could be extra parameters tacked on. e.g., knee for logistc or expansion terms
-    
+  
     if(q < p){
       extraParams <- matrix(BETA[(q+1):p]
                           , nrow = nrow(paramsLink)
@@ -257,15 +263,15 @@ predict.dfunc <- function(x
   return(
     switch(type
          , dfunc = 
-         , dfuncs = predDfuncs(x = x
+         , dfuncs = predDfuncs(object = object
                              , params = paramsLink
                              , distances = distances
                              , isSmooth = isSmooth) 
-         , likelihood = predLikelihood(x = x
+         , likelihood = predLikelihood(object = object
                                      , params = paramsLink
                                       ) 
          , abundance = 
-         , density = predDensity(x = x
+         , density = predDensity(object = object
                                , propUnitSurveyed = propUnitSurveyed
                                 )  
          , {  # the default = parameters

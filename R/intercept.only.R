@@ -6,17 +6,17 @@
 #' intercept-only, effective distance is constant across detections
 #' and short-cuts can be implemented in code.
 #' 
-#' @inheritParams is.smoothed
+#' @inheritParams predict.dfunc
 #'
-#' @return TRUE if \code{x} contains an intercept-only.
-#' FALSE if \code{x} contains at least one detection-level 
+#' @return TRUE if \code{object} contains an intercept-only.
+#' FALSE if \code{object} contains at least one detection-level 
 #' or transect-level covariate in the detection function.
 #' 
 # NOT EXPORTED
 
-intercept.only <- function(x){
+intercept.only <- function(object){
   
-  mt <- terms(x$mf)
+  mt <- terms(object$mf)
   if( attr(mt,"intercept") == 0 ){
     # it has no intecept, so not "intecept only"
     return(FALSE)

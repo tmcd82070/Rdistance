@@ -56,8 +56,16 @@ replacement summary method for rowwise_df's that
 provides useful distance sampling descriptive statistics.
 }
 \examples{
-sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+data(smlAntelopeTransects)
+data(smlAntelopeDetections)
 
-summary(sparrowDf) 
+smlAntelope <- RdistDf(smlAntelopeTransects
+                     , smlAntelopeDetections
+                     , by = "siteID"
+                     , pointSurvey = F
+                     , .effortCol = "length")
+
+summary(smlAntelope |> dplyr::filter(surveyID == "2019_LateDry")
+      , perpDist ~ groupsize(number))
 
 }

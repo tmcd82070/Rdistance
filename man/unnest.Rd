@@ -4,7 +4,21 @@
 \alias{unnest}
 \title{unnest - Unnest an RdistDf data frame}
 \usage{
-unnest(x, ...)
+unnest(data, ...)
+}
+\arguments{
+\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames 
+contain one line per transect and a list-based column. The list-based
+column contains a data frame with detection information. 
+The detection information data frame on each row contains (at least) distances 
+and group sizes of all targets detected on the transect.
+Function \code{\link{RdistDf}} creates \code{RdistDf} data frames 
+from separate transect and detection data frames. 
+\code{\link{is.RdistDf}} checks whether data frames
+are \code{RdistDf}'s.}
+
+\item{...}{Additional arguments passed to \code{tidyr::unnest} if
+\code{data} is not an RdistDf.}
 }
 \value{
 An expanded data frame, without embedded data frames. Rows 

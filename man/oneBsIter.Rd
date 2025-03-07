@@ -52,8 +52,7 @@ global working environment. Regular R scoping
 rules apply.}
 
 \item{likelihood}{String specifying the likelihood to fit. Built-in 
-likelihoods at present are "logistic", "halfnorm", 
-"hazrate", "negexp", and "Gamma".}
+likelihoods at present are "halfnorm", "hazrate", and "negexp".}
 
 \item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
 This is the minimum possible off-transect distance. Default is 0.  If 

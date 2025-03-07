@@ -7,13 +7,14 @@
 #' 
 #' @param strt.lims A list containing start, low, and high limits for 
 #' parameters of the requested likelihood. This list is typically produced
-#' by a call to \code{\link{startLims}}.
+#' by a call to \code{\link{startLimits}}.
 #' 
 #' @return An Rdistance fitted model object. This object contains the 
 #' raw object returned by the optiminzation routine (e.g., \code{nlming}), 
 #' and additional components specific to Rdistance.
 #' 
 #' @export
+#' @importFrom stats nlminb optim
 
 mlEstimates <- function( ml
                        , strt.lims
@@ -35,7 +36,7 @@ mlEstimates <- function( ml
                )
 
   if (optimFunc == "optim"){
-      fit <- optim(
+      fit <- stats::optim(
           strt.lims$start
           , nLL
           , lower = units::drop_units(strt.lims$low) # safe
@@ -46,7 +47,7 @@ mlEstimates <- function( ml
           , ml = ml
           )
   } else if (optimFunc == "nlminb"){
-      fit <- nlminb(
+      fit <- stats::nlminb(
             start = strt.lims$start
           , objective = nLL
           , lower = strt.lims$low
@@ -55,7 +56,7 @@ mlEstimates <- function( ml
           , ml = ml
           )
 
-      hessian <- secondDeriv(
+      hessian <- Rdistance::secondDeriv(
             x = fit$par
           , FUN = nLL
           , eps = getOption("Rdistance_hessEps")

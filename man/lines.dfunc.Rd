@@ -10,6 +10,16 @@
 \item{x}{An estimated detection function object, normally 
 produced by calling \code{\link{dfuncEstim}}.}
 
+\item{newdata}{A data frame containing new values of 
+the covariates at which to evaluate the distance functions. 
+If \code{newdata}
+is NULL, distance functions are evaluated at values of 
+the observed covariates and results in one prediction 
+per distance or transect (see parameter \code{type}). 
+If \code{newdata} is not NULL and the model does not contains covariates, 
+this routine returns one prediction for each row in \code{newdata}, but 
+columns and values in \code{newdata} are ignored.}
+
 \item{prob}{Logical scaler for whether to scale the distance function 
 to be a density function (integrates to one). Default behavior is designed 
 to be compatible with the plot method for distance functions 
@@ -41,10 +51,13 @@ Df <- data.frame(transectID = "A"
                , distance = x
                 ) |> 
   dplyr::nest_by( transectID
-               , .key = "detections") 
+               , .key = "detections") |> 
+  dplyr::mutate(length = units::set_units(100,"km"))              
 attr(Df, "detectionColumn") <- "detections"
 attr(Df, "obsType") <- "single"
 attr(Df, "transType") <- "line"
+attr(Df,'effortColumn') <- "length"
+is.RdistDf(Df)  # TRUE
 
 dfunc <- Df |> dfuncEstim(distance ~ 1, likelihood="halfnorm")
 plot(dfunc, nbins = 40, col="lightgrey", border=NA, vertLines=FALSE)
@@ -60,10 +73,13 @@ Df <- data.frame(transectID = c(rep("A", length(x))
                , distance = c(x,x2)
                 ) |> 
   dplyr::nest_by( transectID
-               , .key = "detections") 
+               , .key = "detections") |> 
+  dplyr::mutate(length = units::set_units(100, "km"))
 attr(Df, "detectionColumn") <- "detections"
 attr(Df, "obsType") <- "single"
 attr(Df, "transType") <- "line"
+attr(Df, "effortColumn") <- "length"
+is.RdistDf(Df)  # TRUE
 
 dfunc <- Df |> dfuncEstim(formula = distance ~ transectID)
 plot(dfunc
@@ -78,6 +94,9 @@ y <- lines(dfunc
    , lty = 1
    , lwd = 4)
 head(y) # values returned, transpose of predict method
+
+# Estimates of sd pretty close
+predict(dfunc, newdata = data.frame(transectID = c("A", "B")))
 
 }
 \seealso{

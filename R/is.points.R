@@ -4,7 +4,7 @@
 #' Determines whether a distance function is for a point survey 
 #' or line survey. 
 #' 
-#' @inheritParams is.smoothed
+#' @inheritParams transectType
 #' 
 #' @return TRUE if the model frame or fitted distance function 
 #' contains point surveys.  FALSE if the model frame or distance 
@@ -12,7 +12,7 @@
 #' 
 #' @export
 #' 
-is.points <- function(x, ...){
+is.points <- function(x){
   typ <- Rdistance::transectType(x)
   if(!is.null(typ)){
     return(typ == "point")

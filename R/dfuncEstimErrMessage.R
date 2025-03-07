@@ -5,7 +5,7 @@
 #' 
 #' @param txt A text string describing the error. 
 #' 
-#' @param attr An attribute to report.
+#' @param attri An attribute to report.
 #' 
 #' @return A string
 #' 

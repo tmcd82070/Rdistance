@@ -34,6 +34,7 @@
 #' and other relavant statistics for 
 #' one iteration of the bootstrap. 
 #' 
+#' @importFrom graphics lines
 #' 
 oneBsIter <- function(indexDf
                       , key
@@ -98,7 +99,7 @@ oneBsIter <- function(indexDf
   )
   
   if ( plot.bs ) {
-    lines(dfunc.bs
+    graphics::lines(dfunc.bs
           , newdata = plotCovValues
           , col = "blue"
           , lwd = 0.5

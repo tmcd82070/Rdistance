@@ -4,10 +4,11 @@
 \alias{is.smoothed}
 \title{is.smoothed - Tests for smoothed distance functions}
 \usage{
-is.smoothed(x, ...)
+is.smoothed(object)
 }
 \arguments{
-\item{x}{An Rdistance model frame or fitted distance function.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 }
 \value{
 TRUE if the model frame or fitted distance function 

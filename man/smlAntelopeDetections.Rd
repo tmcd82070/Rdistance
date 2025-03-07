@@ -9,11 +9,6 @@ A data.frame containing 129 rows and 11 columns.  Each row represents
 a detected group of antelope.  Column descriptions: 
 \enumerate{ 
   \item \code{siteID}: ID for each row.  Row ID's consist of 'year_season_transect.  
-  \item \code{year}: Year of the survey (2016, 2017, 2019, 2020, 2021, and 2022).  
-  \item \code{season}: Season of the survey (EarlyDry or LateDry). 
-  \item \code{surveyID}: Composite of year_season. 
-  \item \code{transID}: Transect ID.  Transect IDs are 4 character strings XXXY, 
-  where XXX is the grid cell number and Y is the transect number.
   \item \code{transect_bearing}: Compass bearing of the transect 
   (direction of travel) at the moment of detection. 
   \item \code{obs_bearing}: Compass bearing of the antelope group (at their 
@@ -28,7 +23,7 @@ a detected group of antelope.  Column descriptions:
 }
 \source{
 The small antelope data is a subset of walking transect data collected 
-by Lion Landscapes (\link{https://www.lionlandscapes.org}).
+by Lion Landscapes (\url{https://www.lionlandscapes.org}).
 }
 \description{
 A data set containing detections of small antelope (Grey Duiker, Grysbok, and Klipspringer)

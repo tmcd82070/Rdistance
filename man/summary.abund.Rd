@@ -4,12 +4,11 @@
 \alias{summary.abund}
 \title{Summarize abundance estimates}
 \usage{
-\method{summary}{abund}(x, criterion = "AICc", ...)
+\method{summary}{abund}(object, criterion = "AICc", ...)
 }
 \arguments{
-\item{x}{An object output by \code{abundEstim}.  This is a distance 
-function object augmented with abundance estimates, and has 
-class \code{c("abund", "dfunc")}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{criterion}{A string specifying the model fit criterion to print.
 Must be one of "AICc" (the default), 

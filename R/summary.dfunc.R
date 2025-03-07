@@ -29,14 +29,14 @@
 #' The number of digits used in the printout is 
 #' controlled by \code{options()$digits}.
 #' 
-#' @return The input distance function object (\code{x}) is invisibly returned, 
+#' @return The input distance function object (\code{object}), invisibly, 
 #' with the following additional components:
 #' \itemize{
 #'   \item \code{convMessage}: The convergence message. If the distance function
 #'   is smoothed, the convergence message is NULL.
 #'   \item \code{effDistance}: The ESW or EDR.
 #'   \item \code{pDetect}: Probability of detection in the strip.
-#'   \item \code{AIC}: AICc, AIC, or BIC of the fit, which ever was requested.
+#'   \item \code{AIC}: AICc, AIC, or BIC of the fit, whichever was requested.
 #'   \item \code{coefficients}: If the distance function has coefficients, this 
 #'   is the coefficient matrix with standard errors, Wald Z values, and p values. 
 #'   If the distance function is smoothed, it has no coefficients and this component 
@@ -48,7 +48,7 @@
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' data(sparrowDf)
 #' 
 #' # Fit half-normal detection function
 #' dfunc <- sparrowDf |> dfuncEstim(formula=dist~1)
@@ -61,37 +61,39 @@
 #' @export
 #' @importFrom stats pnorm
 
-summary.dfunc <- function( x, criterion="AICc", ... ){
+summary.dfunc <- function( object, criterion="AICc", ... ){
 
-  x <- print.dfunc(x, ...)
+  object <- print.dfunc(x = object, ...)
   
   # Convergence and likelihood line ----
-  if( !(isSmooth <- is.smoothed(x)) ){
-    if( grepl("Success", x$convMessage) ){
+  if( !(isSmooth <- is.smoothed(object)) ){
+    if( grepl("Success", object$convMessage) ){
       # b/c FAILURE mess printed in 'print.dfunc', but not Success
       cat("\n")
-      cat(paste("Convergence: ", x$convMessage,  "\n", sep=""))
+      cat(paste("Convergence: ", object$convMessage,  "\n", sep=""))
     }
 
-    if( x$expansions==0 ){
+    if( object$expansions==0 ){
         mess <- ""
     } else {
-        mess <- paste( "with", x$expansions, "expansion(s) of", casefold( x$series, upper=TRUE ), "series")
+        mess <- paste( "with", object$expansions, "expansion(s) of", 
+                       casefold( object$series, upper=TRUE ), "series")
     }
-    cat(paste("Function:", colorize(casefold(x$likelihood, upper=TRUE)), mess, "\n") )
+    cat(paste("Function:", colorize(casefold(object$likelihood, upper=TRUE)), 
+              mess, "\n") )
   } 
     
   # Strip line ----
-  cat(paste("Strip:", colorize(format(x$w.lo)), "to", 
-            colorize(format(x$w.hi)), "\n"))
+  cat(paste("Strip:", colorize(format(object$w.lo)), "to", 
+            colorize(format(object$w.hi)), "\n"))
   
   # Effective distance line ----
-  effDist <- effectiveDistance(x)
-  pDetect <- effDist / (x$w.hi - x$w.lo) 
+  effDist <- effectiveDistance(object)
+  pDetect <- effDist / (object$w.hi - object$w.lo) 
   pDetect <- units::set_units(pDetect, NULL)  # units of pDetect should always be [1]
-  interceptOnly <- Rdistance:::intercept.only(x)
+  interceptOnly <- intercept.only(object) # in Rdistance, not exported
 
-  if( is.points(x) ){
+  if( is.points(object) ){
     # Points
     pDetect <- pDetect^2 # needed later, for P(detect) line
     if( interceptOnly ){
@@ -117,13 +119,13 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
   cat(paste(mess)) # no return here, wait for ciMess to print at end of line
   
   # EFD CI line ----
-  if( interceptOnly && all(!is.null(x$effDistance.ci)) ){
+  if( interceptOnly && all(!is.null(object$effDistance.ci)) ){
     ciMess <- paste0(" "
-      , x$alpha*100
+      , object$alpha*100
       , "% CI: "
-      , colorize(format(x$effDistance.ci[1]))
+      , colorize(format(object$effDistance.ci[1]))
       , " to " 
-      , colorize(format(x$effDistance.ci[2])) 
+      , colorize(format(object$effDistance.ci[2])) 
     ) 
   } else if( !interceptOnly ){
     ciMess <- paste0(
@@ -173,8 +175,8 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
     
   # Scaling line ----    
   cat(paste("Scaling: g(", 
-            colorize(format(x$x.scl)), ") = ", 
-            colorize(format(x$g.x.scl)), sep=""))
+            colorize(format(object$x.scl)), ") = ", 
+            colorize(format(object$g.x.scl)), sep=""))
   if(any(pDetect > 1.0)){
     cat(colorize(" <- Check scaling", col = "red"))
   } 
@@ -182,19 +184,19 @@ summary.dfunc <- function( x, criterion="AICc", ... ){
     
   # Log likelihood line ----    
   cat(paste("Log likelihood:", 
-            colorize(format(x$loglik)), "\n"))
+            colorize(format(object$loglik)), "\n"))
   
   # AIC line ----
   if( !isSmooth ){
-    aic <- AIC.dfunc(x,criterion=criterion) 
+    aic <- AIC.dfunc(object,criterion=criterion) 
     cat(paste0(attr(aic,"criterion"),": ", 
                colorize(format(aic)), "\n"))
   }
 
   # Final assignments ----
-  x$effDistance <- effDist
-  x$pDetect <- pDetect
-  x$AIC <- aic
+  object$effDistance <- effDist
+  object$pDetect <- pDetect
+  object$AIC <- aic
 
-  invisible(x)
+  invisible(object)
 }

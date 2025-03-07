@@ -7,6 +7,8 @@
 #' 
 #' @inheritParams is.smoothed
 #' 
+#' @param ... Ignored
+#' 
 #' @return The estimated coefficient vector for the detection function. 
 #' Length and interpretation of values vary 
 #' depending on the form of the detection function and expansion terms.
@@ -24,12 +26,12 @@
 #' @keywords model
 #' @export
 
-coef.dfunc <- function(x, ...){
-  if( x$likelihood == "smu" ){
+coef.dfunc <- function(object, ...){
+  if( object$likelihood == "smu" ){
     # smoothed distance function
     COEF <- NULL
   } else {
-    COEF <- x$par
+    COEF <- object$par
   }
   COEF
 }

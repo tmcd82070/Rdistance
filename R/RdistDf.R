@@ -187,7 +187,7 @@
 #' point-transects must be a unit-less integers (i.e., number of points).
 #' 
 #'  
-#' @seealso \code{\link{checkRdistDf}}: check validity of RdistDf data frames;
+#' @seealso \code{\link{is.RdistDf}}: check validity of RdistDf data frames;
 #'  \code{\link{dfuncEstim}}: estimate distance function.
 #'  
 #' @examples

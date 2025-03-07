@@ -4,11 +4,11 @@
 \alias{predLikelihood}
 \title{predLikelihood - Distance function values at observations}
 \usage{
-predLikelihood(x, params)
+predLikelihood(object, params)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{params}{A matrix of distance function parameters. 
 Rows are observations, columns contain the set of parameters

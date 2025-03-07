@@ -3,6 +3,7 @@
 #' @description Fits a detection function to off-transect 
 #' distances collected by multiple observers. 
 #' 
+#' @inheritParams dfuncEstim
 #' @inheritParams dE.single
 #' 
 #' @inherit dE.single return
@@ -27,7 +28,6 @@ dE.multi <- function( data
   # but I'm adding a warning here, just in case
     stop("The double-observer routines have not been tested in Rdistance
           versions >2.x, so they have been disabled for the time being.
-          Contact the Rdistance authors if you need double observer analyses
-          and can help.")
+          Contact the Rdistance authors if you need double observer analyses.")
 
 }

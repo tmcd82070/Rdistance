@@ -2,7 +2,7 @@
 % Please edit documentation in R/startLimits.R
 \name{startLimits}
 \alias{startLimits}
-\title{startLimits - Set distance function starting values and limits}
+\title{startLimits - Distance function starting values and limits}
 \usage{
 startLimits(ml)
 }
@@ -11,11 +11,8 @@ startLimits(ml)
 'fitted object'.  Both are of class "dfunc". 
 Rdistance 'model frames' are lists containing components 
 necessary to estimate a distance function, but no estimates. 
-They contain the data, formula, likelihood name, w.lo, w.hi, 
-expansions, transect type, output units, etc.  
 Rdistance 'model frames' are typically
 produced by calls to \code{\link{parseModel}}. 
-
 Rdistance 'fitted objects'
 are typically produced by calls to \code{\link{dfuncEstim}}.
 'Fitted objects' are 'model frames'
@@ -29,42 +26,16 @@ A list containing the following components
   \item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
   \item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
   \item{names}{Vector of names for the likelihood parameters and expansion terms.}
+  
+The length of each vector in the return is:
+  \code{(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)}.
 }
 \description{
 Returns starting values and limits (boundaries) for the parameters of 
   distance functions.  This function is called by 
   other routines in \code{Rdistance}, and is not intended to 
-  be called by the user.
-}
-\details{
-\itemize{
- \item \code{\bold{ml$like}}: A string specifying the likelihood for the distance function.  
-At present, its value must be one of:  
-  "\bold{hazrate}" for the hazard rate likelihood; "\bold{halfnorm}" for the half 
-  normal likelihood, "\bold{uniform}" for the uniform likelihood, 
-  "\bold{negexp}" for the negative exponential likelihood, and 
-  "\bold{Gamma}" for the gamma likelihood.
-  
-\item \code{\bold{ml$expan}} Number of expansion terms to include. Valid values are 0, 1, ..., 3.
-
-\item \code{\bold{ml$w.lo}} Lower or left-truncation limit of the distances.  Normally, 0. 
-Must have physical measurement units.
-
-\item \code{\bold{ml$w.hi}} Upper or right-truncation limit of the distances. This is 
-the maximum observable off-transect distance. Must have physical measurement units.
-
-\item \code{\bold{ml$dist}} A vector of observed off-transect distances.  This vector is 
-used to compute starting values and is only required for 
-\code{like} = "Gamma" and "halfnorm". Must have physical measurement units.
-
-\item \code{\bold{ml$mf}} The model frame containing distances and covariates, if any. 
-
-\item \code{\bold{ml$transType}} Type of transects. Either "line" or "point". 
-}
-
-The number of parameters to be fitted is:
-  \code{expan + 1 + 1*(like \%in\% c("hazrate", "uniform")) + (Num Covars)}.
-  This is the length of vectors returned in the output list.
+  be called by the user. Replace this function in the global 
+  environment to change boundaries and starting values.
 }
 \examples{
   data(sparrowDetectionData)

@@ -20,10 +20,10 @@
 #' 
 #' @examples
 #' 
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' data(sparrowDf)
 #' sparrowModel <- parseModel( sparrowDf, dist ~ observer )
-#' model.response(sparrowModel)
-#' distances(sparrrowModel)
+#' stats::model.response(sparrowModel$mf)
+#' distances(sparrowModel) # same, but future-proof
 #' 
 #' @export
 #' 

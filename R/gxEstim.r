@@ -4,19 +4,6 @@
 #' , g(0) or g(x), for a specified distance function.
 #' 
 #' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
-#' 
-#' @param observer A numeric scalar or text string specifying whether observer 1 
-#'   or observer 2 or both were full-time observers. 
-#'   This parameter dictates which set of observations form the denominator 
-#'   of a double observer system.   
-#'   If, for example, observer 2 was a data recorder and part-time observer, 
-#'   or if observer 2 was the pilot, set \code{observer} = 1.  
-#'   If \code{observer} = 1, observations by observer 1 not seen 
-#'   by observer 2 are ignored. The estimate of detection in this case is the 
-#'   ratio of number of targets seen by both observers 
-#'   to the number seen by both plus the number seen by just observer 2. 
-#'   If observer = "both", the 
-#'   computation goes both directions.
 #'   
 #' @details This routine scales sightability such that 
 #' g(\code{x.scl}) = \code{g.x.scl}, where g() is the sightability function.
@@ -91,19 +78,18 @@
 #' @seealso \code{\link{dfuncEstim}}
 #' 
 #' @examples 
-#'   set.seed(555574)
-#'   x <- rnorm(1000) * 100
-#'   x <- x[ 0 < x & x < 100 ]
-#'   x <- units::set_units(x, "m")
-#'   un.dfunc <- dfuncEstim( x ~ 1
-#'                        , likelihood = "logistic")    
-#'   gxEstim(un.dfunc)
+#' 
+#' data(sparrowDf)
+#' fit <- dfuncEstim(sparrowDf, dist ~ groupsize(groupsize))
+#' gxEstim(fit)
 #'   
-#'   x <- rgamma(1000, shape = 5)
-#'   x <- units::set_units(x, "m")
-#'   gam.dfunc <- dfuncEstim( x ~ 1
-#'                          , likelihood="Gamma")    
-#'   gxEstim(gam.dfunc)
+#' fit <- dfuncEstim(sparrowDf, dist ~ groupsize(groupsize)
+#'                 , x.scl = units::set_units(50,"m")
+#'                 , g.x.scl = 0.75)
+#' gxEstim(fit)
+#' plot(fit)
+#' abline(h=0.75)
+#' abline(v=units::set_units(50,"m"))
 #'   
 #' @keywords model
 #' @export
@@ -186,7 +172,8 @@ gxEstim <- function( fit ){
   
   if( Rdistance::observationType(fit) != "single" ){
       #   Compute g(x) from double observer data
-      g.x.scl <- doubleObsProb( fit )
+      stop("Double observer systems not implemented.")
+      #g.x.scl <- doubleObsProb( fit )
   } else {
       # Single observer; but, g(x) could be less than 1
       # g(x) is specified, nothing to do except check validity

@@ -288,6 +288,6 @@ thrasherDf <- RdistDf( thrasherSiteData
                
 }
 \seealso{
-\code{\link{checkRdistDf}}: check validity of RdistDf data frames;
+\code{\link{is.RdistDf}}: check validity of RdistDf data frames;
  \code{\link{dfuncEstim}}: estimate distance function.
 }

@@ -31,8 +31,7 @@ or transect level and can appear in  \code{data} or exist in the
 global working environment. Regular R scoping 
 rules apply.}
     \item{\code{likelihood}}{String specifying the likelihood to fit. Built-in 
-likelihoods at present are "logistic", "halfnorm", 
-"hazrate", "negexp", and "Gamma".}
+likelihoods at present are "halfnorm", "hazrate", and "negexp".}
     \item{\code{w.lo}}{Lower or left-truncation limit of the distances in distance data. 
 This is the minimum possible off-transect distance. Default is 0.  If 
 \code{w.lo} is greater than 0, it must be assigned measurement units
@@ -232,7 +231,7 @@ ordered = "contr.poly"))}.  Or, to set contrasts for a
 specific factor in the input data frame, use 
 \code{contrasts(df$A) <- "contr.sum"} or similar. 
 See \code{\link{contrasts}} or the \code{contrasts.arg}
-of \code{\link{stats::model.matrix.default}}.
+of \code{\link{model.matrix}}.
 }
 
 \section{Measurement Units}{

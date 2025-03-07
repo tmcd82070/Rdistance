@@ -4,11 +4,11 @@
 \alias{predDfuncs}
 \title{predDfuncs - Predict distance functions}
 \usage{
-predDfuncs(x, params, distances, isSmooth)
+predDfuncs(object, params, distances, isSmooth)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{params}{A matrix of distance function parameters. 
 Rows are observations, columns contain the set of parameters
@@ -19,11 +19,11 @@ distances at which to evaluate
 distance functions, when distance functions 
 are requested.  \code{distances} must have measurement units. 
 Any distances outside the observation 
-strip (\code{x$w.lo} to \code{x$w.hi}) are discarded.  If 
+strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
 \code{distances} is NULL, a sequence 
 of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
 spaced distances between 
-\code{x$w.lo} and \code{x$w.hi} (inclusive) is used.}
+\code{object$w.lo} and \code{object$w.hi} (inclusive) is used.}
 
 \item{isSmooth}{Logical.  TRUE if the distance function 
 is smoothed (and hence has no parameters).}

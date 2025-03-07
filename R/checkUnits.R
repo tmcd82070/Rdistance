@@ -83,7 +83,7 @@ checkUnits <- function(ml){
                  "Assign units using either:\n", 
                  "units::units(x.scl) <- '<units>' or", 
                  paste0("units::set_units(", 
-                        ifelse(is.function(x.scl), "<value>", x.scl),
+                        ifelse(is.function(ml$x.scl), "<value>", ml$x.scl),
                         ", <units>) in function call\n"), 
                  "See units::valid_udunits() for valid symbolic units."))
     }

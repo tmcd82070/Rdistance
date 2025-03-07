@@ -51,7 +51,7 @@ hazrate.like <- function(a
   
   # What's in a? : 
   #   a = [(Intercept), b1, ..., bp, k, <expansion coef>]
-  q <- Rdistance:::nCovars(covars)
+  q <- nCovars(covars) # in Rdistance, not exported
   if(is.matrix(a)){
     beta <- a[, 1:q, drop = FALSE]  # k X q
     K <- a[, q+1, drop = FALSE]     # k X 1

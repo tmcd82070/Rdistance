@@ -20,11 +20,8 @@ i.e., length of this vector is
 'fitted object'.  Both are of class "dfunc". 
 Rdistance 'model frames' are lists containing components 
 necessary to estimate a distance function, but no estimates. 
-They contain the data, formula, likelihood name, w.lo, w.hi, 
-expansions, transect type, output units, etc.  
 Rdistance 'model frames' are typically
 produced by calls to \code{\link{parseModel}}. 
-
 Rdistance 'fitted objects'
 are typically produced by calls to \code{\link{dfuncEstim}}.
 'Fitted objects' are 'model frames'
@@ -61,23 +58,29 @@ set.seed(238642)
 d <- rnorm(1000, mean = 0, sd = 40)
 d <- units::set_units(d[0 <= d], "m")
 
-# Close to what happens in Rdistance
+# Min info in model list to compute likelihood
 ml <- list(
     mf = model.frame(d ~ 1) 
   , likelihood = "halfnorm"
   , expansions = 0
   , w.lo = units::set_units(0, "m")
   , w.hi = units::set_units(125, "m")
+  , outputUnits = units(units::set_units(1,"m"))
+  , x.scl = units::set_units(0,"m")
+  , g.x.scl = 1
+  , data = 1
 )
+attr(ml$data, "transType") <- "line"
+class(ml) <- "dfunc"
 nLL(log(40), ml)
 
-# Another way
+# Another way, b/c we have pnorm()
 ones <- matrix(1, nrow = length(d), ncol = 1)
 l <- halfnorm.like(log(40), d, ones)
 scaler <-(pnorm(units::drop_units(ml$w.hi)
   , units::drop_units(ml$w.lo)
   , sd = l$params) - 0.5) * sqrt(2*pi) * l$params
--sum(log(l$key/scaler))
+-sum(log(l$L.unscaled/scaler))
 
 # A third way, b/c we have pnorm() and dnorm(). 
 l2 <- dnorm(units::drop_units(d), mean = 0, sd = 40)

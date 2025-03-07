@@ -11,11 +11,8 @@ negexp.start.limits(ml)
 'fitted object'.  Both are of class "dfunc". 
 Rdistance 'model frames' are lists containing components 
 necessary to estimate a distance function, but no estimates. 
-They contain the data, formula, likelihood name, w.lo, w.hi, 
-expansions, transect type, output units, etc.  
 Rdistance 'model frames' are typically
 produced by calls to \code{\link{parseModel}}. 
-
 Rdistance 'fitted objects'
 are typically produced by calls to \code{\link{dfuncEstim}}.
 'Fitted objects' are 'model frames'
@@ -29,6 +26,9 @@ A list containing the following components
   \item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
   \item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
   \item{names}{Vector of names for the likelihood parameters and expansion terms.}
+  
+The length of each vector in the return is:
+  \code{(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)}.
 }
 \description{
 Compute starting values and limits for the negative 

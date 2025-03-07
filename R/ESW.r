@@ -44,27 +44,29 @@
 #' \code{\link{effectiveDistance}}
 #' 
 #' @examples
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
-#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~1)
+#' data(sparrowDf)
+#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~bare)
 #' 
-#' ESW(dfunc)
+#' ESW(dfunc) # vector length 356 = number of groups
+#' ESW(dfunc, newdata = data.frame(bare = c(30,40))) # vector length 2
 #' 
 #' @keywords modeling
+#' @importFrom stats predict
 #' @export
 
-ESW <- function( x, newdata = NULL ){
+ESW <- function( object, newdata = NULL ){
   
   # Issue error if the input detection function was fit to point-transect data
 
-  if( Rdistance:::is.points(x) ){
+  if( Rdistance::is.points(object) ){
     stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   } 
 
   nInts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) - 1 # nInts MUST BE even!!!
-  seqx = seq(x$w.lo, x$w.hi, length=nInts + 1)
+  seqx = seq(object$w.lo, object$w.hi, length=nInts + 1)
 
   # Default distances used in predict.dfunc is seq(ml$w.lo, ml$w.hi, getOption("Rdistance_intEvalPts")), 
-  y <- stats::predict(x = x
+  y <- stats::predict(object = object
                      , newdata = newdata
                      , distances = seqx
                      , type = "dfuncs"

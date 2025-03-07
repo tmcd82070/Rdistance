@@ -3,7 +3,8 @@
 #' @description Print method for distance function objects produced 
 #' by \code{dfuncEstim}.
 #' 
-#' @inheritParams predict.dfunc 
+#' @param x An estimated detection function object, normally 
+#' produced by calling \code{\link{dfuncEstim}}.
 #' 
 #' @param \dots Included for compatibility with other print methods.  Ignored here.
 #' 

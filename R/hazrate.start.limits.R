@@ -7,6 +7,8 @@
 #' 
 #' @inherit startLimits return
 #' 
+#' @importFrom stats median
+#' 
 #' @export
 hazrate.start.limits <- function (ml){
   

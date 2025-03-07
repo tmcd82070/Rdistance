@@ -3,7 +3,7 @@
 #' @description
 #' Plot method for parametric line and point transect distance functions. 
 #' 
-#' @inheritParams predict.dfunc 
+#' @inheritParams print.dfunc 
 #'   
 #' @param include.zero Boolean value specifying whether to include 0 on the x-axis 
 #' of the plot.  A value of TRUE will include 0 on the left hand end of the x-axis
@@ -129,10 +129,13 @@
 #'                , distance = x
 #'                 ) |> 
 #'   dplyr::nest_by( transectID
-#'                , .key = "detections") 
+#'                , .key = "detections") |> 
+#'   dplyr::mutate(length = units::set_units(1,"mi"))
 #' attr(Df, "detectionColumn") <- "detections"
 #' attr(Df, "obsType") <- "single"
 #' attr(Df, "transType") <- "line"
+#' attr(Df, "effortColumn") <- "length"
+#' is.RdistDf(Df) # TRUE
 #' 
 #' # Estimation
 #' dfunc <- dfuncEstim(Df
@@ -141,6 +144,9 @@
 #' plot(dfunc)
 #' plot(dfunc, nbins=25)
 #'
+#' @importFrom stats predict
+#' @importFrom graphics hist par barplot axTicks axis lines matpoints text
+#' @importFrom grDevices rainbow
 plot.dfunc.para <- function( x, 
                         include.zero=FALSE, 
                         nbins="Sturges", 
@@ -176,7 +182,7 @@ plot.dfunc.para <- function( x,
   }
   brks <- pretty( x = d
                   , n = nbins )
-  cnts <- hist( d
+  cnts <- graphics::hist( d
                 , plot = FALSE
                 , breaks = brks
                 , include.lowest = TRUE
@@ -248,7 +254,7 @@ plot.dfunc.para <- function( x,
   
   # Predict distance functions ----
   # after here, y is a matrix, columns are distance functions.
-  y <- stats::predict(x = x
+  y <- stats::predict(object = x
                       , newdata = newdata
                       , distances = x.seq
                       , type = "dfuncs"
@@ -266,7 +272,7 @@ plot.dfunc.para <- function( x,
      # ybarhgts <- ybarhgts * scaler
     y.lims <- c(0, max( ybarhgts, y.finite, na.rm=TRUE ))
   } else {
-    scaler <- Rdistance::effectiveDistance(x = x
+    scaler <- Rdistance::effectiveDistance(object = x
                                            , newdata = newdata)
     # Note: scaler is correct even when g.x.scl != 1. Hence, no need to apply 
     # another scaler. i.e., this works when g.x.scl < 1
@@ -316,11 +322,11 @@ plot.dfunc.para <- function( x,
       }
       if( any(density == 0) ){
         # bars are supposed to be empty when density = 0, so reset to fill with background
-        col[density == 0] = par()$bg
+        col[density == 0] = graphics::par()$bg
         density[density == 0] = -1
       }
     }
-    bar.mids <- barplot( ybarhgts, 
+    bar.mids <- graphics::barplot( ybarhgts, 
                          width = xscl, 
                          ylim = y.lims, 
                          xlim = x.limits,
@@ -332,8 +338,8 @@ plot.dfunc.para <- function( x,
                          xlab = xlab,
                          ylab = ylab,
                          ... )  
-    xticks <- axTicks(1)
-    axis( 1, at=xticks,  labels=xticks, line=.5, ... )
+    xticks <- graphics::axTicks(1)
+    graphics::axis( 1, at=xticks,  labels=xticks, line=.5, ... )
   } else {
     plot(1,1,type="n",
          ylim = y.lims, 
@@ -348,7 +354,7 @@ plot.dfunc.para <- function( x,
   nFunctions <- ncol(y)
   if( is.null(col.dfunc) ){
     # rainbow(1) is red, the default for one line
-    col.dfunc <- rainbow(nFunctions)
+    col.dfunc <- grDevices::rainbow(nFunctions)
   } else if(length(col.dfunc) < nFunctions){
     col.dfunc <- rep(col.dfunc,ceiling(nFunctions/length(col.dfunc)))[1:nFunctions]
   }
@@ -371,12 +377,12 @@ plot.dfunc.para <- function( x,
     }
     , x.seq = x.seq
     , d = d )
-    matpoints(d, g, pch = 1, lty = 1, col = 1, cex = 1)
+    graphics::matpoints(d, g, pch = 1, lty = 1, col = 1, cex = 1)
   }
   
   # Draw distance functions ----
   for(i in 1:nFunctions){
-    lines( x.seq, y[,i]
+    graphics::lines( x.seq, y[,i]
            , col=col.dfunc[i]
            , lwd=lwd.dfunc[i]
            , lty = lty.dfunc[i]
@@ -386,9 +392,9 @@ plot.dfunc.para <- function( x,
   
   #   Add vertical lines at 0 and w if called for ----
   if(vertLines){
-    lines( rep(x.seq[1], 2), c(0,y[1,1]), col=col.dfunc[1], lwd=lwd.dfunc[1],
+    graphics::lines( rep(x.seq[1], 2), c(0,y[1,1]), col=col.dfunc[1], lwd=lwd.dfunc[1],
            lty=lty.dfunc[1])
-    lines( rep(x.seq[length(x.seq)], 2), c(0,y[length(x.seq), 1]), 
+    graphics::lines( rep(x.seq[length(x.seq)], 2), c(0,y[length(x.seq), 1]), 
            col=col.dfunc[1], lwd=lwd.dfunc[1],
            lty=lty.dfunc[1] )
   }
@@ -401,28 +407,28 @@ plot.dfunc.para <- function( x,
     } else {
       mess <- "Convergence failure"
     }
-    text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
-    text( mean(x.seq), mean(y.lims), paste("\n\n\n", x$fit$message, sep=""), cex=1, adj=.5, col="black")
+    graphics::text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
+    graphics::text( mean(x.seq), mean(y.lims), paste("\n\n\n", x$fit$message, sep=""), cex=1, adj=.5, col="black")
   }
   
   # Check for Probabilities > 1 ----
   if( !is.points(x) && any(y > 1) ){
     # some g(x) > 1, should'nt happen for line transects
     mess <- "Probabilities > 1"
-    text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
+    graphics::text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
     mess <- "g(x) > 1 should not happen"
-    text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
+    graphics::text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
     mess <- paste0("Check g(", format(x$x.scl), ")= ", round(x$g.x.scl,2), " assumption")
-    text( mean(x.seq), mean(y.lims), paste("\n\n\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
+    graphics::text( mean(x.seq), mean(y.lims), paste("\n\n\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
   } 
   
   # Check missing or <0 y values ----
   if( any(is.na(y)) | any(y < 0) ){
     #   invalid scaling, g0 is wrong
     mess <- "Probabilities < 0"
-    text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
+    graphics::text( mean(x.seq), mean(y.lims), mess, cex=3, adj=.5, col="red")
     mess <- paste("One or more parameters likely at boundary")
-    text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
+    graphics::text( mean(x.seq), mean(y.lims), paste("\n\n\n", mess,sep=""), cex=1, adj=.5, col="black")
   }
   
   # Legend ----
@@ -447,7 +453,7 @@ plot.dfunc.para <- function( x,
     
     #legend.factors <- vector(length = length(x$legend.names))
     
-    legend('topright', legend = Leg, lty = lty.dfunc, lwd = lwd.dfunc, 
+    graphics::legend('topright', legend = Leg, lty = lty.dfunc, lwd = lwd.dfunc, 
            col = col.dfunc, cex = 0.7)
   }
   

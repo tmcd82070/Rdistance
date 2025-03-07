@@ -7,9 +7,9 @@
 #' @param newdata A data frame containing new values for 
 #' covariates at which either
 #' ESW's or EDR's will be computed. If NULL and 
-#'   \code{x} contains covariates, the  
+#'   \code{object} contains covariates, the  
 #'   covariates stored in
-#'   \code{x} are used (like \code{\link{predict.lm}}).
+#'   \code{object} are used (like \code{\link{predict.lm}}).
 #'   If not NULL, covariate values in \code{newdata}
 #'   are used. 
 #'   See \bold{Value} section for more information. 
@@ -24,9 +24,9 @@
 #' covariates in \code{newdata} with length equal to 
 #' the number of rows in \code{newdata}. 
 #' If \code{newdata} is NULL, the returned value is a vector of effective
-#' sampling distances for covariate values in \code{x} and has 
-#' the number of detections in \code{x}.  The returned vector 
-#' has measurement units, i.e., \code{x$outputUnits}.
+#' sampling distances associated with covariate values in \code{object} and has 
+#' the same number of detected groups.  The returned vector 
+#' has measurement units, i.e., \code{object$outputUnits}.
 #' 
 #'      
 #' @seealso \code{\link{dfuncEstim}} \code{\link{ESW}} \code{\link{EDR}}
@@ -34,14 +34,14 @@
 #' @keywords modeling
 #' @export
 
-effectiveDistance <- function(x, newdata = NULL){
+effectiveDistance <- function(object, newdata = NULL){
   
   # call ESW for line transects and EDR for point transects
 
-  if (is.points(x)) {
-    EDR(x, newdata)
+  if (is.points(object)) {
+    EDR(object, newdata)
   } else {
-    ESW(x, newdata)
+    ESW(object, newdata)
   }
 
 }

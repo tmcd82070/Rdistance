@@ -43,9 +43,8 @@ Regular Akaike's information criterion
   \deqn{BIC = LL + log(n)p,}{BIC = (LL) + log(n)p}.
 }
 \examples{
-sparrowDF <- RdistDf(sparrowSiteData, sparrowDetectionData)
-dfunc <- sparrowDf |> dfuncEstim(dist~1,
-                      w.hi=units::set_units(150, "m"))
+data(sparrowDf)
+dfunc <- sparrowDf |> dfuncEstim(dist~1)
   
 # Fit statistics
 AIC(dfunc)  # AICc

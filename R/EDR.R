@@ -4,7 +4,7 @@
 #'   detection functions on point transects.  
 #'   See \code{\link{ESW}} is for line transects. 
 #'   
-#' @inheritParams effectiveDistance
+#' @inheritParams predict.dfunc
 #'   
 #' @details Effective Detection Radius is the integral under the 
 #' detection function times distance. \if{latex}{I.e., 
@@ -26,30 +26,32 @@
 #' data(thrasherDf)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- thrasherDf |> dfuncEstim(formula=dist~1)
+#' dfunc <- thrasherDf |> dfuncEstim(formula=dist~bare)
 #' 
 #' # Compute effective detection radius (EDR)
-#' EDR(dfunc)
+#' EDR(dfunc) # vector length 192
 #' effectiveDistance(dfunc) # same
+#' EDR(dfunc, newdata = data.frame(bare=30)) # vector length 1
 #'   
 #' @keywords modeling
 #'   
+#' @importFrom stats predict
 #' @export
 
-EDR <- function(x, newdata = NULL){
+EDR <- function(object, newdata = NULL){
   
   # Issue error if the input detection function was fit to line-transect data
-  if( !Rdistance:::is.points(x) ){
+  if( !Rdistance::is.points(object) ){
     stop("EDR is for point transects only.  See ESW for the line-transect equivalent.")
   } 
   
   nEvalPts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) # MUST BE ODD!!!
   nInts <- nEvalPts - 1 # this will be even profided nEvalPts is odd
-  seqx = seq(x$w.lo, x$w.hi, length=nEvalPts) 
+  seqx = seq(object$w.lo, object$w.hi, length=nEvalPts) 
   dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts)
   
   y <- units::set_units(seqx, NULL) * 
-       stats::predict(x = x
+       stats::predict(object = object
                     , newdata = newdata
                     , distances = seqx
                     , type = "dfuncs"
@@ -65,7 +67,7 @@ EDR <- function(x, newdata = NULL){
   edr <- (t(y) %*% intCoefs) * dx / 3
   edr <- units::set_units(drop(edr), NULL) # convert from matrix to vector, drop units  
   edr <- sqrt( 2 * edr )  # cannot sqrt units (unless like m^2 are assigned)
-  edr <- units::set_units(edr, x$outputUnits, mode = "standard") # add back units
+  edr <- units::set_units(edr, object$outputUnits, mode = "standard") # add back units
   
     # OLD COMMENTS:
     # obj$detections$dist is in denominator of integration.constant for point surveys. 

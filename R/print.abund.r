@@ -43,7 +43,7 @@
 print.abund <- function( x
                        , ... ){
 
-  print.dfunc( x )
+  Rdistance:::print.dfunc( x, ... )
   cat("\n")
   hasCI <- all(!is.null(x$density.ci))
   

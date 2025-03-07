@@ -21,9 +21,17 @@
 #' the next summary method.
 #' 
 #' @examples
-#' sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+#' data(smlAntelopeTransects)
+#' data(smlAntelopeDetections)
 #' 
-#' summary(sparrowDf) 
+#' smlAntelope <- RdistDf(smlAntelopeTransects
+#'                      , smlAntelopeDetections
+#'                      , by = "siteID"
+#'                      , pointSurvey = F
+#'                      , .effortCol = "length")
+#' 
+#' summary(smlAntelope |> dplyr::filter(surveyID == "2019_LateDry")
+#'       , perpDist ~ groupsize(number))
 #' 
 #' @export
 #' 

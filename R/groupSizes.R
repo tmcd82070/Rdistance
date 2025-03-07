@@ -13,12 +13,13 @@
 #' 
 #' @examples
 #' 
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' data("sparrowDf")
 #' sparrowModel <- parseModel( sparrowDf, dist ~ observer )
-#' model.response(sparrowModel)
-#' distances(sparrrowModel)
+#' stats::model.offset(sparrowModel$mf)
+#' groupSizes(sparrowModel)  # same, but future-proof
 #' 
 #' @export
+#' @importFrom stats model.offset
 #' 
 groupSizes <- function(ml, ...){
   #ml$mf[, attr(terms(ml$mf), "offset")]

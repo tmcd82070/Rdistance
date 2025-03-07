@@ -4,11 +4,11 @@
 \alias{summary.dfunc}
 \title{Summarize a distance function object}
 \usage{
-\method{summary}{dfunc}(x, criterion = "AICc", ...)
+\method{summary}{dfunc}(object, criterion = "AICc", ...)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{criterion}{A string specifying the model fit criterion to print.
 Must be one of "AICc" (the default), 
@@ -17,14 +17,14 @@ Must be one of "AICc" (the default),
 \item{\dots}{Included for compatibility with other print methods.  Ignored here.}
 }
 \value{
-The input distance function object (\code{x}) is invisibly returned, 
+The input distance function object (\code{object}), invisibly, 
 with the following additional components:
 \itemize{
   \item \code{convMessage}: The convergence message. If the distance function
   is smoothed, the convergence message is NULL.
   \item \code{effDistance}: The ESW or EDR.
   \item \code{pDetect}: Probability of detection in the strip.
-  \item \code{AIC}: AICc, AIC, or BIC of the fit, which ever was requested.
+  \item \code{AIC}: AICc, AIC, or BIC of the fit, whichever was requested.
   \item \code{coefficients}: If the distance function has coefficients, this 
   is the coefficient matrix with standard errors, Wald Z values, and p values. 
   If the distance function is smoothed, it has no coefficients and this component 
@@ -56,7 +56,7 @@ controlled by \code{options()$digits}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
-sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+data(sparrowDf)
 
 # Fit half-normal detection function
 dfunc <- sparrowDf |> dfuncEstim(formula=dist~1)

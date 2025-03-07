@@ -31,11 +31,11 @@
 #' to values in the returned vector.
 #'  
 #' @export
-predLikelihood <- function(x
+predLikelihood <- function(object
                          , params
                           ){
   
-  d <- Rdistance::distances(x) # these should have the right units, don't check
+  d <- Rdistance::distances(object) # these should have the right units, don't check
 
   # Note: w.lo is subtracted in predDfuncs
   
@@ -47,10 +47,10 @@ predLikelihood <- function(x
   # resorting to a loop and keeping the predict dfuncs methods.
   # This is something that could be modified in the future.
   
-  y <- Rdistance::predDfuncs(x = x
+  y <- Rdistance::predDfuncs(object = object
                                 , params = params
                                 , distances = d
-                                , isSmooth = is.smoothed(x))
+                                , isSmooth = is.smoothed(object))
   y <- diag(y)
  
   return( y )  

@@ -41,9 +41,8 @@
 #' @seealso \code{\link{coef}}, \code{\link{dfuncEstim}}
 #' 
 #' @examples 
-#' sparrowDF <- RdistDf(sparrowSiteData, sparrowDetectionData)
-#' dfunc <- sparrowDf |> dfuncEstim(dist~1,
-#'                       w.hi=units::set_units(150, "m"))
+#' data(sparrowDf)
+#' dfunc <- sparrowDf |> dfuncEstim(dist~1)
 #'   
 #' # Fit statistics
 #' AIC(dfunc)  # AICc

@@ -4,29 +4,16 @@
 \alias{model.matrix.dfunc}
 \title{model.matrix - Rdistance model matrix}
 \usage{
-\method{model.matrix}{dfunc}(ml, \dots)
+\method{model.matrix}{dfunc}(object, \dots)
 }
 \arguments{
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
-They contain the data, formula, likelihood name, w.lo, w.hi, 
-expansions, transect type, output units, etc.  
-Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
-
-Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
-'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
-log likelihood value, convergence information, and the variance-
-covariance matrix of the parameters.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{...}{Ignored}
 }
 \value{
-A matrix containing covariates for fitting in an
+A matrix containing covariates for fitting an
 Rdistance model.
 }
 \description{
@@ -34,7 +21,7 @@ Extract the model matrix ("X" matrix) from an Rdistance model object.
 }
 \examples{
 
-sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+data(sparrowDf)
 sparrowModel <- parseModel( sparrowDf, dist ~ observer )
 model.matrix(sparrowModel)
 

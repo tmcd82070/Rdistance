@@ -4,18 +4,18 @@
 \alias{effectiveDistance}
 \title{effectiveDistance - Effective sampling distances}
 \usage{
-effectiveDistance(x, newdata = NULL)
+effectiveDistance(object, newdata = NULL)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
 \item{newdata}{A data frame containing new values for 
 covariates at which either
 ESW's or EDR's will be computed. If NULL and 
-  \code{x} contains covariates, the  
+  \code{object} contains covariates, the  
   covariates stored in
-  \code{x} are used (like \code{\link{predict.lm}}).
+  \code{object} are used (like \code{\link{predict.lm}}).
   If not NULL, covariate values in \code{newdata}
   are used. 
   See \bold{Value} section for more information.}
@@ -26,9 +26,9 @@ a vector of effective sampling distances for values of the
 covariates in \code{newdata} with length equal to 
 the number of rows in \code{newdata}. 
 If \code{newdata} is NULL, the returned value is a vector of effective
-sampling distances for covariate values in \code{x} and has 
-the number of detections in \code{x}.  The returned vector 
-has measurement units, i.e., \code{x$outputUnits}.
+sampling distances associated with covariate values in \code{object} and has 
+the same number of detected groups.  The returned vector 
+has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
 Computes Effective Strip Width (ESW) for line-transect detection

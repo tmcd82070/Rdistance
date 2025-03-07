@@ -7,7 +7,10 @@
 \method{coef}{dfunc}(object, \dots)
 }
 \arguments{
-\item{x}{An Rdistance model frame or fitted distance function.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
+
+\item{...}{Ignored}
 }
 \value{
 The estimated coefficient vector for the detection function. 

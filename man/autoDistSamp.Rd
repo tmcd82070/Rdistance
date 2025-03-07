@@ -23,11 +23,20 @@ autoDistSamp(
   plot.bs = FALSE,
   showProgress = TRUE,
   plot = TRUE,
-  criterion = "AICc",
-  ...
+  criterion = "AICc"
 )
 }
 \arguments{
+\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames 
+contain one line per transect and a list-based column. The list-based
+column contains a data frame with detection information. 
+The detection information data frame on each row contains (at least) distances 
+and group sizes of all targets detected on the transect.
+Function \code{\link{RdistDf}} creates \code{RdistDf} data frames 
+from separate transect and detection data frames. 
+\code{\link{is.RdistDf}} checks whether data frames
+are \code{RdistDf}'s.}
+
 \item{formula}{A standard formula object.  For example, \code{dist ~ 1}, 
 \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
 is the name of the vector containing off-transect or radial detection distances.  
@@ -38,6 +47,9 @@ Covariates can be either detection level
 or transect level and can appear in  \code{data} or exist in the 
 global working environment. Regular R scoping 
 rules apply.}
+
+\item{likelihoods}{String vector specifying the likelihoods to fit. 
+See 'likelihood' parameter of \code{\link{dfuncEstim}}.}
 
 \item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
 This is the minimum possible off-transect distance. Default is 0.  If 
@@ -164,70 +176,21 @@ An 'abundance estimate' object, which is a list of
   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
   object (see \code{\link{dfuncEstim}}), plus the following: 
   
-  \item{density}{Estimated density on the sampled area with units. The \emph{effectively}
-  sampled area is 2*L*ESW (not 2*L*w.hi). Density has squared units of the 
-  requested output units.  Convert density to other units with  
-  \code{units::set_units(x$density, "<units>").}} 
-  
-  \item{n.hat}{Estimated abundance on the study area (if \code{area} >
-  1) or estimated density on the study area (if \code{area} = 1), without units.}
- 
-  \item{n}{The number of detections (not individuals) 
-  on non-NA length transects
-  used to compute density and abundance.}
-  
-  \item{n.seen}{The total number of individuals seen on transects with non-NA
-  length. Sum of group sizes used 
-  to estimate density and abundance.}
- 
-  \item{area}{Total area of inference in squared output units.}
-  
-  \item{surveyedUnits}{The total length of sampled transect with units. This is the sum 
-  of the \code{lengthColumn} column of \code{siteData}. }
-  
-  \item{avg.group.size}{Average group size on transects with non-NA length transects.}
-  
-  \item{rng.group.size}{Minimum and maximum groupsizes observed on non-NA length transects.}
-  
-  \item{effDistance}{A vector containing effective sample distance.  If covariates
-  are not included, length of this vector is 1 because effective sampling distance 
-  is constant over detections. If covariates are included, this vector has length
-  equal to the number of detections (i.e., \code{x$n}).  This vector was produced 
-  by a call to \code{effectiveDistance()} with \code{newdata} set to NULL.}
-  
-  \item{n.hat.ci}{A vector containing the lower and upper limits of the 
-  bias corrected bootstrap confidence interval for
-  abundance. } 
-  
-  \item{density.ci}{A vector containing the lower and upper limits of the 
-  bias corrected bootstrap confidence interval for
-  density, with units.
-  }
-
-  \item{effDistance.ci}{A vector containing the lower and upper limits of the 
-  bias corrected bootstrap confidence interval for \emph{average}
-  effective sampling distance.
+  \item{estimates}{A tibble containing number of groups seen, number 
+  of individuals seen, study area size, surveyed area, density, and abundance.
+  Density applies to the sampled area. Abundance applies to the entire 
+  study area.
   }
   
-  \item{B}{A data frame containing bootstrap values of coefficients, 
+  \item{B}{If confidence intervals are requested, a tibble 
+  containing bootstrap values of coefficients, 
   density, and effective distances.  Number of rows is always 
   \code{R}, the requested number of bootstrap 
-  iterations.  If a particular iteration fails, the
+  iterations.  If an iteration fails, the
   corresponding row in \code{B} is \code{NA} (hence, use 'na.rm = TRUE' 
   when computing summaries). Columns 1 through \code{length(coef(dfunc))}
   contain bootstrap realizations of the distance function's coefficients. 
-  The second to last column contains bootstrap values of
-  density (with units).  The last column of B contains bootstrap 
-  values of effective sampling distance or radius (with units). If the 
-  distance function contains covariates,
-  the effective sampling distance column is the average 
-  effective distance over detections 
-  used during the associated bootstrap iteration. }
-  
-  \item{nItersConverged}{The number of bootstrap iterations that converged.  }
-  
-  \item{alpha}{The (scalar) confidence level of the
-  confidence interval for \code{n.hat}.}
+  }
 }
 \description{
 Perform automated likelihood, expansion, and series
@@ -253,16 +216,24 @@ criterion values) in component \code{$fitTable}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
-data(sparrowDetectionData)
-data(sparrowSiteData)
+data(sparrowDf)
 
-# Estimate density and abundance from 'best' detection function
-sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+autoDistSamp(data = sparrowDf
+           , formula = dist ~ groupsize(groupsize)
+           , likelihoods = c("halfnorm","negexp")
+           , expansions = 0
+           , plot = FALSE
+           , ci = NULL
+           , area = units::set_units(1, "hectare")
+)
+
+\dontrun{
 autoDistSamp(data = sparrowDf
     , formula = dist ~ 1 + groupsize(groupsize)
-    , ci = NULL
+    , ci = 0.95
     , area = units::set_units(1, "hectare")
 )     
+}
 
            
 }

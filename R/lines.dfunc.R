@@ -6,6 +6,8 @@
 #' that adds distance functions to an existing plot. 
 #'   
 #' @inheritParams plot.dfunc
+#' @inheritParams print.dfunc
+#' @inheritParams predict.dfunc
 #' 
 #' @param prob Logical scaler for whether to scale the distance function 
 #' to be a density function (integrates to one). Default behavior is designed 
@@ -36,10 +38,13 @@
 #'                , distance = x
 #'                 ) |> 
 #'   dplyr::nest_by( transectID
-#'                , .key = "detections") 
+#'                , .key = "detections") |> 
+#'   dplyr::mutate(length = units::set_units(100,"km"))              
 #' attr(Df, "detectionColumn") <- "detections"
 #' attr(Df, "obsType") <- "single"
 #' attr(Df, "transType") <- "line"
+#' attr(Df,'effortColumn') <- "length"
+#' is.RdistDf(Df)  # TRUE
 #' 
 #' dfunc <- Df |> dfuncEstim(distance ~ 1, likelihood="halfnorm")
 #' plot(dfunc, nbins = 40, col="lightgrey", border=NA, vertLines=FALSE)
@@ -55,10 +60,13 @@
 #'                , distance = c(x,x2)
 #'                 ) |> 
 #'   dplyr::nest_by( transectID
-#'                , .key = "detections") 
+#'                , .key = "detections") |> 
+#'   dplyr::mutate(length = units::set_units(100, "km"))
 #' attr(Df, "detectionColumn") <- "detections"
 #' attr(Df, "obsType") <- "single"
 #' attr(Df, "transType") <- "line"
+#' attr(Df, "effortColumn") <- "length"
+#' is.RdistDf(Df)  # TRUE
 #' 
 #' dfunc <- Df |> dfuncEstim(formula = distance ~ transectID)
 #' plot(dfunc
@@ -74,7 +82,11 @@
 #'    , lwd = 4)
 #' head(y) # values returned, transpose of predict method
 #' 
+#' # Estimates of sd pretty close
+#' predict(dfunc, newdata = data.frame(transectID = c("A", "B")))
+#' 
 #' @export
+#' @importFrom stats predict
 lines.dfunc <- function(x
                         , newdata = NULL
                         , prob = NULL
@@ -84,7 +96,8 @@ lines.dfunc <- function(x
   g.at.x0 <- x$g.x.scl
   x0 <- x$x.scl
   
-  y <- stats::predict(x
+  y <- stats::predict(
+               object = x
              , newdata = newdata
              , distances = x.seq
              , type = "dfunc")

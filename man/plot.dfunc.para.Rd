@@ -159,10 +159,13 @@ Df <- data.frame(transectID = "A"
                , distance = x
                 ) |> 
   dplyr::nest_by( transectID
-               , .key = "detections") 
+               , .key = "detections") |> 
+  dplyr::mutate(length = units::set_units(1,"mi"))
 attr(Df, "detectionColumn") <- "detections"
 attr(Df, "obsType") <- "single"
 attr(Df, "transType") <- "line"
+attr(Df, "effortColumn") <- "length"
+is.RdistDf(Df) # TRUE
 
 # Estimation
 dfunc <- dfuncEstim(Df
