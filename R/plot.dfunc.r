@@ -373,9 +373,9 @@ plot.dfunc <- function( x,
       }
     }
     bar.mids <- barplot( ybarhgts, 
-                         width = xscl, 
+                         width = units::set_units(xscl,NULL), 
                          ylim = y.lims, 
-                         xlim = x.limits,
+                         xlim = units::set_units(x.limits,NULL),
                          space = 0, 
                          density = density,
                          angle = angle,
