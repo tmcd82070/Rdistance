@@ -212,7 +212,7 @@ The estimated number of sparrows on the `r format(saSize)` study area is `r form
 
 *  Users can combine bootstrap iterations from multiple abundance objects 
 by appending `$B` components together.  New confidence intervals from the new `$B` component will be computed when the abundance object is printed. 
-*  Users can compute confidence intervals using different methods (e.g., percentile instead of bia-corrected).
+*  Users can compute confidence intervals using different methods (e.g., percentile instead of bias-corrected).
 *  Users can compute the variance of other quantities that depend on parameters, density, or ESW; for example, density in a particular strip.  
 *  Users can plot the full bootstrap distribution of density (or ESW) to inspect statistical properties. 
 

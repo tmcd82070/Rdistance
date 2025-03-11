@@ -7,7 +7,7 @@
 isUnitless(obj)
 }
 \arguments{
-\item{obj}{A numeric scaler or vector, with or without units.}
+\item{obj}{A numeric scalar or vector, with or without units.}
 }
 \value{
 TRUE if \code{obj} has units and they 

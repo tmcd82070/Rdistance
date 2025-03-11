@@ -84,9 +84,9 @@ package.
 Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and many
 others are acceptable.}
 
-\item{singleSided}{Logical scaler. If only one side of the transect was 
-observed, set \code{singleSided} = TRUE. If both sides of line-transects were 
-observed, \code{singleSided} = FALSE. Some surveys
+\item{singleSided}{Logical scalar. If only one side of the transect was 
+observed, set \code{singleSided} = TRUE. If both sides of line-transects 
+were observed, \code{singleSided} = FALSE. Some surveys
 observe only one side of transect lines for a variety of logistical reasons. 
 For example, some aerial line-transect surveys place observers on only one
 side of the aircraft. This parameter effects only line-transects.  When 
@@ -204,8 +204,8 @@ The abundance estimate for line-transect surveys (if no covariates
    \deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
          N = n*A / (2*ESW*L)} 
    where \emph{n} is total number of sighted individuals 
-  (i.e., \code{sum(dfunc$detections$groupSizes)}), \emph{L} is the total length of 
-  surveyed transect (i.e., \code{sum(siteData[,lengthColumn])}),
+  (i.e., \code{sum(dfunc$detections$groupSizes)}), \emph{L} is the total 
+  length of surveyed transect (i.e., \code{sum(siteData[,lengthColumn])}),
   and \emph{ESW} is effective strip width
   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
   If only one side of transects were observed, the "2" in the denominator 
@@ -254,7 +254,7 @@ The abundance estimate for line-transect surveys (if no covariates
   of distances on the iteration which pushes parameters to their 
   bounds. When an iteration fails to produce a valid 
   distance function, \code{Rdistance} 
-  simply skips the intration, effectively ignoring these 
+  simply skips the iteration, effectively ignoring these 
   non-convergent iterations. 
   If the proportion of non-convergent iterations is small 
   (less than 20% by default), the resulting confidence interval 
@@ -287,7 +287,7 @@ The abundance estimate for line-transect surveys (if no covariates
   
   \bold{Point transects}: Point transects do not have length. The "length" of point transects
   is the number of points on the transect. \code{Rdistance} treats individual points as independent 
-  and bootstrap resampmles them to estimate variance. To include distance obervations
+  and bootstrap resamples them to estimate variance. To include distance observations
   from some points but not the number of targets seen, include a separate "length" column 
   in the site data frame with NA for the "extra" points. Like NA length line transects, 
   NA "length" point transects are dropped from the count of points and group sizes on these 

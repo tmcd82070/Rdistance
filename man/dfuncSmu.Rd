@@ -197,7 +197,7 @@ meaning surveyed points were not grouped into transects, each 'transect' consist
 of one point. In this case, set \code{transectID} equal to 
 the point's ID and set \code{pointID} equal to 1 for all points.}
 
-\item{outputUnits}{A string giving the symbolic measurment 
+\item{outputUnits}{A string giving the symbolic measurement 
 units that results should be reported in.   Any 
 distance measurement unit in \code{units::valid_udunits()} 
 will work.  The strings for common distance symbolic units are: 

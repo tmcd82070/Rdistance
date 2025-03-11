@@ -22,85 +22,32 @@ R CMD check --as-cran results
 No ERRORs or WARNINGs. 
 
 local environment:
-Windows 11 Pro, R version 4.2.3 (2023-03-15 ucrt) -- "Shortstop Beagle"
+Windows 11 Pro, R version 4.4.3 (2025-02-28) -- "Trophy Case"
 
-* Unix (via Travis) : build passing
+# Rhub Checks (via Github actions)
 
-# Winbuilder Check
-
-Passing with one note,
-
-```
-* checking CRAN incoming feasibility ... [8s] NOTE
-Maintainer: 'Trent McDonald <trent@mcdonalddatasciences.com>'
-
-New submission
-
-Package was archived on CRAN
-
-Possibly misspelled words in DESCRIPTION:
-  Rdistance (31:3)
-  covariates (34:21)
-  glm (34:12)
-  lm (34:6)
-
-CRAN repository db overrides:
-  X-CRAN-Comment: Archived on 2022-10-03 as check issues were not
-    corrected despite reminders.
-```
-
-**Those words are not misspelled. **
-
-# Rhub Checks
-
-## debian-gcc-release
+Builds failed on re-build vignettes because pdflatex was not 
+present.  Vignettes build when pdflatex is present. 
 
 ```
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: ‘Trent McDonald <trent@mcdonalddatasciences.com>’
-
-New submission
-
-Package was archived on CRAN
-
-Possibly misspelled words in DESCRIPTION:
-  glm (34:12)
-  lm (34:6)
-  Rdistance (31:3)
-
-CRAN repository db overrides:
-  X-CRAN-Comment: Archived on 2022-10-03 as check issues were not
-    corrected despite reminders.
+<snip>
+* creating vignettes ... ERROR
+Error: --- re-building 'Extended_dfuncEstim_Examples.Rmd' using rmarkdown
+Warning in system2(..., stdout = if (use_file_stdout()) f1 else FALSE, stderr = f2) :
+  '"pdflatex"' not found
+Error: Error: processing vignette 'Extended_dfuncEstim_Examples.Rmd' failed with diagnostics:
+LaTeX failed to compile C:/Users/runneradmin/AppData/Local/Temp/RtmpgT4aiT/Rbuild112c3fb76dd7/Rdistance/vignettes/Extended_dfuncEstim_Examples.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips.
+--- failed re-building 'Extended_dfuncEstim_Examples.Rmd'
+--- re-building 'Rdistance_BeginnerLineTransect.Rmd' using rmarkdown
+Warning in system2(..., stdout = if (use_file_stdout()) f1 else FALSE, stderr = f2) :
+  '"pdflatex"' not found
 ```
 
-## ubuntu-gcc-release
+# Spelling
 
-```
-* checking CRAN incoming feasibility ... [6s/13s] NOTE
-Maintainer: ‘Trent McDonald <trent@mcdonalddatasciences.com>’
+All words identified by devtools::spell_check() are R code (in documentation)
+or names. I do not consider any of the list to be miss-spellings.
 
-New submission
-
-Package was archived on CRAN
-
-Possibly misspelled words in DESCRIPTION:
-  glm (34:12)
-  lm (34:6)
-  Rdistance (31:3)
-
-CRAN repository db overrides:
-  X-CRAN-Comment: Archived on 2022-10-03 as check issues were not
-    corrected despite reminders.
-```
-
-## windows-x86-64-release
-
-```
---- re-building 'Extended_dfuncEstim_Examples.Rmd' using rmarkdown
-! Sorry, but C:\PROGRA~1\MiKTeX\miktex\bin\x64\pdflatex.exe did not succeed.
-```
-
-This appears to be a Latex issue on the rhub instance. The vignettes build without errors on local machine and on Win Builder, Ubuntu, and Debian. No other errors or issues. Same note as the Linux systems re maintainer. 
 
 # Downstream dependencies
 

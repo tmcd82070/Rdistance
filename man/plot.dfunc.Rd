@@ -132,7 +132,7 @@ The input distance function is returned, with two additional
   The additional components are:
   \item{barHeights}{A vector containing the scaled bar heights drawn 
   on the plot.}
-  \item{barWidths}{A vector or scaler of the bar widths drawn on 
+  \item{barWidths}{A vector or scalar of the bar widths drawn on 
   the plot, with measurement units.  }
   Re-plot the bars with \code{barplot( return$barHeights, 
   width = return$barWidths )}.

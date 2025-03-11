@@ -79,7 +79,7 @@ Changes in version 2.1.4 (2019-06-11)
 Changes in version 2.1.3 (2019-01-02)
 ==============
 * Fixed scaling error in the Gamma likelihood causing mode to be less than 1.0
-* Fixed inverted plots that occurred when w.lo > 0 (left-truncatation)
+* Fixed inverted plots that occurred when w.lo > 0 (left-truncation)
 * Fixed bug in 'autoDistSamp' when 'bySite=TRUE'
 * Fixed bug causing bootstrap failure of point transect surveys when 'siteData' contained only one column
 

@@ -98,8 +98,8 @@ The abundance estimate for line-transect surveys (if no covariates
    \deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
          N = n*A / (2*ESW*L)} 
    where \emph{n} is total number of sighted individuals 
-  (i.e., \code{sum(dfunc$detections$groupSizes)}), \emph{L} is the total length of 
-  surveyed transect (i.e., \code{sum(siteData[,lengthColumn])}),
+  (i.e., \code{sum(dfunc$detections$groupSizes)}), \emph{L} is the total 
+  length of surveyed transect (i.e., \code{sum(siteData[,lengthColumn])}),
   and \emph{ESW} is effective strip width
   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
   If only one side of transects were observed, the "2" in the denominator 

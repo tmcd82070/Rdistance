@@ -410,7 +410,7 @@ dfuncSmu <- function (formula
     respName <- as.character(attr(mt, "variables"))[attr(mt, "response") + 1]
     stop(paste("Distance measurement units are required.", 
                "Assign units by attaching 'units' package then:\n", 
-               paste0("units(",dfName,"$", respName, ")"), "<- '<units of measurment>',\n", 
+               paste0("units(",dfName,"$", respName, ")"), "<- '<units of measurement>',\n", 
                "for example 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
   } else if( control$requireUnits ){
     # if we are here, dist has units

@@ -153,7 +153,7 @@
 #' the defaults, and the requirements for this list. 
 #' See examples below for how to change controls.
 #' 
-#' @param outputUnits A string giving the symbolic measurment 
+#' @param outputUnits A string giving the symbolic measurement 
 #' units that results should be reported in.   Any 
 #' distance measurement unit in \code{units::valid_udunits()} 
 #' will work.  The strings for common distance symbolic units are: 
@@ -552,7 +552,7 @@ dfuncEstim <- function (formula
     respName <- as.character(attr(mt, "variables"))[attr(mt, "response") + 1]
     stop(paste("Distance measurement units are required.", 
                "Assign units by attaching 'units' package then:\n", 
-               paste0("units(",dfName,"$", respName, ")"), "<- '<units of measurment>',\n", 
+               paste0("units(",dfName,"$", respName, ")"), "<- '<units of measurement>',\n", 
                "for example 'm' (meters) or 'ft' (feet). See units::valid_udunits()"))
   } else if( control$requireUnits ){
     # if we are here, dist has units

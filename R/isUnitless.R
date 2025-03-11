@@ -10,7 +10,7 @@
 #' Sometimes units like '[m/m]' mess things up, so it is 
 #' better to remove them before calculations. 
 #' 
-#' @param obj  A numeric scaler or vector, with or without units. 
+#' @param obj  A numeric scalar or vector, with or without units. 
 #' 
 #' @return TRUE if \code{obj} has units and they 
 #' are either '[1]' or the denominator units equal
