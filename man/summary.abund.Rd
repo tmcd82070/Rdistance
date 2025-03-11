@@ -5,14 +5,14 @@
 \title{Summarize abundance estimates}
 \usage{
 \method{summary}{abund}(
-  x,
+  object,
   criterion = "AICc",
   maxBSFailPropForWarning = RdistanceControls()$maxBSFailPropForWarning,
   ...
 )
 }
 \arguments{
-\item{x}{An object output by \code{abundEstim}.  This is a distance 
+\item{object}{An object output by \code{abundEstim}.  This is a distance 
 function object augmented with abundance estimates, and has 
 class \code{c("abund", "dfunc")}.}
 

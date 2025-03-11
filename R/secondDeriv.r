@@ -8,7 +8,7 @@
 #' 
 #' @param FUN An R function for which the second derivatives are 
 #' sought.  
-#' This must be a function of the form FUN <- function(x, ...){...}
+#' This must be a function of the form FUN <- function(x, ...)\{...\}
 #' where x is a vector of variable parameters to FUN at which 
 #' to evaluate the 2nd derivative, 
 #' and ... are additional parameters needed to evaluate the function.

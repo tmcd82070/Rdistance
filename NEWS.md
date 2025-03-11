@@ -1,3 +1,9 @@
+Changes in version 3.1.3 (2025-03-11)
+==============
+Version 3.1.3 contains three patches.  Several updates to 
+documentation and one bug fix precipitated
+by changes to the 'units' package. 
+
 Changes in version 3.1.0 (2023-08-28)
 ==============
 Version 3.1.0 primarily addresses [GitHub issues](https://github.com/tmcd82070/Rdistance/issues).

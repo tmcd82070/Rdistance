@@ -177,10 +177,10 @@ F.start.limits <- function( like
       cat("\n")
       cat("dist:\n")
       print(dist)
-      cat("wlo, whi:\n")
-      print(c(wlo, whi))
-      cat("dMin,dMax,dMed:\n")
-      print(c(dMin, dMax, dMed))
+      cat("w.lo, w.hi:\n")
+      print(c(w.lo, w.hi))
+      cat("dMin,dMax,medDist:\n")
+      print(c(dMin, dMax, medDist))
     }
     if(medDist <= dMin){
       medDist <- w*0.05

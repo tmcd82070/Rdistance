@@ -1,36 +1,19 @@
 # Submission comments
 
-Prior version of this package (v 2.1.5) was archived because I did not respond
-to requests to fix an issue. The reason I did not respond
-to notes from CRAN is that 
-I left my prior place of employment and lost access to my old email: tmcdonald@west-inc.com. 
-People at my former employer promised to forward emails, but they did not. My 
-former employer and I also 
-had some miss-understandings on who was maintaining the package. 
-
-I will remain the package maintainer. 
-You may email jwalrath@west-inc.com to confirm that 
-my old email address is dead and that I have permission to continue maintaining 
-this package. 
-
-This new version (2.2.1) is a major update as follows:
-
-* Extensive use of the `units` package has been included. 
-* Many bugs associated with options that are rarely used have been fixed. 
-* Documentation has been extensively updated. 
-* I removed some problematic vignettes, but will be adding them back as I can.  
-I include a revamped "beginner" vignette. 
-* Testing functions have been updated.
+This submission (v3.1.3) contains three patches. Two patches 
+address NOTES during  CRAN checks that flagged a missing 
+braces in documentation equations. One bug fix was related to changes 
+changes in the 'units' package. 
 
 Details on the specific changes are in **NEWS**. 
 
 # Current submission
 
-* 3.0.0
+* 3.1.3
 
 # Prior submission
 
-* 2.1.5 - Archived.  
+* 3.0.0   
 
 # Local Check
 

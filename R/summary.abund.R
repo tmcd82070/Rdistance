@@ -3,7 +3,7 @@
 #' @description Summarize an object of class \code{c("abund","dfunc")} 
 #' that is output by \code{abundEstim}.
 #' 
-#' @param x An object output by \code{abundEstim}.  This is a distance 
+#' @param object An object output by \code{abundEstim}.  This is a distance 
 #' function object augmented with abundance estimates, and has 
 #' class \code{c("abund", "dfunc")}.
 #'   
@@ -55,14 +55,14 @@
 #' @keywords models
 #' @export
 
-summary.abund <- function( x, 
+summary.abund <- function( object, 
                          criterion="AICc", 
                          maxBSFailPropForWarning = RdistanceControls()$maxBSFailPropForWarning,
                          ... ){
   
-  summary.dfunc( x, criterion=criterion )
+  summary.dfunc( object, criterion=criterion )
   cat("\n")
-  hasCI <- all(!is.null(x$density.ci))
+  hasCI <- all(!is.null(object$density.ci))
   
   # ---- Groupsize printout ----
   mess <- format(c(
@@ -72,12 +72,12 @@ summary.abund <- function( x,
                 , "Range:"), justify = "right")
   mess[1] <- paste0(" ", mess[1]) # pesky " " that happens with cat and \n
   avgGs <- c(
-             format(x$surveyedUnits)
-           , paste( format(x$n.seen), "in", format(x$n), "groups")
-           , colorize( format( x$avg.group.size ))
-           , paste(colorize(format( x$rng.group.size[1] ))
+             format(object$surveyedUnits)
+           , paste( format(object$n.seen), "in", format(object$n), "groups")
+           , colorize( format( object$avg.group.size ))
+           , paste(colorize(format( object$rng.group.size[1] ))
                           , "to"
-                          , colorize(format( x$rng.group.size[2] ))))
+                          , colorize(format( object$rng.group.size[2] ))))
   mess <- paste(mess, avgGs)
   cat(paste(mess, "\n"))
   
@@ -87,17 +87,17 @@ summary.abund <- function( x,
   
   # ---- Density printout ----
   if( hasCI ){
-    mess <- c("Density in sampled area:", paste0(x$alpha*100, "% CI:"))
+    mess <- c("Density in sampled area:", paste0(object$alpha*100, "% CI:"))
     mess <- format(mess, justify = "right")
     mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
-    ci <- paste( colorize(format(x$density.ci[1])), 
+    ci <- paste( colorize(format(object$density.ci[1])), 
                  "to", 
-                 colorize(format(x$density.ci[2])) )
-    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+                 colorize(format(object$density.ci[2])) )
+    ptEst <- colorize( colorize(format(object$density)), col = "bold" )
     mess <- paste(mess, c(ptEst, ci))
   } else {
     mess <- c("Density in sampled area:")
-    ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+    ptEst <- colorize( colorize(format(object$density)), col = "bold" )
     mess <- paste(mess, ptEst)
   }
   cat(paste0(mess, "\n"))
@@ -107,33 +107,33 @@ summary.abund <- function( x,
     cat("\n")  # blank line between for readability
   }
   if( hasCI ){
-    mess <- c(paste0( "Abundance in ", format(x$area), " study area:"), 
-                      paste0(x$alpha*100, "% CI:"))
+    mess <- c(paste0( "Abundance in ", format(object$area), " study area:"), 
+                      paste0(object$alpha*100, "% CI:"))
     mess <- format(mess, justify = "right")
     mess[2] <- substring(mess[2], 2) # remove pesky " " that happens with cat and \n
-    ci <- paste( colorize(format(x$n.hat.ci[1])), 
+    ci <- paste( colorize(format(object$n.hat.ci[1])), 
                  "to", 
-                 colorize(format(x$n.hat.ci[2])) )
-    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+                 colorize(format(object$n.hat.ci[2])) )
+    ptEst <- colorize( colorize(format(object$n.hat)), col = "bold" )
     mess <- paste(mess, c(ptEst, ci))
   } else {
-    mess <- paste0( "Abundance in ", format(x$area), " study area:")
-    ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+    mess <- paste0( "Abundance in ", format(object$area), " study area:")
+    ptEst <- colorize( colorize(format(object$n.hat)), col = "bold" )
     mess <- paste(mess, ptEst)
   }
   cat(paste0(mess, "\n"))
   
-  if(!is.null(x$nItersConverged)){
-    if(x$nItersConverged < nrow(x$B)) {
-      cat(paste("CI based on", x$nItersConverged, "of", nrow(x$B), 
+  if(!is.null(object$nItersConverged)){
+    if(object$nItersConverged < nrow(object$B)) {
+      cat(paste("CI based on", object$nItersConverged, "of", nrow(object$B), 
                 "successful bootstrap iterations\n"))
-      convRatio <- x$nItersConverged / nrow(x$B)
+      convRatio <- object$nItersConverged / nrow(object$B)
       if((1.0-convRatio) > maxBSFailPropForWarning) {
         warning("The proportion of non-convergent bootstrap iterations is high.", immediate. = TRUE)
         cat(paste0("The proportion of non-convergent bootstrap iterations exceeds ",
                   maxBSFailPropForWarning, ".\n",
                   "You should figure out why this happened (low detections, unstable dfunc form, etc.),\n",
-                  "inspect the $B component of the abundance object (e.g., hist(x$B)), and decide whether the bootstrap CI is valid.\n"))
+                  "inspect the $B component of the abundance object (e.g., hist(object$B)), and decide whether the bootstrap CI is valid.\n"))
       }
     }
   }

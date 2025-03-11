@@ -460,7 +460,7 @@ abundEstim <- function(dfunc
       
       # Deal with factors in the model
       factorsInModel <- attr(terms(dfunc$model.frame), "factors")
-      if( !is.null(factorsInModel) ){
+      if( !is.null(factorsInModel) && length(factorsInModel)>0 ){
         factorNames <- dimnames(factorsInModel)[[2]]
         factorLevels <- vector("list", length(factorNames))
         names(factorLevels) <- factorNames
