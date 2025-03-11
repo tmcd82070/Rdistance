@@ -22,7 +22,7 @@ Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdon
   person("Stefan", "Emmons", role="ctb", comment="Automated tests"),
   person("Will", "McDonald", role="ctb", comment="Automated tests"),
   person("Reid", "Olson", role="ctb", comment="Automated tests and bug fixes"))
-Description: Distance-sampling analyses (Buckland et al., (2015) <doi:10.1007/978-3-319-19219-2>) 
+Description: Distance-sampling analyses (<doi:10.1007/978-3-319-19219-2>) 
   estimate density and abundance of survey targets (e.g., animals) when 
   detection declines with distance. Distance-sampling is popular ecology, 
   especially when survey targets are observed from aerial platforms (e.g., 
