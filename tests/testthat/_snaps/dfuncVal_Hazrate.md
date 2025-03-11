@@ -1,4 +1,4 @@
-# Hazrate Minimum inputs
+# hazrate-MinimumInputs
 
     Code
       summary(fit)
@@ -18,8 +18,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1665.103 
       AICc: 3334.241
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.131105e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 333781.8
 
-# Hazrate w/ no covariates, same value
+# hazrate-NoCovar
 
     Code
       summary(fit)
@@ -41,8 +48,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1631.796 
       AICc: 3267.625
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.431059e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 346095
 
-# Hazrate w/ cont cov, same value
+# hazrate-ContinuousCovar
 
     Code
       summary(fit)
@@ -65,8 +79,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1626.92 
       AICc: 3259.908
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.448723e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 346820.1
 
-# Hazrate w/ factor covariates, same value
+# hazrate-FactorCovar
 
     Code
       summary(fit)
@@ -92,8 +113,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1627.509 
       AICc: 3267.26
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.12496e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 333529.6
 
-# Hazrate, no covar, wlo 20, whi 150
+# hazrate-NoCovarWloWhi
 
     Code
       summary(fit)
@@ -104,19 +132,55 @@
          outputUnits = "m")
       Coefficients:
                    Estimate  SE         z          p(>|z|)      
-      (Intercept)  3.627952  0.1548712  23.425599  2.344388e-121
-      k            2.188076  0.3582703   6.107333   1.013096e-09
+      (Intercept)  3.814338  0.1117919  34.119989  3.727892e-255
+      k            2.481511  0.3484759   7.121041   1.071152e-12
       
       Convergence: Success
       Function: HAZRATE  
-      Strip: 10 [m] to 150 [m] 
-      Effective strip width (ESW): 54.99009 [m] 
-      Probability of detection: 0.3927863
-      Scaling: g(10 [m]) = 1
-      Log likelihood: -1317.47 
-      AICc: 2638.982
+      Strip: 2 [m] to 150 [m] 
+      Effective strip width (ESW): 62.58799 [m] 
+      Probability of detection: 0.4228918
+      Scaling: g(2 [m]) = 1
+      Log likelihood: -1526.016 
+      AICc: 3056.069
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 347 in 330 groups 
+       Average group size: 1.051515 
+         Group size range: 1 to 3 
+      Density in sampled area: 7.70027e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 316096.1
 
-# Hazrate, no covar, ft
+# hazrate-NoCovarWlo
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+         groupsize(groupsize), likelihood = lhood, w.lo = w.20, expansions =
+         0, series = "cosine", x.scl = w.20, g.x.scl = 1, outputUnits = "m")
+      Coefficients:
+                   Estimate  SE         z          p(>|z|)     
+      (Intercept)  3.894830  0.1031639  37.753805  0.000000e+00
+      k            2.933948  0.3696785   7.936486  2.079906e-15
+      
+      Convergence: Success
+      Function: HAZRATE  
+      Strip: 2 [m] to 207 [m] 
+      Effective strip width (ESW): 65.61884 [m] 
+      Probability of detection: 0.3200919
+      Scaling: g(2 [m]) = 1
+      Log likelihood: -1558.732 
+      AICc: 3121.5
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 350 in 333 groups 
+       Average group size: 1.051051 
+         Group size range: 1 to 3 
+      Density in sampled area: 7.408103e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 304102.6
+
+# hazrate-NoCovarsFt
 
     Code
       summary(fit)
@@ -136,8 +200,15 @@
       Scaling: g(0 [ft]) = 1
       Log likelihood: -2088.067 
       AICc: 4180.168
+      
+           Surveyed Units: 118110.2 [ft] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 7.554043e-06 [1/ft^2]
+      Abundance in 44185852261 [ft^2] study area: 333781.8
 
-# Hazrate, no covar, expansions
+# hazrate-NoCovarExpansions
 
     Code
       summary(fit)
@@ -160,8 +231,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1661.781 
       AICc: 3331.677
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.058707e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 330809.9
 
-# Hazrate, w/ cont covar, expansions
+# hazrate-ContCovarExpansions
 
     Code
       summary(fit)
@@ -185,4 +263,75 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1657.406 
       AICc: 3324.983
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.086028e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 331931.4
+
+# hazrate-ContCovarExpansionsScaling
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~ bare +
+         groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
+         = "m", x.scl = xScl, g.x.scl = gXscl)
+      Coefficients:
+                   Estimate     SE           z          p(>|z|)     
+      (Intercept)   2.57285360  0.348271936   7.387485  1.496323e-13
+      bare          0.01312417  0.004277266   3.068356  2.152400e-03
+      k             2.43201406  0.239839527  10.140172  3.664538e-24
+      a1           -0.32652795  0.194667764  -1.677360  9.347208e-02
+      a2           -0.23085353  0.175986291  -1.311770  1.895978e-01
+      
+      Convergence: Success
+      Function: HAZRATE with 2 expansion(s) of COSINE series 
+      Strip: 0 [m] to 207 [m] 
+      Average effective strip width (ESW): 51.18427 [m] (range 31.82083 [m] to 75.38529 [m]) 
+      Average probability of detection: 0.247267 (range 0.1537238 to 0.3641801)
+      Scaling: g(0 [m]) = 0.75
+      Log likelihood: -1657.406 
+      AICc: 3324.983
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001078137 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 442575.2
+
+# hazrate-Bootstraps
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~
+         groupsize(groupsize), likelihood = lhood)
+      Coefficients:
+                   Estimate  SE          z          p(>|z|)     
+      (Intercept)  3.852207  0.09954916  38.696528  0.000000e+00
+      k            2.821023  0.32412762   8.703432  3.219955e-18
+      
+      Convergence: Success
+      Function: HAZRATE  
+      Strip: 0 [m] to 207 [m] 
+      Effective strip width (ESW): 63.88362 [m] 
+      Probability of detection: 0.3086165
+      Scaling: g(0 [m]) = 1
+      Log likelihood: -1665.103 
+      AICc: 3334.241
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      
+      Density in sampled area: 8.131105e-05 [1/m^2]
+                       95% CI: 6.608967e-05 [1/m^2] to 0.000103622 [1/m^2]
+      
+      Abundance in 4.105e+09 [m^2] study area: 333781.8
+                                       95% CI: 271298.1 to 425368.2
 

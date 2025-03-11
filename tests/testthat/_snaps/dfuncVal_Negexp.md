@@ -1,4 +1,4 @@
-# Hazrate Minimum inputs
+# negexp-MinimumInputs
 
     Code
       summary(fit)
@@ -17,8 +17,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1663.952 
       AICc: 3329.915
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001275864 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 523742.1
 
-# Negexp w/ no covariates, same value
+# negexp-NoCovar
 
     Code
       summary(fit)
@@ -39,8 +46,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1630.893 
       AICc: 3263.797
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001236354 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 507523.2
 
-# Negexp w/ cont cov, same value
+# negexp-ContinuousCovar
 
     Code
       summary(fit)
@@ -62,8 +76,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1626.391 
       AICc: 3256.816
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001264913 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 519246.7
 
-# Negexp factor covariates, same value
+# negexp-FactorCovar
 
     Code
       summary(fit)
@@ -88,8 +109,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1628.324 
       AICc: 3266.822
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001249166 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 512782.6
 
-# Negexp, no covar, wlo 20, whi 150
+# negexp-NoCovarWloWhi
 
     Code
       summary(fit)
@@ -100,18 +128,25 @@
          outputUnits = "m")
       Coefficients:
                    Estimate   SE          z          p(>|z|)
-      (Intercept)  -3.618339  0.09117697  -39.68479  0      
+      (Intercept)  -3.792642  0.07264876  -52.20518  0      
       
       Convergence: Success
       Function: NEGEXP  
-      Strip: 24.384 [m] to 150 [m] 
-      Effective strip width (ESW): 35.9936 [m] 
-      Probability of detection: 0.2865367
-      Scaling: g(24.384 [m]) = 1
-      Log likelihood: -923.906 
-      AICc: 1849.832
+      Strip: 2 [m] to 150 [m] 
+      Effective strip width (ESW): 42.79363 [m] 
+      Probability of detection: 0.2891462
+      Scaling: g(2 [m]) = 1
+      Log likelihood: -1528.975 
+      AICc: 3059.963
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 347 in 330 groups 
+       Average group size: 1.051515 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001126206 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 462307.5
 
-# Negexp, no covar, wlo 20, whi high
+# negexp-NoCovarWlo
 
     Code
       summary(fit)
@@ -120,19 +155,26 @@
          groupsize(groupsize), likelihood = lhood, w.lo = w.20, expansions =
          0, series = "cosine", x.scl = w.20, g.x.scl = 1, outputUnits = "m")
       Coefficients:
-                   Estimate  SE         z          p(>|z|)
-      (Intercept)  -3.58402  0.0754508  -47.50141  0      
+                   Estimate  SE          z          p(>|z|)
+      (Intercept)  -3.73547  0.06060492  -61.63641  0      
       
       Convergence: Success
       Function: NEGEXP  
-      Strip: 24.384 [m] to 207 [m] 
-      Effective strip width (ESW): 35.79178 [m] 
-      Probability of detection: 0.1959948
-      Scaling: g(24.384 [m]) = 1
-      Log likelihood: -954.5901 
-      AICc: 1911.2
+      Strip: 2 [m] to 207 [m] 
+      Effective strip width (ESW): 41.59305 [m] 
+      Probability of detection: 0.2028929
+      Scaling: g(2 [m]) = 1
+      Log likelihood: -1562.078 
+      AICc: 3126.168
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 350 in 333 groups 
+       Average group size: 1.051051 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001168732 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 479764.3
 
-# Negexp, no covar, ft
+# negexp-NoCovarsFt
 
     Code
       summary(fit)
@@ -151,8 +193,15 @@
       Scaling: g(0 [ft]) = 1
       Log likelihood: -2086.915 
       AICc: 4175.842
+      
+           Surveyed Units: 118110.2 [ft] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 1.185316e-05 [1/ft^2]
+      Abundance in 44185852261 [ft^2] study area: 523742
 
-# Negexp, no covar, expansions
+# negexp-NoCovarExpansions
 
     Code
       summary(fit)
@@ -174,8 +223,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1659.437 
       AICc: 3324.942
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001135622 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 466172.7
 
-# Negexp, w/ cont covar, expansions
+# negexp-ContCovarExpansions
 
     Code
       summary(fit)
@@ -198,4 +254,73 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1652.409 
       AICc: 3312.932
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001160719 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 476475
+
+# negexp-ContCovarExpansionsScaling
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~ bare +
+         groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
+         = "m", x.scl = xScl, g.x.scl = gXscl)
+      Coefficients:
+                   Estimate     SE           z            p(>|z|)     
+      (Intercept)  -2.72609129  0.218953210  -12.4505655  1.388578e-35
+      bare         -0.01358029  0.003622584   -3.7487865  1.776923e-04
+      a1           -0.13218438  0.190557575   -0.6936716  4.878882e-01
+      a2           -0.25877710  0.118296110   -2.1875368  2.870336e-02
+      
+      Convergence: Success
+      Function: NEGEXP with 2 expansion(s) of COSINE series 
+      Strip: 0 [m] to 207 [m] 
+      Average effective strip width (ESW): 35.43021 [m] (range 22.51494 [m] to 50.68913 [m]) 
+      Average probability of detection: 0.1711604 (range 0.1087678 to 0.244875)
+      Scaling: g(0 [m]) = 0.75
+      Log likelihood: -1652.409 
+      AICc: 3312.932
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001547625 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 635299.9
+
+# negexp-Bootstraps
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~
+         groupsize(groupsize), likelihood = lhood)
+      Coefficients:
+                   Estimate   SE          z          p(>|z|)
+      (Intercept)  -3.712969  0.05801384  -64.00144  0      
+      
+      Convergence: Success
+      Function: NEGEXP  
+      Strip: 0 [m] to 207 [m] 
+      Effective strip width (ESW): 40.71316 [m] 
+      Probability of detection: 0.1966819
+      Scaling: g(0 [m]) = 1
+      Log likelihood: -1663.952 
+      AICc: 3329.915
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      
+      Density in sampled area: 0.0001275864 [1/m^2]
+                       95% CI: 0.0001002809 [1/m^2] to 0.000148606 [1/m^2]
+      
+      Abundance in 4.105e+09 [m^2] study area: 523742.1
+                                       95% CI: 411653.3 to 610027.6
 

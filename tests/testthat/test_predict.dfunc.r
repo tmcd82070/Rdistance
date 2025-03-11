@@ -18,7 +18,7 @@ dfuncObs <- dfuncEstim(
                     w.lo = w.lo,
                     w.hi = w.hi
                     )
-newdata=data.frame(observer=levels(sparrowSiteData$observer))
+newdata <- data.frame(observer=levels(sparrowSiteData$observer))
 nd <- getOption("Rdistance_intEvalPts")
 d  <- units::set_units(c(0,2,4), "m")
 
@@ -40,23 +40,23 @@ test_that("predict defaults", {
 })
 
 test_that("predict default distances", {
-  p <- predict(dfuncObs, type = "distances")
+  p <- predict(dfuncObs, type = "dfuncs")
   expect_equal(dim(p), c(nd, nObs))
 })
 
 test_that("predict g(0) = 1", {
-  p <- predict(dfuncObs, type = "distances")
+  p <- predict(dfuncObs, type = "dfuncs")
   expect_true( all(p[1,] == 1) )
 })
 
 test_that("predict set distances no units", {
-  expect_error(predict(dfuncObs, type = "distances", distances = c(0,2,4))
+  expect_error(predict(dfuncObs, type = "dfuncs", distances = c(0,2,4))
                , "must have measurement units")
 })
 
 test_that("predict set distances", {
   p <- predict(dfuncObs
-                       , type = "distances"
+                       , type = "dfuncs"
                        , distances = d
                          )
   expect_equal(dim(p), c(length(d), nObs))
@@ -64,7 +64,7 @@ test_that("predict set distances", {
 
 test_that("predict set distances newdata", {
   p <- predict(dfuncObs
-               , type = "distances"
+               , type = "dfuncs"
                , distances = d
                , newdata = newdata
   )
@@ -73,7 +73,7 @@ test_that("predict set distances newdata", {
 
 test_that("predict distinct", {
   p <- predict(dfuncObs
-               , type = "distances"
+               , type = "dfuncs"
                , distances = d
                , newdata = newdata
   )
@@ -90,3 +90,18 @@ test_that("predict default snapshot", {
 })
 
 
+test_that("predict dfuncs snapshot", {
+  p <- predict(dfuncObs, type = "dfuncs", distances = d, 
+               newdata = newdata)
+  expect_snapshot_value(p
+                        , style = "json2")
+})
+
+test_that("predict likelihood snapshot", {
+  p <- predict(dfuncObs, type = "likelihood"
+               , distances = d  # ignored
+               , newdata = newdata  # ignored
+               )
+  expect_snapshot_value(p
+                        , style = "json2")
+})

@@ -1,4 +1,4 @@
-# Halfnorm Minimum inputs
+# halfnorm-MinimumInputs
 
     Code
       summary(fit)
@@ -17,8 +17,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1667.639 
       AICc: 3337.289
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 7.906888e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 324577.7
 
-# Halfnorm w/ no covariates, same value
+# halfnorm-NoCovar
 
     Code
       summary(fit)
@@ -39,8 +46,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1630.716 
       AICc: 3263.443
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.265183e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 339285.8
 
-# Halfnorm w/ cont cov, same value
+# halfnorm-ContinuousCovar
 
     Code
       summary(fit)
@@ -62,8 +76,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1624.351 
       AICc: 3252.736
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.470694e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 347722
 
-# Halfnorm w/ factor covariates, same value
+# halfnorm-FactorCovar
 
     Code
       summary(fit)
@@ -88,8 +109,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1626.142 
       AICc: 3262.456
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 371 in 353 groups 
+       Average group size: 1.050992 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.387749e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 344317.1
 
-# Halfnorm, no covar, wlo 20, whi 150
+# halfnorm-NoCovarWloWhi
 
     Code
       summary(fit)
@@ -110,8 +138,15 @@
       Scaling: g(20 [m]) = 1
       Log likelihood: -1046.467 
       AICc: 2094.952
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 241 in 233 groups 
+       Average group size: 1.034335 
+         Group size range: 1 to 2 
+      Density in sampled area: 6.092505e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 250097.3
 
-# Halfnorm, no covar, wlo 20, whi high
+# halfnorm-NoCovarWlo
 
     Code
       summary(fit)
@@ -131,8 +166,15 @@
       Scaling: g(20 [m]) = 1
       Log likelihood: -1083.168 
       AICc: 2168.354
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 244 in 236 groups 
+       Average group size: 1.033898 
+         Group size range: 1 to 2 
+      Density in sampled area: 5.670392e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 232769.6
 
-# Halfnorm, no covar, ft
+# halfnorm-NoCovarsFt
 
     Code
       summary(fit)
@@ -151,8 +193,15 @@
       Scaling: g(0 [ft]) = 1
       Log likelihood: -2090.602 
       AICc: 4183.216
+      
+           Surveyed Units: 118110.2 [ft] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 7.345741e-06 [1/ft^2]
+      Abundance in 44185852261 [ft^2] study area: 324577.8
 
-# Halfnorm, no covar, expansions
+# halfnorm-NoCovarExpansions
 
     Code
       summary(fit)
@@ -174,8 +223,15 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1663.037 
       AICc: 3332.143
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.786388e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 360681.2
 
-# Halfnorm, w/ cont covar, expansions
+# halfnorm-ContCovarExpansions
 
     Code
       summary(fit)
@@ -198,4 +254,73 @@
       Scaling: g(0 [m]) = 1
       Log likelihood: -1655.091 
       AICc: 3318.296
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 8.876391e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 364375.9
+
+---
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~ bare +
+         groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
+         = "m", x.scl = xScl, g.x.scl = gXscl)
+      Coefficients:
+                   Estimate      SE           z            p(>|z|)     
+      (Intercept)   3.379022805  0.170032017  19.87286202  6.990157e-88
+      bare          0.011262242  0.002783446   4.04615060  5.206674e-05
+      a1            0.253160841  0.152437890   1.66074748  9.676417e-02
+      a2           -0.002002868  0.110144844  -0.01818395  9.854921e-01
+      
+      Convergence: Success
+      Function: HALFNORM with 2 expansion(s) of COSINE series 
+      Strip: 0 [m] to 207 [m] 
+      Average effective strip width (ESW): 44.72562 [m] (range 34.71155 [m] to 55.83212 [m]) 
+      Average probability of detection: 0.2160658 (range 0.1676887 to 0.2697204)
+      Scaling: g(0 [m]) = 0.75
+      Log likelihood: -1655.091 
+      AICc: 3318.296
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.0001183518 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 485834.3
+
+# halfnorm-Bootstraps
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~
+         groupsize(groupsize), likelihood = lhood)
+      Coefficients:
+                   Estimate  SE          z         p(>|z|)
+      (Intercept)  3.959313  0.03767961  105.0784  0      
+      
+      Convergence: Success
+      Function: HALFNORM  
+      Strip: 0 [m] to 207 [m] 
+      Effective strip width (ESW): 65.69518 [m] 
+      Probability of detection: 0.317368
+      Scaling: g(0 [m]) = 1
+      Log likelihood: -1667.639 
+      AICc: 3337.289
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      
+      Density in sampled area: 7.906888e-05 [1/m^2]
+                       95% CI: 6.31604e-05 [1/m^2] to 8.926331e-05 [1/m^2]
+      
+      Abundance in 4.105e+09 [m^2] study area: 324577.7
+                                       95% CI: 259273.4 to 366425.9
 

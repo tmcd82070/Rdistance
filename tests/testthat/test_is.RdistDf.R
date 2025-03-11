@@ -9,7 +9,10 @@ sparrowDf <- Rdistance::RdistDf( sparrowSiteData, sparrowDetectionData )
 data("thrasherDetectionData")
 data("thrasherSiteData")
 
-thrasherDf <- Rdistance::RdistDf( thrasherSiteData, thrasherDetectionData )
+thrasherDf <- Rdistance::RdistDf( thrasherSiteData
+                                , thrasherDetectionData
+                                , pointSurvey = TRUE
+                                )
 
 
 test_that("sparrowDf from RdistDf passes is.RdistDf", {
