@@ -5,6 +5,12 @@ address NOTES during  CRAN checks that flagged a missing
 braces in documentation equations. One bug fix was related to changes 
 changes in the 'units' package. 
 
+Plot method failed on new 'units' package due to use of 'rbind' 
+inside 'barplot'.  While 'barplot' should be changed to not 
+call 'rbind' with a mix of unit and unitless object, I was able
+to safely remove units in the call to 'barplot', and everything 
+works. 
+
 Details on the specific changes are in **NEWS**. 
 
 # Current submission
