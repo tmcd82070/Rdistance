@@ -57,14 +57,13 @@ predDensity <- function(object
   # in the original formula.  Otherwise, all groups are assumed size 1 and 
   # missing distances (from unnest) are assumed to be zero transects. 
   if( length(groupSizeVar) == 0 || !(groupSizeVar %in% names(df)) ){
-    df <- df |> 
-      dplyr::mutate(..groupSizes.. = dplyr::if_else(
-        is.na(.data[[distVar]]),
+    ..groupSizes.. <- dplyr::if_else(
+        is.na(df[[distVar]]),
         0, # assumed zero transects
         1
-      )) 
+      ) 
   } else {
-    names(df)[names(df) == groupSizeVar] <- "..groupSizes.."
+    ..groupSizes.. <- df[[groupSizeVar]]
   }
   
   # Compute ESW/EDR for every observation
@@ -74,9 +73,9 @@ predDensity <- function(object
   effDist <- Rdistance::effectiveDistance(object
                          , newdata = df)
   
-  # Now can rename distance column for convienience
-  names(df)[names(df) == distVar] <- "..distances.." 
-  
+  # Now can pull distance column for convenience
+  ..distances.. <- df[[distVar]]
+
   # filter to observations in strip OR those with 
   # missing distance but non-missing groupsizes
   instrip <- df |> 

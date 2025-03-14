@@ -36,10 +36,12 @@
 #' 
 #' @examples
 #' 
-#' sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+#' data(sparrowDf)
 #' is.RdistDf(sparrowDf)
 #' 
 #' # Data frame okay, but no attributes
+#' data(sparrowDetectionData)
+#' data(sparrowSiteData)
 #' sparrowDf <- sparrowDetectionData |> 
 #'   dplyr::nest_by( siteID
 #'                , .key = "distances") |> 

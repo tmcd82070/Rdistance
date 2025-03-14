@@ -22,7 +22,7 @@ Computes off-transect (also called 'perpendicular') distances from measures of s
 }
 \details{
 If observers recorded sighting distance and sighting angle (as is often common in line transect surveys), use this function to convert 
-  to off-transect distances, the required input data for \code{F.dfunc.estim}.
+  to off-transect distances, the required input data for \code{dfunc.estim}.
 }
 \examples{
 # Load the example dataset of sparrow detections from package

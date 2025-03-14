@@ -38,8 +38,7 @@ Returns starting values and limits (boundaries) for the parameters of
   environment to change boundaries and starting values.
 }
 \examples{
-  data(sparrowDetectionData)
-  sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+  data(sparrowDf)
   
   # Half-normal start limits
   modList <- parseModel(
@@ -66,13 +65,6 @@ Returns starting values and limits (boundaries) for the parameters of
   modList$likelihood <- "negexp"
   startLimits(modList)
   
-  # Gamma start limits
-  modList$likelihood <- "Gamma"
-  startLimits(modList)
-  
-  # Logistic start limits
-  modList$likelihood <- "logistic"
-  startLimits(modList)
   
 }
 \seealso{

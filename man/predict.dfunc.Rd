@@ -221,7 +221,7 @@ dfuncObs <- sparrowDf |> dfuncEstim(formula = dist ~ observer
                      , w.hi = units::as_units(100, "m"))
 predict(dfuncObs)  # n X 1
 
-Observers <- data.frame(observer = levels(sparrowSiteData$observer))
+Observers <- data.frame(observer = levels(sparrowDf$observer))
 predict(dfuncObs, newdata = Observers) # 5 X 1
 
 predict(dfuncObs, type = "dfunc") # nd X n

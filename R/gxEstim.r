@@ -33,8 +33,7 @@
 #'   x.max is the distance at which g is maximized. This case covers the 
 #'   common aerial survey situation where maximum sightability is slightly 
 #'   off the transect, but the distance at which the maximum occurs 
-#'   is unknown. This case is the default, with \code{g.x.scl} = 1, 
-#'   when gamma distance functions are estimated. 
+#'   is unknown. 
 #'   
 #'   \item \bold{Double observer system}: Inputs are 
 #'   \code{x.scl}="max", \code{g.x.scl} = <a data frame>. 
@@ -155,11 +154,11 @@ gxEstim <- function( fit ){
       # where it's maximum is. Hence, we compute the maximum numerically. 
       # It is on the user to make sure their likelihood is well behaved and 
       # gives a nice maximum.
-      # x.scl <- F.maximize.g( fit )
+      # x.scl <- maximize.g( fit )
       stop("unknown likelihood")  # should never happen
     }
     # x.scl came in as "max", we must return one with units attached. 
-    # F.maximize.g returns a unitless x.scl
+    # maximize.g returns a unitless x.scl
     x.scl <- units::set_units(x.scl, fit$outputUnits, mode = "standard")
     
   } else {
@@ -179,14 +178,14 @@ gxEstim <- function( fit ){
       # g(x) is specified, nothing to do except check validity
       if( length(fit$g.x.scl) > 1 ){
           g.x.scl <- fit$g.x.scl[1]
-          warning(paste("Vector of g(x) values found in F.gx.estim. Only the first value,", g.x.scl, "has been used."))
+          warning(paste("Vector of g(x) values found in gxEstim. Only the first value,", g.x.scl, "has been used."))
       }
       if( fit$g.x.scl < 0 ){
           g.x.scl <- 0
-          warning("Impossible g.x.scl < 0 specified in F.gx.estim. g(x) has been reset to 0.")
+          warning("Impossible g.x.scl < 0 specified in gxEstim. g(x) has been reset to 0.")
       } else if( fit$g.x.scl > 1 ){
           g.x.scl <- 1
-          warning("Impossible g(x) > 1 specified in F.gx.estim. g(x) reset to 1.")
+          warning("Impossible g(x) > 1 specified in gxEstim. g(x) reset to 1.")
       } else if( is.character(fit$g.x.scl) ){
           stop(paste0("g.x.scl cannot be character valued. Found '", g.x.scl, "'. Convert this to numeric."))
       } else {

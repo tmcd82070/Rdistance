@@ -22,7 +22,8 @@ Extract distance model coefficients from
 an estimated detection function object.
 }
 \examples{
-sparrowDF <- RdistDf(sparrowSiteData, sparrowDetectionData)
+data(sparrowDf)
+
 dfunc <- sparrowDf |> dfuncEstim(dist~bare + observer,
                       w.hi=units::set_units(150, "m"))
 

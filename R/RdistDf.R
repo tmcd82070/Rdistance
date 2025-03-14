@@ -196,6 +196,7 @@
 #' 
 #' sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
 #' is.RdistDf(sparrowDf, verbose = T)
+#' summary(sparrowDf, formula = dist ~ groupsize(groupsize))
 #' 
 #' # Equivalent to above: 
 #' sparrowDf <- sparrowDetectionData |> 
@@ -207,6 +208,7 @@
 #' attr(sparrowDf, "obsType") <- "single"
 #' attr(sparrowDf, "transType") <- "line"
 #' is.RdistDf(sparrowDf, verbose = T)
+#' summary(sparrowDf, formula = dist ~ groupsize(groupsize))
 #'
 #' # Condensed view: 1 row per transect (make sure tibble is attached)
 #' sparrowDf
@@ -232,11 +234,14 @@
 #' sum(df3$nDetections == 0) # Number of zero transects
 #'     
 #' # Point transects
+#' data(thrasherDetectionData)
+#' data(thrasherSiteData)
 #' thrasherDf <- RdistDf( thrasherSiteData
 #'                , thrasherDetectionData
-#'                , pointSurvey = T
+#'                , pointSurvey = TRUE
 #'                , by = "siteID"
 #'                , .detectionCol = "detections")
+#' summary(thrasherDf, formula = dist ~ groupsize(groupsize))
 #'                
 #' @export
 #' 
@@ -329,7 +334,7 @@ RdistDf <- function( transectDf
                   , names(ans)[candidates[1]]
                   , " as "
                   , torp
-                  , ". Specify a differnt effort column using the .effortCol input parameter."
+                  , ". Specify a different effort column using the .effortCol input parameter."
                   ))
     } else {
       cat(paste0(

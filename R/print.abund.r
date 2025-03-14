@@ -18,16 +18,14 @@
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)
-#' data(sparrowDetectionData)
-#' data(sparrowSiteData)
+#' data(sparrowDf)
 #' 
 #' # Fit half-normal detection function
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
-#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~1)
+#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~groupsize(groupsize))
 #' 
 #' # Estimate abundance given a detection function
 #' # Do more than R=20 bootstraps!
-#' fit <- abundEstim(x = dfunc
+#' fit <- abundEstim(object = dfunc
 #'                 , area = units::set_units(4105, "km^2")
 #'                 , propUnitSurveyed = 0.5
 #'                 , ci = 0.95
@@ -43,7 +41,7 @@
 print.abund <- function( x
                        , ... ){
 
-  Rdistance:::print.dfunc( x, ... )
+  print.dfunc( x, ... )
   cat("\n")
   hasCI <- all(!is.null(x$density.ci))
   

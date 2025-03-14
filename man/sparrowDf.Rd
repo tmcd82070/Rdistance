@@ -52,7 +52,9 @@ Dr. Jason Carlisle as part of his graduate work in the Wyoming Cooperative Fish 
 Research Unit in 2012. Each transect was 500 meters long.
 }
 \examples{
+data(sparrowDf)
 tidyr::unnest(sparrowDf, detections)  # only non-zero transects
+Rdistance::unnest(sparrowDf) # with zero transects at the bottom
 summary(sparrowDf,
   formula = dist ~ groupsize(groupsize)
 )

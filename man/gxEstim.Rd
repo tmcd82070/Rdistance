@@ -47,8 +47,7 @@ Specification of \code{x.scl} and \code{g.x.scl} covers several estimation cases
   x.max is the distance at which g is maximized. This case covers the 
   common aerial survey situation where maximum sightability is slightly 
   off the transect, but the distance at which the maximum occurs 
-  is unknown. This case is the default, with \code{g.x.scl} = 1, 
-  when gamma distance functions are estimated. 
+  is unknown. 
   
   \item \bold{Double observer system}: Inputs are 
   \code{x.scl}="max", \code{g.x.scl} = <a data frame>. 

@@ -27,7 +27,7 @@
 #' smlAntelope <- RdistDf(smlAntelopeTransects
 #'                      , smlAntelopeDetections
 #'                      , by = "siteID"
-#'                      , pointSurvey = F
+#'                      , pointSurvey = FALSE
 #'                      , .effortCol = "length")
 #' 
 #' summary(smlAntelope |> dplyr::filter(surveyID == "2019_LateDry")

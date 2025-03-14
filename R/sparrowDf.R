@@ -53,7 +53,9 @@
 #' Research Unit (2012). 
 #' 
 #' @examples
+#' data(sparrowDf)
 #' tidyr::unnest(sparrowDf, detections)  # only non-zero transects
+#' Rdistance::unnest(sparrowDf) # with zero transects at the bottom
 #' summary(sparrowDf,
 #'   formula = dist ~ groupsize(groupsize)
 #' )

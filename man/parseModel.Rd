@@ -119,6 +119,9 @@ from the model estimation routines in \code{Rdistance}.
 }
 \examples{
 
+data(sparrowSiteData)
+data(sparrowDetectionData)
+
 sparrowDf <- Rdistance::RdistDf(sparrowSiteData
    , sparrowDetectionData
    , by = NULL
@@ -136,7 +139,9 @@ ml <- Rdistance::parseModel(sparrowDf
    , g.x.scl = 1
    , outputUnits = "m"
    )
-   
+class(ml)  # 'dfunc', but no estimated coefficients
+print(ml)
+print.default(ml)
 
 }
 \seealso{

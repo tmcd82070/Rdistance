@@ -247,23 +247,21 @@ abundEstim <- function(object
   if ( bootstrapping ) {
     
     nDigits <- ceiling(log10(R + 0.1))
+    id <- rep(1:R, each = nDataRows)
+    repsDf <-  data.frame(
+                id = paste0("Bootstrap_",
+                            formatC(id
+                                    , format = "f"
+                                    , digits = 0
+                                    , width = nDigits
+                                    , flag = "0"))
+              , rowIndex = sample( 1:nDataRows
+                           , size = R*nDataRows
+                           , replace = TRUE
+                          ))
     bsData <- bsData |> 
-      dplyr::bind_rows(
-          data.frame(
-            id = rep(1:R, each = nDataRows)
-          , rowIndex = sample( 1:nDataRows
-                               , size = R*nDataRows
-                               , replace = TRUE)
-          ) |> 
-          dplyr::mutate(id = paste0("Bootstrap_",
-                                    formatC(id
-                                            , format = "f"
-                                            , digits = 0
-                                            , width = nDigits
-                                            , flag = "0")
-          ))
-      )
-    
+      dplyr::bind_rows( repsDf ) 
+
     # set up progress bar if called for, only if bootstrapping
     if(showProgress){
       pb <- progress::progress_bar$new(

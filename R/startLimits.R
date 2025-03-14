@@ -33,8 +33,7 @@
 #'  
 #' @seealso \code{\link{dfuncEstim}}
 #' @examples 
-#'   data(sparrowDetectionData)
-#'   sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
+#'   data(sparrowDf)
 #'   
 #'   # Half-normal start limits
 #'   modList <- parseModel(
@@ -61,13 +60,6 @@
 #'   modList$likelihood <- "negexp"
 #'   startLimits(modList)
 #'   
-#'   # Gamma start limits
-#'   modList$likelihood <- "Gamma"
-#'   startLimits(modList)
-#'   
-#'   # Logistic start limits
-#'   modList$likelihood <- "logistic"
-#'   startLimits(modList)
 #'   
 #' @keywords models
 #' 

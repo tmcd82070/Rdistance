@@ -21,6 +21,7 @@ $$
 5.    _Testing Versus Distance_: Check parameter values and log likelihoods of every likelihood against what `distance` gives. 
 6.    _Scaling of logistic_: Check scaling of logistic likelihood when covariates are present.  
 7.    _Two param likelihoods_: At some stage, after Rdistance is out, consider including two equations for parameters of likelihoods with two parameters.  E.g., one formula for 'beta' of Huber likelihood and another for 'gamma', e.g., `beta ~ observer` and `gamma ~ observer`. I think this will require a whole new estimation function. 
+8.    _Gamma likelihood_: Add the Gamma likelihood back into the package.  You took out Gamma at version 4.0.0.
 1.    _Logistic, Uniform, Triangle, and Huber Likelihoods_: Implement logistic and uniform likelihoods.  You took them out of version 4.0.0. I think you need to use the EM algorithm. See next note. You placed the old versions in `CodeParkingLot/OtherLikelihoods`.
 
 8.   _Uniform likelihood_: Fix this.  I am pretty sure you need to use the EM algorithm. See this [Stack Exchange post](https://stats.stackexchange.com/questions/591598/em-algorithm-on-a-mixture-of-two-uniforms). I have the following:
@@ -42,7 +43,7 @@ You have most of these testing files drafted in `Rdistance/CodeParkingLot/tests/
 
 2.    Make sure Points are tested
 3.    Test methods for all the options (those set in `onLoad`)
-4.    Test methods for by.site = T in `abundEstim`
+4.    Test methods for `type = density` in `predict(dfunc)`
 6.    Test units for equality. e.g., set w.hi = "100 m" then w.hi = 100 m in ft and check that answers are same.
 7.    Tests that check against `distance::ds` and other routines.  This should become a vignette or paper. 
 8.    Test NA distances in data set.  These should not appear in the distance function but the observation (groupsize) should count toward abundance.

@@ -35,7 +35,7 @@ g.neg <-  function(x,
                    w.hi, 
                    series, 
                    expansions=0, 
-                   pointSurvey = F,
+                   pointSurvey = FALSE,
                    correctUnits){
     f.like <- utils::getFromNamespace(paste0( x$likelihood, ".like"), "Rdistance")
 

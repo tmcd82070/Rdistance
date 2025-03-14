@@ -26,6 +26,9 @@
 #' 
 #' @examples
 #' 
+#' data(sparrowSiteData)
+#' data(sparrowDetectionData)
+#' 
 #' sparrowDf <- Rdistance::RdistDf(sparrowSiteData
 #'    , sparrowDetectionData
 #'    , by = NULL
@@ -43,7 +46,9 @@
 #'    , g.x.scl = 1
 #'    , outputUnits = "m"
 #'    )
-#'    
+#' class(ml)  # 'dfunc', but no estimated coefficients
+#' print(ml)
+#' print.default(ml)
 #' 
 #' @export
 #' @importFrom stats terms.formula model.frame runif na.pass

@@ -26,7 +26,7 @@ length of line-transects or number of points on point-transects.
 }
 \examples{
 
-sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+data(sparrowDf)
 effort(sparrowDf)
 fit <- dfuncEstim(sparrowDf, dist ~ 1)
 effort(fit)

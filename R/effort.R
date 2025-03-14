@@ -16,7 +16,7 @@
 #' 
 #' @examples
 #' 
-#' sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+#' data(sparrowDf)
 #' effort(sparrowDf)
 #' fit <- dfuncEstim(sparrowDf, dist ~ 1)
 #' effort(fit)
@@ -25,7 +25,7 @@
 #' 
 effort <- function(x, ...){
   if( inherits(x, "dfunc") ){
-    return( dplyr::pull(x$data, attr(x$data, "effortColumn")) )
+    return( dplyr::pull(x$data, attr(x$data, "effortColumn")) ) # or x$data[[attr(x$data, "effortColumn")]]
   } else if( is.RdistDf(x, verbose = TRUE) ){
     return( dplyr::pull(x, attr(x, "effortCol")) )
   } else {

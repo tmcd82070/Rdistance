@@ -50,7 +50,7 @@ summary.abund <- function( object
                          , criterion="AICc"
                          , ... ){
   
-  Rdistance:::summary.dfunc( object = object, criterion=criterion )
+  summary.dfunc( object = object, criterion=criterion )
   cat("\n")
   hasCI <- !is.null(object$B) && (nrow(object$B) > 0)
   ests <- object$estimates
