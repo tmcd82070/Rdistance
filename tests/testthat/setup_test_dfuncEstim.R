@@ -43,8 +43,7 @@ cat(crayon::bgYellow("Installed test_dfuncEstim function\n"))
 
 test_dfuncEstim <- function( detectParams,
                              abundParams = NULL,
-                             detectDf = sparrowDetectionData, 
-                             abundDf = sparrowSiteData,
+                             Df = sparrowDetectionData, 
                              formula = dist ~ 1){
   
   for( i in 1:nrow(detectParams) ){
@@ -52,11 +51,9 @@ test_dfuncEstim <- function( detectParams,
                          ", Like=", detectParams$likelihood[i], 
                          ", w.lo=", detectParams$w.lo[i],
                          ", w.hi=", detectParams$w.hi[i], 
-                         ", pointSurvey=", detectParams$pointSurvey[i],
                          ", expansions=", detectParams$expansions[i], 
                          ", x.scl=", detectParams$x.scl[i], 
                          ", g.x.scl=", detectParams$g.x.scl[i], 
-                         ", observer=", detectParams$observer[i],
                          ", outputUnits=", detectParams$outputUnits[i]
     )
     
@@ -72,57 +69,65 @@ test_dfuncEstim <- function( detectParams,
     outUnits <- detectParams$outputUnits[i]
     
     # ---- x.scl param ----
+    exDf <- tidyr::unnest(Df, cols = attr(sparrowDf, "detectionCol"))
+    UnitsOnDist <- exDf |> 
+      dplyr::pull(dplyr::matches( paste0("^", responseVar, "$"))) 
+    UnitsOnDist <- units(UnitsOnDist)
+    
     if( detectParams$x.scl[i] == "max" ){
       param.x.scl = "max"
     } else {
       param.x.scl = units::set_units(as.numeric(detectParams$x.scl[i]), 
-                                     units(detectDf[,responseVar]), 
+                                     UnitsOnDist, 
                                      mode = "standard")
       param.x.scl.output <- units::set_units(param.x.scl
-                                         , detectParams$outputUnits[i]
+                                         , outUnits
                                          , mode = "standard")
     }
     
     # ---- w.lo param ----
     param.w.lo = units::set_units(as.numeric(detectParams$w.lo[i]),
-                                  units(detectDf[,responseVar]), 
+                                  UnitsOnDist, 
                                   mode = "standard")
     param.w.lo.output <- units::set_units(param.w.lo
-                                        , detectParams$outputUnits[i]
+                                        , outUnits
                                         , mode = "standard")
     
     # ---- w.hi param ----
     if( is.na(detectParams$w.hi[i]) ){
       param.w.hi <- NULL
-      param.w.hi.output <- max(detectDf[,responseVar], na.rm=TRUE)
+      param.w.hi.output <- max(exDf[,responseVar], na.rm=TRUE)
+      # Mystery: max(exDf[,responseVar], na.rm=TRUE) should but does not 
+      # bring forward units.  exDf[,responseVar] has units, but param.w.hi.output
+      # does not.  Don't fight the feeling.
+      param.w.hi.output <- units::set_units(param.w.hi.output
+                                            , UnitsOnDist
+                                            , mode = "standard")
     } else {
       param.w.hi = units::set_units(detectParams$w.hi[i], 
-                                    units(detectDf[,responseVar]), 
+                                    UnitsOnDist, 
                                     mode = "standard")
       param.w.hi.output <- param.w.hi
     }
     param.w.hi.output <- units::set_units(param.w.hi.output
-                                          , detectParams$outputUnits[i]
+                                          , outUnits
                                           , mode = "standard")
-    
+
     # ---- param.x.scl < param.w.lo Warning ----
     if( !is.character(param.x.scl) ){
       if( param.x.scl < param.w.lo ){
         # could run this case in separate "warnings" test file
         test_that(paste(testParams,"x.scl less than w.lo warning", sep=";")
           , {expect_warning(
-            dfuncEstim(formula = formula
-                       , detectionData=detectDf
-                       , siteData = abundDf
+            dfuncEstim(data = Df
+                       , formula = formula
                        , likelihood = detectParams$likelihood[i]
                        , w.lo = param.w.lo
                        , w.hi = param.w.hi
-                       , pointSurvey = detectParams$pointSurvey[i]
                        , expansions = detectParams$expansions[i]
                        , series = detectParams$series[i]
                        , x.scl = param.x.scl
                        , g.x.scl = as.numeric(detectParams$g.x.scl[i])
-                       , observer = detectParams$observer[i]
                        , outputUnits = detectParams$outputUnits[i]
             )
             , regexp = "x.scl is less than specified lower limit"
@@ -135,56 +140,22 @@ test_dfuncEstim <- function( detectParams,
     
     # ---- Fit the distance function ----
     # Beware of warnings; Errors should fail.
+    print(testParams)
     dfuncFit <- suppressWarnings(
-      dfuncEstim(formula = formula
-                 , detectionData=detectDf
-                 , siteData = abundDf
+      dfuncEstim(data = Df
+                 , formula = formula
                  , likelihood = detectParams$likelihood[i]
                  , w.lo = param.w.lo
                  , w.hi = param.w.hi
-                 , pointSurvey = detectParams$pointSurvey[i]
                  , expansions = detectParams$expansions[i]
                  , series = detectParams$series[i]
                  , x.scl = param.x.scl
                  , g.x.scl = as.numeric(detectParams$g.x.scl[i])
-                 , observer = detectParams$observer[i]
                  , outputUnits = detectParams$outputUnits[i]
         )
       )
     
-    # print(testParams)
-    # print(tmp)
-    # print("----")
-    # 
-    # if( inherits(tmp, "warning") | inherits(tmp, "error") ){
-    #   # I cannot seem to trap the warning thrown by dfuncEstim AND return the 
-    #   # fitted object outside test_that. So, when an error or warning is thrown, 
-    #   # refit under "expect warning" which returns the fitted object. 
-    #   # This is inefficient because same fit happens twice in this case.
-    #   dfuncFit <- expect_warning( 
-    #                 dfuncEstim(formula = formula
-    #                          , detectionData=detectDf
-    #                          , siteData = abundDf
-    #                          , likelihood = detectParams$likelihood[i]
-    #                          , w.lo = param.w.lo
-    #                          , w.hi = param.w.hi
-    #                          , pointSurvey = detectParams$pointSurvey[i]
-    #                          , expansions = detectParams$expansions[i]
-    #                          , series = detectParams$series[i]
-    #                          , x.scl = param.x.scl
-    #                          , g.x.scl = as.numeric(detectParams$g.x.scl[i])
-    #                          , observer = detectParams$observer[i]
-    #                          , outputUnits = detectParams$outputUnits[i]
-    #                          )
-    #                 )
-    #   cat("Refitted dfuncFit:\n")
-    #   print(dfuncFit)
-    # } else {
-    #   # no warning first time
-    #   dfuncFit <- tmp
-    # }
 
-    
     # ---- Tests ----
     # Now that we have the fitted object, go down the output 
     # line by line testing. If it prints, it's good.
@@ -198,6 +169,11 @@ test_dfuncEstim <- function( detectParams,
       print(names(dfuncFit))
     }
     
+    test_that(paste(testParams,"Basic print", sep=";"), {
+      expect_output(print(dfuncFit), regexp = "Call: dfuncEstim.+\nCoefficients")
+    })
+    
+    
     if( dfuncFit$convergence == 0 ) {
       vcDiag <- diag(dfuncFit$varcovar)
       if( any(is.na(vcDiag)) | any(vcDiag < 0.0)) {
@@ -206,13 +182,13 @@ test_dfuncEstim <- function( detectParams,
         convergemess <- "Success"
       }
     } else {
-      convergemess <- dfuncFit$fit$message
+      convergemess <- dfuncFit$message
       convergemess <- gsub("\\(", "\\\\(", convergemess)
       convergemess <- gsub("\\)", "\\\\)", convergemess)
     }
     
     test_that(paste(testParams,"Convergence message prints", sep=";"), {
-      expect_output(print(dfuncFit), regexp = convergemess)
+      expect_output(summary(dfuncFit), regexp = convergemess)
     })
   
     test_that(paste(testParams,"Like prints", sep=";"), {
@@ -226,36 +202,21 @@ test_dfuncEstim <- function( detectParams,
                           , toupper(detectParams$series[i])
                           )
       }
-      expect_output(print(dfuncFit), regexp = tstString)
+      expect_output(summary(dfuncFit), regexp = tstString)
     })
 
-    test_that(paste(testParams,"Strip", sep=";"), {
+    test_that(paste(testParams," Strip", sep=";"), {
       tstString <- paste0("Strip: ", format(param.w.lo.output), " to ", format(param.w.hi.output))
       tstString <- gsub("[\\[\\]]", ".", tstString, perl = T)
-      expect_output(print(dfuncFit), regexp = tstString)
+      expect_output(summary(dfuncFit), regexp = tstString)
     })
 
-    if( !is.null(dfuncFit$covars) ){
-      # The difference between stored covars and stored model frame is 
-      # that covars only has distances inside the strip
-      test_that(paste(testParams,"Size Covars <= size Model.frame", sep=";"), {
-        nOutStrip <- sum( 
-          (dfuncFit$w.lo > model.response(dfuncFit$model.frame)) | 
-          (model.response(dfuncFit$model.frame) > dfuncFit$w.hi)
-          )
-        expect_equal(nrow(dfuncFit$covars) + nOutStrip, nrow(dfuncFit$model.frame))
-      })
-    }
-    
+
     # test effectiveDistance runs first, then re-run and store it
     # Would be better to assign returned effectiveDistance to correct 
     # frame, but these run fast so okay to re-run
     test_that(paste(testParams,"Effective distance computes", sep=";"), {
-      if( is.null(dfuncFit$covars) ){
-        nED <- 1
-      } else {
-        nED <- nrow(dfuncFit$detections)
-      }
+      nED <- nrow(dfuncFit$mf)
       expect_length(effectiveDistance(dfuncFit), nED)
     })
     
@@ -268,6 +229,7 @@ test_dfuncEstim <- function( detectParams,
         
     test_that(paste(testParams,"Effective distance(s) > 0", sep=";"), {
       zero <- units::set_units(0, dfuncFit$outputUnits, mode = "standard")
+      # zero <- 0 
       expect_true( all( efd > zero), label = "All EFDs > 0" )
     })
 
@@ -285,7 +247,7 @@ test_dfuncEstim <- function( detectParams,
       efdString <- format(mean(efd))
       efdString <- gsub("[\\[\\]]", ".", efdString, perl = T)
       efdString <- gsub("\\+", "\\\\+", efdString, perl = T) # incase of value like 4.234e+10
-      if(detectParams$pointSurvey[i]){
+      if(is.points(dfuncFit)){
         tstString <- paste("[E|e]ffective detection radius \\(EDR\\):", efdString)
       } else {
         tstString <- paste("[E|e]ffective strip width \\(ESW\\):", efdString)
@@ -293,13 +255,13 @@ test_dfuncEstim <- function( detectParams,
       if(!is.null(dfuncFit$covars)){
         tstString <- paste("Average", tstString)
       }
-      expect_output(print(dfuncFit), regexp = tstString)
+      expect_output(summary(dfuncFit), regexp = tstString)
     })
     
     if( any(efd > nominalW) ){
       # check that red text is printed
       tstString <- "<- One or more"
-      expect_output(print(dfuncFit), regexp = tstString, label = "Red text re Pr()>1 did not print")
+      expect_output(summary(dfuncFit), regexp = tstString, label = "Red text re Pr()>1 did not print")
     }
     
     test_that(paste(testParams,"Scaling prints", sep=";"), {
@@ -310,7 +272,7 @@ test_dfuncEstim <- function( detectParams,
       }
       x0 <- gsub("[\\[\\]]", ".", x0, perl = T)
       tstString <- paste0("Scaling: g\\(", x0, "\\) = ", detectParams$g.x.scl[i])
-      expect_output(print(dfuncFit), regexp = tstString)
+      expect_output(summary(dfuncFit), regexp = tstString)
     })
     
     # Same deal as effectiveDistance: test first, then rerun to compute
@@ -320,19 +282,17 @@ test_dfuncEstim <- function( detectParams,
     aic <- AIC(dfuncFit)
         
     test_that(paste(testParams,"AICc prints", sep=";"), {
-      expect_output(print(dfuncFit), regexp = paste0("\\nAICc: ", format(aic)))
+      expect_output(summary(dfuncFit), regexp = paste0("\\nAICc: ", format(aic)))
     })
 
     test_that(paste(testParams,"BIC prints", sep=";"), {
       bic <- AIC(dfuncFit, criterion = "BIC")
-      expect_output(print(dfuncFit, criterion = "BIC"), regexp = paste0("\\nBIC: ", format(bic)))
+      expect_output(summary(dfuncFit, criterion = "BIC"), regexp = paste0("\\nBIC: ", format(bic)))
     })
     
     # ---- Test abundance methods for these parameters ----
     if(!is.null(abundParams)){
       test_abundEstim(abundParams = abundParams, 
-                 dfuncDf = detectDf, 
-                 abundDf = abundDf,
                  distFunc = dfuncFit)
     }
       

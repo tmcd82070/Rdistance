@@ -2,65 +2,76 @@
 % Please edit documentation in R/EDR.R
 \name{EDR}
 \alias{EDR}
-\title{Effective Detection Radius (EDR) for estimated detection functions
-  with point transects}
+\title{EDR - Effective Detection Radius (EDR) for point transects}
 \usage{
-EDR(obj, newdata)
+EDR(object, newdata = NULL)
 }
 \arguments{
-\item{obj}{An estimated detection function object.  An estimated detection 
-function object has class 'dfunc', and is usually produced by a call to 
-\code{dfuncEstim}. The estimated detection function may optionally contain 
-a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
-1 is assumed.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
-\item{newdata}{A data frame containing new values of the covariates at which
-EDR's are sought. If NULL or missing and 
-\code{obj} contains covariates, the covariates stored in \code{obj}
-are used.  See \bold{Value} section.}
+\item{newdata}{A data frame containing new values of 
+the covariates at which to evaluate the distance functions. 
+If \code{newdata}
+is NULL, distance functions are evaluated at values of 
+the observed covariates and results in one prediction 
+per distance or transect (see parameter \code{type}). 
+If \code{newdata} is not NULL and the model does not contains covariates, 
+this routine returns one prediction for each row in \code{newdata}, but 
+columns and values in \code{newdata} are ignored.}
 }
 \value{
-If \code{newdata} is not missing and not NULL and 
-covariates are present in \code{obj}, returned value is 
-a vector with length equal to the number of rows in \code{newdata}. 
-If \code{newdata} is missing or NULL and covariates are present
-in \code{obj}, returned value is a vector with length equal to 
-the number of detections in \code{obj$detections}. In either of the 
-above cases, elements in the returned vector are 
-the effective detection radii for the corresponding set of 
-covariates.  
-
-If \code{obj} does not contain covariates, \code{newdata} is ignored and 
-a scalar equal to the (constant) effective detection radius for all 
-detections is returned.
+If \code{newdata} is present, the returned value is 
+a vector of effective sampling distances for values of the 
+covariates in \code{newdata} with length equal to 
+the number of rows in \code{newdata}. 
+If \code{newdata} is NULL, the returned value is a vector of effective
+sampling distances associated with covariate values in \code{object} and has 
+the same number of detected groups.  The returned vector 
+has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
 Computes Effective Detection Radius (EDR) for estimated 
-  detection functions with point transects.  The point-transect equivalent to
-  Effective Strip Width (ESW).
+  detection functions on point transects.  
+  See \code{\link{ESW}} is for line transects.
 }
 \details{
-The point-transect equivalent to Effective Strip Width (ESW).
+Effective Detection Radius is the integral under the 
+detection function times distance. \if{latex}{I.e., 
+    \deqn{EDR = \int_{w.lo}^{w.hi} xg(x)dx,} 
+  where \eqn{g(x)} is the distance
+  function scaled so that \eqn{g(x.scl) = g.x.scl}
+  and \eqn{w.lo} and \eqn{w.hi} are the lower
+  and upper truncation limits.  }
 }
+\section{Numeric Integration}{
+ 
+Rdistance uses Simpson's composite 1/3 rule to numerically 
+integrate under distance functions. The number of points evaluated 
+during numerical integration is controlled by 
+\code{options(Rdistance_intEvalPts)} (default 101).
+Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
+requires an even number of intervals (hence, odd number of points). 
+Lower values of 'Rdistance_intEvalPts' increase calculation speeds; 
+but, decrease accuracy.
+'Rdistance_intEvalPts' must be >= 5.  A warning is thrown if 
+'Rdistance_intEvalPts' < 29. Empirical tests by the author 
+suggest 'Rdistance_intEvalPts' values >= 30 are accurate 
+to several decimal points and that all 'Rdistance_intEvalPts' >= 101 produce 
+identical results in all but pathological cases.
+}
+
 \examples{
 # Load example thrasher data (point transect survey type)
-data(thrasherDetectionData)
+data(thrasherDf)
 
 # Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist~1
-                  , detectionData=thrasherDetectionData
-                  , likelihood="halfnorm"
-                  , w.hi=units::set_units(175, "m")
-                  , pointSurvey=TRUE)
+dfunc <- thrasherDf |> dfuncEstim(formula=dist~bare)
 
 # Compute effective detection radius (EDR)
-EDR(dfunc)
-
-# EDR only applies to point transect surveys
-# ESW is the line transect equivalent
-# The effectiveDistance function tests whether the dfunc was
-# fit to line or point data, and returns either ESW or EDR accordingly
-effectiveDistance(dfunc)
+EDR(dfunc) # vector length 192
+effectiveDistance(dfunc) # same
+EDR(dfunc, newdata = data.frame(bare=30)) # vector length 1
   
 }
 \seealso{

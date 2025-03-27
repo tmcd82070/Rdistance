@@ -1,0 +1,62 @@
+#' @name smlAntelopeTransects
+#' 
+#' @title Small antelope detection walking transects
+#' 
+#' @description 
+#' Walking transects on a study area in central Africa. 
+#' The study area was partitioned into 
+#' 3km X 3km grid cells, and each cell contained two 
+#' north-south transects separated (in east-west direction) by 1km. 
+#' Trackers and guides walked both 3km transects in each cell 
+#' recording all observations of wildlife. 
+#' Trackers and guides deviated around obstacles (vegetation, impassable 
+#' terrain) as necessary.  
+#' 
+#' The spatial extent of all surveyed grid cells was the study area. 
+#' Hence, the study area covered an area of 315 \[km^2\] (35 cells X 9 km^2).
+#' 
+#' The data set contains information 
+#' from 7 surveys between early 2016 and early 2022 on 35 grid cells.  During 
+#' most surveys, all grid cells were surveyed (35 cells * 2 transects = 
+#' 70 transects); but, during the last three surveys 1, 2, and 5 grid cells, 
+#' respectively, could not be surveyed. 
+#' 
+#' @docType data
+#' 
+#' @format A tibble containing 474 rows and 8 columns.  Each row represents
+#' on 3km transect.  Column descriptions: 
+#' \enumerate{ 
+#'   \item \code{siteID}: ID of the survey and transect.  Survey and transect ID's 
+#'     consist of 'year_season_transectID'.  
+#'   \item \code{surveyID}: ID of the survey. Survey ID's consist of 
+#'     'year_season'.
+#'   \item \code{surveyDate}: POSIXct date of the survey. 
+#'   \item \code{transID}: Transect ID.  Transect IDs are character strings 
+#'   in the format XXXY, where XXX is the grid cell ID and Y is the transect number.
+#'   \item \code{year}: Year of the survey (2016, 2017, 2019, 2020, 2021, and 2022).  
+#'   \item \code{season}: Season of the survey (EarlyDry or LateDry). 
+#'   \item \code{gridCell}: ID of the grid cell. Grid cell ID's are integers 
+#'   from 1 to 37; but, grid cells 10 and 28 were never surveyed and hence 
+#'   are missing. (35 grid cells total).
+#'   \item \code{length}: Length of the transect.
+#' }
+#' 
+#' @seealso \code{\link{smlAntelopeDetections}}
+#' 
+#' @source The small antelope data is a subset of walking transect data collected 
+#' by Lion Landscapes (\url{https://www.lionlandscapes.org}). 
+#' 
+#' @examples
+#' data("smlAntelopeDetections")
+#' data("smlAntelopeTransects")
+#' smlAntelope <- RdistDf(smlAntelopeTransects
+#'                      , smlAntelopeDetections
+#'                      , by = "siteID"
+#'                      , pointSurvey = FALSE
+#'                      , .effortCol = "length") 
+#' 
+#' summary(smlAntelope |> dplyr::filter(surveyID == "2019_LateDry")
+#'       , perpDist ~ groupsize(number))
+#'       
+#' @keywords datasets
+NULL

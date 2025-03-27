@@ -1,156 +1,57 @@
-#' @title negexp.like - Negative exponential distance function
+#' @title negexp.like - Negative exponential likelihood
 #' 
-#' @description Computes the negative exponential form of 
-#' a distance function 
+#' @description Computes the negative exponential distance function. 
 #' 
-#' @param a A vector of likelihood parameter values. Length and 
-#'   meaning depend on \code{series} and \code{expansions}. If 
-#'   no expansion terms were called for
-#'   (i.e., \code{expansions = 0}), the distance likelihood 
-#'   contains only one canonical parameter, which 
-#'   is the first element of \code{a} (see Details). If one 
-#'   or more expansions are called for,
-#'   coefficients for the expansion terms follow 
-#'   coefficients for the canonical parameter.  
-#'   
-#' @param dist A numeric vector containing the observed distances.
-#' 
-#' @param covars Data frame containing values of covariates at each 
-#'   observation in \code{dist}.
-#' 
-#' @param w.lo Scalar value of the lowest observable distance.  This is the \emph{left truncation} of sighting distances in \code{dist}. Same units as \code{dist}.
-#'   Values less than \code{w.lo} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
-#' @param w.hi Scalar value of the largest observable distance.  This is the \emph{right truncation} of sighting distances in \code{dist}.  Same units as \code{dist}.
-#'   Values greater than \code{w.hi} are allowed in \code{dist}, but are ignored and their contribution to the likelihood is set to \code{NA} in the output.
-#' @param series A string specifying the type of expansion to use.  Currently, valid values are 'simple', 'hermite', and 'cosine'; but, see 
-#'   \code{\link{dfuncEstim}} about defining other series.
-#' @param expansions A scalar specifying the number of terms in \code{series}. Depending on the series, this could be 0 through 5.
-#'   The default of 0 equates to no expansion terms of any type.
-#' @param scale Logical scalar indicating whether or not to scale the likelihood so it integrates to 1. This parameter is used to stop recursion in other functions.
-#'   If \code{scale} equals TRUE, a numerical integration routine (\code{\link{integration.constant}}) is called, which in turn calls this likelihood function again
-#'   with \code{scale} = FALSE. Thus, this routine knows when its values are being used to compute the likelihood and when its value is being used to compute the 
-#'   constant of integration.  All user defined likelihoods must have and use this parameter.
-#' @param pointSurvey Boolean. TRUE if \code{dist} is point transect data, FALSE if line transect data.
+#' @inheritParams halfnorm.like 
 #' 
 #' @details The negative exponential likelihood is 
-#' \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is a 
-#' slope parameter to be estimated. 
+#' \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is the 
+#' slope parameter. 
 #' 
-#' \bold{Expansion Terms}: If the number of \code{expansions} = k (k > 0), the expansion 
-#' function specified by \code{series} is called (see for example
-#' \code{\link{cosine.expansion}}). Assuming \eqn{h_{ij}(x)}{h_ij(x)} is 
-#' the \eqn{j^{th}}{j-th} expansion term for the \eqn{i^{th}}{i-th} distance and that 
-#' \eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}are (estimated) coefficients for the expansion terms, the likelihood contribution for the \eqn{i^{th}}{i-th} 
-#'   distance is, 
-#'   \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}{f(x|a,b,c_1,c_2,...,c_k) = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
-#'   
-#' @return A numeric vector the same length and order as \code{dist} containing the likelihood contribution for corresponding distances in \code{dist}. 
-#'   Assuming \code{L} is the returned vector from one of these functions, the full log likelihood of all the data is \code{-sum(log(L), na.rm=T)}. Note that the
-#'   returned likelihood value for distances less than \code{w.lo} or greater than \code{w.hi} is \code{NA}, and thus it is prudent to use \code{na.rm=TRUE} in the
-#'   sum. If \code{scale} = TRUE, the integral of the likelihood from \code{w.lo} to \code{w.hi} is 1.0. If \code{scale} = FALSE, the integral of the likelihood is
-#'   arbitrary.
-#'   
-#' @seealso \code{\link{dfuncEstim}},
-#'          \code{\link{halfnorm.like}},
-#'          \code{\link{uniform.like}},
-#'          \code{\link{hazrate.like}},
-#'          \code{\link{Gamma.like}}
-#'          
-#' @examples \dontrun{
-#' set.seed(238642)
-#' x <- seq(0, 100, length=100)
+#' @inherit halfnorm.like return seealso
+#'    
+#' @examples
+#' d <- seq(0, 100, length=100)
+#' covs <- matrix(1,length(d),1)
+#' negexp.like(log(0.01), d, covs)
 #' 
-#' # Plots showing effects of changes in parameter Beta
-#' plot(x, negexp.like(0.01, x), type="l", col="red")
-#' plot(x, negexp.like(0.05, x), type="l", col="blue")
+#' # Changing slope parameter
+#' plot(d, negexp.like(log(0.1), d, covs)$L.unscaled, type="l", col="red")
+#' lines(d, negexp.like(log(0.05), d, covs)$L.unscaled, col="blue")
 #' 
-#' # Estimate 'negexp' distance function
-#' Beta <- 0.01
-#' x <- rexp(1000, rate=Beta)
-#' dfunc <- dfuncEstim(x~1, likelihood="negexp")
-#' plot(dfunc)
-#' }
-#'          
-#' @keywords models
 #' @export
 
 negexp.like <- function (a, 
                          dist, 
-                         covars = NULL, 
-                         w.lo = units::set_units(0,"m"), 
-                         w.hi = max(dist),
-                         series = "cosine", 
-                         expansions = 0, 
-                         scale = TRUE,
-                         pointSurvey = FALSE){
-
-  # rule is: parameter 'a' never has units.
-  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
-  
-  dist[ (dist < w.lo) | (dist > w.hi) ] <- NA
+                         covars){
 
   # What's in a? : 
-  #   If no covariates: a = [a, <expansion coef>]
-  #   If covariates:    a = [(Intercept), b1, ..., bp, <expansion coef>]
-    
-  if(!is.null(covars)){
-    q <- ncol(covars)
-    beta <- a[1:q] 
-    s <- drop( covars %*% matrix(beta,ncol=1) )      
-    beta <- exp(s)  # link function here
-  } else {
-    beta <- a[1]
+  #     a = [(Intercept), b1, ..., bp, <expansion coef>]
+  if(length(dim(dist)) >= 2 && dim(dist)[2] != 1 ){ 
+    stop(paste("Argument 'dist' must be a vector or single-column matrix.",
+               "Found array with", length(dim(dist)), "dimensions."))
   }
-    
+  
+  q <- nCovars(covars)
+  if(is.matrix(a)){
+    beta <- a[,1:q, drop = FALSE]  # k X q
+  } else {
+    beta <- matrix(a[1:q], nrow = 1) # 1 X q
+  }
+  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
+  sigma <- exp(s)  # link function here
 
-  key = -beta * units::drop_units(dist)
+  dist <- units::set_units(dist, NULL)
+  dist <- matrix(dist
+                 , nrow = length(dist)
+                 , ncol = ncol(sigma)
+  ) 
+  
+  key = -sigma * dist  # (nXk) * (nXk)
   key <- exp(key)
+  
+  return( list(L.unscaled = key, 
+               params = sigma)
+  )  
 
-
-    if(expansions > 0){
-
-        w <- w.hi - w.lo
-        
-    		if (series=="cosine"){
-                dscl = units::drop_units(dist/w)
-                exp.term <- cosine.expansion( dscl, expansions )
-    		} else if (series=="hermite"){
-                dscl = units::drop_units(dist/w)
-                exp.term <- hermite.expansion( dscl, expansions )
-    		} else if (series == "simple") {
-                dscl = units::drop_units(dist/w)
-                exp.term <- simple.expansion( dscl, expansions )
-        } else {
-              stop( paste( "Unknown expansion series", series ))
-        }
-
-        expanCoefs <- a[(length(a)-(expansions-1)):(length(a))]
-        key <- key * (1 + c(exp.term %*% expanCoefs))
-
-        # without monotonicity restraints, function can go negative, 
-        # especially in a gap between datapoints. This makes no sense in distance
-        # sampling and screws up the convergence. 
-        key[ which(key < 0) ] <- 0
-        
-    } 
-    
-    if( scale ){
-        key = key / integration.constant(dist=dist, 
-                                             density=negexp.like, 
-                                             a=a,
-                                             covars = covars, 
-                                             w.lo=w.lo,
-                                             w.hi=w.hi,
-                                             series=series,
-                                             expansions=expansions, 
-                                             pointSurvey = pointSurvey)  # makes integral from w.lo to w.hi = 1.0
-    }
-    
-  # cat(paste("nLL=", -sum(log(key), na.rm=TRUE), "\n"))
-  # cat(paste("n(NA)=", sum(is.na(key)), "\n"))
-  # cat(paste("n(Inf)=", sum(is.infinite(key)), "\n"))
-  # cat(paste("n(NaN)=", sum(is.nan(key)), "\n"))
-  # if(any(is.na(a) | is.nan(a) | is.infinite(a))) readline("-------- hit return...")
-
-    c(key)
 }

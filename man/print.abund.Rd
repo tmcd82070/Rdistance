@@ -23,22 +23,29 @@ produced by \code{abundEstim}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
-data(sparrowDetectionData)
-data(sparrowSiteData)
+data(sparrowDf)
 
 # Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist ~ 1 + offset(groupsize)
-                  , detectionData=sparrowDetectionData)
+dfunc <- sparrowDf |> dfuncEstim(formula=dist~groupsize(groupsize))
 
 # Estimate abundance given a detection function
-# Note: a person should do more than R=20 bootstrap iterations
-fit <- abundEstim(dfunc
-                , detectionData = sparrowDetectionData
-                , siteData = sparrowSiteData
+fit <- abundEstim(object = dfunc
                 , area = units::set_units(4105, "km^2")
                 , ci = NULL)
 print(fit)
+summary(fit)
 
+\dontrun{
+# Bootstrap confidence intervals (500 iterations)
+# Requires ~4 min
+fit <- abundEstim(object = dfunc
+                , area = units::set_units(4105, "km^2")
+                , ci = 0.95
+                , plot.bs = TRUE
+                , showProgress = TRUE)
+print(fit)
+summary(fit)
+}
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 

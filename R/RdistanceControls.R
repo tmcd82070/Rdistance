@@ -1,116 +1,86 @@
-#' @title Control parameters for \code{Rdistance} optimization.
+#' @title Rdistance optimization control parameters.
 #' 
-#' @description Returns a list of optimization controls used in 
-#' \code{Rdistance} and provides a way to change them if needed. 
+#' @aliases control controls RdistanceControls
 #' 
-#' @param maxIters The maximum number of optimization 
+#' @concept control optimization
+#' 
+#' @description Optimization control parameters 
+#' are set by calls to \code{options()} (see examples). 
+#' Optimization parameters used in 
+#' \code{Rdistance} are the following:  
+#' 
+#' \itemize{
+#'   \item \code{Rdist_maxIters}: The maximum number of optimization 
 #' iterations allowed.
 #' 
-#' @param evalMax The maximum number of objective function
+#'   \item \code{Rdist_evalMax}: The maximum number of objective function
 #' evaluations allowed.
 #' 
-#' @param likeTol The maximum change in the likelihood 
-#' (the objective) between
-#' iterations that is tolerated during optimization.  
+#'   \item \code{Rdist_likeTol}: Minimum change in the likelihood 
+#' between iterations required optimization to continue.  
 #' If the likelihood changes by less than this amount, 
-#' optimization stops and a solution is declared. 
+#' optimization stops and a solution is declared. Iteration 
+#' continues when likelihood changes exceed this value.
 #' 
-#' @param coefTol The maximum change in the model coefficients 
-#' between
-#' iterations that is tolerated during optimization.  
+#'   \item \code{Rdist_coefTol}: Minimum change in model coefficients 
+#' between iterations for optimization to continue.  
 #' If the sum of squared coefficient differences changes 
 #' by less than this amount between iterations, 
 #' optimization stops and a solution is declared. 
 #'
-#' 
-#' @param optimizer A string specifying the optimizer 
-#' to use.  Results
-#' vary between optimizers, so switching algorithms sometimes 
-#' makes a poorly behaved distance function converge.  The valid 
+#'   \item \code{Rdist_optimizer}: A string specifying the optimizer 
+#' to use.  Results can vary between optimizers, so 
+#' switching algorithms sometimes makes a poorly 
+#' behaved distance function converge.  Valid 
 #' values are "optim" which uses \code{optim::optim},
 #' and "nlminb" which uses \code{stats:nlminb}.  The authors 
 #' have had better luck with "nlminb" than "optim" and "nlminb" 
-#' runs noticeably faster.  Problems with solutions near parameter 
-#' boundaries may require use of "optim".   
+#' runs noticeably faster.  Problems with solutions near, but not on,
+#' parameter boundaries may require use of "optim".   
 #'
-#' @param hessEps A vector of parameter distances used during 
-#' computation of numeric second derivatives. Should have length 
+#'   \item \code{Rdist_hessEps}: A vector of parameter distances used during 
+#' computation of numeric second derivatives. These distances control
+#' and determine variance estimates, and they may need revision when 
+#' the maximum likelihood solution is near a parameter boundary. 
+#' Should have length 
 #' 1 or the number of parameters in the model. See function 
-#' \code{\link{secondDeriv}}. 
-#' 
-#' @param requireUnits A logical specifying whether measurement 
+#' \code{\link{secondDeriv}} for further details. 
+#'  
+#'   \item \code{Rdist_requireUnits}: A logical specifying whether measurement 
 #' units are required on distances and areas.  If TRUE, 
 #' measurement units are required on off-transect and radial 
 #' distances in the input data frame.  Likewise, measurement 
-#' units are required on transect length and study area size. 
+#' units are required on truncation distances, scale location, 
+#' transect lengths, and study area size. If FALSE, no units are 
+#' required and input values are used as is.  The FALSE options is 
+#' provided for rare cases when \code{Rdistance} functions are called
+#' from other functions and the calling functions do not accomodate 
+#' units.
+#' 
 #' Assign units with statement like \code{units(detectionDf$dist) <- "m"}
-#' or \code{units(df$transectDf) <- "km"}.  Measurement units do not 
-#' need to be the same.  All units are converted appropriately during 
-#' internal computations.  \code{Rdistance} recognizes 
-#' units listed in \code{units::valid_udunits()}. 
+#' or \code{units::set_units(w.hi, "km")}.  Measurement units of 
+#' the various physical quantities need not 
+#' be equal because appropriate conversions occur internally.
+#' An error is thrown if differing units are not compatible.  
+#' For example, "m" (meters) cannot be converted into "ha" (hectares),
+#' but "acres" can be converted into "ha".
+#' \code{Rdistance} recognizes units listed in \code{units::valid_udunits()}. 
 #' 
-#' @param maxBSFailPropForWarning The proportion of bootstrap 
+#'   \item \code{Rdist_maxBSFailPropForWarning}: The proportion of bootstrap 
 #' iterations that can fail without a warning. If the proportion 
-#' of bootstrap iterations that did not converge exceeds this 
+#' of non-convergent bootstrap iterations exceeds this 
 #' parameter, a warning about the validity of CI's is issued in 
-#' the print method for
-#' abundance objects. 
+#' the abundance print method. 
 #' 
-#' @param contrasts A list, whose entries are values 
-#' (numeric matrices, functions or character strings naming functions) 
-#' to be used as replacement values for the default contrasts function 
-#' and whose names are the names of columns of data containing factors.
 #' 
-#' There are several ways to change the contrasts used for factors 
-#' in Rdistance because all methods used in linear models (\code{lm})
-#' work.  To summarize contrast methods in R, if this parameter is NULL, Rdistance uses 
-#' the global contrasts specified in 
-#' \code{options()}.  To change the global contrasts, use a statement
-#' like \code{options(contrasts = c(unordered = "contr.SAS", 
-#' ordered = "contr.poly"))}.
-#' One can also set contrasts for a factor using \code{contrasts(a)} 
-#' (e.g., \code{contrasts(a) <- "contr.sum"}) 
-#' Lastly, one can set this parameter to a  
-#' list that explicitely states the non-global contrasts to use for 
-#' which factors in 
-#' the Rdistance model.  For example, \code{list(a = "contr.helmert")} 
-#' will use Helmert contrasts for \code{a} 
-#' and the global contrast option for all other factors. The 
-#' built-in R contrast functions are "contr.treatment", "contr.helmert", 
-#' "contr.SAS", "contr.sum", and "contr.poly".  
-#' 
-#' @return A list containing named components for each of the 
-#' controls.  This list has the same components as this function 
-#' has input parameters. 
+#' }
 #' 
 #' @examples 
 #' # increase number of iterations
-#' RdistanceControls(maxIters=2000)
+#' options(Rdist_maxIters=2000)
 #' 
 #' # change optimizer and decrease tolerance
-#' RdistanceControls(optimizer="optim", likeTol=1e-6) 
+#' options(list(Rdist_optimizer="optim", Rdist_likeTol=1e-6)) 
 #' 
-#' @export  
-
-RdistanceControls <- function(optimizer = "nlminb",
-                              evalMax = 2000,
-                              maxIters = 1000,
-                              likeTol = 1e-8,
-                              coefTol = 1.5e-8,
-                              hessEps = 1e-8,
-                              requireUnits = TRUE,
-                              maxBSFailPropForWarning = 0.2,
-                              contrasts = NULL){
-  
-  list(optimizer = optimizer,
-       evalMax = evalMax,
-       maxIters = maxIters,
-       likeTol = likeTol,
-       coefTol = coefTol,
-       hessEps = hessEps,
-       requireUnits = requireUnits,
-       maxBSFailPropForWarning = maxBSFailPropForWarning,
-       contrasts = contrasts
-      )
-  
-}
+#' @name RdistanceControls
+NULL

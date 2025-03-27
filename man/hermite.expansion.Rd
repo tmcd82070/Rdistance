@@ -34,10 +34,10 @@ There are, in general, several expansions that can be called Hermite. The Hermit
   The maximum number of expansion terms computed is 4.
 }
 \examples{
-set.seed(83828233)
-  x <- rnorm(1000) * 100
-  x <- x[0 < x & x < 100]
-  herm.expn <- hermite.expansion(x, 3)
+x <- seq(0, 1, length = 200)
+herm.expn <- hermite.expansion(x, 4)
+plot(range(x), range(herm.expn), type="n")
+matlines(x, herm.expn, col=rainbow(4), lty = 1) 
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{simple.expansion}}, and the discussion 

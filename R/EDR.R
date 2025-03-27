@@ -1,148 +1,84 @@
-#' @title Effective Detection Radius (EDR) for estimated detection functions
-#'   with point transects
+#' @title EDR - Effective Detection Radius (EDR) for point transects
 #'   
 #' @description Computes Effective Detection Radius (EDR) for estimated 
-#'   detection functions with point transects.  The point-transect equivalent to
-#'   Effective Strip Width (ESW).
+#'   detection functions on point transects.  
+#'   See \code{\link{ESW}} is for line transects. 
 #'   
-#' @param obj An estimated detection function object.  An estimated detection 
-#'   function object has class 'dfunc', and is usually produced by a call to 
-#'   \code{dfuncEstim}. The estimated detection function may optionally contain 
-#'   a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
-#'   1 is assumed.
+#' @inheritParams predict.dfunc
 #'   
-#' @param newdata A data frame containing new values of the covariates at which
-#'   EDR's are sought. If NULL or missing and 
-#'   \code{obj} contains covariates, the covariates stored in \code{obj}
-#'   are used.  See \bold{Value} section. 
+#' @details Effective Detection Radius is the integral under the 
+#' detection function times distance. \if{latex}{I.e., 
+#'     \deqn{EDR = \int_{w.lo}^{w.hi} xg(x)dx,} 
+#'   where \eqn{g(x)} is the distance
+#'   function scaled so that \eqn{g(x.scl) = g.x.scl}
+#'   and \eqn{w.lo} and \eqn{w.hi} are the lower
+#'   and upper truncation limits.  }
 #'   
-#' @details The point-transect equivalent to Effective Strip Width (ESW).
-#'   
-#' @return If \code{newdata} is not missing and not NULL and 
-#' covariates are present in \code{obj}, returned value is 
-#' a vector with length equal to the number of rows in \code{newdata}. 
-#' If \code{newdata} is missing or NULL and covariates are present
-#' in \code{obj}, returned value is a vector with length equal to 
-#' the number of detections in \code{obj$detections}. In either of the 
-#' above cases, elements in the returned vector are 
-#' the effective detection radii for the corresponding set of 
-#' covariates.  
+#' @inherit effectiveDistance return  
 #' 
-#' If \code{obj} does not contain covariates, \code{newdata} is ignored and 
-#' a scalar equal to the (constant) effective detection radius for all 
-#' detections is returned.  
-#'   
+#' @inheritSection ESW Numeric Integration
+#'    
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
 #' \code{\link{effectiveDistance}}
 #'   
 #' @examples
 #' # Load example thrasher data (point transect survey type)
-#' data(thrasherDetectionData)
+#' data(thrasherDf)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1
-#'                   , detectionData=thrasherDetectionData
-#'                   , likelihood="halfnorm"
-#'                   , w.hi=units::set_units(175, "m")
-#'                   , pointSurvey=TRUE)
+#' dfunc <- thrasherDf |> dfuncEstim(formula=dist~bare)
 #' 
 #' # Compute effective detection radius (EDR)
-#' EDR(dfunc)
-#' 
-#' # EDR only applies to point transect surveys
-#' # ESW is the line transect equivalent
-#' # The effectiveDistance function tests whether the dfunc was
-#' # fit to line or point data, and returns either ESW or EDR accordingly
-#' effectiveDistance(dfunc)
+#' EDR(dfunc) # vector length 192
+#' effectiveDistance(dfunc) # same
+#' EDR(dfunc, newdata = data.frame(bare=30)) # vector length 1
 #'   
 #' @keywords modeling
 #'   
+#' @importFrom stats predict
 #' @export
 
-EDR <- function(obj, newdata){
+EDR <- function(object, newdata = NULL){
   
   # Issue error if the input detection function was fit to line-transect data
-  if(!(obj$pointSurvey)) stop("EDR is for point transects only.  See ESW for the line-transect equivalent.")
+  if( !Rdistance::is.points(object) ){
+    stop("EDR is for point transects only.  See ESW for the line-transect equivalent.")
+  } 
   
-  like <- match.fun(paste( obj$like.form, ".like", sep=""))
+  nEvalPts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) # MUST BE ODD!!!
+  nInts <- nEvalPts - 1 # this will be even profided nEvalPts is odd
+  seqx = seq(object$w.lo, object$w.hi, length=nEvalPts) 
+  dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts)
   
-  seq.length = 200  
+  y <- units::set_units(seqx, NULL) * 
+       stats::predict(object = object
+                    , newdata = newdata
+                    , distances = seqx
+                    , type = "dfuncs"
+                    )
   
-  # Can't evaluate hazrate at 0
-  if( (obj$like.form == "hazrate") & (obj$x.scl == obj$w.lo) ){
-    x <- seq( obj$w.lo + 1e-6*(obj$w.hi - obj$w.lo), obj$w.hi, length=seq.length)
-  } else {
-    x <- seq( obj$w.lo, obj$w.hi, length=seq.length)
-  }  
-
+  # Numerical integration ----
+  # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))
+  # i.e., 1, 4, 2, 4, 2, ..., 2, 4, 1
+  intCoefs <- rep( c(2,4), (nInts/2) ) # here we need nInts to be even
+  intCoefs[1] <- 1
+  intCoefs <- matrix(c(intCoefs, 1), ncol = 1)
   
+  edr <- (t(y) %*% intCoefs) * dx / 3
+  edr <- units::set_units(drop(edr), NULL) # convert from matrix to vector, drop units  
+  edr <- sqrt( 2 * edr )  # cannot sqrt units (unless like m^2 are assigned)
+  edr <- units::set_units(edr, object$outputUnits, mode = "standard") # add back units
   
-  if( !is.null(obj$covars) ){
-    if(missing(newdata)){
-      newdata <- NULL  # in this case, predict.dfunc will use obj$covars, but gotta have something to pass
-    }
-    
-    params <- predict.dfunc(obj, newdata, type="parameters")
-    
-    # Use covars= NULL here because we evaluated covariates to get params above
-    # after this, y is n X length(x).  each row is an unscaled distance 
-    # function (f(x) = x*g(x)) 
-    #
-    # Note: pointSurvey parameter does not matter here because 
-    # integration.constant is not called in likelihood (because unscaled)
-
-    # seqy <- seqx * density( dist = seqx, scale = FALSE, w.lo = w.lo, w.hi = w.hi, a = a, expansions = expansions, ...)
-    
-    zero <- units::set_units(x = 0
-                             , value = obj$outputUnits
-                             , mode = "standard")
-
-    x <- x - obj$w.lo
-    y <- x * apply(X = params
-                 , MARGIN = 1
-                 , FUN = like
-                 , dist = x
-                 , series = obj$series
-                 , covars = NULL
-                 , expansions = obj$expansions
-                 , w.lo = zero
-                 , w.hi = obj$w.hi - obj$w.lo
-                 , pointSurvey = obj$pointSurvey
-                 , scale=FALSE)    
-    y <- t(y)
-
-    # Trapazoid rule.  
-    dx <- units::drop_units(x[3]-x[2])
-    y1 <- y[,-1,drop=FALSE]
-    y  <- y[,-ncol(y),drop=FALSE]
-    rho <- dx*rowSums(y + y1)/2
-    rho <- sqrt(2*rho)
-    rho <- units::set_units(rho, obj$outputUnits, mode = "standard")
-    
-  } else {
-    # this returns (Integral xg(x)dx)/dist
-    # integral is nrow(obj$detections) long vector
-    integral <- integration.constant(dist = obj$detections$dist
-                                   , density = like
-                                   , a = obj$parameters
-                                   , covars = obj$covars
-                                   , w.lo = obj$w.lo
-                                   , w.hi = obj$w.hi
-                                   , expansions = obj$expansions
-                                   , pointSurvey = obj$pointSurvey
-                                   , series = obj$series
-                                   )
+    # OLD COMMENTS:
     # obj$detections$dist is in denominator of integration.constant for point surveys. 
     # multiply here to remove it. vector inside root should be constant.
-    rho <- sqrt(2 * integral * units::drop_units(obj$detections$dist))[1]
+    # rho <- sqrt(2 * integral * units::drop_units(obj$detections$dist))[1]
     
     # multiplying by obj$detections$dist in above line was a trick because we called 
     # integration.constant (because computations are complicated). But what about units? 
     # rho should have same units as obj$detections$dist, but one cannot take root of vectors with units. 
     # So, add back the units. 
-    rho <- units::set_units(rho, obj$outputUnits, mode = "standard")
+    # rho <- units::set_units(rho, obj$outputUnits, mode = "standard")
   
-  }
-  
-  rho
+  edr
 }

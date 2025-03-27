@@ -15,30 +15,25 @@ Some of \code{Rdistance}'s features include:
 \itemize{
    \item Accommodation of both point and line transect analyses 
     in one routine (\code{\link{dfuncEstim}}).
-   \item Regression-like formula for inclusion of covariate in 
-   distance functions (\code{\link{dfuncEstim}}).
+   \item Regression-like formula for inclusion of distance function
+   covariates (\code{\link{dfuncEstim}}).
    \item Automatic bootstrap confidence intervals 
    (\code{\link{abundEstim}}).
    \item Availability of both study-area and site-level abundance
-   estimates (\code{\link{abundEstim}}).
+   estimates (\code{help("predict.dfunc")}).
    \item Classical, parametric distance functions
-   (\code{\link{halfnorm.like}}, \code{\link{hazrate.like}}), and
+   (\code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, 
+   \code{\link{negexp.like}}), and
    expansion functions (\code{\link{cosine.expansion}}, 
    \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}).
    
-   \item Non-classic distance functions (\code{\link{Gamma.like}}, 
-   \code{\link{negexp.like}}, \code{\link{uniform.like}}) 
-   and a non-parametric smoother 
-   \code{\link{dfuncSmu}}).
    
-   \item User defined distance functions. 
-    
    \item Automated distance function fits and selection 
    \code{\link{autoDistSamp}}.
-   \item Extended vignettes.
+   
    \item \code{print}, \code{plot}, \code{predict}, \code{coef}, 
-   and \code{summary} 
-   methods for distance function objects and abundance classes.
+   and \code{summary} methods for distance function objects and 
+   abundance classes.
 }
 }
 \section{Background}{
@@ -49,12 +44,10 @@ randomly placed transects in a study area with the objective of
 sighting animals and estimating density or abundance.  Data collected
 during line transect surveys consists of sighting records for
 \emph{targets}, usually either individuals or groups of individuals.  Among
-the collected data, off-transect distances are 
-recorded or computed from
-other information (see
-\code{\link{perpDists}}).  Off-transect distances are the perpendicular
-distances from the transect to the location of the initial sighting cue.
-The actual locations of sighted targets are often recorded or computed.
+the collected data, off-transect distances are recorded or computed from
+other information (see \code{\link{perpDists}}).  Off-transect distances 
+are the perpendicular distances from the transect to the location of 
+the initial sighting cue.
 When groups are the target, the number of individuals in the group is
 recorded.
 
@@ -104,36 +97,15 @@ requests, etc. through the package's GitHub website
  \code{Rdistance} contains four example data sets: two collected using 
 line-transect methods (i.e., \code{\link{sparrowDetectionData}} and
 \code{\link{sparrowSiteData}}) and two collected using point-transect
-(sometimes called a point count) methods (i.e.,
+methods (i.e.,
 \code{\link{thrasherDetectionData}} and \code{\link{thrasherSiteData}}).
-
-These datasets demonstrate the type and format of input data required by
-\code{Rdistance} to estimate a detection function and abundance from
-distance sampling data collected by surveying line transects or point
-transects.  They also allow the user to step through the tutorials described
-in the package vignettes.  
-
-\code{Rdistance} requires only  detection data to fit 
-detection functions, assuming  no covariates in the detection function
-(see \code{\link{dfuncEstim}}).  Both detection and
-site data are required to estimate abundance or to include
-site-level covariates in the detection function (see
-\code{\link{abundEstim}}).
 }
 
-\section{Resources}{
-
-The best place to start learning about \code{Rdistance}
-is at the package's GitHub Wiki, which hosts several tutorial vignettes and
-FAQs (\url{https://github.com/tmcd82070/Rdistance/wiki}).
-Additionally, the examples in the help files for
-\code{\link{dfuncEstim}}, \code{\link{abundEstim}}, and
-\code{\link{autoDistSamp}} highlight the package's primary functionality.
-
-A list of routines can be obtained by loading \code{Rdistance} and issuing
-\code{help(package="Rdistance")}.
+\references{
+Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
+  1993. \emph{Distance Sampling: Estimating Abundance of Biological
+  Populations}. Chapman and Hall, London.
 }
-
 \seealso{
 Useful links:
 \itemize{

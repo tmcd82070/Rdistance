@@ -8,7 +8,7 @@
 #' @param data data.frame object containing sighting distance and sighting angle.
 #' 
 #' @details If observers recorded sighting distance and sighting angle (as is often common in line transect surveys), use this function to convert 
-#'   to off-transect distances, the required input data for \code{F.dfunc.estim}.
+#'   to off-transect distances, the required input data for \code{dfunc.estim}.
 #' @return A vector of off-transect (or perpendicular) distances.  Units are the same as \code{sightDist}.
 #' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. 
 #'   \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.

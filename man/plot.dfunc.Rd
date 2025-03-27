@@ -4,93 +4,66 @@
 \alias{plot.dfunc}
 \title{plot.dfunc - Plot method for distance (detection) functions}
 \usage{
-\method{plot}{dfunc}(
-  x,
-  include.zero = FALSE,
-  nbins = "Sturges",
-  newdata = NULL,
-  legend = TRUE,
-  vertLines = TRUE,
-  plotBars = TRUE,
-  density = -1,
-  angle = 45,
-  xlab = NULL,
-  ylab = NULL,
-  border = TRUE,
-  col = "grey85",
-  col.dfunc = NULL,
-  lty.dfunc = NULL,
-  lwd.dfunc = NULL,
-  ...
-)
+\method{plot}{dfunc}(x, ...)
 }
 \arguments{
-\item{x}{An estimated distance function resulting from a call to
-\code{dfuncEstim}.}
+\item{x}{An estimated detection function object, normally 
+produced by calling \code{\link{dfuncEstim}}.}
 
-\item{include.zero}{Boolean value specifying whether to include 0 on the x-axis 
+\item{...}{
+  Arguments passed on to \code{\link[=plot.dfunc.para]{plot.dfunc.para}}
+  \describe{
+    \item{\code{include.zero}}{Boolean value specifying whether to include 0 on the x-axis 
 of the plot.  A value of TRUE will include 0 on the left hand end of the x-axis
 regardless of the range of distances.  A value of FALSE will plot only the
-input distance range (\code{w.lo} to \code{w.hi}).}
-
-\item{nbins}{Internally, this function uses \code{hist} to compute histogram
+observation strip (\code{w.lo} to \code{w.hi}).}
+    \item{\code{nbins}}{Internally, this function uses \code{hist} to compute histogram
 bars for the plot. This argument is the \code{breaks} argument to
 \code{hist}.  This can be either a vector giving the breakpoints between
 bars, the suggested number of bars (a single number), a string naming
 an algorithm to compute the number of bars, or a function to compute the
 number of bars.  See \code{\link{hist}} for all options.}
-
-\item{newdata}{Data frame similar to the \code{newdata} parameter 
-to \code{\link{lm}} containing new values for covariates in the distance function.
+    \item{\code{newdata}}{Data frame (similar to \code{newdata} parameter 
+of \code{\link{lm}}) containing new values for covariates in 
+the distance function.
 One distance function is computed and plotted for each row in the data frame. 
-If \code{newdata} is NULL, the routine computes the mean of all numeric covariates
-in the distance function and the mode of all factor covariates in 
-the distance function. The new mean and mode vector is used to predict 
-and plot a distance function.}
-
-\item{legend}{Logical scalar for whether to include a legend. 
+If \code{newdata} is NULL, a single distance function is plotted 
+for mean values of all numeric covariates and mode values for all 
+factor covariates.}
+    \item{\code{legend}}{Logical scalar for whether to include a legend. 
 If TRUE, a legend will be included on the plot detailing
-the covariate values use to generate the plot.}
-
-\item{vertLines}{Logical scalar specifying whether to plot vertical 
-lines at \code{w.lo} and \code{w.hi} from 0 to the  
-distance function.}
-
-\item{plotBars}{Logical scalar for whether to plot the histogram 
+the covariate values used to generate the plot.}
+    \item{\code{plotBars}}{Logical scalar for whether to plot the histogram 
 of distances behind the distance function.  If FALSE, no histogram 
 is plotted, only the distance function line(s).}
-
-\item{density}{If \code{plotBars=TRUE}, a vector giving the density of 
+    \item{\code{xlab}}{Label for the x-axis}
+    \item{\code{ylab}}{Label for the y-axis}
+    \item{\code{density}}{If \code{plotBars=TRUE}, a vector giving the density of 
 shading lines, in lines per inch, for the bars underneath 
 the distance function, repeated as necessary to exceed the number 
 of bars. Values of NULL or a number strictly less than 0 
 mean solid fill using colors from parameter \code{col}. 
 If \code{density = 0}, bars are not filled and only the borders are rendered. 
-If \code{density} >0, bars are shaded with colors and angles from 
+If \code{density} > 0, bars are shaded with colors and angles from 
 parameters \code{col} and \code{angle}.}
-
-\item{angle}{When \code{density} is >0, the slope of bar shading lines, 
+    \item{\code{angle}}{When \code{density} > 0, the slope of bar shading lines, 
 given as an angle in degrees (counter-clockwise), repeated as necessary
 to exceed the number of bars.}
-
-\item{xlab}{Label for the x-axis}
-
-\item{ylab}{Label for the y-axis}
-
-\item{border}{The color of bar borders when bars are plotted, 
+    \item{\code{col}}{A vector of bar fill colors or line colors when bars are 
+drawn and \code{density != 0}, repeated as necessary to exceed the number
+of bars. Also used for the bar borders when
+\code{border = TRUE}.}
+    \item{\code{border}}{The color of bar borders when bars are plotted, 
 repeated as necessary to exceed the number of bars. A 
 value of NA or FALSE means no borders. If bars are shaded with lines 
 (i.e., \code{density>0}), \code{border = TRUE} uses the same 
 color for the border as for the shading lines.  Otherwise, fill color
 or shaded line color are specified in \code{col} while 
 border color is specified in \code{border}.}
-
-\item{col}{A vector of bar fill colors or line colors when bars are 
-drawn and \code{density != 0}, repeated as necessary to exceed the number
-of bars. Also used for the bar borders when
-\code{border = TRUE}.}
-
-\item{col.dfunc}{Color of the distance function(s).
+    \item{\code{vertLines}}{Logical scalar specifying whether to plot vertical 
+lines at \code{w.lo} and \code{w.hi} from 0 to the  
+distance function.}
+    \item{\code{col.dfunc}}{Color of the distance function(s).
 If only one distance function (one line) is being plotted, 
 the default color is "red".
 If covariates or \code{newdata} are present, 
@@ -102,8 +75,7 @@ distance functions in the same color by setting
 \code{col.dfunc} to
 a scalar. Plot blue-red pairs of distance functions 
 by setting \code{col.dfunc} = \code{c("blue", "red")}. Etc.}
-
-\item{lty.dfunc}{Line type of the distance function(s).
+    \item{\code{lty.dfunc}}{Line type of the distance function(s).
 If covariates or \code{newdata} is present, 
 the default uses line types  
 to \code{1:n}, where \code{n} is the number 
@@ -111,24 +83,15 @@ of plotted distance functions.  Otherwise, \code{lty.dfunc}
 is replicated to the required length. Plot solid lines
 by specifying \code{lty.dfunc = 1}. Plot solid-dashed line pairs
 by specifying \code{lty.dfunc = c(1,2)}. Etc.}
-
-\item{lwd.dfunc}{Line width of the distance function(s), replicated 
+    \item{\code{lwd.dfunc}}{Line width of the distance function(s), replicated 
 to the required length. Default is 2 for all lines.}
-
-\item{\dots}{When bars are plotted, this routine 
-uses \code{graphics::barplot} to set up the 
-plotting region and plot bars. When bars are not plotted,
-this routine sets up the plot with \code{graphics::plot}.
-\dots can be any other 
-argument to \code{barplot} or \code{plot} EXCEPT  
-\code{width}, \code{ylim}, \code{xlim}, 
-\code{density}, \code{angle}, and \code{space}.}
+  }}
 }
 \value{
 The input distance function is returned, with two additional
-  components than can be used to reconstruct the plotted bars.  To 
+  components than can be used to reconstruct the plotted bars.  (To 
   obtain values of the plotted distance functions, use \code{predict}
-  with \code{type = "distances"}. 
+  with \code{type = "distances"}.) 
   The additional components are:
   \item{barHeights}{A vector containing the scaled bar heights drawn 
   on the plot.}
@@ -164,7 +127,19 @@ set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]
 x <- units::set_units(x, "ft")
-dfunc <- dfuncEstim(x~1, likelihood="halfnorm")
+Df <- data.frame(transectID = "A"
+               , distance = x
+                ) |> 
+  dplyr::nest_by( transectID
+               , .key = "detections") |> 
+  dplyr::mutate(length = units::set_units(1,"mi"))
+attr(Df, "detectionColumn") <- "detections"
+attr(Df, "obsType") <- "single"
+attr(Df, "transType") <- "line"
+attr(Df, "effortColumn") <- "length"
+is.RdistDf(Df) # TRUE
+
+dfunc <- Df |> dfuncEstim(distance ~ 1, likelihood="halfnorm")
 plot(dfunc)
 plot(dfunc, nbins=25)
 
@@ -178,7 +153,7 @@ plot(dfunc
   , main="Showing plot params")
  
 plot(dfunc
-   , col="wheat"
+   , col="purple"
    , density=30
    , angle=c(-45,0,45)
    , cex.axis=1.5
@@ -201,30 +176,28 @@ plot(dfunc
    , plotBars=FALSE
    , cex.axis=1.5
    , col.axis="blue")
-rug(dfunc$detections$dist)
+rug(distances(dfunc))
 
 # Plot showing f(0)
-hist(dfunc$detections$dist
+hist(distances(dfunc)
    , n = 40
    , border = NA
    , prob = TRUE)
 x <- seq(dfunc$w.lo, dfunc$w.hi, length=200)
-y <- predict(dfunc, type="dfunc", distances = x)
-lines(x, c(y)/attr(y, "scaler"))
-c(attr(y,"scaler") / y[1], ESW(dfunc))  # 1/f(0) = ESW
+g <- predict(dfunc, type="dfunc", distances = x, newdata = data.frame(a=1))
+f <- g[,1] / ESW(dfunc)[1]
+# Check integration:
+sum(diff(x)*(f[-1] + f[-length(f)]) / 2) # Trapazoid rule; should be 1.0
+lines(x, f) # hence, 1/f(0) = ESW
 
 # Covariates: detection by observer
-data(sparrowDetectionData)
-data(sparrowSiteData)
-dfuncObs <- dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-                     , likelihood = "hazrate"
-                     , detectionData = sparrowDetectionData
-                     , siteData = sparrowSiteData)
-plot(dfuncObs
-   , newdata = data.frame(observer = levels(sparrowSiteData$observer))
+data(sparrowDfuncObserver) # pre-estimated model
+
+obsLevs <- levels(sparrowDfuncObserver$data$observer)
+plot(sparrowDfuncObserver
+   , newdata = data.frame(observer = obsLevs)
    , vertLines = FALSE
-   , lty = c(1,1)
-   , col.dfunc = heat.colors(length(levels(sparrowSiteData$observer)))
+   , col.dfunc = heat.colors(length(obsLevs))
    , col = c("grey","lightgrey")
    , border=NA
    , main="Detection by observer")
@@ -234,4 +207,3 @@ plot(dfuncObs
 \code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
   \code{\link{print.abund}}
 }
-\keyword{models}

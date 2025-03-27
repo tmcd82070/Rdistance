@@ -2,33 +2,18 @@
 % Please edit documentation in R/estimateN.r
 \name{estimateN}
 \alias{estimateN}
-\title{Abundance point estimates}
+\title{estimateN - Abundance point estimates}
 \usage{
-estimateN(
-  dfunc,
-  data,
-  area = NULL,
-  surveyedSides,
-  lengthColumn,
-  control = RdistanceControls()
-)
+estimateN(object, area = NULL, propUnitSurveyed = 1)
 }
 \arguments{
-\item{dfunc}{An estimate distance function (see \code{dfuncEstim}).}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
-\item{data}{A data frame containing distance observations, transects, 
-and lengths.  This data frame must have a column named 'siteID' that identifies
-unique sites (transects or points). If observations were made on  line-transects, this 
-data frame must also have a column named 
-by the \code{lengthColumn} parameter that contains transect lengths. NA
-length transects are accepted and are dropped when computing total 
-transect length. Only observations on non-NA-length transects are toward density.}
-
-\item{area}{A scalar containing the total area of 
-inference. Commonly, this is study area size.  
-If \code{area} is NULL (the default), 
-\code{area} will be set to 1 square unit of the output units and this
-produces abundance estimates equal density estimates. 
+\item{area}{A scalar containing the total area of inference. Usually, this is 
+study area size.  If \code{area} is NULL (the default), 
+\code{area} will be set to 1 square unit of the output units and density estimates
+will be produced. 
 If \code{area} is not NULL, it must have measurement units 
 assigned by the \code{units} package. 
 The units on \code{area} must be convertible
@@ -36,44 +21,38 @@ to squared output units. Units
 on \code{area} must be two-dimensional. 
 For example, if output units are "foo", 
 units on area must be convertible to "foo^2" by the \code{units}
-package. 
-Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and many
+package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
 
-\item{surveyedSides}{The number of sides of the transect that were surveyed. Either 
-1 or 2.  Only applies to line transects.}
-
-\item{lengthColumn}{Character string specifying the (single) column in 
-\code{siteData} that contains transect lengths. This is ignored if 
-\code{pointSurvey} = TRUE. This column must have measurement units.}
-
-\item{control}{A list containing optimization control parameters such 
-as the maximum number of iterations, tolerance, the optimizer to use, 
-etc.  See the 
-\code{\link{RdistanceControls}} function for explanation of each value,
-the defaults, and the requirements for this list. 
-See examples below for how to change controls.}
+\item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
+The proportion of the default sampling unit that 
+  was surveyed.  If both sides of line transects were observed, 
+  \code{propUnitSurveyed}
+  = 1.  If only a single side of line transects were observed, set 
+  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
+  the proportion of each circle that was observed. Length must either be
+  1 or the total number of transects in \code{x}.}
 }
 \value{
 A list containing the following components:
 
    \item{density}{Estimated density in the surveyed area.}
    
-   \item{abundance}{Estimated abundance on the study area.}
+   \item{abundance}{Estimated abundance on the study area. Equals density if 
+   area is not specified.}
    
-   \item{n.groups}{The number of detections (not individuals, unless all group sizes = 1) 
-   used to estimate density and abundance.}
+   \item{n.groups}{The number of detected groups (not individuals, unless all group sizes = 1).}
    
-   \item{n.seen}{The number of individuals (sum of group sizes) used to 
-   estimate density and abundance.}
+   \item{n.seen}{The number of individuals (sum of group sizes).}
    
    \item{area}{Total area of inference. Study area size}
    
    \item{surveyedUnits}{Number of surveyed sites.  This is total transect length
-   for line-transects and number of points for point-transects. This total transect
-   length does not include NA transects.}
+   for line-transects or number of points for point-transects. This total transect
+   length does not include transects with missing lengths.}
    
-   \item{surveyedSides}{Number of sides (1 or 2) of transects surveyed. Only relevant for line-transects.}
+   \item{propUnitSurveyed}{Proportion of the standard survey unit
+   that was observed}
    
    \item{avg.group.size}{Average group size on non-NA transects}
    
@@ -81,25 +60,24 @@ A list containing the following components:
    
    \item{pDetection}{Probability of detection.}
    
-For line-transects that do not involve covariates, x$density  
-is x$n.seen / (x$surveyedSides * x$w * x$pDetection * x$surveyedUnits)
+For line-transects that do not involve covariates, object$density  
+is object$n.seen / (2 * propUnitSurveyed * object$w * object$pDetection * object$surveyedUnits)
 }
 \description{
-Estimate abundance given a distance function, 
-a "merged" data frame containing detections and transect lengths, area, 
-and the number of sides surveyed (if line-transects).   
-This is called internally by \code{abundEstim}.  Most users will call 
-\code{abundEstim} to estimate abundance.
+Estimate abundance from an Rdistance fitted model. 
+This function is called internally by \code{abundEstim}.  Most users will call 
+\code{abundEstim} to estimate abundance unless they are running simulations or 
+bootstrapping.
 }
 \details{
 The abundance estimate for line-transect surveys (if no covariates
    are included in the detection function and both sides of the transect 
-   were observed) is 
+   are observed) is 
    \deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
          N = n*A / (2*ESW*L)} 
    where \emph{n} is total number of sighted individuals 
-  (i.e., \code{sum(dfunc$detections$groupSizes)}), \emph{L} is the total 
-  length of surveyed transect (i.e., \code{sum(siteData[,lengthColumn])}),
+  (i.e., \code{sum(groupSizes(dfunc))}), \emph{L} is the total length of 
+  surveyed transect (i.e., \code{sum(effort(dfunc))}),
   and \emph{ESW} is effective strip width
   computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
   If only one side of transects were observed, the "2" in the denominator 
@@ -109,15 +87,19 @@ The abundance estimate for line-transect surveys (if no covariates
   included) is 
    \deqn{N =\frac{n(A)}{\pi(ESR^2)(P)}}{%
          N = n*A / ((3.1415)*ESR^2*(P))} 
-   where \emph{n} is total number of sighted individuals,
-   \emph{P} is the total number of surveyed points, 
+   where \emph{n} is total number of sighted individuals (i.e., \code{sum(groupSizes(dfunc))}),
+   \emph{P} is the total number of surveyed points (i.e., \code{sum(effort(dfunc))}), 
    and \emph{ESR} is effective search radius 
    computed from the estimated distance function (i.e., \code{ESR(dfunc)}).
 
  Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
-    suppresses all intermediate output.
+    suppresses all intermediate output.  
+    
+ Estimation of site-specific density (e.g., on every transect) is accomplished by 
+ \code{predict(x, type = "density")}, which returns a 
+ tibble containing density and abundance on the area surveyed by every
+ transect.
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 }
-\keyword{model}

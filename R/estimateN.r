@@ -1,27 +1,12 @@
-#' @title Abundance point estimates
+#' @title estimateN - Abundance point estimates
 #' 
-#' @description Estimate abundance given a distance function, 
-#' a "merged" data frame containing detections and transect lengths, area, 
-#' and the number of sides surveyed (if line-transects).   
-#' This is called internally by \code{abundEstim}.  Most users will call 
-#' \code{abundEstim} to estimate abundance. 
+#' @description Estimate abundance from an Rdistance fitted model. 
+#' This function is called internally by \code{abundEstim}.  Most users will call 
+#' \code{abundEstim} to estimate abundance unless they are running simulations or 
+#' bootstrapping.
 #' 
-#' @param dfunc An estimate distance function (see \code{dfuncEstim}).
-#' 
-#' @param data A data frame containing distance observations, transects, 
-#' and lengths.  This data frame must have a column named 'siteID' that identifies
-#' unique sites (transects or points). If observations were made on  line-transects, this 
-#' data frame must also have a column named 
-#' by the \code{lengthColumn} parameter that contains transect lengths. NA
-#' length transects are accepted and are dropped when computing total 
-#' transect length. Only observations on non-NA-length transects are toward density.
-#' 
-#' @param surveyedSides The number of sides of the transect that were surveyed. Either 
-#' 1 or 2.  Only applies to line transects. 
-#' 
+#' @inheritParams predict.dfunc 
 #' @inheritParams abundEstim
-#' 
-#' @inheritParams dfuncEstim  
 #'  
 #' @inherit abundEstim details
 #'   
@@ -29,21 +14,21 @@
 #' 
 #'    \item{density}{Estimated density in the surveyed area.}
 #'    
-#'    \item{abundance}{Estimated abundance on the study area.}
+#'    \item{abundance}{Estimated abundance on the study area. Equals density if 
+#'    area is not specified.}
 #'    
-#'    \item{n.groups}{The number of detections (not individuals, unless all group sizes = 1) 
-#'    used to estimate density and abundance.}
+#'    \item{n.groups}{The number of detected groups (not individuals, unless all group sizes = 1).}
 #'    
-#'    \item{n.seen}{The number of individuals (sum of group sizes) used to 
-#'    estimate density and abundance.}
+#'    \item{n.seen}{The number of individuals (sum of group sizes).}
 #'    
 #'    \item{area}{Total area of inference. Study area size}
 #'    
 #'    \item{surveyedUnits}{Number of surveyed sites.  This is total transect length
-#'    for line-transects and number of points for point-transects. This total transect
-#'    length does not include NA transects.}
+#'    for line-transects or number of points for point-transects. This total transect
+#'    length does not include transects with missing lengths.}
 #'    
-#'    \item{surveyedSides}{Number of sides (1 or 2) of transects surveyed. Only relevant for line-transects.}
+#'    \item{propUnitSurveyed}{Proportion of the standard survey unit
+#'    that was observed}
 #'    
 #'    \item{avg.group.size}{Average group size on non-NA transects}
 #'    
@@ -51,247 +36,101 @@
 #'    
 #'    \item{pDetection}{Probability of detection.}
 #'    
-#' For line-transects that do not involve covariates, x$density  
-#' is x$n.seen / (x$surveyedSides * x$w * x$pDetection * x$surveyedUnits)
+#' For line-transects that do not involve covariates, object$density  
+#' is object$n.seen / (2 * propUnitSurveyed * object$w * object$pDetection * object$surveyedUnits)
 #'    
 #'         
 #'    
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
 #' 
-#' @keywords model
-#'
 #' @export 
 
-estimateN <- function(dfunc
-                      , data
+estimateN <- function(object
                       , area = NULL
-                      , surveyedSides
-                      , lengthColumn
-                      , control = RdistanceControls()
+                      , propUnitSurveyed = 1.0
                       ){
 
-  if( !inherits(area, "units") & control$requireUnits ){
-    if( !is.null(area) ){
-      # If we are here, area did not come with units, we require units, and it's not null: ERROR
-      stop(paste("Study area measurement units are required."
-                 , "Assign units to area by attaching 'units' package then:\n"
-                 , "units(area) <- '<units of measurment>'."
-                 , "'m^2' (sq meters), 'ha' (hectares), 'km^2', and 'acre' are acceptable.\n"
-                 , "See units::valid_udunits()"))
-    }
-    # if we are here, area is NULL: Report abundance in 1 square unit of measure
-    area <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
-  } else if( control$requireUnits ){
-    # if we are here, area has units and it is not null (because you cannot 
-    # assign units to NULL) but it could be NA)
-    # Convert area units to square of outputUnits.
-    # This converts units like "hectare" to "m^2". If cannot convert, and error is thrown here
-    squareOutputUnits <- units::set_units(1, dfunc$outputUnits, mode = "standard")^2
-    area <- units::set_units(area, squareOutputUnits, mode = "standard")
-  }
-
-  # ---- Check whether point survey "lengths" are present ----
-  if( dfunc$pointSurvey ){
-    if( !( lengthColumn %in% names(data)) ){
-      # no point "length". Use siteID as length. Below, we count non-missing site ids
-      lengthColumn <- "siteID"
-    }  
-  }  
+  w <- object$w.hi - object$w.lo
   
   # ---- Find observations on NA length transects inside the strip ----
-  mt <- terms(dfunc$model.frame)
-  distColumn <- all.vars(mt)[attr(mt, "response")]
-  inStrip <- (dfunc$w.lo <= data[,distColumn]) &
-             (data[,distColumn] <= dfunc$w.hi)
-  onPosTransect <- !is.na(data[, lengthColumn ]) # use distance in dfunc, but do not count groupsize
-  distPresent <- !is.na(data[, distColumn]) # count groupsize, but no distances
-  obsInd <- inStrip & onPosTransect & distPresent
-
-  # ---- Measurement units check. ----
-  if( !dfunc$pointSurvey ){
-    if( !inherits(data[,lengthColumn], "units") & control$requireUnits ){
-      stop(paste("Transect length units are required.\n" 
-                 , "Assign units to transect lengths in site data frame with statements like:\n"
-                 , "siteData$length <- units::set_units(siteData$length, '<units>')\n"
-                 , "'m' (meters), 'ft' (feet), 'km' (kilometers), etc. are all acceptable.\n"
-                 , "See units::valid_udunits()"))
-    } else if( control$requireUnits ){
-      # if we are here, length has units. convert them to units used during estimation.
-      # Input dfunc must have a $outputUnits component.
-      data[,lengthColumn] <-  units::set_units(data[,lengthColumn], dfunc$outputUnits, mode = "standard")
+  # We need these regardless whether dfunc converges or not
+  groupSz <- Rdistance::groupSizes(object) # length = num distance obs (could include NA)
+  eff <- Rdistance::effort(object) # length = num non-missing plus missing transects
+  totSurveyedUnits <- sum(eff, na.rm = TRUE) # na.rm CRITICAL here: remove transects with NA length
+  if( !Rdistance::is.points(object) ){
+    if(units(totSurveyedUnits) != object$outputUnits){
+      # w has units we want; but, effort came from user and has not been converted yet
+      totSurveyedUnits <- units::set_units(totSurveyedUnits, object$outputUnits, mode="standard")
     }
-  } 
+  }  # Point effort vector has no units b/c it's number of points
   
   # ---- Estimate numerator of abundance ----
-  # REMEMBER: component $detections of dfunc has been truncated to (w.lo, w.hi)
-  #           component $model.frame has NOT been truncated to the strip
-
-  # If dfunc has covariates, esw is a vector of length n. No covars, esw is scalar
-  # If dfunc is pointSurveys, esw is EDR.  If line surveys, esw is ESW.
-  esw <- effectiveDistance(dfunc
-                         , newdata = data[ obsInd, , drop = FALSE])
-    
-  w <- dfunc$w.hi - dfunc$w.lo
+  if( object$convergence == 0 ){
+    # REMEMBER: component $mf is the model frame and has been truncated to (w.lo, w.hi) and
+    #           potentially has distance observations from transects without lengths
+    #           component $data has NOT been truncated to the strip
   
-  if (dfunc$pointSurvey) {
-    phat <- (esw / w)^2  # for points
-  } else {
-    phat <- esw / w  # for lines
-  }
-
-  # phat should be unit-less; check just to be sure, if so drop "1" units
-  # Odd: sometimes phat has units "1", sometimes "m/m". Either way, test and remove.
-  
-  if( isUnitless(phat)  ){
-    phat <- units::drop_units(phat)
-  }
-
-  if( !is.null(attr(mt, "offset")) ){
-    gsCol <- all.vars(mt)[attr(mt, "offset")]
-    gs <- data[, gsCol]
-    gs <- gs[ obsInd ]
-  } else {
-    gs <- rep(1, sum(obsInd))
-  }
-  
-  nhat <- gs / phat # inflated counts one per detection
-  
-  # ---- Compute denominator of abundance, and abundance itself ----
-  
-  if (FALSE) {
+    # esw is always a vector of length n. 
+    esw <- effectiveDistance(object)
     
-    # MOVE ALL THIS TO A PREDICT METHOD
-    
-    # if(!is.null(dfunc$covars)){
-    #   covarsInModel <- attr(terms(dfunc$model.frame), "term.labels")
-    #   allSiteLevelCovs <- all( covarsInModel %in% names(siteData) )
-    #   if( !allSiteLevelCovs ) {
-    #     nonSiteLevCovs <- paste("'",covarsInModel[!(covarsInModel %in% names(siteData))], 
-    #                             "'",collapse = ", ", sep="")
-    #     mess <-"Cannot estimate site-level abundance. bySite is TRUE but detection-level "
-    #     if(regexpr(",", nonSiteLevCovs) < 0) {
-    #       mess <- paste0(mess, "covariate ",
-    #                    nonSiteLevCovs,
-    #                    " is in the model. Options: remove this covariate from dfunc; ",
-    #                    "set bySite=FALSE; or, summarize it to the site-level,", 
-    #                    " place it in siteData under same name, and re-run ", 
-    #                    "abundEstim WITHOUT re-running dfuncEstim.")
-    #     } else {
-    #       mess <- paste0(mess, "covariates ",
-    #                      nonSiteLevCovs,
-    #                      " are in the model. Options: remove these covariates from dfunc; ",
-    #                      "set bySite=FALSE; or, summarize them to the site-level,", 
-    #                      " place them in siteData under same names, and re-run ", 
-    #                      "abundEstim WITHOUT re-running dfuncEstim.")
-    #       
-    #     }
-    #     stop(mess)
-    #   }
-    # }
-    # 
-    # # ---- sum statistics by siteID
-    # 
-    # nhat.df <- data.frame(siteID = detectionData$siteID, abundance=nhat)
-    # nhat.df <- tapply(nhat.df$abundance, nhat.df$siteID, sum)
-    # nhat.df <- data.frame(siteID = names(nhat.df), abundance=nhat.df)
-    # 
-    # observedCount <- tapply(detectionData$groupsize, detectionData$siteID, sum)
-    # observedCount <- data.frame(siteID = names(observedCount), observedCount=observedCount)
-    # 
-    # nhat.df <- merge(observedCount, nhat.df)  # should match perfectly
-    # 
-    # # If detectionData$siteID is a factor and has all levels, even zero
-    # # sites, don't need to do this.  But, to be safe merge back to 
-    # # get zero transects and replace NA with 0 
-    # 
-    # # Must do this to get pDetection on 0-sites.  Site must have 
-    # # non-missing covars if dfunc has covars
-    # esw <- effectiveDistance(dfunc, siteData)
-    # siteData <- data.frame(siteData, esw=esw)
-    # 
-    # if (dfunc$pointSurvey) {
-    #   siteData$pDetection <- (siteData$esw / w)^2  # for points
-    # } else {
-    #   siteData$pDetection <- siteData$esw / w  # for lines
-    # }
-    # 
-    # 
-    # nhat.df <- merge(siteData, nhat.df, by="siteID", all.x=TRUE)
-    # nhat.df$observedCount[is.na(nhat.df$observedCount)] <- 0
-    # nhat.df$abundance[is.na(nhat.df$abundance)] <- 0
-    # 
-    # # Calculate density
-    # if (dfunc$pointSurvey) {
-    #   sampledArea <- pi * w^2  # area samled for single point  
-    # } else {
-    #   sampledArea <- 2 * w * nhat.df$length  # area sampled for single line
-    # }
-    # nhat.df$density <- (nhat.df$abundance * area) / sampledArea
-    # 
-    # 
-    # # Calculate effective area ("effective" as in ESW)
-    # # This is suggested as the offset term in a GLM model of density
-    # if (dfunc$pointSurvey) {
-    #   nhat.df$effArea <- (pi * nhat.df$esw^2) / area  # for points
-    # } else {
-    #   nhat.df$effArea <- (nhat.df$length * nhat.df$esw * 2) / area  # for lines
-    # }
-    # 
-    # 
-    # # Replace the column name for "esw", which is edr for points
-    # if (dfunc$pointSurvey) {
-    #   names(nhat.df)[names(nhat.df)=="esw"] <- "EDR"  # for points
-    # } else {
-    #   names(nhat.df)[names(nhat.df)=="esw"] <- "ESW"  # for lines
-    # }
-    
-    
-  } else {
-
-    # ----  not bySite ----
-    
-    # ---- Compute number of points or transect length ----
-    # Note: drop NA length transects or points here, which may have detections and distance measurements.
-    # There are dups because data is the merged data, and has one row per detection and there 
-    # are multiple detections per transect or point.
-    if( dfunc$pointSurvey ){
-      dups <- duplicated(data$siteID)
-      totSurveyedUnits <- sum(!is.na(data[!dups,,drop=FALSE][,lengthColumn]))
+    if (Rdistance::is.points(object)) {
+      phat <- (esw / w)^2  # for points
     } else {
-      dups <- duplicated(data$siteID)
-      totSurveyedUnits <- sum(data[!dups,,drop=FALSE][,lengthColumn], na.rm = TRUE)
+      phat <- esw / w  # for lines
+    }
+  
+    # phat should be unit-less; check just to be sure, if so drop "1" units
+    # Odd: sometimes phat has units "1", sometimes "m/m". Either way, remove,
+    # but don't use units::drop_units which only works if phat has units to drop.
+    # Assigning NULL units always works
+    phat <- units::set_units(phat, NULL)
+    nhat <- groupSz / phat # inflated counts one per detection
+    
+    # ---- Compute density ----
+    if(Rdistance::is.points(object)){
+      dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * pi * w^2 * totSurveyedUnits) # na.rm CRITICAL here; missing groupsizes on missing transects
+    } else {
+      dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * 2 * w * totSurveyedUnits)
     }
     
-    if(dfunc$pointSurvey){
-      dens <- sum(nhat) / (pi * w^2 * totSurveyedUnits)
-    } else {
-      dens <- sum(nhat) / (surveyedSides * w * totSurveyedUnits)
+    # ---- Compute abundance ----
+    oneSqUnit <- units::set_units(1, object$outputUnits, mode = "standard")^2 
+    if( is.null(area) ){
+      area <- oneSqUnit
+    } else if( units(area) != units(oneSqUnit) ){
+      area <- units::set_units(area, units(oneSqUnit), mode="standard")
     }
     
     nhat.df <- dens * area
-    
-    # nhat.df should be unitless
-    if( isUnitless(nhat.df) ){
-      nhat.df <- units::drop_units(nhat.df)
+    if( units(nhat.df) != units(units::set_units(1, "1")) ){
+      warning(paste("Units on N are not 1 (unitless). Some units did not convert correctly."
+                    , "Manually convert all measurements"
+                    , "to the same units outside Rdistance, and re-run."))
     } else {
-      warning(paste("Strange measurement units have been detected because abundance is not unitless.\n", 
-      "Check measurement unit compatability among distances, transect lengths, and area."))
+      nhat.df <- units::set_units(nhat.df, NULL)
     }
     
-    nhat.df <- list(density = dens
-                    , abundance = nhat.df
-                    , n.groups = length(gs)
-                    , n.seen = sum(gs)
-                    , area = area
-                    , surveyedUnits = totSurveyedUnits
-                    , surveyedSides = surveyedSides
-                    , avg.group.size = mean(gs)
-                    , range.group.size = range(gs)
-                    , w = w
-                    , pDetection = phat
-                    )
+  } else {
+    # if we are here, object did not converge
+    dens <- NA
+    nhat.df <- NA
+    phat <- NA
   }
-    
+
+  # ---- Make output data frame ----
+  nhat.df <- list(density = dens
+                  , abundance = nhat.df
+                  , n.groups = sum(!is.na(groupSz))
+                  , n.seen = sum(groupSz, na.rm = TRUE)
+                  , area = area
+                  , surveyedUnits = totSurveyedUnits
+                  , propUnitSurveyed = propUnitSurveyed
+                  , avg.group.size = mean(groupSz, na.rm = TRUE)
+                  # , range.group.size = range(groupSz)
+                  , w = w
+                  , pDetection = phat
+                  )
+
   # some interesting tidbits:
   #  sampled area = tot.trans.len * 2 * (dfunc$w.hi - dfunc$w.lo)
   #  sum(1/phat) = what Distance calls "N in covered region".  This is
@@ -310,6 +149,6 @@ estimateN <- function(dfunc
   
 
   return(nhat.df)
-}  # end estimate.nhat function
+}  
 
 

@@ -51,8 +51,9 @@ Rdistance.Rproj
 .Rhistory
 inst/doc
 R/prep.R
-data-raw/
-# tests/
+data-raw
+
+vignettes/
 WorkshopScripts/
 doc
 Meta

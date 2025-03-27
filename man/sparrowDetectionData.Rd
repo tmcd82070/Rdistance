@@ -34,7 +34,6 @@ located on a 4105 km^2 study
 area in central Wyoming. Data were collected by 
 Dr. Jason Carlisle of the Wyoming Cooperative Fish & Wildlife
 Research Unit in 2012. Each transect was 500 meters long.
-See the package vignettes for tutorials of the basic analysis.
 }
 \references{
 Carlisle, J.D. 2017. The effect of sage-grouse conservation on

@@ -18,41 +18,48 @@
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)
-#' data(sparrowDetectionData)
-#' data(sparrowSiteData)
+#' data(sparrowDf)
 #' 
 #' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist ~ 1 + offset(groupsize)
-#'                   , detectionData=sparrowDetectionData)
+#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~groupsize(groupsize))
 #' 
 #' # Estimate abundance given a detection function
-#' # Note: a person should do more than R=20 bootstrap iterations
-#' fit <- abundEstim(dfunc
-#'                 , detectionData = sparrowDetectionData
-#'                 , siteData = sparrowSiteData
+#' fit <- abundEstim(object = dfunc
 #'                 , area = units::set_units(4105, "km^2")
 #'                 , ci = NULL)
 #' print(fit)
+#' summary(fit)
 #' 
+#' \dontrun{
+#' # Bootstrap confidence intervals (500 iterations)
+#' # Requires ~4 min
+#' fit <- abundEstim(object = dfunc
+#'                 , area = units::set_units(4105, "km^2")
+#'                 , ci = 0.95
+#'                 , plot.bs = TRUE
+#'                 , showProgress = TRUE)
+#' print(fit)
+#' summary(fit)
+#' }
 #' @keywords models
 #' @export
 
 print.abund <- function( x
                        , ... ){
 
-  print.dfunc( x )
+  print.dfunc( x, ... )
   cat("\n")
   hasCI <- all(!is.null(x$density.ci))
   
   # ---- Density printout ----
   mess <- c("Density in sampled area:")
-  ptEst <- colorize( colorize(format(x$density)), col = "bold" )
+  ptEst <- colorize( colorize(format(x$estimates$density)), col = "bold" )
   mess <- paste(mess, ptEst)
   cat(paste0(mess, "\n"))
 
   # ---- Abundance printout ----
-  mess <- paste0( "Abundance in ", format(x$area), " study area:")
-  ptEst <- colorize( colorize(format(x$n.hat)), col = "bold" )
+  mess <- paste0( "Abundance in ", format(x$estimates$area), " study area:")
+  ptEst <- colorize( colorize(format(x$estimates$abundance)), col = "bold" )
   mess <- paste(mess, ptEst)
   cat(paste0(mess, "\n"))
 

@@ -32,7 +32,6 @@ Research Unit (2012).
 Point transect data collected in central 
 Wyoming from 120 points surveyed for Sage Thrashers by the Wyoming 
 Cooperative Fish & Wildlife Research Unit in 2013.
-See package vignettes for tutorials of the basic analysis.
 }
 \references{
 Carlisle, J.D. 2017. The effect of sage-grouse conservation on

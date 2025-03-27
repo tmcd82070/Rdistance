@@ -1,12 +1,13 @@
-#' @title calculation of cosine expansion for detection function likelihoods
+#' @title cosine.expansion - Cosine expansion terms
 #' 
-#' @description Computes the cosine expansion terms used in the likelihood of a distance analysis. 
-#'   More generally, will compute a cosine expansion of any numeric vector.
+#' @description 
+#' Computes the cosine expansion terms used to modify the 
+#' shape of distance likelihood functions. 
 #'   
-#' @param x In a distance analysis, \code{x} is a numeric vector of the proportion of a strip transect's half-width 
-#'   at which a group of individuals were sighted.  If \eqn{w} is the strip transect half-width or maximum sighting 
-#'   distance, and \eqn{d} is the perpendicular off-transect distance to a sighted group (\eqn{d\leq w}{d <= w}), 
-#'   \code{x} is usually \eqn{d/w}.  More generally, \code{x} is a vector of numeric values
+#' @param x A numeric vector of distances at which to evaluate 
+#' the expansion series. For distance analysis, \code{x} is
+#' of the proportion of a strip transect's half-width 
+#' at which a group of individuals were sighted, i.e., \eqn{d/w}.  
 #'   
 #' @param expansions A scalar specifying the number of expansion terms to compute. Must be one of the 
 #' integers 1, 2, 3, 4, or 5.
@@ -27,25 +28,16 @@
 #' @seealso \code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
 #'   of user defined likelihoods in \code{\link{dfuncEstim}}.
 #'   
-#' @examples set.seed(33328)
-#'   x <- rnorm(1000) * 100
-#'   x <- x[ 0 < x & x < 100 ]
-#'   cos.expn <- cosine.expansion(x, 5)
+#' @examples 
+#' x <- seq(0, 1, length = 200)
+#' cos.expn <- cosine.expansion(x, 5)
+#' plot(range(x), range(cos.expn), type="n")
+#' matlines(x, cos.expn, col=rainbow(5), lty = 1)
 #' @keywords models
 #' @export
 
 cosine.expansion <- function(x, expansions){
-# Calculates cosine expansion for detection function.
-# Input:
-#       x = distances / w
-#       expansions = number of expansion terms (1 - 5)
-#
-# Output:
-#       expansion = a matrix with columns
-#                   expansion[,1] = expansion for the 1st term,
-#                   expansion[,2] = expansion for the 2nd, and so on.  
-# changed 1st coeff to 2 - even function - jg
-   
+
     if (expansions > 5){
         warning("Too many Cosine polynomial expansion terms. Only 5 used.")
         expansions = 5

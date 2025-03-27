@@ -15,8 +15,9 @@ distance, and \eqn{d} is the perpendicular off-transect distance to a sighted gr
 \item{expansions}{A scalar specifying the number of expansion terms to compute. Must be one of the integers 1, 2, 3, or 4.}
 }
 \value{
-A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the Hermite polynomial expansions of \code{x}. 
-  Column 1 is the first expansion term of \code{x}, column 2 is the second expansion term of \code{x}, and so on up to \code{expansions}.
+A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are 
+the Simple polynomial expansions of \code{x}. Column 1 is the first expansion term of \code{x}, 
+column 2 is the second \code{x}, and so on up to \code{expansions}.
 }
 \description{
 Computes simple polynomial expansion terms used in the likelihood of a distance analysis. More generally, will compute
@@ -28,18 +29,17 @@ The polynomials computed here are:
     \item \bold{First term}: \deqn{h_1(x)=x^4,}{h1(x) = x^4,}
     \item \bold{Second term}: \deqn{h_2(x)=x^6,}{h2(x) = x^6,}
     \item \bold{Third term}: \deqn{h_3(x)=x^8,}{h3(x) = x^8,}
-    \item \bold{Fourth term}: \deqn{h_4(x)=x^10,}{h4(x) = x^10,}
+    \item \bold{Fourth term}: \deqn{h_4(x)=x^{10},}{h4(x) = x^10,}
   }
   The maximum number of expansion terms computed is 4.
 }
 \examples{
-set.seed(883839)
-  x <- rnorm(1000) * 100
-  x <- x[ 0 < x & x < 100 ]
-  simp.expn <- simple.expansion(x, 4)
+x <- seq(0, 1, length = 200)
+simp.expn <- simple.expansion(x, 4)
+plot(range(x), range(simp.expn), type="n")
+matlines(x, simp.expn, col=rainbow(4), lty = 1) 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{hermite.expansion}}, and the discussion 
-  of user defined likelihoods in \code{\link{dfuncEstim}}.
+\code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{hermite.expansion}}
 }
 \keyword{models}

@@ -2,24 +2,21 @@
 % Please edit documentation in R/AIC.dfunc.R
 \name{AIC.dfunc}
 \alias{AIC.dfunc}
-\title{AICc and related fit statistics for detection function objects}
+\title{AIC.dfunc - AIC-related fit statistics for detection functions}
 \usage{
 \method{AIC}{dfunc}(object, ..., criterion = "AICc")
 }
 \arguments{
-\item{object}{An estimated detection function object.  An estimated detection 
-function object has class 'dfunc', and is usually produced by a call to 
-\code{dfuncEstim}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
-\item{\dots}{Required for compatibility with the general \code{AIC} method.  Any 
-extra arguments to this function are ignored.}
+\item{...}{Included for compatibility with generic \code{predict} methods.}
 
 \item{criterion}{String specifying the criterion to compute. Either 
 "AICc", "AIC", or "BIC".}
 }
 \value{
-A scalar. By default, the value of AICc for the 
-estimated distance function \code{obj}.
+A scalar, the requested fit statistic for \code{object}.
 }
 \description{
 Computes AICc, AIC, or BIC for estimated distance functions.
@@ -46,15 +43,14 @@ Regular Akaike's information criterion
   \deqn{BIC = LL + log(n)p,}{BIC = (LL) + log(n)p}.
 }
 \examples{
-  data(sparrowDetectionData)
-  dfunc <- dfuncEstim(dist~1,
-                      detectionData=sparrowDetectionData, 
-                      w.hi=units::set_units(150, "m"))
+data(sparrowDf)
+dfunc <- sparrowDf |> dfuncEstim(dist~1)
   
-  # Compute fit statistics
-  AIC(dfunc)  # AICc
-  AIC(dfunc, criterion="AIC")  # AIC
-  AIC(dfunc, criterion="BIC")  # BIC
+# Fit statistics
+AIC(dfunc)  # AICc
+AIC(dfunc, criterion="AIC")  # AIC
+AIC(dfunc, criterion="BIC")  # BIC
+
 }
 \references{
 Burnham, K. P., and D. R. Anderson, 2002. 

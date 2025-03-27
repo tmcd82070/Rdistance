@@ -2,12 +2,13 @@
 % Please edit documentation in R/print.dfunc.r
 \name{print.dfunc}
 \alias{print.dfunc}
-\title{Print a distance function object}
+\title{print.dfunc - Print method for distance function object}
 \usage{
 \method{print}{dfunc}(x, ...)
 }
 \arguments{
-\item{x}{An estimated distance function resulting from a call to \code{dfuncEstim}.}
+\item{x}{An estimated detection function object, normally 
+produced by calling \code{\link{dfuncEstim}}.}
 
 \item{\dots}{Included for compatibility with other print methods.  Ignored here.}
 }
@@ -15,16 +16,17 @@
 The input distance function (\code{x}) is returned invisibly.
 }
 \description{
-Print method for distance functions produced by \code{dfuncEstim},
-which are of class \code{dfunc}.
+Print method for distance function objects produced 
+by \code{dfuncEstim}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
+data(sparrowSiteData)
 data(sparrowDetectionData)
 
 # Fit half-normal detection function
-dfunc <- dfuncEstim(formula=dist~1,
-                    detectionData=sparrowDetectionData)
+sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
+dfunc <- sparrowDf |> dfuncEstim(formula=dist~1)
 
 dfunc
 
@@ -33,4 +35,3 @@ dfunc
 \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, 
 \code{\link{print.abund}}, \code{\link{summary.dfunc}}
 }
-\keyword{models}

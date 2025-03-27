@@ -2,93 +2,81 @@
 % Please edit documentation in R/ESW.r
 \name{ESW}
 \alias{ESW}
-\title{Line transect Effective Strip Width (ESW)}
+\title{ESW - Effective Strip Width (ESW) for line transects}
 \usage{
-ESW(obj, newdata)
+ESW(object, newdata = NULL)
 }
 \arguments{
-\item{obj}{An estimated detection function object.  An estimated detection 
-function object has class 'dfunc', and is usually produced by a call to 
-\code{dfuncEstim}. The estimated detection function may optionally contain 
-a \eqn{g(0)} component that specifies detection probability 
-on the transect.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
-1 is assumed.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
-\item{newdata}{A data frame containing new values of 
-the covariates at which ESW's are sought. If NULL or missing and 
-\code{obj} contains covariates, the  
-covariates stored in \code{obj} are used. See \bold{Value} section.}
+\item{newdata}{A data frame containing new values for 
+covariates at which either
+ESW's or EDR's will be computed. If NULL and 
+  \code{object} contains covariates, the  
+  covariates stored in
+  \code{object} are used (like \code{\link{predict.lm}}).
+  If not NULL, covariate values in \code{newdata}
+  are used. 
+  See \bold{Value} section for more information.}
 }
 \value{
-If \code{newdata} is not missing and not NULL and 
-covariates are present in \code{obj}, the returned value is 
-a vector of ESW values associated with covariates in the 
-distance function and equal in length to the number of rows in \code{newdata}. 
-If \code{newdata} is missing or NULL and covariates are present
-in \code{obj}, an ESW vector with length equal to 
-the number of detections in \code{obj$detections} is returned. 
-
-If \code{obj} does not contain covariates, \code{newdata} is ignored and 
-a scalar equal to the (constant) effective strip width for all 
-detections is returned.
+If \code{newdata} is present, the returned value is 
+a vector of effective sampling distances for values of the 
+covariates in \code{newdata} with length equal to 
+the number of rows in \code{newdata}. 
+If \code{newdata} is NULL, the returned value is a vector of effective
+sampling distances associated with covariate values in \code{object} and has 
+the same number of detected groups.  The returned vector 
+has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
-Returns effective strip width (ESW) from an estimated 
-  line transect detection
-  functions. This function applies only to line transect information.
-  Function \code{EDR} is for point transect data. Function 
-  \code{effectiveDistance} accepts either point or line transect data.
+Returns effective strip width (ESW) for 
+  line-transect detection functions. 
+  See \code{\link{EDR}} is for point transects.
 }
 \details{
-Effective strip width (ESW) of a distance function is its
-  integral. That is, ESW is the area under the distance function from its
-  left-truncation limit (\code{obj$w.lo}) to its right-truncation limit
-  (\code{obj$w.hi}). \if{latex}{In mathematical notation, \deqn{ESW =
-  \int_{w.lo}^{w.hi} g(x)dx,} where \eqn{g(x)} is the height of the distance
-  function at distance \eqn{x}, and \eqn{w.lo} and \eqn{w.hi} are the lower
-  and upper truncation limits used during the survey.  }
+ESW is the area under 
+  the scaled distance function between its
+  left-truncation limit (\code{obj$w.lo}) and its right-truncation 
+  limit (\code{obj$w.hi}). \if{latex}{I.e., 
+    \deqn{ESW = \int_{w.lo}^{w.hi} g(x)dx,} 
+  where \eqn{g(x)} is the distance
+  function scaled so that \eqn{g(x.scl) = g.x.scl}
+  and \eqn{w.lo} and \eqn{w.hi} are the lower
+  and upper truncation limits.  }
   
-  If detection does not decline with distance, area under the detection 
-  function is the entire half-width of 
-  the strip transect (i.e., \code{obj$w.hi - obj$w.lo}).  
-  In this case density is the number sighted targets 
-  divided by area surveyed, where area surveyed is 
-  \code{obj$w.hi-obj$w.lo} times
-  total length of transects.
-  
-  When detection declines with distance, less than the total half-width is
-  \emph{effectively} covered. In this case, Buckland \emph{et al.} (1993) show that the
-  denominator of the density estimator is total length of 
-  surveyed transects times area under the detection function (i.e., this
-  integral). By analogy with the non-declining detection case, ESW is the 
-  transect half-width that observers \emph{effectively}
-  cover. In other words, if ESW = X, the study 
-  effectively covers the same area as a study with non-declining detection out to a
-  distance of X.
-  
-  \emph{A technical consideration}: Rdistance uses the trapezoid rule to numerically 
-  integrate under the distance
-  function from \code{obj$w.lo} to \code{obj$w.hi}. Two-hundred
-  trapezoids are used in the approximation to speed calculations.  In some
-  rare cases, two hundred trapezoids may not be enough.  In these cases, 
-  users should modify this function's code and bump \code{seq.length} to 
-  a value greater than 200.
+  If detection does not decline with distance, 
+  the detection function is flat (horizontal), and 
+  area under the detection  
+  function is  \eqn{g(0)(w.hi - w.lo)}.  
+  If, in this case, \eqn{g(0) = 1}, effective sampling distance is 
+  the half-width of the surveys, \eqn{(w.hi - w.lo)}
 }
+\section{Numeric Integration}{
+ 
+Rdistance uses Simpson's composite 1/3 rule to numerically 
+integrate under distance functions. The number of points evaluated 
+during numerical integration is controlled by 
+\code{options(Rdistance_intEvalPts)} (default 101).
+Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
+requires an even number of intervals (hence, odd number of points). 
+Lower values of 'Rdistance_intEvalPts' increase calculation speeds; 
+but, decrease accuracy.
+'Rdistance_intEvalPts' must be >= 5.  A warning is thrown if 
+'Rdistance_intEvalPts' < 29. Empirical tests by the author 
+suggest 'Rdistance_intEvalPts' values >= 30 are accurate 
+to several decimal points and that all 'Rdistance_intEvalPts' >= 101 produce 
+identical results in all but pathological cases.
+}
+
 \examples{
-# Load example sparrow data (line transect survey type)
-data(sparrowDetectionData)
+data(sparrowDf)
+dfunc <- sparrowDf |> dfuncEstim(formula=dist~bare)
 
-dfunc <- dfuncEstim(formula=dist~1
-                  , detectionData = sparrowDetectionData)
+ESW(dfunc) # vector length 356 = number of groups
+ESW(dfunc, newdata = data.frame(bare = c(30,40))) # vector length 2
 
-# Compute effective strip width (ESW)
-ESW(dfunc)
-
-}
-\references{
-Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
-  1993. \emph{Distance Sampling: Estimating Abundance of Biological
-  Populations}. Chapman and Hall, London.
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{EDR}}, 

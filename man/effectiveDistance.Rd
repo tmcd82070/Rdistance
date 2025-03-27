@@ -2,38 +2,33 @@
 % Please edit documentation in R/effectiveDistance.R
 \name{effectiveDistance}
 \alias{effectiveDistance}
-\title{Calculates the effective sampling distance for 
-estimated detection functions}
+\title{effectiveDistance - Effective sampling distances}
 \usage{
-effectiveDistance(obj, newdata = NULL)
+effectiveDistance(object, newdata = NULL)
 }
 \arguments{
-\item{obj}{An estimated detection function object.  An estimated detection 
-function object has class 'dfunc', and is usually produced by a call to 
-\code{dfuncEstim}. The estimated detection function may optionally contain 
-a \eqn{g(0)} component.  If no \eqn{g(0)} component is found, \eqn{g(0)} =
-1 is assumed.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
-\item{newdata}{A data frame containing new values of the covariates at which
-ESW's or EDR's are sought. If NULL or missing and 
-\code{obj} contains covariates, the  
-covariates stored in
-\code{obj} are used. See \bold{Value} section.}
+\item{newdata}{A data frame containing new values for 
+covariates at which either
+ESW's or EDR's will be computed. If NULL and 
+  \code{object} contains covariates, the  
+  covariates stored in
+  \code{object} are used (like \code{\link{predict.lm}}).
+  If not NULL, covariate values in \code{newdata}
+  are used. 
+  See \bold{Value} section for more information.}
 }
 \value{
-If \code{newdata} is not missing or NULL and 
-covariates are present in \code{obj}, returned value is 
-a vector with length equal to the number of rows in \code{newdata}. 
-If \code{newdata} is missing or NULL and covariates are present
-in \code{obj}, returned value is a vector with length equal to 
-the number of detections in \code{obj$detections}. In either of the 
-above cases, elements in the returned vector are 
-the effective sampling distances for the corresponding set of 
-covariates.  
-
-If \code{obj} does not contain covariates, \code{newdata} is ignored and 
-a scalar equal to the (constant) effective sampling distance for all 
-detections is returned.
+If \code{newdata} is present, the returned value is 
+a vector of effective sampling distances for values of the 
+covariates in \code{newdata} with length equal to 
+the number of rows in \code{newdata}. 
+If \code{newdata} is NULL, the returned value is a vector of effective
+sampling distances associated with covariate values in \code{object} and has 
+the same number of detected groups.  The returned vector 
+has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
 Computes Effective Strip Width (ESW) for line-transect detection
@@ -41,7 +36,8 @@ Computes Effective Strip Width (ESW) for line-transect detection
   detection functions.
 }
 \details{
-Serves as a wrapper for \code{\link{ESW}} and \code{\link{EDR}}.
+Serves as a wrapper for 
+\code{\link{ESW}} and \code{\link{EDR}}.
 }
 \seealso{
 \code{\link{dfuncEstim}} \code{\link{ESW}} \code{\link{EDR}}

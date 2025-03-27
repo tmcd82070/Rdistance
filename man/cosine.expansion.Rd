@@ -2,15 +2,15 @@
 % Please edit documentation in R/cosine.expansion.R
 \name{cosine.expansion}
 \alias{cosine.expansion}
-\title{calculation of cosine expansion for detection function likelihoods}
+\title{cosine.expansion - Cosine expansion terms}
 \usage{
 cosine.expansion(x, expansions)
 }
 \arguments{
-\item{x}{In a distance analysis, \code{x} is a numeric vector of the proportion of a strip transect's half-width 
-at which a group of individuals were sighted.  If \eqn{w} is the strip transect half-width or maximum sighting 
-distance, and \eqn{d} is the perpendicular off-transect distance to a sighted group (\eqn{d\leq w}{d <= w}), 
-\code{x} is usually \eqn{d/w}.  More generally, \code{x} is a vector of numeric values}
+\item{x}{A numeric vector of distances at which to evaluate 
+the expansion series. For distance analysis, \code{x} is
+of the proportion of a strip transect's half-width 
+at which a group of individuals were sighted, i.e., \eqn{d/w}.}
 
 \item{expansions}{A scalar specifying the number of expansion terms to compute. Must be one of the 
 integers 1, 2, 3, 4, or 5.}
@@ -21,8 +21,8 @@ A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matr
   up to \code{expansions}.
 }
 \description{
-Computes the cosine expansion terms used in the likelihood of a distance analysis. 
-  More generally, will compute a cosine expansion of any numeric vector.
+Computes the cosine expansion terms used to modify the 
+shape of distance likelihood functions.
 }
 \details{
 There are, in general, several expansions that can be called cosine. The cosine expansion used here is:
@@ -36,10 +36,10 @@ There are, in general, several expansions that can be called cosine. The cosine 
   The maximum number of expansion terms computed is 5.
 }
 \examples{
-set.seed(33328)
-  x <- rnorm(1000) * 100
-  x <- x[ 0 < x & x < 100 ]
-  cos.expn <- cosine.expansion(x, 5)
+x <- seq(0, 1, length = 200)
+cos.expn <- cosine.expansion(x, 5)
+plot(range(x), range(cos.expn), type="n")
+matlines(x, cos.expn, col=rainbow(5), lty = 1)
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 

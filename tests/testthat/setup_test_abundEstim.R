@@ -35,9 +35,7 @@
 cat(crayon::bgYellow("Installed test_abundEstim function\n"))
 
 test_abundEstim <- function( abundParams, 
-                             distFunc,
-                             dfuncDf = sparrowDetectionData, 
-                             abundDf = sparrowSiteData
+                             distFunc
                              ){
   
   for( j in 1:nrow(abundParams) ){
@@ -49,12 +47,11 @@ test_abundEstim <- function( abundParams,
       ciParam <- testParams$ci
     }
     
-    testContext <- paste0("  A:", j, "/", nrow(abundParams),
+    testContext <- paste0("Abund:", j, "/", nrow(abundParams),
                          ", Area=", testParams$area,
                          ", ci=", ciParam, 
                          ", plot.bs=", testParams$plot.bs,
                          ", showProgress=", testParams$showProgress, 
-                         ", bySite=", testParams$bySite,
                          ", R=", testParams$R 
     )
     
@@ -64,90 +61,61 @@ test_abundEstim <- function( abundParams,
     # cat(crayon::green(paste("i=",i,testParams)))
     # cat("\n")
     
-    abundEst <- abundEstim(dfunc = distFunc, 
-                             detectionData = dfuncDf, 
-                             siteData = abundDf,
+    abundEst <- abundEstim(  x = distFunc, 
                              area = testParams$area,
                              ci = ciParam, 
                              plot.bs = testParams$plot.bs,
                              showProgress = testParams$showProgress, 
-                             bySite = testParams$bySite,
-                             R =  testParams$R, 
-                             control = RdistanceControls()
+                             R =  testParams$R 
     )
     
     # Check added components of output
-    if(distFunc$pointSurvey){
-      newComponents <- c( "density"
-                        , "n.hat"
-                        , "n"
-                        , "n.seen"
-                        , "area"
-                        , "surveyedUnits"
-                        , "avg.group.size"
-                        , "rng.group.size"
-                        , "effDistance" )
-    } else {
-      newComponents <- c( "density"
-                          , "n.hat"
-                          , "n"
-                          , "n.seen"
-                          , "area"
-                          , "surveyedUnits"
-                          , "avg.group.size"
-                          , "rng.group.size"
-                          , "effDistance" )
-    }
-    
-    if(!is.null(ciParam)){
-      newComponents <- c(newComponents, 
-                         c("n.hat.ci"
-                           , "density.ci"
-                           , "effDistance.ci"
-                           , "B"
-                           , "nItersConverged"
-                           , "alpha" ))
-    }
-    
+    newComponents <- c( 
+                        "estimates"
+                      , "B" 
+                      , "ci"
+                      )
+
+
     test_that("abundComponents", {
       expect_setequal(setdiff(names(abundEst), names(distFunc)), newComponents)
     })
 
     # n.hat not null, not NA, and does not have units
     test_that("n.hatNotNull", {
-      expect_true(!is.null(abundEst$n.hat))
+      expect_true(!is.null(abundEst$estimates$abundance))
     })
     
     test_that("n.hatNotNA", {
-      expect_true(!is.na(abundEst$n.hat))
+      expect_true(!is.na(abundEst$estimates$abundance))
     })
     
     test_that("n.hatNoUnits", {
-      expect_s3_class(abundEst$n.hat, NA)
+      expect_s3_class(abundEst$estimates$abundance, NA)
     })
     
     # Density should have units
     test_that("densityIsUnits", {
-      expect_s3_class(abundEst$density, "units")
+      expect_s3_class(abundEst$estimates$density, "units")
     })
 
     test_that("areaIsUnits", {
-      expect_s3_class(abundEst$area, "units")
+      expect_s3_class(abundEst$estimates$area, "units")
     })
 
-    if( !distFunc$pointSurvey ){
+    if( !is.points(distFunc) ){
       test_that("tran.lenIsUnits", {
-        expect_s3_class(abundEst$surveyedUnits, "units")
+        expect_s3_class(abundEst$estimates$surveyedUnits, "units")
       })
     
       test_that("tran.lenUnits", {
-        expect_equal(units(abundEst$surveyedUnits), abundEst$outputUnits)
+        expect_equal(units(abundEst$estimates$surveyedUnits), abundEst$outputUnits)
       })
     }
 
     test_that("areaUnits", {
       x <- units::set_units(1, abundEst$outputUnits, mode = "standard")
-      expect_equal(units(abundEst$area), units(x*x))
+      expect_equal(units(abundEst$estimates$area), units(x*x))
     })
     
     numberRegEx <- "[\\d\\.\\-\\+e]+"
@@ -166,27 +134,28 @@ test_abundEstim <- function( abundParams,
 
     # Confidence interval tests
     if(!is.null(ciParam)){
-      if( abundEst$nItersConverged > 0 ){
+      nItersConverged <- sum(!is.na(abundEst$B$abundance))
+      if( nItersConverged > 0 ){
         ciLev <- paste0(100*ciParam, "% ")
-        
-        test_that("n.hatCILength2", {
-          expect_length(abundEst$n.hat.ci, 2)
-        })
+        abundCI <- c( abundEst$estimates$abundance_lo
+                    , abundEst$estimates$abundance_hi)
+        densiCI <- c( abundEst$estimates$density_lo
+                      , abundEst$estimates$density_hi)
         
         test_that("n.hatCINotMissing", {
-          expect_true(all(!is.na(abundEst$n.hat.ci)))
+          expect_true(all(!is.na(abundCI)))
         })
   
         test_that("densCILength2", {
-          expect_length(abundEst$density.ci, 2)
+          expect_length(abundCI, 2)
         })
         
         test_that("densCINotMissing", {
-          expect_true(all(!is.na(abundEst$density.ci)))
+          expect_true(all(!is.na(densiCI)))
         })
         
         test_that("densCIPrint", {
-          expect_output(print(abundEst, maxBSFailPropForWarning = 1.0), 
+          expect_output(summary(abundEst, maxBSFailPropForWarning = 1.0), 
                         regexp = paste0(ciLev, "CI: ", numberRegEx, " to ", numberRegEx), 
                         perl = TRUE)
         })

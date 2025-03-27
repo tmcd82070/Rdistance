@@ -1,44 +1,42 @@
-#' @title Coefficients of an estimated detection function
-#' @description Extract the coefficients and estimated parameters (if any) from 
-#'   a estimated detection function object.
+#' @title coef.dfunc - Coefficients of an estimated detection function
+#' 
+#' @description Extract distance model coefficients from 
+#' an estimated detection function object.
 #'   
 #' @usage \method{coef}{dfunc}(object, \dots)
 #' 
-#' @param object An estimated distance function object.  An estimated distance 
-#'   function object has class 'dfunc', and is usually produced by a call to 
-#'   \code{dfuncEstim}.
-#' @param \dots Required for compatibility with the general \code{coef} method.  Any 
-#'   extra arguments to this function are ignored.
-#' @details This is an extractor function for the parameters of an estimated detection function. 
-#'   This function is equivalent to \code{obj$parameters} for classical detection functions.
-#' @return The estimated parameter vector for the detection function. Length and interpretation of values 
-#'   in this vector vary depending on the form of the detection function and expansion terms.
+#' @inheritParams is.smoothed
+#' 
+#' @param ... Ignored
+#' 
+#' @return The estimated coefficient vector for the detection function. 
+#' Length and interpretation of values vary 
+#' depending on the form of the detection function and expansion terms.
 #'   
 #' @seealso \code{\link{AIC}}, \code{\link{dfuncEstim}}
 #' 
 #' @examples
-#' # Load example sparrow data (line transect survey type)
-#' data(sparrowDetectionData)
+#' data(sparrowDfuncObserver) # pre-estimated dfunc
 #' 
-#' # Fit half-normal detection function
-#' dfunc <- dfuncEstim(formula=dist~1
-#'                   , detectionData=sparrowDetectionData)
+#' # Same as sparrowDfuncObserver$par 
+#' coef(sparrowDfuncObserver) 
 #' 
-#' # Print results
-#' dfunc
-#'   
-#' # Extract the coefficient(s)
+#' \dontrun{
+#' data(sparrowDf)
+#' dfunc <- sparrowDf |> dfuncEstim(dist~bare + observer,
+#'                       w.hi=units::set_units(150, "m"))
 #' coef(dfunc)
-#' 
+#' }
+#'  
 #' @keywords model
 #' @export
 
 coef.dfunc <- function(object, ...){
-  if( inherits(object$fit, "density")){
+  if( object$likelihood == "smu" ){
     # smoothed distance function
     COEF <- NULL
   } else {
-    COEF <- object$parameters
+    COEF <- object$par
   }
   COEF
 }
