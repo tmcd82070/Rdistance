@@ -191,17 +191,13 @@ sum(diff(x)*(f[-1] + f[-length(f)]) / 2) # Trapazoid rule; should be 1.0
 lines(x, f) # hence, 1/f(0) = ESW
 
 # Covariates: detection by observer
-data(sparrowDetectionData)
-data(sparrowSiteData)
-sparrowDf <- RdistDf(sparrowSiteData, sparrowDetectionData)
-dfuncObs <- sparrowDf |> 
-     dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-               , likelihood = "hazrate")
-plot(dfuncObs
-   , newdata = data.frame(observer = levels(sparrowSiteData$observer))
+data(sparrowDfuncObserver) # pre-estimated model
+
+obsLevs <- levels(sparrowDfuncObserver$data$observer)
+plot(sparrowDfuncObserver
+   , newdata = data.frame(observer = obsLevs)
    , vertLines = FALSE
-   , lty = c(1,1)
-   , col.dfunc = heat.colors(length(levels(sparrowSiteData$observer)))
+   , col.dfunc = heat.colors(length(obsLevs))
    , col = c("grey","lightgrey")
    , border=NA
    , main="Detection by observer")

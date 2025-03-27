@@ -244,7 +244,10 @@ data(sparrowDetectionData)
 
 sparrowDf <- RdistDf( sparrowSiteData, sparrowDetectionData )
 is.RdistDf(sparrowDf, verbose = T)
-summary(sparrowDf, formula = dist ~ groupsize(groupsize))
+summary(sparrowDf)
+summary(sparrowDf
+      , formula = dist ~ groupsize(groupsize)
+      , w.hi = units::set_units(100, "m"))
 
 # Equivalent to above: 
 sparrowDf <- sparrowDetectionData |> 

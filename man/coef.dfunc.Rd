@@ -22,14 +22,18 @@ Extract distance model coefficients from
 an estimated detection function object.
 }
 \examples{
-data(sparrowDf)
+data(sparrowDfuncObserver) # pre-estimated dfunc
 
+# Same as sparrowDfuncObserver$par 
+coef(sparrowDfuncObserver) 
+
+\dontrun{
+data(sparrowDf)
 dfunc <- sparrowDf |> dfuncEstim(dist~bare + observer,
                       w.hi=units::set_units(150, "m"))
-
-# Extract the coefficient(s)
 coef(dfunc)
-
+}
+ 
 }
 \seealso{
 \code{\link{AIC}}, \code{\link{dfuncEstim}}

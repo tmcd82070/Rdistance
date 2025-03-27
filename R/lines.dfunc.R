@@ -48,42 +48,25 @@
 #' 
 #' dfunc <- Df |> dfuncEstim(distance ~ 1, likelihood="halfnorm")
 #' plot(dfunc, nbins = 40, col="lightgrey", border=NA, vertLines=FALSE)
-#' lines(dfunc, col="grey90", lwd=15)
-#' lines(dfunc, col="black", lwd=5, lty = 2)
+#' lines(dfunc, col="grey30", lwd=15)
+#' lines(dfunc, col="grey90", lwd=5, lty = 2)
 #' 
 #' # Multiple lines 
-#' x2 <- rnorm(1000, mean=0, sd=10)
-#' x2 <- x2[x2 >= 0]
-#' x2 <- units::set_units(x2, "mi")
-#' Df <- data.frame(transectID = c(rep("A", length(x)) 
-#'                               , rep("B", length(x2)))
-#'                , distance = c(x,x2)
-#'                 ) |> 
-#'   dplyr::nest_by( transectID
-#'                , .key = "detections") |> 
-#'   dplyr::mutate(length = units::set_units(100, "km"))
-#' attr(Df, "detectionColumn") <- "detections"
-#' attr(Df, "obsType") <- "single"
-#' attr(Df, "transType") <- "line"
-#' attr(Df, "effortColumn") <- "length"
-#' is.RdistDf(Df)  # TRUE
-#' 
-#' dfunc <- Df |> dfuncEstim(formula = distance ~ transectID)
-#' plot(dfunc
+#' data(sparrowDfuncObserver)
+#' obsLevs <- levels(sparrowDfuncObserver$data$observer)
+#' plot(sparrowDfuncObserver
 #'    , vertLines = FALSE
 #'    , lty = 0
 #'    , plotBars = FALSE
-#'    , main="Detection by transect"
+#'    , main="Detection by observer"
 #'    , legend = FALSE)
-#' y <- lines(dfunc
-#'    , newdata = data.frame(transectID = unique(Df$transectID))
-#'    , col = palette.colors(length(unique(Df$transectID)))
+#' y <- lines(sparrowDfuncObserver
+#'    , newdata = data.frame(observer = obsLevs)
+#'    , col = palette.colors(length(obsLevs))
 #'    , lty = 1
 #'    , lwd = 4)
-#' head(y) # values returned, transpose of predict method
+#' head(y) # values returned, with distances as column
 #' 
-#' # Estimates of sd pretty close
-#' predict(dfunc, newdata = data.frame(transectID = c("A", "B")))
 #' 
 #' @export
 #' @importFrom stats predict

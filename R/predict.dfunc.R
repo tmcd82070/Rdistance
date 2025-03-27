@@ -182,20 +182,31 @@
 #' all(dim(p) == c(3, 5))
 #' 
 #' # Covariates
-#' dfuncObs <- sparrowDf |> dfuncEstim(formula = dist ~ observer
-#'                      , w.hi = units::as_units(100, "m"))
-#' predict(dfuncObs)  # n X 1
+#' data(sparrowDfuncObserver) # pre-estimated object
+#' \dontrun{
+#' # Command to generate 'sparrowDfuncObserver'
+#' sparrowDfuncObserver <- sparrowDf |> 
+#'             dfuncEstim(formula = dist ~ observer
+#'                      , likelihood = "hazrate")
+#' }
+#' 
+#' predict(sparrowDfuncObserver)  # n X 2
 #' 
 #' Observers <- data.frame(observer = levels(sparrowDf$observer))
-#' predict(dfuncObs, newdata = Observers) # 5 X 1
+#' predict(sparrowDfuncObserver, newdata = Observers) # 5 X 2
 #' 
-#' predict(dfuncObs, type = "dfunc") # nd X n
-#' predict(dfuncObs, newdata = Observers, type = "dfunc") # nd X 5
-#' predict(dfuncObs
+#' predict(sparrowDfuncObserver, type = "dfunc") # nd X n
+#' predict(sparrowDfuncObserver, newdata = Observers, type = "dfunc") # nd X 5
+#' d <- units::set_units(c(0, 150, 400), "ft")
+#' predict(sparrowDfuncObserver
 #'   , newdata = Observers
 #'   , distances = d
 #'   , type = "dfunc") # 3 X 5
 #' 
+#' # Density and abundance by transect
+#' predict(sparrowDfuncObserver
+#'   , type = "density")
+#'   
 #' @export
 #' 
 #' 
@@ -223,19 +234,23 @@ predict.dfunc <- function(object
       # Case: Use original covars
       X <- model.matrix(object)
     } else {
-      # Pull formula to make covars from NEWDATA
+      # We have NEWDATA to deal with
       Terms <- terms( object$mf )
       Terms <- delete.response( Terms ) # model.frame (below) fails if there's a response, go figure.
-      if( !is.null(attr(Terms, "offset")) ){
+      gsName <- all.vars(Terms)[ attr(Terms, "offset") ] # there is always an offset
+      if( !(gsName %in% names(newdata)) ){
         # gotta add a fake groupsize to newdata so model.frame (below) works
         # but, model.matrix drops offset, so this is silly
-        gsName <- all.vars(Terms)[ attr(Terms, "offset") ]
         newdata <- cbind(newdata, data.frame( 1 ))
         names(newdata)[length(names(newdata))] <- gsName
       }
       xLevs <- lapply( object$mf, levels ) # get unspecified levels of factors
-      m <- model.frame( Terms, newdata, xlev = xLevs )
-      X <- model.matrix( Terms, m, contrasts.arg = attr(object$mf,"contrasts") )
+      m <- model.frame( formula = Terms
+                      , data = newdata
+                      , xlev = xLevs )
+      X <- model.matrix( object = Terms
+                       , data = m
+                       , contrasts.arg = attr(object$mf,"contrasts") )
     }
     
     BETA <- coef(object)

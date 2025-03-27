@@ -4,19 +4,19 @@
 \alias{AIC.dfunc}
 \title{AIC.dfunc - AIC-related fit statistics for detection functions}
 \usage{
-\method{AIC}{dfunc}(x, ..., criterion = "AICc")
+\method{AIC}{dfunc}(object, ..., criterion = "AICc")
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
 
-\item{...}{Included for compatibility with other print methods.  Ignored here.}
+\item{...}{Included for compatibility with generic \code{predict} methods.}
 
 \item{criterion}{String specifying the criterion to compute. Either 
 "AICc", "AIC", or "BIC".}
 }
 \value{
-A scalar, the requested fit statistic for \code{x}.
+A scalar, the requested fit statistic for \code{object}.
 }
 \description{
 Computes AICc, AIC, or BIC for estimated distance functions.

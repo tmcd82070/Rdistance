@@ -10,6 +10,11 @@
 #' @return A data frame containing the original data used 
 #' to fit the distance function, plus an additional column
 #' containing the density of individuals on each transect. 
+#' 
+#' @examples
+#' data(sparrowDfuncObserver)
+#' predict(sparrowDfuncObserver, type="density")
+#' 
 #'  
 #' @export
 predDensity <- function(object
@@ -44,11 +49,14 @@ predDensity <- function(object
   mt <- terms(object$mf)
   distVar <- all.vars(mt)[attributes(mt)$response]
   groupSizeVar <- all.vars(mt)[attributes(mt)$offset]
+  effVar <- attr(object$data, "effortColumn")
   
+  # Gotta use object$data because object$mf has no missing distances
+  # nor the zero transects. $data has these
   df <- Rdistance::unnest(object$data) 
   
-  # Add group size if not specified in formula. ----
-  #  If not specified (assumed 1), fake groupsizes are in object$mf
+  # Must add group size to df if not specified in formula. ----
+  #  If not specified (i.e., assumed 1), fake groupsizes are in object$mf
   #  but not in object$data. 
   
   # Note: to use the [missing distance but sighted group] functionality,
@@ -57,14 +65,31 @@ predDensity <- function(object
   # in the original formula.  Otherwise, all groups are assumed size 1 and 
   # missing distances (from unnest) are assumed to be zero transects. 
   if( length(groupSizeVar) == 0 || !(groupSizeVar %in% names(df)) ){
+    # I don't think length(groupSizeVar) == 0 ever happens b/c there is always an offset
+    # BUT, groupSizeVar is not in df if we made up the groupsize in parseModel
     ..groupSizes.. <- dplyr::if_else(
         is.na(df[[distVar]]),
-        0, # assumed zero transects
+        0, # assumed zero transects, non-missing group sizes overwritten
         1
       ) 
+    df[,groupSizeVar] <- ..groupSizes.. # needed for effectiveDistance
   } else {
+    # Gotta set missing group sizes to 0, in df, or model.frame inside 
+    # predict method (that is inside effectiveDistance(), below) tosses 
+    # the missings. ( I have na.action set to 
+    # na.omit in model.frame, and group size is in the Terms so any 
+    # missing are dropped)
+    df <- df |> 
+      dplyr::mutate(dplyr::across(dplyr::all_of(groupSizeVar)
+                                  , .fns = function(.x){
+                                    .x[is.na(.x)] <- 0
+                                    .x
+                                  }))
     ..groupSizes.. <- df[[groupSizeVar]]
   }
+  
+  # Note: at this point, df has the group size variable, and 
+  # there are no missing groupsizes. Zero transects have 0 groupsize.
   
   # Compute ESW/EDR for every observation
   # at this point, df contains missing distances.
@@ -73,50 +98,46 @@ predDensity <- function(object
   effDist <- Rdistance::effectiveDistance(object
                          , newdata = df)
   
-  # Now can pull distance column for convenience
-  ..distances.. <- df[[distVar]]
-
-  # filter to observations in strip OR those with 
+  # Now can pull columns for convenience
+  ..distances.. <- df[[distVar]] # don't call distances() b/c need zero transects
+  ..effort.. <- effort(object) # nTransects long
+  
+  # Compute index of observations in strip OR those with 
   # missing distance but non-missing groupsizes
-  instrip <- df |> 
-    dplyr::bind_cols(tibble::tibble(effDist)) |> 
-    dplyr::filter( 
-      (is.na(..distances..) & !is.na(..groupSizes..)) 
-      |
-      ((object$w.lo <= ..distances..) & (..distances.. <= object$w.hi))
-                 ) 
-  # Counts by transect
-  effVar <- attr(object$data, "effortColumn")
-  w <- object$w.hi - object$w.lo
+  ..instrip.. <- (is.na(..distances..) & !is.na(..groupSizes..)) |
+             ((object$w.lo <= ..distances..) & (..distances.. <= object$w.hi))
+  
+  # Compute estimates by transect
+  w <- object$w.hi - object$w.lo # length 1
   if(is.points(object)){
-    deCounts <- instrip |>
-      dplyr::mutate( 
-          pDetect = (effDist / w)^2
-        , nAdjusted = ..groupSizes.. / pDetect) |> 
-      dplyr::group_by(dplyr::across(dplyr::all_of(siteIDs))) |> 
-      dplyr::summarise(individualsSeen = sum(..groupSizes..)
-                       , avgPdetect = mean(pDetect)
-                       , nAdjusted = sum(nAdjusted)
-                       , effort = pi * propUnitSurveyed * w^2 * dplyr::first(.data[[effVar]])
-                       , density = nAdjusted / effort
-                       , abundance = nAdjusted
-      ) |> 
-      dplyr::select(-nAdjusted)
+    ..pDetect.. <- (effDist / w)^2
+    ..effort.. <- pi * propUnitSurveyed * w^2 * ..effort..
   } else {
-    deCounts <- instrip |>
-      dplyr::mutate( 
-          pDetect = effDist / w
-        , nAdjusted = ..groupSizes.. / pDetect) |> 
-      dplyr::group_by(dplyr::across(dplyr::all_of(siteIDs))) |> 
-      dplyr::summarise(individualsSeen = sum(..groupSizes..)
-                     , avgPdetect = mean(pDetect)
-                     , nAdjusted = sum(nAdjusted)
-                     , effort = 2 * propUnitSurveyed * w * dplyr::first(.data[[effVar]])
-                     , density = nAdjusted / effort
-                     , abundance = nAdjusted
-      ) |> 
-      dplyr::select(-nAdjusted)
+    ..pDetect.. = effDist / w
+    ..effort.. = 2 * propUnitSurveyed * w * ..effort..
   }
+  # NOTE: At this point, there cannot be any missing ..groupSizes.. or ..pDetect..
+  ..nAdjusted.. <- ..groupSizes.. / ..pDetect..  # nObs+nZero long
+  deCounts <- df |>
+    dplyr::mutate(..groupSizes.. = ..groupSizes..
+                , ..pDetect.. = ..pDetect..
+                , ..nAdjusted.. = ..nAdjusted..
+                , ..instrip.. = ..instrip.. ) |> 
+    dplyr::group_by(dplyr::across(dplyr::all_of(siteIDs))) |> 
+    dplyr::summarise(individualsSeen = sum(..groupSizes..[..instrip..])
+                     , avgPdetect = mean(..pDetect..[..instrip..])
+                     , ..nAdjusted.. = sum(..nAdjusted..[..instrip..])
+    ) 
+  deCounts <- deCounts |> 
+    dplyr::ungroup() |> 
+    dplyr::mutate(density = ..nAdjusted.. / ..effort..
+                , effort = ..effort..
+    ) |> 
+    dplyr::rename("abundance" = "..nAdjusted..")
+  
+  # NOTE: the "..XXX.." variables and renaming of abundance and 
+  # the strange MUTATE statements above are to get around CRAN checks
+  # that don't recognize new variables inside mutate statements. 
 
   # Internal function to remove units from unitless columns ----  
   drop1Units <- function(x){

@@ -273,7 +273,6 @@
 #'     
 #' @seealso \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 #' Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}). 
-#' See package vignettes for additional options. 
 #' 
 #' @examples 
 #' # Load example sparrow data (line transect survey type)

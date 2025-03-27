@@ -28,3 +28,9 @@ containing the density of individuals on each transect.
 An internal prediction method for computing density 
 on the sampled transects.
 }
+\examples{
+data(sparrowDfuncObserver)
+predict(sparrowDfuncObserver, type="density")
+
+ 
+}

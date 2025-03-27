@@ -217,20 +217,31 @@ p <- predict(dfuncObs
 all(dim(p) == c(3, 5))
 
 # Covariates
-dfuncObs <- sparrowDf |> dfuncEstim(formula = dist ~ observer
-                     , w.hi = units::as_units(100, "m"))
-predict(dfuncObs)  # n X 1
+data(sparrowDfuncObserver) # pre-estimated object
+\dontrun{
+# Command to generate 'sparrowDfuncObserver'
+sparrowDfuncObserver <- sparrowDf |> 
+            dfuncEstim(formula = dist ~ observer
+                     , likelihood = "hazrate")
+}
+
+predict(sparrowDfuncObserver)  # n X 2
 
 Observers <- data.frame(observer = levels(sparrowDf$observer))
-predict(dfuncObs, newdata = Observers) # 5 X 1
+predict(sparrowDfuncObserver, newdata = Observers) # 5 X 2
 
-predict(dfuncObs, type = "dfunc") # nd X n
-predict(dfuncObs, newdata = Observers, type = "dfunc") # nd X 5
-predict(dfuncObs
+predict(sparrowDfuncObserver, type = "dfunc") # nd X n
+predict(sparrowDfuncObserver, newdata = Observers, type = "dfunc") # nd X 5
+d <- units::set_units(c(0, 150, 400), "ft")
+predict(sparrowDfuncObserver
   , newdata = Observers
   , distances = d
   , type = "dfunc") # 3 X 5
 
+# Density and abundance by transect
+predict(sparrowDfuncObserver
+  , type = "density")
+  
 }
 \seealso{
 \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 

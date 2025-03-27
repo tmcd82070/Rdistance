@@ -83,86 +83,96 @@
 #' @section Bootstrap Confidence Intervals:
 #' 
 #'   Rdistance's nested data frames (produced by \code{\link{RdistDf}})
-#'   contain both all information required to estimate bootstrap CI. 
-#'   Rdistance bootstrap resamples
-#'   the rows of the \code{$data} component contained in an Rdistance 
-#'   fitted model. 
-#'   The \code{$data} component of Rdistance fitted models contains one line 
-#'   per transect. Via missing value combinations, \code{$data} contains 
-#'   informaiton on which observations go into the 
-#'   detection functions, which into detected targets, and which into transect length. 
+#'   contain all information required to estimate bootstrap CIs. 
+#'   To compute bootstrap CIs, Rdistance resamples, with replacemment,
+#'   the rows of the \code{$data} component contained in Rdistance 
+#'   fitted models. Rdistance assumes each row of \code{$data} 
+#'   contains one information on on transect.
+#'   The \code{$data} component also contains 
+#'   information on which observations go into the 
+#'   detection functions, which should be counted as detected targets, 
+#'   and which count toward transect length. 
 #'   After resampling rows of \code{$data}, Rdistance 
-#'   refits the distance function using non-missing distance, recomputes detected 
-#'   number of targets using non-missing group sizes on transects with non-missing length, 
-#'   and re-computes total transect length using transects with non-missing lengths. 
+#'   refits the distance function using non-missing distances, 
+#'   recomputes the detected number of targets using non-missing 
+#'   group sizes on transects with non-missing length, 
+#'   and re-computes total transect length from transects 
+#'   with non-missing lengths. 
 #'   By default, \code{R} = 500 bootstrap iterations are 
 #'   performed, after which bias
 #'   corrected confidence intervals are computed (Manly, 1997, section 3.4).
 #'   
 #'   The distance function is not re-selected during bootstrap resampling. The 
-#'   model in the input object is re-fitted every iteration.  
+#'   model of the input object is re-fitted every iteration.  
 #'   
 #'   During bootstrap iterations, the distance function can fail. 
-#'   An iteration can fail 
-#'   for a two reasons:
+#'   An iteration can fail for a two reasons:
 #'   (1) no detections on the iteration, and (2) a bad configuration 
-#'   of distances that pushes the distance function's parameters to their 
+#'   of distances that push the distance function's parameters to their 
 #'   limits. When an iteration fails, Rdistance 
 #'   skips the iteration and effectively ignores the 
 #'   failed iterations. 
 #'   If the proportion of failed iterations is small 
 #'   (less than 20% by default), the resulting abundance confidence interval 
-#'   is probably valid and no warning is issued.  If the proportion of non-convergent iterations 
+#'   is probably valid and no warning is issued.  If the proportion of 
+#'   non-convergent iterations 
 #'   is not small (exceeds 20% by default), a warning is issued.  
 #'   The warning can be modified  
 #'   by re-setting the \code{Rdistance_maxBSFailPropForWarning} option. 
 #'   Setting \code{options(Rdistance_masBSFailPropForWarning = 1.0)} will turn 
 #'   off the warning. 
 #'   Setting \code{options(Rdistance_masBSFailPropForWarning = 0.0)} will 
-#'   warn if any iteration failed.  Results (density and effective sampling distance) 
+#'   warn if any iteration failed.  Results (density and effective 
+#'   sampling distance) 
 #'   from all successful iterations are contained in the  
 #'   non-NA rows of data frame 'B' in the output object.  
 #'   
 #' @section Missing Transect Lengths:
 #' 
-# FINISH WRITING DOCUMENTATION HERE!!!
-#
-#'   \bold{Line transects}: Transect length can be missing in the 'sites'. 
-#'   NA length transects are equivalent
-#'   to 0 [m] transects and do not count toward total surveyed units.  NA length
-#'   transects are handy if some off-transect distance observations should be included
+#'   Transect lengths can be missing in the RdistDf object. 
+#'   Missing length transects are equivalent
+#'   to 0 [m] transects and do not count toward total surveyed units
+#'   nor to group sizes on these transects count toward total 
+#'   detected individuals.  
+#'   Use NA-length transects to include their associated distances 
 #'   when estimating the distance function, but not when estimating abundance. 
-#'   To do this, include the "extra" distance observations in the detection data frame, with valid
+#'   For example, this allows estimation of abundance on one 
+#'   study area using off-transect distances from another.  This allows 
+#'   sightability to be estimated using two or more similar targets (e.g., 
+#'   two similar species), but abundance to be estimated separate for each 
+#'   target type.
+#'   Include NA-length transects by including the "extra" distance observations 
+#'   in the detection data frame, with valid
 #'   site IDs, but set the length of those site IDs to NA in the site data frame. 
-#'   Group sizes associated with NA length transects are dropped and not counted toward density
-#'   or abundance. Among other things, this allows estimation of abundance on one 
-#'   study area using off-transect distance observations from another.  
+#'
+#' @section Point Transect Lengths:
+#'   Point transects do not have a physical measurement for length. 
+#'   The "length" of point transects is the number of points on the transect. 
+#'   Point transects can contain only one point.  
+#'   Rdistance treats transects of points as independent 
+#'   and bootstrap resamples them to estimate variance. The number of points
+#'   on each point transect must exist in the RdistDf and cannot have 
+#'   physical measurement units (it is a count, not a distance).
 #'   
-#'   \bold{Point transects}: Point transects do not have length. The "length" of point transects
-#'   is the number of points on the transect. \code{Rdistance} treats individual points as independent 
-#'   and bootstrap resampmles them to estimate variance. To include distance obervations
-#'   from some points but not the number of targets seen, include a separate "length" column 
-#'   in the site data frame with NA for the "extra" points. Like NA length line transects, 
-#'   NA "length" point transects are dropped from the count of points and group sizes on these 
-#'   transects are dropped from the counts of targets.  This allows users to estimate their distance 
-#'   function on one set of observations while inflating counts from another set of observations.  
-#'   A transect "length" column is not required for point transects. Values in the \code{lengthColumn}
-#'   do not matter except for NA (e.g., a column of 1's mixed with NA's is acceptable). 
-#' 
 #'   
-#' @return An 'abundance estimate' object, which is a list of
+#' @return An Rdistance 'abundance estimate' object, which is a list of
 #'   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
 #'   object (see \code{\link{dfuncEstim}}), plus the following: 
 #'   
-#'   \item{estimates}{A tibble containing number of groups seen, number 
-#'   of individuals seen, study area size, surveyed area, density, and abundance.
-#'   Density applies to the sampled area. Abundance applies to the entire 
-#'   study area.
+#'   \item{estimates}{A tibble containing fitted coefficients in the
+#'   distance function, density in the area(s) surveyed, 
+#'   abundance on the study area, the number of groups seen 
+#'   between w.lo and w.hi, the number 
+#'   of individuals seen between w.lo and w.hi, 
+#'   study area size, surveyed area, average group size, and 
+#'   average effective detection distance.
 #'   }
 #'   
-#'   \item{B}{If confidence intervals are requested, a tibble 
-#'   containing bootstrap values of coefficients, 
-#'   density, and effective distances.  Number of rows is always 
+#'   \item{B}{If confidence intervals were requested, a tibble 
+#'   containing all bootstrap values of coefficients, 
+#'   density, abundance, groups seen, individuals seen, 
+#'   study area size, surveyed area size, average group size, 
+#'   and average effective detection distance.  The number of rows is always 
 #'   \code{R}, the requested number of bootstrap 
 #'   iterations.  If an iteration fails, the
 #'   corresponding row in \code{B} is \code{NA} (hence, use 'na.rm = TRUE' 
@@ -170,7 +180,7 @@
 #'   contain bootstrap realizations of the distance function's coefficients. 
 #'   }
 #'   
-#'
+#'   \item{ci}{Confidence level of the confidence intervals}
 #'   
 #' @references Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
 #'   Monte-Carlo methods in biology}, London: Chapman and Hall.
@@ -179,7 +189,8 @@
 #'    and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
 #'    abundance of biological populations}. Oxford University Press, Oxford, UK.
 #'   
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{autoDistSamp}}.
+#' @seealso \code{\link{dfuncEstim}}, \code{\link{autoDistSamp}}, 
+#'  \code{\link{predict.dfunc}} with 'type = "density"'.
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)

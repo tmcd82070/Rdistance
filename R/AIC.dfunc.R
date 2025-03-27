@@ -2,7 +2,7 @@
 #' 
 #' @description Computes AICc, AIC, or BIC for estimated distance functions.
 #' 
-#' @inheritParams print.dfunc
+#' @inheritParams predict.dfunc
 #' 
 #' @param criterion String specifying the criterion to compute. Either 
 #'   "AICc", "AIC", or "BIC".
@@ -27,7 +27,7 @@
 #'   The Bayesian Information Criterion (BIC) is
 #'   \deqn{BIC = LL + log(n)p,}{BIC = (LL) + log(n)p}. 
 #'   
-#' @return A scalar, the requested fit statistic for \code{x}.
+#' @return A scalar, the requested fit statistic for \code{object}.
 #' 
 #' @references Burnham, K. P., and D. R. Anderson, 2002. 
 #' \emph{Model selection and multi-model inference: 
@@ -52,22 +52,22 @@
 #' @keywords model
 #' @export
 
-AIC.dfunc=function (x, ..., criterion="AICc") 
+AIC.dfunc=function (object, ..., criterion="AICc") 
 {
   if( criterion == "AIC"){
     k <- 2
     n <- Inf
   } else if( criterion == "BIC"){
-    k <- log(nrow(x$mf))
+    k <- log(nrow(object$mf))
     n <- Inf
   } else {
     k <- 2
-    n <- nrow(x$mf)
+    n <- nrow(object$mf)
     criterion <- "AICc"
   }
     
-  p <- length(coef(x))
-  ans <- -2*x$loglik + (k*p) + (k * p * (p + 1))/(n - p - 1)
+  p <- length(coef(object))
+  ans <- -2*object$loglik + (k*p) + (k * p * (p + 1))/(n - p - 1)
   attr(ans, "criterion") <- criterion
   ans
 }

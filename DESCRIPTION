@@ -2,7 +2,7 @@ Package: Rdistance
 Type: Package
 Title: Distance-Sampling Analysis for Density and Abundance Estimation of Survey Targets
 Version: 4.0.2
-Date: 2024-03-07
+Date: 2024-03-20
 Maintainer: Trent McDonald <trent@mcdonalddatasciences.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdonalddatasciences.com"), 
   person("Jason", "Carlisle", role="aut", email="jason.carlisle@wyo.gov"), 
@@ -22,9 +22,9 @@ Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdon
   person("Stefan", "Emmons", role="ctb", comment="Automated tests"),
   person("Will", "McDonald", role="ctb", comment="Automated tests"),
   person("Reid", "Olson", role="ctb", comment="Automated tests and bug fixes"))
-Description: Distance-sampling (Buckland et al., (2015) <doi:10.1007/978-3-319-19219-2>) 
+Description: Distance-sampling (<doi:10.1007/978-3-319-19219-2>) 
   estimates density and abundance of survey targets (e.g., animals) when 
-  detection declines as distance from observer to target increases. 
+  detection probability declines as distance from observer increases. 
   Distance-sampling is popular in ecology, 
   especially when survey targets are observed from aerial platforms (e.g., 
   airplane or drone), surface vessels (e.g., boat or truck), or along 
@@ -34,17 +34,15 @@ Description: Distance-sampling (Buckland et al., (2015) <doi:10.1007/978-3-319-1
   (i.e., perpendicular off-transect distance), and point-transect studies that 
   measure observation distances from stationary observers to 
   the target (i.e., radial distance). 
-  These routines fit smooth curves to histograms of observation distances 
+  The routines included here fit smooth (parametric) curves to 
+  histograms of observation distances 
   and use those functions to compute effective sampling distances, density of 
   targets in the surveyed area, and abundance 
-  of targets in a surrounding study area. Possible curve shapes include several 
-  parametric functions (i.e., half-normal, hazard rate, logisitc, Gamma, 
-  and negative exponential).
-  Non-parametric smoothed density estimates are also included. Physical 
-  measurement units are required on all distance and area parameters, which 
-  ensure measurement unit integrity of outputs. The help files and 
-  vignettes have been vetted by multiple authors and tested in workshop 
-  settings. 
+  of targets in a surrounding study area. Fitted curves include the 
+  half-normal, hazard rate, and negative exponential functions.
+  Physical measurement units are required and used throughout to 
+  ensure reported density units are reported correctly. The help files 
+  are extensive and have been vetted by multiple authors. 
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki
 BugReports: https://github.com/tmcd82070/Rdistance/issues

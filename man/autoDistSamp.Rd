@@ -172,25 +172,32 @@ of this criterion.  This must be one of "AICc" (the default),
 "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
 }
 \value{
-An 'abundance estimate' object, which is a list of
+An Rdistance 'abundance estimate' object, which is a list of
   class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
   object (see \code{\link{dfuncEstim}}), plus the following: 
   
-  \item{estimates}{A tibble containing number of groups seen, number 
-  of individuals seen, study area size, surveyed area, density, and abundance.
-  Density applies to the sampled area. Abundance applies to the entire 
-  study area.
+  \item{estimates}{A tibble containing fitted coefficients in the
+  distance function, density in the area(s) surveyed, 
+  abundance on the study area, the number of groups seen 
+  between w.lo and w.hi, the number 
+  of individuals seen between w.lo and w.hi, 
+  study area size, surveyed area, average group size, and 
+  average effective detection distance.
   }
   
-  \item{B}{If confidence intervals are requested, a tibble 
-  containing bootstrap values of coefficients, 
-  density, and effective distances.  Number of rows is always 
+  \item{B}{If confidence intervals were requested, a tibble 
+  containing all bootstrap values of coefficients, 
+  density, abundance, groups seen, individuals seen, 
+  study area size, surveyed area size, average group size, 
+  and average effective detection distance.  The number of rows is always 
   \code{R}, the requested number of bootstrap 
   iterations.  If an iteration fails, the
   corresponding row in \code{B} is \code{NA} (hence, use 'na.rm = TRUE' 
   when computing summaries). Columns 1 through \code{length(coef(dfunc))}
   contain bootstrap realizations of the distance function's coefficients. 
   }
+  
+  \item{ci}{Confidence level of the confidence intervals}
 }
 \description{
 Perform automated likelihood, expansion, and series

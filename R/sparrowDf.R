@@ -53,6 +53,18 @@
 #' Research Unit (2012). 
 #' 
 #' @examples
+#' \dontrun{
+#' # The following code generated 'sparrowDf'
+#' data(sparrowDetectionData)
+#' data(sparrowSiteData)
+#' sparrowDf <- RdistDf(transectDf = sparrowSiteData
+#'                    , detectionDf = sparrowDetectionData
+#'                    , by = "siteID"
+#'                    , pointSurvey = FALSE
+#'                    , .effortCol = "length"
+#'                     )
+#' }
+#' 
 #' data(sparrowDf)
 #' tidyr::unnest(sparrowDf, detections)  # only non-zero transects
 #' Rdistance::unnest(sparrowDf) # with zero transects at the bottom

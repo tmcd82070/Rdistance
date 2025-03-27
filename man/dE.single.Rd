@@ -319,7 +319,6 @@ Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 }
 \seealso{
 \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
-Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}). 
-See package vignettes for additional options.
+Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}).
 }
 \keyword{model}

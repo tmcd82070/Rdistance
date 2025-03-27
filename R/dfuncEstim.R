@@ -31,7 +31,6 @@
 #'     
 #' @seealso \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 #' Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}). 
-#' See package vignettes for additional options. 
 #' 
 #' @examples 
 #' # Sparrow line transect example
@@ -44,15 +43,19 @@
 #'                     formula = dist ~ 1
 #'                   )
 #' summary(dfunc)
-#'                   
-#' dfunc <- sparrowDf |> 
+#' 
+#'   
+#' data(sparrowDfuncObserver) # pre-estimated object
+#' \dontrun{                 
+#' # Command to produce 'sparrowDfuncObserver'
+#' sparrowDfuncObserver <- sparrowDf |> 
 #'          dfuncEstim( 
 #'            formula = dist ~ observer
 #'          )
-#'              
-#' dfunc
-#' summary(dfunc)
-#' plot(dfunc)                   
+#' }     
+#' sparrowDfuncObserver
+#' summary(sparrowDfuncObserver)
+#' plot(sparrowDfuncObserver)                   
 #'
 #' @keywords model
 #' @export

@@ -25,3 +25,5 @@ RTestLibrary
 ^NOTES.Rmd$
 .Renviron$
 ^CRAN-SUBMISSION$
+\.html$
+\.HTML$

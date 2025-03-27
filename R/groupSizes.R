@@ -17,6 +17,10 @@
 #' sparrowModel <- parseModel( sparrowDf, dist ~ observer )
 #' stats::model.offset(sparrowModel$mf)
 #' groupSizes(sparrowModel)  # same, but future-proof
+#'
+#' sparrowModel <- parseModel( sparrowDf
+#'                  , dist ~ observer + groupsize(groupsize) )
+#' groupSizes(sparrowModel)  
 #' 
 #' @export
 #' @importFrom stats model.offset

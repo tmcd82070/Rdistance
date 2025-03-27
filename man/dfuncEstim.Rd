@@ -282,15 +282,19 @@ dfunc <- dfuncEstim(sparrowDf,
                     formula = dist ~ 1
                   )
 summary(dfunc)
-                  
-dfunc <- sparrowDf |> 
+
+  
+data(sparrowDfuncObserver) # pre-estimated object
+\dontrun{                 
+# Command to produce 'sparrowDfuncObserver'
+sparrowDfuncObserver <- sparrowDf |> 
          dfuncEstim( 
            formula = dist ~ observer
          )
-             
-dfunc
-summary(dfunc)
-plot(dfunc)                   
+}     
+sparrowDfuncObserver
+summary(sparrowDfuncObserver)
+plot(sparrowDfuncObserver)                   
 
 }
 \references{
@@ -300,7 +304,6 @@ Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 }
 \seealso{
 \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
-Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}). 
-See package vignettes for additional options.
+Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}).
 }
 \keyword{model}

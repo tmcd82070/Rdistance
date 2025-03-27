@@ -9,7 +9,6 @@
 #' area in central Wyoming. Data were collected by 
 #' Dr. Jason Carlisle of the Wyoming Cooperative Fish & Wildlife
 #' Research Unit in 2012. Each transect was 500 meters long.
-#' See the package vignettes for tutorials of the basic analysis. 
 #' 
 #' @docType data
 #' 

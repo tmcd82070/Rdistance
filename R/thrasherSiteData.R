@@ -5,7 +5,6 @@
 #' @description Point transect data collected in central 
 #' Wyoming from 120 points surveyed for Sage Thrashers by the Wyoming 
 #' Cooperative Fish & Wildlife Research Unit in 2013.
-#' See package vignettes for tutorials of the basic analysis.
 #' 
 #' @docType data
 #' 
