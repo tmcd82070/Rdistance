@@ -21,17 +21,12 @@
 #' the next summary method.
 #' 
 #' @examples
-#' data(smlAntelopeTransects)
-#' data(smlAntelopeDetections)
-#' 
-#' smlAntelope <- RdistDf(smlAntelopeTransects
-#'                      , smlAntelopeDetections
-#'                      , by = "siteID"
-#'                      , pointSurvey = FALSE
-#'                      , .effortCol = "length")
-#' 
-#' summary(smlAntelope |> dplyr::filter(surveyID == "2019_LateDry")
-#'       , perpDist ~ groupsize(number))
+#' data(thrasherDf)
+#' summary(thrasherDf)
+#' summary(thrasherDf
+#'         , formula = dist ~ groupsize(groupsize)
+#'         , w.hi = units::set_units(100,"m")
+#'         )
 #' 
 #' @export
 #' 
