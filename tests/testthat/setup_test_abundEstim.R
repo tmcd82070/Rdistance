@@ -32,7 +32,7 @@
 #' test_dfuncEstim( p )               
 
 
-cat(crayon::bgYellow("Installed test_abundEstim function\n"))
+cat(crayon::green("Installed test_abundEstim function\n"))
 
 test_abundEstim <- function( abundParams, 
                              distFunc
@@ -61,7 +61,7 @@ test_abundEstim <- function( abundParams,
     # cat(crayon::green(paste("i=",i,testParams)))
     # cat("\n")
     
-    abundEst <- abundEstim(  x = distFunc, 
+    abundEst <- abundEstim(  object = distFunc, 
                              area = testParams$area,
                              ci = ciParam, 
                              plot.bs = testParams$plot.bs,

@@ -39,7 +39,7 @@
 
 # Notes: Need to test:  presence of covariates, Point surveys
 
-cat(crayon::bgYellow("Installed test_dfuncEstim function\n"))
+cat(crayon::green("Installed test_dfuncEstim function\n"))
 
 test_dfuncEstim <- function( detectParams,
                              abundParams = NULL,

@@ -4,7 +4,7 @@
 
 library(Distance)
 library(Rdistance)
-library(magrittr)
+library(dplyr)
 
 # Maximum Allowable Percent differnece ----
 # between Rdistance and Distance results
@@ -48,13 +48,18 @@ dfuncDS <- ds(sparrowDS
             )
 
 # Rdistance statements ----
-dfuncRD <- dfuncEstim(dist ~ 1 + offset(groupsize)
-                      , sparrowDetectionData
+sparrowDf <- RdistDf( sparrowSiteData
+                    , sparrowDetectionData
+                    , by = "siteID"
+                    , pointSurvey = FALSE
+                    , observer = "single"
+                    , .detectionCol = "detections"
+                    , .effortCol = "length")
+dfuncRD <- sparrowDf |> 
+  dfuncEstim(dist ~ 1 + groupsize(groupsize)
                       , likelihood = "halfnorm"
                       , outputUnits = "m")
 abundRD <- abundEstim( dfuncRD
-                     , detectionData = sparrowDetectionData
-                     , siteData = sparrowSiteData
                      , area = units::set_units(4105, "km^2")
                      , ci = .95)
 
@@ -69,7 +74,7 @@ testthat::test_that("Distance and RDistance AIC Agree", {
 
 # Check that coefficient agrees ----
 coefDS <- dfuncDS$ddf$par
-coefRD <- log(coef(dfuncRD))
+coefRD <- coef(dfuncRD)
 coefPctDiff <- abs(coefDS - coefRD) / coefDS
 
 testthat::test_that("Distance and RDistance Coefficients Agree", {
@@ -93,7 +98,7 @@ testthat::test_that("Distance and RDistance Coefficients Agree", {
 
 # Test abundance estimates ----
 nhatDS <- dfuncDS$dht$individuals$N$Estimate
-nhatRD <- abundRD$n.hat
+nhatRD <- abundRD$estimates$abundance
 nhatPctDiff <- abs(nhatDS - nhatRD) / nhatDS
 
 testthat::test_that("Distance and RDistance Abundance Estimates Agree", {
@@ -103,7 +108,7 @@ testthat::test_that("Distance and RDistance Abundance Estimates Agree", {
 
 # Test average groupsizes ----
 groupsizeDS <- dfuncDS$dht$Expected.S$Expected.S
-groupsizeRD <- abundRD$avg.group.size
+groupsizeRD <- mean(groupSizes(abundRD))
 groupsizePctDiff <- abs(groupsizeDS - groupsizeRD) / groupsizeDS
 
 testthat::test_that("Distance and RDistance Avg Groupsizes Agree", {
@@ -116,12 +121,61 @@ ciDS <- c(
     dfuncDS$dht$individuals$N$lcl
   , dfuncDS$dht$individuals$N$ucl
 )
-ciRD <- abundRD$n.hat.ci
+ciRD <- abundRD$estimates |> 
+  dplyr::ungroup() |> 
+  dplyr::select(abundance_lo, abundance_hi)
 ciPctDiff <- abs(ciDS - ciRD) / ciDS
 
 testthat::test_that("Distance and RDistance confidence intervals <10% different", {
   testthat::expect_true( all(ciPctDiff <= c(0.1, 0.1)) )
 })
+
+
+
+# Hazard rate ----
+# Note that Miller and I parameterize the hazard rate differently.  
+# I think he has a 2 in the denominator of the exp, ... or something.
+# So, coefficients don't match, but other estimates that matter do.
+
+dfuncDS <- ds(sparrowDS
+              , key = "hr"
+              , adjustment = NULL
+              , sample_table = sparrowDS_sampleTable
+              , region_table = sparrowDS_regionTable
+)
+
+abundRD <- sparrowDf |> 
+  dfuncEstim(dist ~ 1 + groupsize(groupsize)
+             , likelihood = "halfnorm"
+             , outputUnits = "m") |> 
+  abundEstim(area = units::set_units(4105, "km^2")
+             , ci = NULL)
+
+# Check that AIC's agree ----
+aicDS <- AIC(dfuncDS)$AIC
+aicRD <- AIC(abundRD)
+aicPctDiff <- abs(aicDS - aicRD) / aicDS
+
+testthat::test_that("Hazrate: Distance and RDistance AIC Agree", {
+  testthat::expect_lte(aicPctDiff, maxPctDiff)
+})
+
+llDS <- dfuncDS$ddf$lnl
+llRD <- abundRD$loglik
+llPctDiff <- abs(llDS - llRD) / llDS
+
+testthat::test_that("Hazrate: Distance and RDistance LogLik Agree", {
+  testthat::expect_lte(llPctDiff, maxPctDiff)
+})
+
+nhatDS <- dfuncDS$dht$individuals$N$Estimate
+nhatRD <- abundRD$estimates$abundance
+nhatPctDiff <- abs(nhatDS - nhatRD) / nhatDS
+
+testthat::test_that("Distance and RDistance Abundance Estimates Agree", {
+  testthat::expect_lte(nhatPctDiff, maxPctDiff)
+})
+
 
 # =======================
 # Could in include tests of expansions and other distance functions here. 
