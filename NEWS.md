@@ -1,3 +1,38 @@
+Changes in version 4.0.2 (2025-03-28)
+==============
+Version numbers >4.0.0 substantial different from prior versions. 
+
+* ***BIGGEST CHANGE***: Input data frames are now nested.  That is, 
+input data frames are now a nested tibble with one row per transect, 
+and detection information in a data frame contained within a list column. 
+Technically, the new data frame format is a grouped tibble with one row 
+per group, and each group is a transect. 
+Survey type, observer system, and name of the effort column are recorded 
+as attributes in the new data frame. 
+  + `RdistDf` constructs the new Rdistance data frames from separate 
+     transect and detection data frames formatted for use in prior versions.
+     Use this function on old sets of site and detection data frames to 
+     construct the new nested data frames.  See examples in `?RdistDf`.
+  + `is.RdistDf` checks the validity of the new Rdistance data frames.  
+  + `summary` prints a summary of number of transects, number of groups seen, 
+     number of individuals, etc. 
+* ***Temporary Functionality Removal***: Versions >4.0.0 are a near 
+complete re-write of versions <3.1.3.  I felt the re-write was necessary to 
+improve stability of the code and lay the ground work for future functionality
+improvements. But, to keep from going insane, I am rolling out new versions 
+that build on one another, with core functions first (in 
+4.0.* versions). As such, I have temporarily removed the following functionality
+from versions with numbers 4.0.*:
+  + Logistic distance function form.
+  + Smoothed distance functions.
+  + Beta distribution distance functions.
+  + Double-observer methods. 
+  + All vignettes.
+* `print`, `summary`, and `plot` methods have been improved.
+* Documentation updated and improved.
+
+
+
 Changes in version 3.1.3 (2025-03-11)
 ==============
 Version 3.1.3 contains three patches.  Several updates to 
