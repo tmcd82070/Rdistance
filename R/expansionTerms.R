@@ -7,7 +7,7 @@
 #' @param a A vector or matrix of (estimated) coefficients. 
 #' \code{a} has length \eqn{p} + \code{nexp} (if a vector) or dimension
 #' (\eqn{k}, \eqn{p} + \code{nexp}), where \eqn{p} is the number 
-#' of canonical parameters in the likeihood and \eqn{k} is the 
+#' of canonical parameters in the likelihood and \eqn{k} is the 
 #' number of coefficient vectors to evaluate. The first \eqn{p}
 #' elements of \code{a}, or the first \eqn{p} columns if \code{a}
 #' is a matrix, are ignored. I.e., Expansion 
@@ -31,7 +31,7 @@
 #' 
 #' @details
 #' Expansion terms modify the "key" function of the 
-#' likelihood multiplicatively.  The modified distance function is,
+#' likelihood manipulatively.  The modified distance function is,
 #' \code{key * expTerms} where \code{key} is a vector of values in
 #' the base likelihood function (e.g., \code{halfnorm.like()$L.unscaled} 
 #' or \code{hazrate.like()$L.unscaled}) and \code{expTerms} is the 

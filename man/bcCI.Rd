@@ -9,9 +9,9 @@ bcCI(x.bs, x, ci = 0.95)
 \arguments{
 \item{x.bs}{A vector of bootstrap estimates of some quantity.}
 
-\item{x}{A scaler of the original estimate of the quantity.}
+\item{x}{A scalar of the original estimate of the quantity.}
 
-\item{ci}{A scaler of the desired confidence interval 
+\item{ci}{A scalar of the desired confidence interval 
 coverage.}
 }
 \value{

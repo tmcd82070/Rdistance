@@ -11,7 +11,7 @@
 #' If so, it may come in as a normal vector, not a matrix. 
 #' If a normal vector, ncol(X) does not work. 
 #' 
-#' @return An integer scaler
+#' @return An integer scalar
 #' 
 #' # do not export
 nCovars <- function(X){

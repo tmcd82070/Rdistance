@@ -171,7 +171,7 @@
 #'     Length of this vector for built-in likelihoods is one 
 #'     (for the function's parameter) plus the 
 #'     number of expansion terms plus one if the likelihood is 
-#'     either 'hazrate', 'huber, or 'uniform' (which have
+#'     'hazrate' (which has
 #'     two parameters). }
 #'     
 #'   \item{varcovar}{The variance-covariance matrix for coefficients 

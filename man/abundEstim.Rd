@@ -128,7 +128,7 @@ The abundance estimate for line-transect surveys (if no covariates
 
   Rdistance's nested data frames (produced by \code{\link{RdistDf}})
   contain all information required to estimate bootstrap CIs. 
-  To compute bootstrap CIs, Rdistance resamples, with replacemment,
+  To compute bootstrap CIs, Rdistance resamples, with replacement,
   the rows of the \code{$data} component contained in Rdistance 
   fitted models. Rdistance assumes each row of \code{$data} 
   contains one information on on transect.

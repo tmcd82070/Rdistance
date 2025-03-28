@@ -48,7 +48,7 @@ frame must contain the following:
   side of \code{formula} in a call to \code{dfuncEstim}.  
   As of Rdistance version 3.0.0, detection distances must have 
   physical measurement units assigned. See 
-  \bold{Measurment Units}. 
+  \bold{Measurement Units}. 
 }
 Optional columns in `detectionDf`:
 \itemize{
@@ -111,7 +111,7 @@ in the merged data frame whose name contains 'point'
 (for point transects) or 'length' (for line transects)
 is used and a message is printed. Matching is case insensitive, 
 so for example, 'nPoints' and 
-'N_point' and "numberOfPoints" will all be matched.   If two or more column 
+'N_point' and 'numberOfPoints' will all be matched.   If two or more column 
 names match the effort column search terms, a warning is issued. 
 See \bold{Transect Lengths} for a description of point and line transects.}
 }

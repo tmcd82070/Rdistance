@@ -1,4 +1,4 @@
-#' @title dfuncEstimDfErrMessage - dfuncEstim error messages
+#' @title dfuncEstimErrMessage - dfuncEstim error messages
 #' 
 #' @description
 #' Utility function to produce error messages suitable for \code{stop}

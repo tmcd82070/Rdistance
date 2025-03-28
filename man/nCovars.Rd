@@ -10,7 +10,7 @@ nCovars(X)
 \item{X}{The X matrix of covariates, or a vector.}
 }
 \value{
-An integer scaler
+An integer scalar
 
 # do not export
 }

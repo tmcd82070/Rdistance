@@ -11,7 +11,7 @@
 #' If one or more expansions are called for, coefficients for the 
 #' expansion terms follow coefficients for the canonical parameters.  
 #' i.e., length of this vector is 
-#'   \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate", "logistic", "huber"))}.
+#'   \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate"))}.
 #'   
 #' @inheritParams startLimits
 #'  

@@ -10,7 +10,7 @@
 #' by a call to \code{\link{startLimits}}.
 #' 
 #' @return An Rdistance fitted model object. This object contains the 
-#' raw object returned by the optiminzation routine (e.g., \code{nlming}), 
+#' raw object returned by the optimization routine (e.g., \code{nlming}), 
 #' and additional components specific to Rdistance.
 #' 
 #' @export

@@ -20,7 +20,7 @@ If \code{newdata} is not NULL and the model does not contains covariates,
 this routine returns one prediction for each row in \code{newdata}, but 
 columns and values in \code{newdata} are ignored.}
 
-\item{prob}{Logical scaler for whether to scale the distance function 
+\item{prob}{Logical scalar for whether to scale the distance function 
 to be a density function (integrates to one). Default behavior is designed 
 to be compatible with the plot method for distance functions 
 (\code{\link{plot.dfunc}}). By default, line transect distance 

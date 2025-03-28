@@ -1,4 +1,4 @@
-#' @title RdistErrUnk - Unknown error message
+#' @title errDataUnk - Unknown error message
 #' 
 #' @description
 #' Constructs a string stating what is "unknown" that is 

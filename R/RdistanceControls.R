@@ -54,7 +54,7 @@
 #' transect lengths, and study area size. If FALSE, no units are 
 #' required and input values are used as is.  The FALSE options is 
 #' provided for rare cases when \code{Rdistance} functions are called
-#' from other functions and the calling functions do not accomodate 
+#' from other functions and the calling functions do not accommodate 
 #' units.
 #' 
 #' Assign units with statement like \code{units(detectionDf$dist) <- "m"}

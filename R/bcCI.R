@@ -6,9 +6,9 @@
 #' 
 #' @param x.bs A vector of bootstrap estimates of some quantity. 
 #' 
-#' @param x A scaler of the original estimate of the quantity.
+#' @param x A scalar of the original estimate of the quantity.
 #' 
-#' @param ci A scaler of the desired confidence interval 
+#' @param ci A scalar of the desired confidence interval 
 #' coverage. 
 #' 
 #' @return A named vector containing the lower and upper endpoints of

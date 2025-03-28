@@ -5,7 +5,7 @@
 #' abundance calculations on one iteration of the bootstrap. 
 #' 
 #' @param indexDf A data frame containing row indices to use 
-#' for subsetting the rows of \code{data}. The actual indicies are 
+#' for subsetting the rows of \code{data}. The actual indices are 
 #' in column \code{rowIndex}.
 #' 
 #' @param key A data frame containing the current id of the 
@@ -31,7 +31,7 @@
 #' @inheritParams abundEstim
 #' 
 #' @return A data frame containing density and abundance 
-#' and other relavant statistics for 
+#' and other relevant statistics for 
 #' one iteration of the bootstrap. 
 #' 
 #' @importFrom graphics lines

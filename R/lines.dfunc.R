@@ -9,7 +9,7 @@
 #' @inheritParams print.dfunc
 #' @inheritParams predict.dfunc
 #' 
-#' @param prob Logical scaler for whether to scale the distance function 
+#' @param prob Logical scalar for whether to scale the distance function 
 #' to be a density function (integrates to one). Default behavior is designed 
 #' to be compatible with the plot method for distance functions 
 #' (\code{\link{plot.dfunc}}). By default, line transect distance 
