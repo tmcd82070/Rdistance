@@ -23,7 +23,7 @@ RTestLibrary
 ^README\.Rmd$
 ^wiki
 ^NOTES.Rmd$
+^NOTES.html$
 .Renviron$
 ^CRAN-SUBMISSION$
-\.html$
-\.HTML$
+^\.github$

@@ -1,6 +1,6 @@
 Changes in version 4.0.2 (2025-03-28)
 ==============
-Version numbers >4.0.0 substantial different from prior versions. 
+Version numbers >4.0.0 are substantial different from prior versions. 
 
 * ***BIGGEST CHANGE***: Input data frames are now nested.  That is, 
 input data frames are now a nested tibble with one row per transect, 
@@ -30,6 +30,13 @@ from versions with numbers 4.0.*:
   + All vignettes.
 * `print`, `summary`, and `plot` methods have been improved.
 * Documentation updated and improved.
+* Rdistance options can now be assessed by the regular `options` function.
+  All Rdistance options are prefixed with 'Rdistance_' to distinguish them 
+  from other options.
+* New data frame format is pipe-able through the estimation workflow.  For
+  example, the basic workflow is `df |> dfuncEstim(dist~1) |> abundEstim()`, 
+  which will estimate a distance function and density in one go.
+
 
 
 
