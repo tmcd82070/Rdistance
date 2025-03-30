@@ -39,19 +39,10 @@ includeFigure("RdistanceTopBanner.PNG")
 <!-- [![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance) -->
 <!-- badges: end -->
 
-# Simplified Distance-Sampling in R
+## Simplified Distance-Sampling in R
 
-**Rdistance** analyzes line- and point-transect distance-sampling data. 
-If you are unfamiliar with 
-distance-sampling, check out our primer, [Distance Sampling 
-for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/Distance-Sampling-for-the-Average-Joe). 
-For those ready to take on 
-an analysis, the best place to start is one of our vignettes or in the **Examples** section (below).
+**Rdistance** analyzes line- and point-transect distance-sampling data. If you are unfamiliar with distance-sampling, check out our primer, [Distance Sampling for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/Distance-Sampling-for-the-Average-Joe). If you are ready to take on an analysis, the best place to start is the **Examples** section (below).  The *Example* sections of help files `?RdistDf`, `?dfuncEstim`, and `?abundEstim` contain enough information to get you started and explain a few details of analysis in **Rdistance**. The **Rdistance** [wiki](https://github.com/tmcd82070/Rdistance/wiki) (always a work-in-progress) contains additional information on distance sampling and is the equivalent of vignettes. 
 
-**Vignettes**:
-
-* [Beginner Line Transects](https://cran.r-project.org/web/packages/Rdistance/vignettes/Rdistance_BeginnerLineTransect.pdf)
-* [Extended Beginner Line Transects Examples](https://cran.r-project.org/web/packages/Rdistance/vignettes/Extended_dfuncEstim_Examples.pdf)
 
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
@@ -64,19 +55,14 @@ includeFigure("RdistanceSeparator.PNG")
   + half-normal (`halfnorm`) 
   + hazard rate (`hazrate`) 
   + negative exponential (`negexp`)
-  + Gamma (`Gamma`)
-  + logistic (`logistic`)
-* Non-parametric smoothed distance functions (`smu`)
-* Built-in key functions: `sine`, `cosine`, and `hermite`
 * Expansion terms
 * Standard methods: `print`, `plot`, `predict`, `AIC`, etc.
 * Observation and transect-level distance function covariates
 * Standard R formula model specification (e.g., `distance ~ elevation + observer`)
 * Measurement unit control and automatic conversion
 * Automated bootstrap confidence intervals 
-* Overall (study area) abundance estimates
-* Custom (user-defined) detection functions
-* Help and vignettes reviewed and edited by multiple authors
+* Overall (study area) and site level abundance estimates
+* Help and wiki content taught at multiple workshops and reviewed by multiple authors
 
     
 ```{r}
@@ -113,8 +99,6 @@ includeFigure("RdistanceSeparator.PNG")
 
 
 These examples show basic estimation of abundance via distance-sampling analyses, both with and without covariates. 
-Additional information can be found on our [wiki](https://github.com/tmcd82070/Rdistance/wiki) and in 
-our vignettes.
 
 ### Line Transects - No Covariates
 
