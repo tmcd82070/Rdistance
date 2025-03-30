@@ -71,12 +71,17 @@ includeFigure("RdistanceSeparator.PNG")
 
 
 ## Current Release
-The current release is [here](https://github.com/tmcd82070/Rdistance/releases).
 
 
 ## Installation
 
-Install the development version from [GitHub](https://github.com/) with:
+The current release is [here](https://github.com/tmcd82070/Rdistance/releases). Install the current release directly from CRAN:
+
+``` r
+install.packages("Rdistance")
+```
+
+**Rdistance** is under active development.  Install the development version from [GitHub](https://github.com/) using:
 ``` r
 if( !require("devtools") ){
   install.packages("devtools")
@@ -84,11 +89,6 @@ if( !require("devtools") ){
 devtools::install_github("tmcd82070/Rdistance")
 ```
 
-Install the stable version directly from CRAN:
-
-``` r
-install.packages("Rdistance")
-```
 
 
 ```{r}
@@ -103,51 +103,74 @@ These examples show basic estimation of abundance via distance-sampling analyses
 ### Line Transects - No Covariates
 
 ```{r sparrowData, echo=TRUE}
-if( !require("units") ){
-  install.packages("units")
-}
 library(Rdistance)
-library(units)
 
 # Example data
 data("sparrowDetectionData")  # access example data
 data("sparrowSiteData")
 head(sparrowDetectionData)  # inspect data
 head(sparrowSiteData)
+
+# Make nested data frame required by Rdistance
+sparrowDf <- RdistDf(sparrowSiteData
+                   , sparrowDetectionData
+                   , by = "siteID"
+                   , pointSurvey = FALSE
+                   , observer = "single"
+                   , .detectionCol = "detections"
+                   , .effortCol = "length")
+head(sparrowDf)
+summary(sparrowDf, formula = dist ~ groupsize(groupsize))
+# see detections on transect A1
+sparrowDf |> 
+  dplyr::filter(siteID == "A1") |>
+  dplyr::reframe(detections)
+# see detections on 5th transect
+sparrowDf$detections[[5]]
 ```
+
+#### Estimate hazard rate distance function
 
 ```{r lineHazrateExample, echo=TRUE}
 # Set upper (right) truncation distance
-whi <- set_units(150, "m")
-# Fit hazard rate likelihood
-dfuncFit <- dfuncEstim(dist ~ 1
-                   , detectionData = sparrowDetectionData
-                   , likelihood = "hazrate"
-                   , w.hi = whi)
-dfuncFit <- abundEstim(dfuncFit
-         , detectionData = sparrowDetectionData
-         , siteData = sparrowSiteData
-         , area = set_units(2500, "hectares"))
+whi <- set_units(200, "m")
+# Fit hazard rate likelihood and estimate density per ha
+oneHectare <- set_units(1, "ha")
+
+# To save computation time, only compute point estimates.
+# change `ci = NULL` to `ci = 0.95` to compute confidence intervals
+dfuncFit <- sparrowDf |>
+  dfuncEstim(dist ~ groupsize(groupsize)
+           , likelihood = "hazrate"
+           , w.hi = whi) |> 
+  abundEstim(area = oneHectare
+           , ci = NULL)
 summary(dfuncFit)
-plot(dfuncFit)
+plot(dfuncFit, nbins = 30, border = NA)
+
+# Estimate stored in output object
+dfuncFit$estimates
 ```
 
 
 ### Line Transects - With Vegetation Covariate
 
 ```{r lineHazrateExampleCovars, echo=TRUE}
-dfuncFit <- dfuncEstim(dist ~ bare
-                   , detectionData = sparrowDetectionData
-                   , siteData = sparrowSiteData
-                   , likelihood = "hazrate"
-                   , w.hi = whi)
-dfuncFit <- abundEstim(dfuncFit
-         , detectionData = sparrowDetectionData
-         , siteData = sparrowSiteData
-         , area = set_units(2500, "hectares")
-         , ci=NULL)
+# This time, estimates only. No confidence intervals
+dfuncFit <- sparrowDf |>
+  dfuncEstim(dist ~ bare + groupsize(groupsize)
+           , likelihood = "hazrate"
+           , w.hi = whi) |> 
+  abundEstim(area = oneHectare
+           , ci = NULL)
+
 summary(dfuncFit)
-plot(dfuncFit, newdata = data.frame(bare = c(30, 40, 50)), lty = 1)
+plot(dfuncFit
+   , newdata = data.frame(bare = c(30, 40, 50))
+   , lty = 1
+   , nbins = 30
+   , border = NA
+   , col = "grey75")
 ```
 
 ### Point Transects - No Covariates
@@ -158,36 +181,44 @@ data("thrasherDetectionData")  # access example data
 data("thrasherSiteData")
 head(thrasherDetectionData)  # inspect example data
 head(thrasherSiteData)
+
+# Make nested data frame required by Rdistance
+thrasherDf <- RdistDf(thrasherSiteData
+                   , thrasherDetectionData
+                   , by = "siteID"
+                   , pointSurvey = TRUE
+                   , observer = "single"
+                   , .detectionCol = "detections"
+                   , .effortCol = "npoints")
+head(thrasherDf)
+summary(thrasherDf, formula = dist ~ groupsize(groupsize))
 ```
 
 ```{r pointHazrateExample, echo=TRUE}
-dfuncFit <- dfuncEstim(dist ~ 1
-                   , detectionData = thrasherDetectionData
-                   , likelihood = "hazrate"
-                   , pointSurvey = TRUE)
-dfuncFit <- abundEstim(dfuncFit
-         , detectionData = thrasherDetectionData
-         , siteData = thrasherSiteData
-         , area = set_units(100, "acres"), ci=NULL)
+dfuncFit <- thrasherDf |>
+  dfuncEstim(dist ~ groupsize(groupsize)
+           , likelihood = "hazrate") |> 
+  abundEstim(area = oneHectare
+           , ci = NULL)
+
 summary(dfuncFit)
-plot(dfuncFit)
+plot(dfuncFit
+   , nbins = 15)
 ```
 
 ### Point Transects - With Vegetation Covariates
 
 ```{r pointHazrateExampleCovars, echo=TRUE}
-dfuncFit <- dfuncEstim(dist ~ bare + shrub
-                   , detectionData = thrasherDetectionData
-                   , siteData = thrasherSiteData
-                   , likelihood = "hazrate"
-                   , pointSurvey = TRUE)
-dfuncFit <- abundEstim(dfuncFit
-         , detectionData = thrasherDetectionData
-         , siteData = thrasherSiteData
-         , area = set_units(100, "acres"), ci=NULL)
+dfuncFit <- thrasherDf |>
+  dfuncEstim(dist ~ bare + shrub + groupsize(groupsize)
+           , likelihood = "hazrate") |> 
+  abundEstim(area = oneHectare
+           , ci = NULL)
 summary(dfuncFit)
-plot(dfuncFit, newdata = data.frame(bare = c(30, 35, 40)
-                                  , shrub = 20), lty = 1)
+plot(dfuncFit
+   , newdata = data.frame(bare = c(30, 35, 40)
+                       , shrub = 20)
+   , lty = 1)
 ```
 
 <!-- github CI examples for auto rendering of Rmd <https://github.com/r-lib/actions/tree/v1/examples>. -->
@@ -199,6 +230,6 @@ includeFigure("RdistanceSeparator.PNG")
 
 # RECENT CHANGES
 
-See our [NEWS](NEWS.md) file for recent changes.
+See our [NEWS](NEWS.md) file for changes across version numbers.
 
 
