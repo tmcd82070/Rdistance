@@ -61,17 +61,43 @@ and is the equivalent of vignettes.
 
 <img src="README_files/RdistanceSeparator.PNG" width="100%" />
 
-## Current Release
-
 ## Installation
 
-The current release is
+### Prerequisites
+
+**Rdistance** depends on and imports a number of other packages. For a
+fresh installation, you will need to install `Rtools` prior to
+installing `Rdistance` because some dependent packages require
+compilation. If `Rtools` is already installed, skip this step.
+
+***Windows***: Install `Rtools` by first downloading the correct
+installer for your version of R from
+[here](https://cran.r-project.org/bin/windows/Rtools/). Once downloaded,
+run the installer (double-click it) and accept all default options.
+
+***Linux***: Install the equivalent of `Rtools` using the following
+command:
+
+    sudo apt-get install r-base-dev
+
+The `units` package will require the `udunits` library which can be
+installed on linux via:
+
+    sudo apt-get install libudunits2-dev
+
+### Install Rdistance
+
+The current release’s code is
 [here](https://github.com/tmcd82070/Rdistance/releases). Install the
-current release directly from CRAN:
+current release in R directly from CRAN using:
 
 ``` r
 install.packages("Rdistance")
 ```
+
+This will check for and install all dependencies. The number of
+dependencies is large, in part because `Rdistance` imports `dplyr`, so a
+fresh installation will require patience.
 
 **Rdistance** is under active development. Install the development
 version from [GitHub](https://github.com/) using:

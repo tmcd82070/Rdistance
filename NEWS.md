@@ -1,9 +1,9 @@
-Changes in version 4.0.2 (2025-03-28)
+Changes in version 4.0.3 (2025-03-28)
 ==============
-Version numbers >4.0.0 are substantial different from prior versions. 
+Version numbers >4.0.0 are substantially different from prior versions. 
 
-* ***BIGGEST CHANGE***: Input data frames are now nested.  That is, 
-input data frames are now a nested tibble with one row per transect, 
+* ***BIGGEST CHANGE***: Input data frames are now nested tibbles with one 
+row per transect, 
 and detection information in a data frame contained within a list column. 
 Technically, the new data frame format is a grouped tibble with one row 
 per group, and each group is a transect. 
