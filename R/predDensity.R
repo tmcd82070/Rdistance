@@ -125,7 +125,11 @@ predDensity <- function(object
                 , ..instrip.. = ..instrip.. ) |> 
     dplyr::group_by(dplyr::across(dplyr::all_of(siteIDs))) |> 
     dplyr::summarise(individualsSeen = sum(..groupSizes..[..instrip..])
-                     , avgPdetect = mean(..pDetect..[..instrip..])
+                     , avgPdetect = dplyr::if_else(
+                             sum(..instrip..) > 0
+                           , mean(..pDetect..[..instrip..])
+                           , mean(..pDetect..)
+                         )
                      , ..nAdjusted.. = sum(..nAdjusted..[..instrip..])
     ) 
   deCounts <- deCounts |> 
