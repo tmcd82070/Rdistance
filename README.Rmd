@@ -72,35 +72,43 @@ includeFigure("RdistanceSeparator.PNG")
 
 ## Installation
 
-### Prerequisites
 
-**Rdistance** depends on and imports a number of other packages. For a fresh installation, you will need to install `Rtools` prior to installing `Rdistance` because some dependent packages require compilation.  If `Rtools` is already installed, skip this step. 
+**Rdistance** depends on and imports a number of other packages. All installations require compilation because some dependent packages require compilation. Compilation requires either `Rtools` (on Windows systems) or `r-base-dev` (on Linux systems). The number of dependencies is large, in part because `Rdistance` imports `dplyr`, so a fresh installation will require patience.  
 
-***Windows***: Install `Rtools` by first downloading the correct installer for your version of R from [here](https://cran.r-project.org/bin/windows/Rtools/).  Once downloaded, run the installer (double-click it) and accept all default options.
 
-***Linux***: Install the equivalent of `Rtools` using the following command:
+### Windows - `Rtools`: 
+
+1.  Install `Rtools`: Download the correct `Rtools` installer for your version of R from [here](https://cran.r-project.org/bin/windows/Rtools/).  When download completes, run the installer (double-click it) and accept all default options. If `Rtools` is already installed, skip this step.
+
+
+### Ubuntu - `r-base-dev`:
+
+If R is installed, chances are repository lists are correct. For a fresh installation (of R) follow the instructions [here](https://cran.r-project.org/bin/linux/ubuntu/fullREADME.html).  This will insure that `apt get` has the correct list of repositories.
+
+1.  Install the equivalent of `Rtools` with the following command:
 
 ```
 sudo apt-get install r-base-dev
 ```
 
-The `units` package will require the `udunits` library which can be installed on linux via:
+2.  `Rdistance` requires the `units` package, and the `units` package requires the `udunits` library. Install the `udunits` library on linux via:
 
 ```
 sudo apt-get install libudunits2-dev
 ```
 
-### Install Rdistance
+### Install Rdistance :
 
-The current release's code is [here](https://github.com/tmcd82070/Rdistance/releases). Install the current release in R directly from CRAN using:
+Once R is installed and running, install the current stable release or the development release with the following commands:
+
+1.  ***Current release***: Install the current release directly from CRAN.  In the R terminal, issue...
 
 ``` r
 install.packages("Rdistance")
 ```
 
-This will check for and install all dependencies.  The number of dependencies is large, in part because `Rdistance` imports `dplyr`, so a fresh installation will require patience.  
+2.  ***Development version***: `Rdistance` is under active development, and the 'development' version often contains patches between official releases.  Inspect commit messages for commits following the most recent release for a description of the patches. Install the development version from [GitHub](https://github.com/tmcd82070/Rdistance) using:
 
-**Rdistance** is under active development.  Install the development version from [GitHub](https://github.com/) using:
 ``` r
 if( !require("devtools") ){
   install.packages("devtools")
@@ -108,138 +116,15 @@ if( !require("devtools") ){
 devtools::install_github("tmcd82070/Rdistance")
 ```
 
-
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
 ```
 
-## Examples 
 
+## Tutorials 
 
-These examples show basic estimation of abundance via distance-sampling analyses, both with and without covariates. 
+Beginner, intermediate, and advanced `Rdistance` tutorials are [here](https://mcdonalddatasciences.com/Rdistance.html).
 
-### Line Transects - No Covariates
-
-```{r sparrowData, echo=TRUE}
-library(Rdistance)
-
-# Example data
-data("sparrowDetectionData")  # access example data
-data("sparrowSiteData")
-head(sparrowDetectionData)  # inspect data
-head(sparrowSiteData)
-
-# Make nested data frame required by Rdistance
-sparrowDf <- RdistDf(sparrowSiteData
-                   , sparrowDetectionData
-                   , by = "siteID"
-                   , pointSurvey = FALSE
-                   , observer = "single"
-                   , .detectionCol = "detections"
-                   , .effortCol = "length")
-head(sparrowDf)
-summary(sparrowDf, formula = dist ~ groupsize(groupsize))
-# see detections on transect A1
-sparrowDf |> 
-  dplyr::filter(siteID == "A1") |>
-  dplyr::reframe(detections)
-# see detections on 5th transect
-sparrowDf$detections[[5]]
-```
-
-#### Estimate hazard rate distance function
-
-```{r lineHazrateExample, echo=TRUE}
-# Set upper (right) truncation distance
-whi <- set_units(200, "m")
-# Fit hazard rate likelihood and estimate density per ha
-oneHectare <- set_units(1, "ha")
-
-# To save computation time, only compute point estimates.
-# change `ci = NULL` to `ci = 0.95` to compute confidence intervals
-dfuncFit <- sparrowDf |>
-  dfuncEstim(dist ~ groupsize(groupsize)
-           , likelihood = "hazrate"
-           , w.hi = whi) |> 
-  abundEstim(area = oneHectare
-           , ci = NULL)
-summary(dfuncFit)
-plot(dfuncFit, nbins = 30, border = NA)
-
-# Estimate stored in output object
-dfuncFit$estimates
-```
-
-
-### Line Transects - With Vegetation Covariate
-
-```{r lineHazrateExampleCovars, echo=TRUE}
-# This time, estimates only. No confidence intervals
-dfuncFit <- sparrowDf |>
-  dfuncEstim(dist ~ bare + groupsize(groupsize)
-           , likelihood = "hazrate"
-           , w.hi = whi) |> 
-  abundEstim(area = oneHectare
-           , ci = NULL)
-
-summary(dfuncFit)
-plot(dfuncFit
-   , newdata = data.frame(bare = c(30, 40, 50))
-   , lty = 1
-   , nbins = 30
-   , border = NA
-   , col = "grey75")
-```
-
-### Point Transects - No Covariates
-
-```{r thrasherData, echo=TRUE}
-# Example data
-data("thrasherDetectionData")  # access example data
-data("thrasherSiteData")
-head(thrasherDetectionData)  # inspect example data
-head(thrasherSiteData)
-
-# Make nested data frame required by Rdistance
-thrasherDf <- RdistDf(thrasherSiteData
-                   , thrasherDetectionData
-                   , by = "siteID"
-                   , pointSurvey = TRUE
-                   , observer = "single"
-                   , .detectionCol = "detections"
-                   , .effortCol = "npoints")
-head(thrasherDf)
-summary(thrasherDf, formula = dist ~ groupsize(groupsize))
-```
-
-```{r pointHazrateExample, echo=TRUE}
-dfuncFit <- thrasherDf |>
-  dfuncEstim(dist ~ groupsize(groupsize)
-           , likelihood = "hazrate") |> 
-  abundEstim(area = oneHectare
-           , ci = NULL)
-
-summary(dfuncFit)
-plot(dfuncFit
-   , nbins = 15)
-```
-
-### Point Transects - With Vegetation Covariates
-
-```{r pointHazrateExampleCovars, echo=TRUE}
-dfuncFit <- thrasherDf |>
-  dfuncEstim(dist ~ bare + shrub + groupsize(groupsize)
-           , likelihood = "hazrate") |> 
-  abundEstim(area = oneHectare
-           , ci = NULL)
-summary(dfuncFit)
-plot(dfuncFit
-   , newdata = data.frame(bare = c(30, 35, 40)
-                       , shrub = 20)
-   , lty = 1)
-```
-
-<!-- github CI examples for auto rendering of Rmd <https://github.com/r-lib/actions/tree/v1/examples>. -->
 
 ```{r}
 includeFigure("RdistanceSeparator.PNG")
@@ -248,6 +133,6 @@ includeFigure("RdistanceSeparator.PNG")
 
 # RECENT CHANGES
 
-See our [NEWS](NEWS.md) file for changes across version numbers.
+Our [NEWS](NEWS.md) file contains salient changes across version numbers.
 
 
