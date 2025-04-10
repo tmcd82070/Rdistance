@@ -1,23 +1,16 @@
 # Submission comments
 
-This submission (v4.0.2) represents a substantial re-write 
-of nearly every routine contained in prior releases.  
-I felt the re-write was necessary to 
-improve stability of the code (prior code had a lot of "spaghetti" code) 
-and lay the ground work for future functionality
-improvements. I have been working on this version for over a year. 
-Documentation has been substantially improved.  Testing files have 
-been substantially tightened and focuses.  
+This submission (v4.0.4) fixes two important bugs present in version 4.0.3.
 
 Details on the specific changes are in **NEWS**. 
 
 # Current submission
 
-* 4.0.2
+* 4.0.4
 
 # Prior submission
 
-* 3.1.4   
+* 4.0.3   
 
 # Local Check
 
