@@ -326,7 +326,7 @@ RdistDf <- function( transectDf
   ans <- ans |> 
     dplyr::rename_with(
         .fn = function(inNm, nmMap){nmMap}
-      , .cols = names(reverseBy), nmMap = refBy
+      , .cols = names(reverseBy), nmMap = reverseBy
     )
 
   # Figure out effort column ----
