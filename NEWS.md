@@ -1,4 +1,4 @@
-Changes in version 4.0.4 (2025-04-08)
+Changes in version 4.0.5 (2025-04-10)
 ==============
 Bug fixes:
 

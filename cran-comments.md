@@ -1,12 +1,12 @@
 # Submission comments
 
-This submission (v4.0.4) fixes two important bugs present in version 4.0.3.
+This submission (v4.0.5) fixes two important bugs present in version 4.0.3.
 
 Details on the specific changes are in **NEWS**. 
 
 # Current submission
 
-* 4.0.4
+* 4.0.5
 
 # Prior submission
 
