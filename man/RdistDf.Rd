@@ -62,10 +62,10 @@ Optional columns in `detectionDf`:
 }}
 
 \item{by}{A character vector of variables to use in the join. The right-hand
-side of this join identifies unique transects and will specify unique 
-rows in both \code{transectDf} and the output (see warning in \bold{Details}).
-If NULL, the join will be 'natural', using all variables in common between
-\code{transectDf} and \code{detectionDf}. To join on 
+side of this join identifies unique transects (unique 
+rows) in both \code{transectDf} and the output (see warning in \bold{Details}).
+If NULL, the join will be 'natural', using all common variables 
+in \code{transectDf} and \code{detectionDf}. To join on 
 specific variables, specify a character vector of 
 the variables. For example, by = c("a", "b") 
 joins \code{transectDf$a} to \code{detectionDf$a} and 

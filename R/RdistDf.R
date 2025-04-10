@@ -99,10 +99,10 @@
 #' See \bold{Transect Lengths} for a description of point and line transects.
 #' 
 #' @param by A character vector of variables to use in the join. The right-hand
-#' side of this join identifies unique transects and will specify unique 
-#' rows in both \code{transectDf} and the output (see warning in \bold{Details}).
-#' If NULL, the join will be 'natural', using all variables in common between
-#' \code{transectDf} and \code{detectionDf}. To join on 
+#' side of this join identifies unique transects (unique 
+#' rows) in both \code{transectDf} and the output (see warning in \bold{Details}).
+#' If NULL, the join will be 'natural', using all common variables 
+#' in \code{transectDf} and \code{detectionDf}. To join on 
 #' specific variables, specify a character vector of 
 #' the variables. For example, by = c("a", "b") 
 #' joins \code{transectDf$a} to \code{detectionDf$a} and 
@@ -297,17 +297,38 @@ RdistDf <- function( transectDf
                  , "Consider using format 'by = c('a' = 'b')' to'
                  , 'join on columns 'a' and 'b'."))
     }
+  } 
+  
+  # 'by' now has a value always, check it is named
+  if( is.null(names(by)) ){
+    # e.g., by = c("id", "region")
+    reverseBy <- by
+    names(reverseBy) <- by
+  } else {
+    # by is specified. b/c we nest first, then right join, we 
+    # gotta reverse names and values in 'by'
+    reverseBy <- names(by)
+    names(reverseBy) <- by
   }
   ans <- detectionDf |> 
     dplyr::nest_by( dplyr::across(dplyr::all_of(unname(by)))
                     , .key = .detectionCol
                     , .keep = FALSE) |> 
-    dplyr::right_join(transectDf, by = by)
+    dplyr::right_join(transectDf, by = reverseBy)
 
   attr(ans, "detectionColumn") <- .detectionCol
   attr(ans, "obsType") <- as.character(obsType)
   attr(ans, "transType") <- as.character(transType)
- 
+  
+  # Rename ID column: b/c we nested first, then merged, the ID column
+  # in the result is names the first element of reverseBy. 
+  # Don't need to do this if by == reverseby, but...no harm if so
+  ans <- ans |> 
+    dplyr::rename_with(
+        .fn = function(inNm, nmMap){nmMap}
+      , .cols = names(reverseBy), nmMap = refBy
+    )
+
   # Figure out effort column ----
   if( is.null(.effortCol) ){
     if( pointSurvey ){
@@ -345,7 +366,7 @@ RdistDf <- function( transectDf
                 , colorize(names(ans)[candidates[1]])
                 , " as "
                 , torp
-                , ". Specify a differnt effort column using the .effortCol input parameter."
+                , ". Specify a different effort column using the .effortCol input parameter."
       ))
     }
     .effortCol <- names(ans)[candidates[1]]
