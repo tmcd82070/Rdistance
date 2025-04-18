@@ -204,7 +204,7 @@ autoDistSamp <- function (data
             , expansions = expan
             , series = ser
             , x.scl = w.lo
-            , g.x.scl = 1
+            , g.x.scl = g.x.scl
             , warn = TRUE
             , outputUnits = NULL)
           
@@ -250,7 +250,7 @@ autoDistSamp <- function (data
     , expansions = fit.table$expansions[1]
     , series = fit.table$series[1]
     , x.scl = w.lo
-    , g.x.scl = 1
+    , g.x.scl = g.x.scl
     , warn = TRUE
     , outputUnits = NULL)
   if (plot) {
