@@ -244,10 +244,17 @@ abundEstim <- function(object
     area <- units::set_units(1, object$outputUnits, mode = "standard")^2
   }
   
-  # ---- Construct Indices to Original data frame ----
+  # ---- Construct Original estimates frame ----
+  ests <- estimateN(object = object
+                  , area = area
+                  , propUnitSurveyed = propUnitSurveyed
+                    )
+  ests$id <- "Original"
+  
+  # ---- Prelims constants for bootstrapping ----
   nDataRows <- nrow(object$data)
-  bsData <- data.frame(id = "Original",
-                       rowIndex = 1:nDataRows)
+  # bsData <- data.frame(id = "Original",
+  #                      rowIndex = 1:nDataRows)
 
   pb <- list(tick = function(){}) # NULL tick function for not bootstrapping
 
@@ -259,7 +266,7 @@ abundEstim <- function(object
     
     nDigits <- ceiling(log10(R + 0.1))
     id <- rep(1:R, each = nDataRows)
-    repsDf <-  data.frame(
+    bsData <-  data.frame(
                 id = paste0("Bootstrap_",
                             formatC(id
                                     , format = "f"
@@ -270,58 +277,61 @@ abundEstim <- function(object
                            , size = R*nDataRows
                            , replace = TRUE
                           ))
-    bsData <- bsData |> 
-      dplyr::bind_rows( repsDf ) 
 
     # set up progress bar if called for, only if bootstrapping
     if(showProgress){
       pb <- progress::progress_bar$new(
-          format = "Bootstrapping: [:bar] Elapsed Time: :elapsedfull "
+          format = "Bootstrapping: [:bar] Run Time: :elapsedfull "
         , total = R+1
         , show_after = 1
         , clear = FALSE
       )
     }
+
+    # --- Apply estimation to each ID group ----
+    B <- bsData |> 
+      dplyr::group_by(id) |> 
+      dplyr::group_modify(.f = Rdistance:::oneBsIter # In Rdistance, not exported
+                        , data = object$data
+                        , formula = object$formula  
+                        , likelihood = object$likelihood 
+                        , w.lo = object$w.lo
+                        , w.hi = object$w.hi
+                        , expansions = object$expansions
+                        , series = object$series
+                        , x.scl = object$x.scl 
+                        , g.x.scl = object$g.x.scl
+                        , outputUnits = object$outputUnits
+                        , warn = FALSE
+                        , area = area
+                        , propUnitSurveyed = propUnitSurveyed
+                        , pb = pb
+                        , plot.bs = plot.bs
+                        , plotCovValues = plotObj$predCovValues
+      )
+    
+    if(showProgress){
+      pb$terminate()
+    }
+    
+    # Replace varcovar with bootstrap varcovar
+    bsCoefs <- B |> 
+      dplyr::ungroup() |> 
+      dplyr::select(dplyr::all_of(names(coef(object))))
+    object$varcovar <- var(bsCoefs)
+    
+
   } else {
     ci <- NA
-  }
-
-  # --- Apply estimation to each ID group ----
-  bsEsts <- bsData |> 
-    dplyr::group_by(id) |> 
-    dplyr::group_modify(.f = oneBsIter # In Rdistance, not exported
-                      , data = object$data
-                      , formula = object$formula  
-                      , likelihood = object$likelihood 
-                      , w.lo = object$w.lo
-                      , w.hi = object$w.hi
-                      , expansions = object$expansions
-                      , series = object$series
-                      , x.scl = object$x.scl 
-                      , g.x.scl = object$g.x.scl
-                      , outputUnits = object$outputUnits
-                      , warn = FALSE
-                      , area = area
-                      , propUnitSurveyed = propUnitSurveyed
-                      , pb = pb
-                      , plot.bs = plot.bs
-                      , plotCovValues = plotObj$predCovValues
-    )
-      
-  # ---- Construct output object ----
-  ests <- bsEsts |> 
-    dplyr::filter(id == "Original")
-
-  if( bootstrapping ){
-    B <- bsEsts |> 
-      dplyr::filter( id != "Original" )
-  } else {
     B <- NULL
   }
+  
+  # ---- Construct output object ----
   ans <- c(object
           , estimates = list(ests)
           , B = list(B)
           )
+  
   # ---- Plot original fit again (over bs lines) ----
   if (bootstrapping && plot.bs) {
     graphics::lines(object
@@ -338,9 +348,9 @@ abundEstim <- function(object
       names(xx) <- paste0(nm, "_", names(xx))
       xx
     }
-    abCI <- Rdistance::bcCI(bsEsts$abundance, ests$abundance, ci)
-    dnCI <- Rdistance::bcCI(bsEsts$density, ests$density, ci)
-    efCI <- Rdistance::bcCI(bsEsts$avgEffDistance, ests$avgEffDistance, ci) 
+    abCI <- Rdistance::bcCI(B$abundance, ests$abundance, ci)
+    dnCI <- Rdistance::bcCI(B$density, ests$density, ci)
+    efCI <- Rdistance::bcCI(B$avgEffDistance, ests$avgEffDistance, ci) 
     abCI <- vec2df(abCI, "abundance") 
     dnCI <- vec2df(dnCI, "density") 
     efCI <- vec2df(efCI, "avgEffDistance") 
@@ -352,12 +362,25 @@ abundEstim <- function(object
 
     # rearrange columns    
     ans$estimates <- ans$estimates |> 
-      dplyr::select(id, dplyr::starts_with("density"), dplyr::starts_with("abundance"), dplyr::starts_with("avgEffDistance"), dplyr::everything())
+      dplyr::select(id
+                  , dplyr::all_of(names(coef(object)))  
+                  , dplyr::starts_with("density")
+                  , dplyr::starts_with("abundance")
+                  , dplyr::starts_with("avgEffDistance")
+                  , dplyr::everything())
     B <- B |> 
-      dplyr::select(id, dplyr::starts_with("density"), dplyr::starts_with("abundance"), dplyr::starts_with("avgEffDistance"), dplyr::everything())
+      dplyr::select(id
+                  , dplyr::all_of(names(coef(object)))  
+                  , dplyr::starts_with("density")
+                  , dplyr::starts_with("abundance")
+                  , dplyr::starts_with("avgEffDistance")
+                  , dplyr::everything())
     
-    if ((object$LhoodType == "parametric") && (any(is.na(bsEsts$density))) && showProgress){
-      cat(paste( sum(is.na(bsEsts$density)), "of", R, "iterations did not converge.\n"))
+    if ((object$LhoodType == "parametric") && 
+        (any(is.na(B$density))) && 
+        showProgress){
+      cat(paste( sum(is.na(B$density)), "of", R
+                 , "iterations did not converge.\n"))
     }
   }
 

@@ -77,27 +77,6 @@ oneBsIter <- function(indexDf
     , propUnitSurveyed = propUnitSurveyed
   )
 
-  Coefs <- data.frame(matrix(coef(dfunc.bs), nrow = 1))
-  names(Coefs) <- names(coef(dfunc.bs))
-  
-  if(Rdistance::is.points(data)){
-    avgEDD <- mean( sqrt(nEst$pDetection) * nEst$w, na.rm = TRUE)
-  } else {
-    avgEDD <- mean( nEst$pDetection * nEst$w, na.rm = TRUE)
-  }
-  
-  out <- tibble::tibble(
-    Coefs
-    , density = nEst$density
-    , abundance = nEst$abundance
-    , nGroups = nEst$n.groups
-    , nSeen = nEst$n.seen
-    , area = nEst$area
-    , surveyedUnits = nEst$surveyedUnits
-    , avgGroupSize = nEst$avg.group.size
-    , avgEffDistance = avgEDD
-  )
-  
   if ( plot.bs ) {
     graphics::lines(dfunc.bs
           , newdata = plotCovValues
@@ -108,5 +87,5 @@ oneBsIter <- function(indexDf
   
   pb$tick()
   
-  out        
+  nEst        
 }

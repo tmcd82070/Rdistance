@@ -117,19 +117,66 @@ estimateN <- function(object
     phat <- NA
   }
 
+  Coefs <- data.frame(matrix(coef(object), nrow = 1))
+  names(Coefs) <- names(coef(object))
+  
+  if(Rdistance::is.points(object)){
+    avgEDD <- mean( sqrt(phat) * w, na.rm = TRUE)
+  } else {
+    avgEDD <- mean( phat * w, na.rm = TRUE)
+  }
+  
   # ---- Make output data frame ----
-  nhat.df <- list(density = dens
-                  , abundance = nhat.df
-                  , n.groups = sum(!is.na(groupSz))
-                  , n.seen = sum(groupSz, na.rm = TRUE)
-                  , area = area
-                  , surveyedUnits = totSurveyedUnits
-                  , propUnitSurveyed = propUnitSurveyed
-                  , avg.group.size = mean(groupSz, na.rm = TRUE)
-                  # , range.group.size = range(groupSz)
-                  , w = w
-                  , pDetection = phat
-                  )
+  nhat.df <- tibble::tibble(
+    Coefs
+    , density = dens
+    , abundance = nhat.df
+    , nGroups = sum(!is.na(groupSz))
+    , nSeen = sum(groupSz, na.rm = TRUE)
+    , avgGroupSize = mean(groupSz, na.rm = TRUE)
+    , area = area
+    , surveyedUnits = totSurveyedUnits
+    , propUnitSurveyed = propUnitSurveyed
+    , w = w
+    , avgEffDistance = avgEDD
+  )
+  
+  # nhat.df <- list(density = dens
+  #                 , abundance = nhat.df
+  #                 , n.groups = sum(!is.na(groupSz))
+  #                 , n.seen = sum(groupSz, na.rm = TRUE)
+  #                 , area = area
+  #                 , surveyedUnits = totSurveyedUnits
+  #                 , propUnitSurveyed = propUnitSurveyed
+  #                 , avg.group.size = mean(groupSz, na.rm = TRUE)
+  #                 # , range.group.size = range(groupSz)
+  #                 , w = w
+  #                 , pDetection = phat
+  #                 )
+  
+  # Code from here to **** came from bottom of 'oneBsIter' ----
+  # Coefs <- data.frame(matrix(coef(object), nrow = 1))
+  # names(Coefs) <- names(coef(object))
+  # 
+  # if(Rdistance::is.points(object)){
+  #   avgEDD <- mean( sqrt(phat) * w, na.rm = TRUE)
+  # } else {
+  #   avgEDD <- mean( pDetection * w, na.rm = TRUE)
+  # }
+  # 
+  # out <- tibble::tibble(
+  #   Coefs
+  #   , density = nEst$density
+  #   , abundance = nEst$abundance
+  #   , nGroups = nEst$n.groups
+  #   , nSeen = nEst$n.seen
+  #   , area = nEst$area
+  #   , surveyedUnits = nEst$surveyedUnits
+  #   , avgGroupSize = nEst$avg.group.size
+  #   , avgEffDistance = avgEDD
+  # )
+  
+  # ****
 
   # some interesting tidbits:
   #  sampled area = tot.trans.len * 2 * (dfunc$w.hi - dfunc$w.lo)
