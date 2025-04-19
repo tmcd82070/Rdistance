@@ -88,30 +88,13 @@ nLL <- function(a
   # could move these retrievals outside nLL, which might 
   # speed things a little, but it's more params to pass in.
   
-  # f.like <- match.fun(paste( ml$likelihood, ".like", sep="")) # requires Rdistance to be attached
-  # f.like <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")
-  
   # Because of na.pass when building model frame, and 
   # other code in parseModel(), there could be missing distances 
   # ONLY because they are inheritly missing (crew did not get a distance
   # on an observation). Observations outside the strip are not present 
   # in the model frame. model.frame returns rows for missing responses. 
   # check and reduce X if necessary.
-  # X <- model.matrix(ml)  # this calls model.matrix.dfunc()
-  # dist <- Rdistance::distances(ml, na.rm = FALSE) - ml$w.lo
-  # if(any(is.na(dist))){
-  #   X <- X[ !is.na(dist), , drop = FALSE]
-  #   dist <- dist[ !is.na(dist) ]
-  # }
 
-  # cat(crayon::blue("===================="))
-  # cat("\n")
-  # cat(paste("In", crayon::blue("nLL"), "\n"))
-  # print(a)
-  # cat(crayon::blue("---- Calling "))
-  # cat(ml$likelihood)
-  # cat("\n")
-      
   # Evaluate the "key" function ----
   # I call Buckland's "key" function just "likelihood".
   # Returns one value per observation. Expansions, if any, 

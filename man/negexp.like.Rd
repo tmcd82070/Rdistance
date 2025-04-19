@@ -4,7 +4,7 @@
 \alias{negexp.like}
 \title{negexp.like - Negative exponential likelihood}
 \usage{
-negexp.like(a, dist, covars)
+negexp.like(a, dist, covars, w.hi = NULL)
 }
 \arguments{
 \item{a}{A vector or matrix of covariate 
@@ -26,6 +26,9 @@ detection distances at which to evaluate the likelihood.}
 \item{covars}{A numeric vector of length $q$ or 
 matrix of dimension $n$X$q$ containing covariate values 
 associated with distances in argument \code{d}}
+
+\item{w.hi}{A numeric scalar containing maximum 
+distance. The right-hand cutoff or upper limit.}
 }
 \value{
 A list containing the following two components:

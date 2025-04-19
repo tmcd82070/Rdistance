@@ -59,10 +59,12 @@ predDfuncs <- function(object
     d <- distances - object$w.lo
 
     XIntOnly <- matrix(1, nrow = length(d), ncol = 1)
+    
     y <- like(
              a = params
            , dist = d
            , covars = XIntOnly
+           , w.hi = object$w.hi
     )
     y <- y$L.unscaled # (nXk) = (length(d) X nrow(params))
 
@@ -142,7 +144,9 @@ predDfuncs <- function(object
     # here, length(x0) == nrow(d) == 1
     f.at.x0 <- like(a = params
                   , dist = d
-                  , covars = XIntOnly)    
+                  , covars = XIntOnly
+                  , w.hi = object$w.hi
+                  )    
     f.at.x0 <- f.at.x0$L.unscaled  # (1Xk)
     
     if(object$expansions > 0){

@@ -25,6 +25,9 @@
 #' matrix of dimension $n$X$q$ containing covariate values 
 #' associated with distances in argument \code{d} 
 #' 
+#' @param w.hi A numeric scalar containing maximum 
+#' distance. The right-hand cutoff or upper limit.
+#' 
 #' @details The half-normal distance function is 
 #' \deqn{f(d|s) = \exp(-d^2 / (2*s^2))}{f(d|s) = exp(-d^2 / (2*s^2))}
 #' where \eqn{s = exp(x'a)}, \eqn{x} is a vector of 
@@ -92,8 +95,10 @@
 halfnorm.like <- function(a
                           , dist
                           , covars
+                          , w.hi = NULL
                           ){
 
+  # w.hi is ignored, but needed for compatability in other likelihoods
   # cat(paste("In", crayon::red("halfnorm.like"), "\n"))
   
   if(length(dim(dist)) >= 2 && dim(dist)[2] != 1 ){ 

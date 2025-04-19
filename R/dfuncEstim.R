@@ -64,6 +64,11 @@ dfuncEstim <- function (  data, ... ){
 
   call <- match.call()
   obsType <- Rdistance::observationType(data)
+  
+  # because Rdistance can override some options, e.g. optimizer
+  # for oneStep, save a copy of options so can restore later.
+  op <- options()
+  op <- op[grepl("Rdistance_", names(op))]
 
   # Dispatch separate estimation functions based on observer type ----
   res <- switch( obsType
@@ -101,6 +106,9 @@ dfuncEstim <- function (  data, ... ){
     res$LhoodType <- res$likelihood  # Gamma and smu
   }
 
+  # restore options
+  options(op)
+  
   res 
 }
 

@@ -38,7 +38,24 @@ print.dfunc <- function( x, ... ){
     cat(paste0(callLine,"\n"))
     
     coefs <- coef(x)
-    if ( length(coefs) & !isSmooth ) {
+    if (is.null(x$varcovar) &&
+        !isSmooth
+    ){
+      
+      # No bootstraps yet, SE's pending
+      coefMat <- cbind(format(coefs))
+      dimnames(coefMat)[[2]] <- c("Estimate")
+      if( x$convergence == 0 ) {
+        mess <- paste0(colorize("Success")
+                     , "; "
+                     , colorize("SE's pending bootstrap"))
+      } else {
+        mess <- colorize("FAILURE", col="white", bg = "bgRed")
+        mess <- paste0( mess, " (Exit code= ", x$convergence, ", ", x$message, ")")
+      }
+      
+    } else if ( !isSmooth ) {
+      # X has a varcovar, either asymptotic or bootstrap
       vcDiag <- diag(x$varcovar)
       seCoef <- vcDiag
       seCoef[seCoef < fuzz] <- NA # fuzz is positive, so this NAs all negatives
@@ -50,6 +67,15 @@ print.dfunc <- function( x, ... ){
           mess <- paste(mess, "(singular variance-covariance matrix)")
         } else {
           mess <- colorize("Success")
+          # IF YOU CHANGE EITHER OF THESE MESSAGES, MAKE SURE TO 
+          # CHANGE grepl IN IF STATEMENT MARKED WITH **** BELOW! 
+          # ALSO! YOU NEED TO CHANGE THE SAME grepl STATEMENT 
+          # IN SUMMARY.DFUNC (MARKED BY ****)
+          if( is.null(x$B) ){
+            mess <- paste0(mess, "; ", colorize("Asymptotic SE's"))
+          } else {
+            mess <- paste0(mess, "; ", colorize("Bootstrap SE's"))
+          }
         }
       } else {
         mess <- colorize("FAILURE", col="white", bg = "bgRed")
@@ -61,18 +87,22 @@ print.dfunc <- function( x, ... ){
                        , format(waldZ)
                        , format(pWaldZ))
       dimnames(coefMat)[[2]] <- c("Estimate", "SE", "z", "p(>|z|)")
-      cat("Coefficients:\n")
-      print.default(coefMat, print.gap = 2, quote = FALSE)
-      if( !grepl("Success", mess) ){
-        cat("\n")
-        cat(paste("Convergence: ", mess,  "\n", sep=""))
-      } 
-    } else if( isSmooth ){
+    }
+    cat("Coefficients:\n")
+    print.default(coefMat, print.gap = 2, quote = FALSE)
+    
+    # **** CHANGE THIS grepl IF SUCCESSFUL MESSAGE CHANGES
+    if( !grepl("(Asymptotic|Bootstrap) SE's", mess)  ){ 
+      cat("\n")
+      cat(paste("Message: ", mess,  "\n", sep=""))
+    } 
+    
+    if( isSmooth ){
       cat(paste(x$fit$call[["kernel"]], "kernel smooth\n"))
       cat(paste(" Bandwidth method:", x$fit$call[["bw"]], "with adjustment factor", 
                   format(x$fit$call[["adjust"]]),"\n"))
       cat(paste(" Actual bandwidth =", format(x$fit$bw), "\n"))
-    } else {
+    } else if(length(coefs) == 0){
       cat("No coefficients\n")
       coefMat <- NULL
       mess <- "Rdistance data"

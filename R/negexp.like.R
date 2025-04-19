@@ -21,10 +21,13 @@
 #' 
 #' @export
 
-negexp.like <- function (a, 
-                         dist, 
-                         covars){
+negexp.like <- function(a
+                      , dist
+                      , covars
+                      , w.hi = NULL
+                      ){
 
+  # w.hi is ignored, but needed for compatability in other likelihoods
   # What's in a? : 
   #     a = [(Intercept), b1, ..., bp, <expansion coef>]
   if(length(dim(dist)) >= 2 && dim(dist)[2] != 1 ){ 

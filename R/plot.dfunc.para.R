@@ -192,25 +192,7 @@ plot.dfunc.para <- function( x,
   cnts$breaks <- units::as_units(cnts$breaks, x$outputUnits)
   cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
   xscl <- cnts$mid[2] - cnts$mid[1]
-  like <- utils::getFromNamespace(paste0( x$likelihood, ".like"), "Rdistance")    
   x.seq <- seq( x$w.lo, x$w.hi, length=getOption("Rdistance_intEvalPts") )
-  
-  # #   Gotta add bars on the left if first bar is not at w.lo.  I.e., if first 
-  # #   bar is not zero.  Zero bars at top end are not a problem, but low end are because
-  # #   barplot just plots bars, not coordinates
-  # if( cnts$breaks[1] > x$w.lo ){
-  #   # do the hist again, this time specifying breaks exactly
-  #   brks <- seq(x$w.lo, x$w.hi, by=xscl)
-  #   brks <- c(brks, brks[length(brks)] + xscl )   # make sure last bin goes outside range of data
-  #   cnts <- hist( xInStrip
-  #                 , plot=FALSE
-  #                 , breaks=units::drop_units(brks)
-  #                 , include.lowest=TRUE
-  #                 , warn.unused = FALSE)
-  #   cnts$breaks <- units::as_units(cnts$breaks, x$outputUnits)
-  #   cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
-  # }
-  
   
   # Fixup new data if missing ----
   if( is.null(newdata) ){

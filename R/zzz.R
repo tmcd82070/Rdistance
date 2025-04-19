@@ -13,6 +13,7 @@
     , Rdistance_likeTol   = (.Machine$double.eps)^(1/1.75)
     , Rdistance_coefTol   = (.Machine$double.eps)^(1/2)
     , Rdistance_hessEps   = (.Machine$double.eps)^(1/1.75)
+    , Rdistance_trace     = 0
     , Rdistance_requireUnits = TRUE
     , Rdistance_maxBSFailPropForWarning = 0.2
     , Rdistance_negInf    = -1 / .Machine$double.neg.eps
@@ -39,6 +40,7 @@
     , "Rdistance_likeTol"   = NULL
     , "Rdistance_coefTol"   = NULL
     , "Rdistance_hessEps"   = NULL
+    , "Rdistance_trace"     = NULL
     , "Rdistance_requireUnits" = NULL
     , "Rdistance_maxBSFailPropForWarning" = NULL
     , "Rdistance_negInf"    = NULL

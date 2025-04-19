@@ -67,10 +67,12 @@ summary.dfunc <- function( object, criterion="AICc", ... ){
   
   # Convergence and likelihood line ----
   if( !(isSmooth <- is.smoothed(object)) ){
-    if( grepl("Success", object$convMessage) ){
+    # **** CHANGE THIS grepl IF SUCCESSFUL MESSAGE CHANGES IN PRINT.DFUNC
+    if( grepl("(Asymptotic|Bootstrap) SE's", object$convMessage)){
       # b/c FAILURE mess printed in 'print.dfunc', but not Success
+      # or "pending bootstrap" messages
       cat("\n")
-      cat(paste("Convergence: ", object$convMessage,  "\n", sep=""))
+      cat(paste("Message: ", object$convMessage,  "\n", sep=""))
     }
 
     if( object$expansions==0 ){

@@ -62,6 +62,19 @@ ESW <- function( object, newdata = NULL ){
     stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   } 
 
+  # WHEN IMPLEMENTING ANALYTICAL INTEGRALS
+  # 1) implement switch based on likelihood
+  #   switch(object$likelihood
+  #       , "halfnorm" = integrateHalfnorm(object)
+  #       , "negexp" = integrateNegexp(object)
+  #       , "oneStep" = integrateOneStep(object)
+  #       , integrateNumerical(object)
+  # )
+  # The known integration routines should use predict(object,type="params")
+  # to get parameters, then evaluate integrals using those parameters.
+  # Do the same in EDR().
+  #
+  # All this code below, from here to **** goes in integrateNumerical()
   nInts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) - 1 # nInts MUST BE even!!!
   seqx = seq(object$w.lo, object$w.hi, length=nInts + 1)
 
@@ -88,6 +101,8 @@ ESW <- function( object, newdata = NULL ){
   
   esw <- (t(y) %*% intCoefs) * dx / 3
   esw <- drop(esw) # convert from matrix to vector
+  
+  # ****
   
   # Trapazoid rule: Computation used in Rdistance version < 0.2.2
   # y1 <- y[,-1,drop=FALSE]

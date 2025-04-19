@@ -298,15 +298,6 @@ dE.single <- function(   data
                             , outputUnits = NULL
  ){
 
-  # if ( likelihood == "uniform" ){
-  #   .Deprecated(new = "logistic.like"
-  #               , package = "Rdistance"
-  #               , msg = paste("'unform.like' is depricated. Use 'logistic'.\n"
-  #                             , "Switching to 'logistic' likelihood.")
-  #               , old = "uniform.like")
-  #   likelihood <- "logistic"
-  # }
-
   # Parse the formula and make a model list ----
   # all parameters go into parseModel because they need to become
   # components for the output list, not just formula.
@@ -327,10 +318,22 @@ dE.single <- function(   data
   
   strt.lims <- Rdistance::startLimits(modelList)
 
+  # Check whether need to use non-gradient optimizer ----
+  if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
+    origOp <- options(Rdistance_optimizer = "hookeJeeves"
+                      , Rdistance_intEvalPts = 301 #Until get known integrals coded
+                      )
+  }
+  
   # Perform optimization
   fit <- mlEstimates( ml = modelList
                     , strt.lims = strt.lims
                     )
+  
+  # Put original optimizer back in options if needed ----
+  if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
+    options(origOp)
+  }
 
   # Assemble results
   ans <- c(fit, modelList)

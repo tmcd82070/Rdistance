@@ -42,7 +42,11 @@
 
 hazrate.like <- function(a 
                        , dist 
-                       , covars ){
+                       , covars
+                       , w.hi = NULL
+                       ){
+
+  # w.hi is ignored, but needed for compatability in other likelihoods
   
   if(length(dim(dist)) >= 2 && dim(dist)[2] != 1 ){ 
     stop(paste("Argument 'dist' must be a vector or single-column matrix.",
