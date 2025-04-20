@@ -281,7 +281,7 @@ abundEstim <- function(object
     # set up progress bar if called for, only if bootstrapping
     if(showProgress){
       pb <- progress::progress_bar$new(
-          format = "Bootstrapping: [:bar] Run Time: :elapsedfull "
+          format = paste0(R, " Bootstraps: [:bar] Run Time: :elapsedfull")
         , total = R+1
         , show_after = 1
         , clear = FALSE
