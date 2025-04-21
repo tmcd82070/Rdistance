@@ -187,8 +187,8 @@ oneStep.like <- function(a
   
   # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
   p <- matrix(p, nrow = nrow(theta), ncol = ncol(theta))
-  key <- (p / theta) * (0 <= dist & dist <= theta) + 
-         ((1-p) / (w.hi - theta)) * (theta < dist & dist <= w.hi)
+  key <- (0 <= dist & dist <= theta) + 
+         (((1-p) * theta) / ((w.hi - theta) * p)) * (theta < dist & dist <= w.hi)
 
   return( list(L.unscaled = key, 
                params = theta))

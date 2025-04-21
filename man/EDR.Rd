@@ -22,12 +22,13 @@ columns and values in \code{newdata} are ignored.}
 }
 \value{
 If \code{newdata} is present, the returned value is 
-a vector of effective sampling distances for values of the 
-covariates in \code{newdata} with length equal to 
-the number of rows in \code{newdata}. 
-If \code{newdata} is NULL, the returned value is a vector of effective
-sampling distances associated with covariate values in \code{object} and has 
-the same number of detected groups.  The returned vector 
+a vector of effective sampling distances associated with 
+covariate values in \code{newdata}. Length of return 
+in this case is the number of rows in \code{newdata}. 
+If \code{newdata} is NULL, the returned value is a vector 
+of effective sampling distances associated with covariate 
+values in \code{object}. Length of return in this case 
+is the number of detected groups.  The returned vector 
 has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
@@ -44,23 +45,6 @@ detection function times distance. \if{latex}{I.e.,
   and \eqn{w.lo} and \eqn{w.hi} are the lower
   and upper truncation limits.  }
 }
-\section{Numeric Integration}{
- 
-Rdistance uses Simpson's composite 1/3 rule to numerically 
-integrate under distance functions. The number of points evaluated 
-during numerical integration is controlled by 
-\code{options(Rdistance_intEvalPts)} (default 101).
-Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
-requires an even number of intervals (hence, odd number of points). 
-Lower values of 'Rdistance_intEvalPts' increase calculation speeds; 
-but, decrease accuracy.
-'Rdistance_intEvalPts' must be >= 5.  A warning is thrown if 
-'Rdistance_intEvalPts' < 29. Empirical tests by the author 
-suggest 'Rdistance_intEvalPts' values >= 30 are accurate 
-to several decimal points and that all 'Rdistance_intEvalPts' >= 101 produce 
-identical results in all but pathological cases.
-}
-
 \examples{
 # Load example thrasher data (point transect survey type)
 data(thrasherDf)

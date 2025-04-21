@@ -1,4 +1,4 @@
-#' @title effectiveDistance - Effective sampling distances
+#' @title Effective sampling distances
 #' 
 #' @description Computes Effective Strip Width (ESW) for line-transect detection
 #'   functions, or the analogous Effective Detection Radius (EDR) for point-transect
@@ -19,17 +19,27 @@
 #' @details Serves as a wrapper for 
 #' \code{\link{ESW}} and \code{\link{EDR}}.
 #' 
+#' Effective distances are areas under scaled 
+#' distance functions (i.e., area under g(x)). Areas are 
+#' exact for functions whose integral is known (e.g., negexp). 
+#' Numeric integration is used for all others. 
+#' 
 #' @return If \code{newdata} is present, the returned value is 
-#' a vector of effective sampling distances for values of the 
-#' covariates in \code{newdata} with length equal to 
-#' the number of rows in \code{newdata}. 
-#' If \code{newdata} is NULL, the returned value is a vector of effective
-#' sampling distances associated with covariate values in \code{object} and has 
-#' the same number of detected groups.  The returned vector 
+#' a vector of effective sampling distances associated with 
+#' covariate values in \code{newdata}. Length of return 
+#' in this case is the number of rows in \code{newdata}. 
+#' If \code{newdata} is NULL, the returned value is a vector 
+#' of effective sampling distances associated with covariate 
+#' values in \code{object}. Length of return in this case 
+#' is the number of detected groups.  The returned vector 
 #' has measurement units, i.e., \code{object$outputUnits}.
 #' 
 #'      
-#' @seealso \code{\link{dfuncEstim}} \code{\link{ESW}} \code{\link{EDR}}
+#' @seealso \code{\link{dfuncEstim}},
+#'   \code{\link{ESW}},
+#'   \code{\link{EDR}}, 
+#'   \code{\link{integrateNumeric}},
+#'   \code{\link{integrateNegexp}}
 #' 
 #' @keywords modeling
 #' @export

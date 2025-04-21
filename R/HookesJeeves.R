@@ -14,7 +14,7 @@ HookeJeeves <- function(ml, strt.lims){
   contRl <- list(info = getOption("Rdistance_trace") > 0
                  , maximize = FALSE
                  , target = Inf
-                 , maxfeval = getOption("Rdistance_maxIters")
+                 , maxfeval = getOption("Rdistance_evalMax")
                  , tol = getOption("Rdistance_likeTol")
   )
   

@@ -195,6 +195,7 @@ nLL <- function(a
           , type = "likelihood"
   )
   intgral <- effectiveDistance(ml)
+  
   key <- key / intgral
   
   if( !is.null(getOption("Rdistance_optimizer")) &&

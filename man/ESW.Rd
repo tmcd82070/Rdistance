@@ -2,7 +2,7 @@
 % Please edit documentation in R/ESW.r
 \name{ESW}
 \alias{ESW}
-\title{ESW - Effective Strip Width (ESW) for line transects}
+\title{Effective Strip Width (ESW) for line transects}
 \usage{
 ESW(object, newdata = NULL)
 }
@@ -22,12 +22,13 @@ ESW's or EDR's will be computed. If NULL and
 }
 \value{
 If \code{newdata} is present, the returned value is 
-a vector of effective sampling distances for values of the 
-covariates in \code{newdata} with length equal to 
-the number of rows in \code{newdata}. 
-If \code{newdata} is NULL, the returned value is a vector of effective
-sampling distances associated with covariate values in \code{object} and has 
-the same number of detected groups.  The returned vector 
+a vector of effective sampling distances associated with 
+covariate values in \code{newdata}. Length of return 
+in this case is the number of rows in \code{newdata}. 
+If \code{newdata} is NULL, the returned value is a vector 
+of effective sampling distances associated with covariate 
+values in \code{object}. Length of return in this case 
+is the number of detected groups.  The returned vector 
 has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
@@ -36,8 +37,8 @@ Returns effective strip width (ESW) for
   See \code{\link{EDR}} is for point transects.
 }
 \details{
-ESW is the area under 
-  the scaled distance function between its
+ESW is area under 
+  a scaled distance function between its
   left-truncation limit (\code{obj$w.lo}) and its right-truncation 
   limit (\code{obj$w.hi}). \if{latex}{I.e., 
     \deqn{ESW = \int_{w.lo}^{w.hi} g(x)dx,} 
@@ -53,23 +54,6 @@ ESW is the area under
   If, in this case, \eqn{g(0) = 1}, effective sampling distance is 
   the half-width of the surveys, \eqn{(w.hi - w.lo)}
 }
-\section{Numeric Integration}{
- 
-Rdistance uses Simpson's composite 1/3 rule to numerically 
-integrate under distance functions. The number of points evaluated 
-during numerical integration is controlled by 
-\code{options(Rdistance_intEvalPts)} (default 101).
-Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
-requires an even number of intervals (hence, odd number of points). 
-Lower values of 'Rdistance_intEvalPts' increase calculation speeds; 
-but, decrease accuracy.
-'Rdistance_intEvalPts' must be >= 5.  A warning is thrown if 
-'Rdistance_intEvalPts' < 29. Empirical tests by the author 
-suggest 'Rdistance_intEvalPts' values >= 30 are accurate 
-to several decimal points and that all 'Rdistance_intEvalPts' >= 101 produce 
-identical results in all but pathological cases.
-}
-
 \examples{
 data(sparrowDf)
 dfunc <- sparrowDf |> dfuncEstim(formula=dist~bare)
