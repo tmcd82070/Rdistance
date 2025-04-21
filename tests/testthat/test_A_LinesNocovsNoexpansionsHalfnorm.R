@@ -9,9 +9,9 @@ testInputs <- expand.grid(
   likelihood = c( "halfnorm" ),
   w.lo = c(0, 5), 
   w.hi = c(NA, 100), 
-  expansions = 0,
-  series = c('simple'),
-  x.scl = c(0, 60, "max"),
+  expansions = 0:1,
+  series = c('cosine'),
+  x.scl = c(0, 60),
   g.x.scl = c(1, .85), 
   outputUnits = c(NULL, "m", "ft"), 
   stringsAsFactors = FALSE

@@ -1,14 +1,11 @@
-#' @description Test specific values of parameters. Other tests, 
-#' i.e., test_dfuncEstim, simply test whether the inputs to dfuncEstim 
-#' cause errors.  These other routines do not check that routines arrive
-#' at the same answer. 
+#' @description Snapshot testing of basic functionality    
 #' 
 
 w.lo  <- 0
-w.20  <- units::set_units(2, "m")
+w.20  <- units::set_units(65.6168, "ft")
 w.hi  <- units::set_units(150, "m")
 sArea <- units::set_units(4105, "km^2")
-lhood <- "hazrate"
+lhood <- "oneStep"
 xScl  <- units::set_units(0, "m")
 gXscl <- 0.75
 
@@ -48,7 +45,7 @@ testthat::test_that(paste0(lhood, "-NoCovar"),{
 # Continuous covariate ----
 testthat::test_that(paste0(lhood, "-ContinuousCovar"), {
 
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ height + groupsize(groupsize)
                                  , likelihood = lhood
                                  , w.lo = w.lo
                                  , w.hi = w.hi
@@ -151,7 +148,7 @@ testthat::test_that( paste0(lhood, "-NoCovarExpansions"),{
 # Continuous covariate, expansions ----
 
 testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ height + groupsize(groupsize)
                                  , likelihood = lhood
                                  , expansions = 2
                                  , outputUnits = "m"
@@ -162,18 +159,20 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
                             , transform = scrub_environ)
   
   # Simple Plot ----
-  test_that("Hazrate plot", {
-    expect_snapshot_plot("dfuncVal_hazRate", plot(fit))
+  test_that("oneStep plot", {
+    expect_snapshot_plot("dfuncVal_oneStep", plot(fit))
   })
   
 }
 )
 
 
+
+
 # Scaling ----
 
-testthat::test_that( paste0(lhood, "-ContCovarExpansionsScaling"),{
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ height + groupsize(groupsize)
                                  , likelihood = lhood
                                  , expansions = 2
                                  , outputUnits = "m"

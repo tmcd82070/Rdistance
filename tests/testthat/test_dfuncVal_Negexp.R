@@ -157,6 +157,12 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
+  
+  # Simple Plot ----
+  test_that("Negexp plot", {
+    expect_snapshot_plot("dfuncVal_negExp", plot(fit))
+  })
+  
 }
 )
 

@@ -10,7 +10,7 @@
       (Intercept)  3.852207  0.09954916  38.696528  0.000000e+00
       k            2.821023  0.32412762   8.703432  3.219955e-18
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [m] to 207 [m] 
       Effective strip width (ESW): 63.88362 [m] 
@@ -40,7 +40,7 @@
       (Intercept)  3.774729  0.1079167  34.978162  4.833460e-268
       k            2.405957  0.3096556   7.769785   7.861954e-15
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [m] to 150 [m] 
       Effective strip width (ESW): 61.11661 [m] 
@@ -71,7 +71,7 @@
       bare         0.01325053  0.004247695   3.119463  1.811810e-03
       k            2.54787816  0.346483941   7.353525  1.930476e-13
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [m] to 150 [m] 
       Average effective strip width (ESW): 62.78889 [m] (range 45.37353 [m] to 81.93084 [m]) 
@@ -105,7 +105,7 @@
       observerobs5  -0.09584640  0.1671430  -0.5734395   5.663472e-01
       k              2.76472118  0.3481398   7.9414107   1.998946e-15
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [m] to 150 [m] 
       Average effective strip width (ESW): 64.83158 [m] (range 46.60934 [m] to 77.35058 [m]) 
@@ -135,7 +135,7 @@
       (Intercept)  3.814338  0.1117919  34.119989  3.727892e-255
       k            2.481511  0.3484759   7.121041   1.071152e-12
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 2 [m] to 150 [m] 
       Effective strip width (ESW): 62.58799 [m] 
@@ -164,7 +164,7 @@
       (Intercept)  3.894830  0.1031639  37.753805  0.000000e+00
       k            2.933948  0.3696785   7.936486  2.079906e-15
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 2 [m] to 207 [m] 
       Effective strip width (ESW): 65.61884 [m] 
@@ -192,7 +192,7 @@
       (Intercept)  5.040306  0.09954522  50.633332  0.000000e+00
       k            2.821023  0.32411484   8.703775  3.210234e-18
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [ft] to 679.1339 [ft] 
       Effective strip width (ESW): 209.5919 [ft] 
@@ -223,7 +223,7 @@
       a1           -0.3749832  0.1759458  -2.131243  3.306915e-02
       a2           -0.3825795  0.1988336  -1.924119  5.433966e-02
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
       Effective strip width (ESW): 64.45754 [m] 
@@ -255,7 +255,7 @@
       a1           -0.32652796  0.194667765  -1.677360  9.347207e-02
       a2           -0.23085353  0.175986293  -1.311770  1.895978e-01
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
       Average effective strip width (ESW): 68.24569 [m] (range 42.42778 [m] to 100.5137 [m]) 
@@ -287,7 +287,7 @@
       a1           -0.32652795  0.194667764  -1.677360  9.347208e-02
       a2           -0.23085353  0.175986291  -1.311770  1.895978e-01
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
       Average effective strip width (ESW): 51.18427 [m] (range 31.82083 [m] to 75.38529 [m]) 
@@ -311,11 +311,11 @@
       Call: dfuncEstim(data = sparrowDf, formula = dist ~
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
-                   Estimate  SE          z          p(>|z|)     
-      (Intercept)  3.852207  0.09954916  38.696528  0.000000e+00
-      k            2.821023  0.32412762   8.703432  3.219955e-18
+                   Estimate  SE         z          p(>|z|)      
+      (Intercept)  3.852207  0.1429937  26.939699  7.532080e-160
+      k            2.821023  0.4312821   6.541015   6.110275e-11
       
-      Convergence: Success
+      Message: Success; Bootstrap SE's
       Function: HAZRATE  
       Strip: 0 [m] to 207 [m] 
       Effective strip width (ESW): 63.88362 [m] 
@@ -330,8 +330,8 @@
          Group size range: 1 to 3 
       
       Density in sampled area: 8.131105e-05 [1/m^2]
-                       95% CI: 6.608967e-05 [1/m^2] to 0.000103622 [1/m^2]
+                       95% CI: 6.331e-05 [1/m^2] to 0.0001033262 [1/m^2]
       
       Abundance in 4.105e+09 [m^2] study area: 333781.8
-                                       95% CI: 271298.1 to 425368.2
+                                       95% CI: 259887.5 to 424153.9
 

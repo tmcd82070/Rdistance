@@ -146,7 +146,7 @@ dfuncDS <- ds(sparrowDS
 
 abundRD <- sparrowDf |> 
   dfuncEstim(dist ~ 1 + groupsize(groupsize)
-             , likelihood = "halfnorm"
+             , likelihood = "hazrate"
              , outputUnits = "m") |> 
   abundEstim(area = units::set_units(4105, "km^2")
              , ci = NULL)

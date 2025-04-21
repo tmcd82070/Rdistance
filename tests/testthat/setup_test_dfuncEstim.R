@@ -45,7 +45,7 @@ test_dfuncEstim <- function( detectParams,
                              abundParams = NULL,
                              Df = sparrowDetectionData, 
                              formula = dist ~ 1){
-  
+
   for( i in 1:nrow(detectParams) ){
     testParams <- paste0("D:", i, "/", nrow(detectParams),
                          ", Like=", detectParams$likelihood[i], 
@@ -118,7 +118,8 @@ test_dfuncEstim <- function( detectParams,
       if( param.x.scl < param.w.lo ){
         # could run this case in separate "warnings" test file
         test_that(paste(testParams,"x.scl less than w.lo warning", sep=";")
-          , {expect_warning(
+          , {
+            expect_warning(
             dfuncEstim(data = Df
                        , formula = formula
                        , likelihood = detectParams$likelihood[i]
@@ -130,7 +131,7 @@ test_dfuncEstim <- function( detectParams,
                        , g.x.scl = as.numeric(detectParams$g.x.scl[i])
                        , outputUnits = detectParams$outputUnits[i]
             )
-            , regexp = "x.scl is less than specified lower limit"
+            , regexp = "x.scl must be >= w.lo"
           )
         })
         param.x.scl <- param.w.lo
@@ -140,7 +141,10 @@ test_dfuncEstim <- function( detectParams,
     
     # ---- Fit the distance function ----
     # Beware of warnings; Errors should fail.
-    print(testParams)
+    cat("\n")
+    cat(testParams)
+    cat("\n")
+    
     dfuncFit <- suppressWarnings(
       dfuncEstim(data = Df
                  , formula = formula
@@ -260,7 +264,7 @@ test_dfuncEstim <- function( detectParams,
     
     if( any(efd > nominalW) ){
       # check that red text is printed
-      tstString <- "<- One or more"
+      tstString <- "> 1"
       expect_output(summary(dfuncFit), regexp = tstString, label = "Red text re Pr()>1 did not print")
     }
     

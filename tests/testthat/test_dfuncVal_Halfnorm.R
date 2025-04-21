@@ -157,8 +157,16 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
+  
+  # Simple Plot ----
+  test_that("Halfnorm plot", {
+    expect_snapshot_plot("dfuncVal_halfNorm", plot(fit))
+  })
+  
 }
 )
+
+
 
 
 # Scaling ----

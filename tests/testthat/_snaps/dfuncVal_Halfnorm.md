@@ -9,7 +9,7 @@
                    Estimate  SE          z         p(>|z|)
       (Intercept)  3.959313  0.03767961  105.0784  0      
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 207 [m] 
       Effective strip width (ESW): 65.69518 [m] 
@@ -38,7 +38,7 @@
                    Estimate  SE          z         p(>|z|)
       (Intercept)  3.9095    0.04038592  96.80353  0      
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 150 [m] 
       Effective strip width (ESW): 62.34318 [m] 
@@ -65,14 +65,14 @@
          outputUnits = "m")
       Coefficients:
                    Estimate     SE           z          p(>|z|)      
-      (Intercept)  3.346186334  0.155241549  21.554709  4.782716e-103
-      bare         0.009715902  0.002720187   3.571777   3.545668e-04
+      (Intercept)  3.346183910  0.155241297  21.554728  4.780716e-103
+      bare         0.009715925  0.002720183   3.571791   3.545479e-04
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 150 [m] 
-      Average effective strip width (ESW): 61.9967 [m] (range 47.95041 [m] to 76.97784 [m]) 
-      Average probability of detection: 0.4133113 (range 0.3196694 to 0.5131856)
+      Average effective strip width (ESW): 61.99663 [m] (range 47.95033 [m] to 76.9778 [m]) 
+      Average probability of detection: 0.4133109 (range 0.3196689 to 0.5131854)
       Scaling: g(0 [m]) = 1
       Log likelihood: -1624.351 
       AICc: 3252.736
@@ -81,8 +81,8 @@
          Individuals seen: 371 in 353 groups 
        Average group size: 1.050992 
          Group size range: 1 to 3 
-      Density in sampled area: 8.470694e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 347722
+      Density in sampled area: 8.470704e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 347722.4
 
 # halfnorm-FactorCovar
 
@@ -94,14 +94,14 @@
          expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1,
          outputUnits = "m")
       Coefficients:
-                    Estimate     SE         z           p(>|z|)   
-      (Intercept)    3.92800543  0.0879347  44.6695705  0.00000000
-      observerobs2   0.17073245  0.1460467   1.1690265  0.24239295
-      observerobs3  -0.01647247  0.1192377  -0.1381481  0.89012334
-      observerobs4  -0.26739637  0.1289792  -2.0731738  0.03815611
-      observerobs5  -0.02839298  0.1234549  -0.2299866  0.81810217
+                    Estimate     SE          z           p(>|z|)   
+      (Intercept)    3.92800543  0.08793471  44.6695675  0.00000000
+      observerobs2   0.17073246  0.14604669   1.1690265  0.24239295
+      observerobs3  -0.01647247  0.11923776  -0.1381481  0.89012337
+      observerobs4  -0.26739638  0.12897924  -2.0731737  0.03815612
+      observerobs5  -0.02839298  0.12345494  -0.2299866  0.81810216
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 150 [m] 
       Average effective strip width (ESW): 62.19478 [m] (range 48.72956 [m] to 74.5625 [m]) 
@@ -130,7 +130,7 @@
                    Estimate  SE          z         p(>|z|)
       (Intercept)  3.783568  0.05013421  75.46878  0      
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 20 [m] to 150 [m] 
       Effective strip width (ESW): 54.94 [m] 
@@ -158,7 +158,7 @@
                    Estimate  SE          z         p(>|z|)
       (Intercept)  3.864711  0.04630146  83.46845  0      
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 20 [m] to 207 [m] 
       Effective strip width (ESW): 59.76463 [m] 
@@ -185,7 +185,7 @@
                    Estimate  SE         z       p(>|z|)
       (Intercept)  5.147412  0.0376796  136.61  0      
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [ft] to 679.1339 [ft] 
       Effective strip width (ESW): 215.5353 [ft] 
@@ -215,7 +215,7 @@
       a1            0.345899344  0.13834328   2.50029742  0.01240891
       a2           -0.007169272  0.10471435  -0.06846504  0.94541545
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
       Effective strip width (ESW): 59.11922 [m] 
@@ -246,7 +246,7 @@
       a1            0.253160857  0.152435242   1.66077643  9.675836e-02
       a2           -0.002002772  0.110140598  -0.01818377  9.854922e-01
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
       Average effective strip width (ESW): 59.63415 [m] (range 46.28205 [m] to 74.44282 [m]) 
@@ -277,7 +277,7 @@
       a1            0.253160841  0.152437890   1.66074748  9.676417e-02
       a2           -0.002002868  0.110144844  -0.01818395  9.854921e-01
       
-      Convergence: Success
+      Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
       Average effective strip width (ESW): 44.72562 [m] (range 34.71155 [m] to 55.83212 [m]) 
@@ -302,9 +302,9 @@
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
                    Estimate  SE          z         p(>|z|)
-      (Intercept)  3.959313  0.03767961  105.0784  0      
+      (Intercept)  3.959313  0.05118412  77.35433  0      
       
-      Convergence: Success
+      Message: Success; Bootstrap SE's
       Function: HALFNORM  
       Strip: 0 [m] to 207 [m] 
       Effective strip width (ESW): 65.69518 [m] 
@@ -319,8 +319,8 @@
          Group size range: 1 to 3 
       
       Density in sampled area: 7.906888e-05 [1/m^2]
-                       95% CI: 6.31604e-05 [1/m^2] to 8.926331e-05 [1/m^2]
+                       95% CI: 6.247555e-05 [1/m^2] to 8.923405e-05 [1/m^2]
       
       Abundance in 4.105e+09 [m^2] study area: 324577.7
-                                       95% CI: 259273.4 to 366425.9
+                                       95% CI: 256462.1 to 366305.8
 
