@@ -58,23 +58,41 @@ Compute likelihood function for a mixture of two uniform
 distributions.
 }
 \details{
-Rdistance's \code{oneStep} likelihood is a mixture of two 
+Rdistance's \code{oneStep} likelihood parameterizes a mixture of two 
 non-overlapping uniform distributions. The 'oneStep' density function
 is  
 \deqn{f(d|p, \theta) = pU(d;0,\theta) + (1-p)U(d;\theta,w)}
-where U(x;a,b) is a regular uniform distribution on the interval 
+where U(x;a,b) is the uniform probability density function on the interval 
 a to b, and w is the nominal strip width (i.e., \code{w.hi} in Rdistance). 
-Specifically, the 'oneStep' density is
+Expanding, the 'oneStep' density is
 \deqn{f(d|p, \theta) = \frac{p}{\theta}I(0 <= d <= \theta) + 
        \frac{1 - p}{w - \theta}I(\theta <= d <= w)}.
 The unknown parameters are \eqn{\theta}{T} and \eqn{p}{p}.
  
-Covariates effect parameter \eqn{\theta}{T} 
-via the log link function, i.e., \eqn{\theta = exp(x'b)}{T = exp(x'b)},
+When covariates are present, 
+parameter \eqn{\theta}{T} is modeled as   
+ \eqn{\theta = exp(x'b)}{T = exp(x'b)},
 where \eqn{x} is the vector of covariate values 
 associated with distance \eqn{d}, and \eqn{b}
 is the vector of estimated coefficients.
 }
+\section{A Note on Maximum Likelihood Solutions}{
+
+At the order statistics (order statistics = ordered observations), 
+the \code{oneStep} 
+likelihood is discontinuous. Between order statistics the likelihood
+is nearly constant (it is slightly quadratic in parameter \code{p}). 
+As a result, the true maximum likelihood is somewhere between order statistics, 
+and it is difficult for the minimization routine to identify a unique 
+maximum when factor covariates are present. In general, the same 
+maximum likelihood value is observed when the distance function 
+does not contain covarites, or 
+when it contains continuous covariates. When the distance function 
+contains factor covariates, the author recommends re-running 
+\code{dfuncEstim} three or more times and selecting the solution with 
+lowest AICc (largest log likelihood).
+}
+
 \examples{
 
 # theta profile likelihood 

@@ -69,14 +69,24 @@ predDfuncs <- function(object
     y <- y$L.unscaled # (nXk) = (length(d) X nrow(params))
 
     if(object$expansions > 0){
-      # expansion terms are always constant across distances
-      # Hence, length of params does not matter, return n = length(d) vector
+      # Some expansion series depend on parameters
+      if(object$likelihood %in% c("oneStep")){
+        W <- units::set_units(exp(params[,1]), units(d), mode="standard")
+      } else { 
+        # Most likelihoods: expansions constant across params
+        W <- object$w.hi - object$w.lo
+      }
+      
+      # This returns n X length(W) matrix, which is either nX1 (length(d) X 1)
+      # for most likelihoods, 
+      # or nXk (length(d) X nrow(params)) matrix for oneStep
       exp.terms <- Rdistance::expansionTerms(a = params
                                              , d = d 
                                              , series = object$series
                                              , nexp = object$expansions
-                                             , w = object$w.hi - object$w.lo)
-      y <- y * exp.terms # (nXk) * (nXk)
+                                             , w = W)
+      
+      y <- y * exp.terms # (nXk) * (nX1)
       
       # without monotonicity restraints, function can go negative, 
       # especially in a gap between datapoints. Don't want this in distance

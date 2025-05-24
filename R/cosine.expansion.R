@@ -45,22 +45,22 @@ cosine.expansion <- function(x, expansions){
     
     if( expansions < 1 ) stop( "Number of expansions must be >= 1" )
     
-    expansion = matrix(nrow=length(x), ncol=expansions)
+    expansion = array(dim = c(nrow(x), ncol(x), expansions))
 
-    expansion[,1] = cos(2*pi*x)
+    expansion[,,1] = (1 + cos(2*pi*x)) / 2 / expansions
     
     # I realize I could do this in a for loop, but I think this is faster.    
     if(expansions >= 2){
-        expansion[,2] = cos(3*pi*x)
+        expansion[,,2] = (1 + cos(4*pi*x)) / 2 / expansions
     }
     if(expansions >= 3){
-        expansion[,3] = cos(4*pi*x)
+        expansion[,,3] = (1 + cos(6*pi*x)) / 2 / expansions
     }
     if(expansions >= 4){
-        expansion[,4]=  cos(5*pi*x)
+        expansion[,,4]=  (1 + cos(8*pi*x)) / 2 / expansions
     }
     if(expansions >= 5){
-        expansion[,5] = cos(6*pi*x)
+        expansion[,,5] = (1 + cos(10*pi*x)) / 2 / expansions
     }      
    
     return(expansion)

@@ -84,10 +84,12 @@
 expansionTerms <- function(a, d, series, nexp, w){
   
   if( nexp > 0 ){
-    dscl <- units::set_units(d/w, NULL)   # unit conversion here; drop units is safe
+    dscl <- units::set_units(outer(d, W, "/"), NULL)
+    indOutside <- dscl > 1  # save this for later
+    dscl[ dscl > 1 ] <- 0  # just a legal value, will be replace later
     
     if (series=="cosine"){
-      exp.term <- cosine.expansion( dscl, nexp )
+      exp.term <- cosine.expansion( dscl, nexp ) # returns n X k X nexp array
     } else if (series=="hermite"){
       # dscl <- units::drop_units(dist/sigma) # not sure /sigma matters; I think we can use /w
       exp.term <- hermite.expansion( dscl, nexp )
@@ -105,7 +107,14 @@ expansionTerms <- function(a, d, series, nexp, w){
       expCoeffs <- matrix(a[coefLocs], nrow = 1) # 1 X q
     }
     
-    expTerms <- (1 + exp.term %*% t(expCoeffs)) # (nXk)
+    expCoeffs <- array(rep(expCoeffs
+                           , each = nrow(exp.term) * ncol(exp.term))
+                     , dim = c(nrow(exp.term), ncol(exp.term), nexp))
+    
+    expTerms <- apply(exp.term * expCoeffs, c(1,2), sum) # (nXkXnExp) * (nXkXnExp)
+    # then sum across nExp
+    
+    expTerms[ indOutside ] <- 1 # blank out values > parameters
     
     # Standardize the terms using the following statements:
     # expTerms <- expTerms / (1 + rowSums(expCoeffs))
