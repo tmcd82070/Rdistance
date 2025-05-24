@@ -226,8 +226,8 @@
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 57.48284 [m] 
-      Probability of detection: 0.2776949
+      Effective strip width (ESW): 57.89655 [m] 
+      Probability of detection: 0.2796935
       Scaling: g(0 [m]) = 1
       Log likelihood: -1676.911 
       AICc: 3361.937
@@ -236,8 +236,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.036512e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 370948.8
+      Density in sampled area: 8.971942e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 368298.2
 
 # oneStep-ContCovarExpansions
 
@@ -251,15 +251,15 @@
                    Estimate     
       (Intercept)   4.4021899073
       height       -0.0003380217
-      p             0.9133356257
-      a1           -0.1653617099
-      a2            0.5514222942
+      p             0.9133356219
+      a1           -0.1653616764
+      a2            0.5514222048
       
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 57.48285 [m] (range 57.44405 [m] to 57.52741 [m]) 
-      Average probability of detection: 0.2776949 (range 0.2775075 to 0.2779102)
+      Average effective strip width (ESW): 57.89655 [m] (range 57.85793 [m] to 57.94092 [m]) 
+      Average probability of detection: 0.2796935 (range 0.2795069 to 0.2799078)
       Scaling: g(0 [m]) = 1
       Log likelihood: -1676.859 
       AICc: 3363.89
@@ -268,8 +268,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.036535e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 370949.7
+      Density in sampled area: 8.971963e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 368299.1
 
 ---
 
@@ -283,15 +283,15 @@
                    Estimate     
       (Intercept)   4.4021899073
       height       -0.0003380217
-      p             0.9133356294
-      a1           -0.1653617471
-      a2            0.5514222644
+      p             0.9133356257
+      a1           -0.1653617695
+      a2            0.5514222495
       
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 43.11214 [m] (range 43.08304 [m] to 43.14556 [m]) 
-      Average probability of detection: 0.2082712 (range 0.2081306 to 0.2084327)
+      Average effective strip width (ESW): 43.42242 [m] (range 43.39345 [m] to 43.45569 [m]) 
+      Average probability of detection: 0.2097701 (range 0.2096302 to 0.2099309)
       Scaling: g(0 [m]) = 0.75
       Log likelihood: -1676.859 
       AICc: 3363.89
@@ -300,8 +300,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 0.0001204871 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 494599.6
+      Density in sampled area: 0.0001196262 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 491065.4
 
 # oneStep-Bootstraps
 
