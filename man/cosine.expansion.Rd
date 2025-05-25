@@ -27,12 +27,13 @@ shape of distance likelihood functions.
 \details{
 There are, in general, several expansions that can be called cosine. The cosine expansion used here is:
   \itemize{
-    \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
-    \item \bold{Second term}: \deqn{h_2(x)=\cos(3\pi x),}{h2(x) = cos(3*Pi*x),}
+    \item \bold{First term}: \deqn{h_1(x)=(1+\cos(2\pi x))/(2n),}{h1(x) = (1 + cos(2*Pi*x))/(2n),}
+    \item \bold{Second term}: \deqn{h_2(x)=(1 + \cos(4\pi x))/(2n),}{h2(x) = (1+cos(4*Pi*x))/(2n),}
     \item \bold{Third term}: \deqn{h_3(x)=\cos(4\pi x),}{h3(x) = cos(4*Pi*x),}
     \item \bold{Fourth term}: \deqn{h_4(x)=\cos(5\pi x),}{h4(x) = cos(5*Pi*x),}
     \item \bold{Fifth term}: \deqn{h_5(x)=\cos(6\pi x),}{h5(x) = cos(6*Pi*x),}
   }
+  where n is number of expansions (i.e., \code{expansions}).
   The maximum number of expansion terms computed is 5.
 }
 \examples{

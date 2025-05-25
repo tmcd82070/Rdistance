@@ -80,11 +80,15 @@ predDfuncs <- function(object
       # This returns n X length(W) matrix, which is either nX1 (length(d) X 1)
       # for most likelihoods, 
       # or nXk (length(d) X nrow(params)) matrix for oneStep
+      print(dim(params))
+      
       exp.terms <- Rdistance::expansionTerms(a = params
                                              , d = d 
                                              , series = object$series
                                              , nexp = object$expansions
                                              , w = W)
+      print(dim(exp.terms))
+      print(dim(y))
       
       y <- y * exp.terms # (nXk) * (nX1)
       

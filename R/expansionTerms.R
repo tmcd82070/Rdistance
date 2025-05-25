@@ -87,6 +87,9 @@ expansionTerms <- function(a, d, series, nexp, w){
     dscl <- units::set_units(outer(d, W, "/"), NULL)
     indOutside <- dscl > 1  # save this for later
     dscl[ dscl > 1 ] <- 0  # just a legal value, will be replace later
+
+    cat("In expansionTerms\n")
+    print(dim(dscl))
     
     if (series=="cosine"){
       exp.term <- cosine.expansion( dscl, nexp ) # returns n X k X nexp array
@@ -99,6 +102,9 @@ expansionTerms <- function(a, d, series, nexp, w){
       stop( paste( "Unknown expansion series", series, "requested." ))
     }
 
+    print(dim(exp.term))
+    print(h(exp.term))
+    
     if(is.matrix(a)){
       coefLocs <- (ncol(a)-(nexp-1)):(ncol(a))
       expCoeffs <- a[, coefLocs, drop = FALSE]  # k X q
