@@ -172,26 +172,17 @@ plot.dfunc.para <- function( x,
   d <- Rdistance::distances(x)
   whi <- x$w.hi
   wlo <- x$w.lo
-  
-  if(is.character(nbins)){
-    if( nbins %in% c("Sturges", "scott", "FD")){
-      nbins <- paste0("nclass.", nbins)
-    }
-    nbins <- match.fun(nbins)
-    nbins <- nbins(d)
-  }
-  brks <- pretty( x = d
-                  , n = nbins )
+
   cnts <- graphics::hist( d
                 , plot = FALSE
-                , breaks = brks
+                , breaks = nbins
                 , include.lowest = TRUE
                 , warn.unused = FALSE)
   
   # hist should return breaks with units attached, but it does not
   cnts$breaks <- units::as_units(cnts$breaks, x$outputUnits)
   cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
-  xscl <- cnts$mid[2] - cnts$mid[1]
+  xscl <- diff(cnts$breaks) 
   x.seq <- seq( x$w.lo, x$w.hi, length=getOption("Rdistance_intEvalPts") )
   
   # Fixup new data if missing ----
@@ -294,7 +285,7 @@ plot.dfunc.para <- function( x,
   if(plotBars){
     if(x$w.lo != zero){
       ybarhgts <- c(NA,ybarhgts)
-      xscl <- c(x$w.lo, rep(xscl,length(ybarhgts)-1))
+      xscl <- c(xscl[1], xscl)
       # the following is because barplot draws the border
       # of the NA box when line density >= 0.  Makes no sense, but there it is.
       # This produces a line to 0 when w.lo > 0
