@@ -5,8 +5,9 @@ Bug fixes:
 *   Fixed bug in `predict` method when `type = "density"` causing NaN 
 estimates on transects with observations outside the strip.
 *   Fixed bug in `RdistDf` when merge parameter `by` was named.  When `by`
-was named, and hence we merge on different variables, the names and values 
-in `by` were reversed because we nest first then merge. Bug did not 
+was named and merge was on different named variables, names and values 
+in `by` were reversed prior to the fix due to first nesting then merging. 
+This bug did not 
 affect merges on same-named variables. 
 *   *Non-bug* change: Moved all the examples from README to tutorials 
 on the [McDonald Data Science website](https://mcdonalddatasciences.com/Rdistance.html) 
@@ -16,7 +17,8 @@ they are indexed by date and keyword, and they look better.
 
 Changes in version 4.0.3 (2025-03-28)
 ==============
-Version numbers >4.0.0 are substantially different from prior versions. 
+Methods and workflow in Rdistance versions >4.0.0 are substantially 
+different from prior versions. 
 
 * ***BIGGEST CHANGE***: Input data frames are now nested tibbles with one 
 row per transect, 
