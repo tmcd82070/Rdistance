@@ -5,6 +5,8 @@
 
 # Lines Without Covars ----
 
+data("sparrowDf")
+
 dfuncFit <- sparrowDf |> 
   dfuncEstim( dist ~ 1
             , likelihood = "halfnorm")

@@ -26,6 +26,7 @@ abundParams <- expand.grid(
 )
 # abundParams <- NULL
 
+data("sparrowDf")
 
 res <- test_dfuncEstim( detectParams = testInputs,
                         abundParams = abundParams,

@@ -160,9 +160,9 @@
          groupsize(groupsize), likelihood = lhood, w.lo = w.20, expansions =
          0, series = "cosine", x.scl = w.20, g.x.scl = 1, outputUnits = "m")
       Coefficients:
-                   Estimate  SE         z          p(>|z|)     
-      (Intercept)  3.894830  0.1031639  37.753805  0.000000e+00
-      k            2.933948  0.3696785   7.936486  2.079906e-15
+                   Estimate  SE         z          p(>|z|)      
+      (Intercept)  3.894830  0.1031639  37.753805  6.514759e-312
+      k            2.933948  0.3696785   7.936486   2.079906e-15
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
