@@ -172,7 +172,7 @@ plot.dfunc.para <- function( x,
   d <- Rdistance::distances(x)
   whi <- x$w.hi
   wlo <- x$w.lo
-
+  
   cnts <- graphics::hist( d
                 , plot = FALSE
                 , breaks = nbins
@@ -184,6 +184,7 @@ plot.dfunc.para <- function( x,
   cnts$mids <- units::as_units(cnts$mids, x$outputUnits)
   xscl <- diff(cnts$breaks) 
   x.seq <- seq( x$w.lo, x$w.hi, length=getOption("Rdistance_intEvalPts") )
+  
   
   # Fixup new data if missing ----
   if( is.null(newdata) ){
@@ -224,7 +225,17 @@ plot.dfunc.para <- function( x,
       }
     }
   }
+
+  # Add discrete likelihood points ----
+  # add points just left and just right of breaks in discontinuous functions
+  x.seq <- switch(x$likelihood
+                  , "oneStep" = insertOneStepBreaks(obj = x
+                                                  , newData = newdata
+                                                  , xseq = x.seq)
+                  , x.seq
+  )
   
+    
   # Predict distance functions ----
   # after here, y is a matrix, columns are distance functions.
   y <- stats::predict(object = x
