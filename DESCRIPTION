@@ -2,7 +2,7 @@ Package: Rdistance
 Type: Package
 Title: Density and Abundance from Distance-Sampling Surveys
 Version: 4.0.7
-Date: 2025-06-16
+Date: 2025-08-16
 Maintainer: Trent McDonald <trent@mcdonalddatasciences.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdonalddatasciences.com"), 
   person("Jason", "Carlisle", role="aut", email="jason.carlisle@wyo.gov"), 
@@ -24,22 +24,23 @@ Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdon
   person("Reid", "Olson", role="ctb", comment="Automated tests and bug fixes"))
 Description: Distance-sampling (<doi:10.1007/978-3-319-19219-2>) 
   estimates density and abundance of survey targets (e.g., animals) when 
-  detection probability declines with distance. 
+  detection probability declines with observation distance. 
   Distance-sampling is popular in ecology, 
   especially when survey targets are observed from aerial platforms (e.g., 
   airplane or drone), surface vessels (e.g., boat or truck), or along 
   walking transects. 
-  Distance-sampling includes line-transect studies that measure observation 
-  distances as the closest approach of the sample route (transect) to the target 
-  (i.e., perpendicular off-transect distance), and point-transect studies that 
-  measure observation distances from stationary observers to 
-  the target (i.e., radial distance). 
+  Distance-sampling studies include both line-transect and point-transect
+  survey protocols. Line-transect studies measure observation 
+  distances from closest approach of the sample route (transect) to the survey 
+  target.  
+  Point-transect studies measure observation distances from 
+  stationary observers to the survey target. 
+  Both suvey protocols are allowed.
   The routines included here fit smooth (parametric) curves to 
   histograms of observation distances 
   and use those functions to compute effective sampling distances, density of 
   targets in the surveyed area, and abundance 
-  of targets in a surrounding study area. Curve shapes include the 
-  half-normal, hazard rate, and negative exponential functions.
+  of targets in a surrounding study area. 
   Physical measurement units are required and used throughout to 
   ensure density is reported correctly. The help files 
   are extensive and have been vetted by multiple authors. 

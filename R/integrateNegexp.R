@@ -10,19 +10,31 @@
 #' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
 #' return length is \code{length(distances(object))}. 
 #' 
-#' @seealso [integrateNumeric()]; [integrateNegexp()]; 
-#' [integrateOneStep()] 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+#' \code{\link{integrateOneStep}} 
 #' 
 #' @examples
 #' 
-#' # Check:
+#' # Fake distance function object w/ minimum inputs for integration
+#' d <- units::set_units(rep(1,4),"m") # Only units needed, not values
+#' obs <- factor(rep(c("obs1", "obs2"), 2))
+#' beta <- c(-5, -0.5)
 #' w.hi <- 125
-#' w.lo <- 0
-#' s1 <- 40
-#' s2 <- exp(log(s1) + log(0.5))
-#' obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
-#' obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
-#' c(obs1Scaler, obs2Scaler)
+#' w.lo <- 20
+#' ml <- list(
+#'     mf = model.frame(d ~ obs)
+#'   , par = beta 
+#'   , likelihood = "negexp"
+#'   , w.lo = units::set_units(w.lo, "m")
+#'   , w.hi = units::set_units(w.hi, "m")
+#' )
+#' class(ml) <- "dfunc"
+#' integrateNegexp(ml)
+#' 
+#' # Check: Integral of exp(-bx) from 0 to w.hi-w.lo
+#' b <- c(exp(beta[1]), exp(beta[1] + beta[2]))
+#' intgral <- (1 - exp(-b*(w.hi - w.lo))) / b
+#' intgral
 #' 
 #' 
 #' @export

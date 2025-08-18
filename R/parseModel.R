@@ -3,13 +3,12 @@
 #' @description 
 #' Parse an 'Rdistance' formula and produce a list containing all model 
 #' parameters.
+#' This routine is not normally called directly by the user, but 
+#' it might be helpful in simulations.  It is called 
+#' internally from the model estimation routines.
 #' 
 #' @inheritParams dfuncEstim
 #' @inheritParams dE.single
-#' 
-#' @details
-#' This routine is not intended to be called by the user.  It is called 
-#' from the model estimation routines in \code{Rdistance}.
 #' 
 #' 
 #' @return An Rdistance model frame, which is an object of class 
@@ -21,20 +20,14 @@
 #' number of expansions, etc.  Rdistance model frames contain a 
 #' subset of fitted Rdistance model components. 
 #' 
-#' @seealso [RdistDf()], which returns an Rdistance \emph{data} frame;
-#' [dfuncEstim()], which returns an Rdistance \emph{fitted} model.
+#' @seealso \code{\link{RdistDf}}, which returns an 
+#' Rdistance \emph{data} frame;
+#' \code{\link{dfuncEstim}}, which returns an 
+#' Rdistance \emph{fitted} model.
 #' 
 #' @examples
 #' 
-#' data(sparrowSiteData)
-#' data(sparrowDetectionData)
-#' 
-#' sparrowDf <- Rdistance::RdistDf(sparrowSiteData
-#'    , sparrowDetectionData
-#'    , by = NULL
-#'    , pointSurvey = FALSE
-#'    , observer = "single"
-#'    , .detectionCol = "detections")
+#' data(sparrowDf)
 #'    
 #' ml <- Rdistance::parseModel(sparrowDf
 #'    , formula = dist ~ 1 + observer + groupsize(groupsize)

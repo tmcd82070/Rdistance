@@ -7,8 +7,8 @@
 #' 
 #' @section Numeric Integration: 
 #' Rdistance uses Simpson's composite 1/3 rule to numerically 
-#' integrate distance functions from \code{object$w.lo} to 
-#' \code{object$w.hi}. The number of points evaluated 
+#' integrate distance functions from 0 to 
+#' \code{object$w.hi - object$w.lo}. The number of points evaluated 
 #' during numerical integration is controlled by 
 #' \code{options(Rdistance_intEvalPts)} (default 101).
 #' Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
@@ -23,9 +23,9 @@
 #' and that all 'Rdistance_intEvalPts' >= 101 produce 
 #' identical results if the distance function is smooth. 
 #'   
-#' \emph{Details}: Let \code{n} = \code{options(Rdistance_intEvalPts)}
-#' and evaluate the distance function at \code{n} equal-spaced 
-#' locations \{f(x0), f(x1), ..., f(xn)\}. 
+#' \emph{Details}: Let \code{n} = \code{options(Rdistance_intEvalPts)}.
+#' Evaluate the distance function at \code{n} equal-spaced 
+#' locations \{f(x0), f(x1), ..., f(xn)\} between 0 and (w.hi - w.lo). 
 #' Simpson's composite approximation to the area under the curve is
 #' \deqn{\frac{1}{3}h(f(x_0) + 4f(x_1) + 2f(x_2) + 
 #'      4f(x_3) + 2f(x_4) + ... + 2f(x_{n-2}) + 
@@ -40,30 +40,37 @@
 #' 
 #' @examples
 #' 
-#' # Fake a distance function object
+#' # Fake distance function object w/ minimum inputs for integration
 #' d <- units::set_units(rep(1,4),"m") # Only units needed, not values
+#' df <- data.frame(1) # Need attributes only
+#' attr(df, "transType") <- "line"
 #' obs <- factor(rep(c("obs1", "obs2"), 2))
+#' beta <- c(3.5, -0.5)
+#' w.hi <- 125
+#' w.lo <- 20
 #' ml <- list(
-#'     mf = model.frame(d ~ obs) 
+#'     mf = model.frame(d ~ obs)
+#'   , data = df
+#'   , par = beta 
 #'   , likelihood = "halfnorm"
+#'   , w.lo = units::set_units(w.lo, "m")
+#'   , w.hi = units::set_units(w.hi, "m")
+#'   , outputUnits = units(d)
 #'   , expansions = 0
-#'   , w.lo = units::set_units(0, "m")
-#'   , w.hi = units::set_units(125, "m")
-#'   , outputUnits = units(units::set_units(1,"m"))
-#'   , transType = "line"
+#'   , x.scl = units::set_units(w.lo, "m")
+#'   , g.x.scl = 1
 #' )
 #' class(ml) <- "dfunc"
-#' integrateNumeric(ml)
+#' exact <- integrateHalfnorm(ml) # exact area
+#' apprx <- integrateNumeric(ml)  # Numeric approx
+#' pd <- options(digits = 20)
+#' cbind(exact, apprx)
+#' absDiff <- abs(apprx - exact) 
+#' options(pd)
 #' 
-#' # Check:
-#' w.hi <- 125
-#' w.lo <- 0
-#' s1 <- 40
-#' s2 <- exp(log(s1) + log(0.5))
-#' obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
-#' obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
-#' c(obs1Scaler, obs2Scaler)
-#' 
+#' # Approximation to halfnorm is good to this number of digits
+#' equalDigits <- round(log10(absDiff),1)  
+#'
 #' @export
 #' 
 integrateNumeric <- function(object
