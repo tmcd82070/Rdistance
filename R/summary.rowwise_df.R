@@ -36,7 +36,7 @@ summary.rowwise_df <- function(object
                              , w.hi = NULL
                              , ...){
   
-  if( Rdistance::is.RdistDf(object) ){
+  if( is.RdistDf(object) ){
     tranType <- Rdistance::transectType(object)
     effVec <- Rdistance::effort(object)
     nTrans <- sum(!is.na(effVec))
@@ -59,42 +59,44 @@ summary.rowwise_df <- function(object
       nGroups <- NA
     }
     
-    cat(paste(crayon::blue("Transect type: ")))
+    cat(paste("Transect type: "))
     if( Rdistance::is.points(object) ){
       tType <- "point"
-      cat(crayon::red(tType))
+      cat(colorize(tType))
       lenMess <- paste(lenTrans, "[points]")
     } else {
       tType <- "line"
-      cat(crayon::red(tType))
+      cat(colorize(tType))
       lenMess <- format(lenTrans)
     }
     cat("\n")
     
-    cat(crayon::blue("Effort:\n "))
+    cat("Effort:\n ")
     cat(paste("  " 
             , format( c("Transects:"
                       , "Total length:")
                     , justify = "right")
-            , crayon::red(format( c(nTrans, lenMess)))
+            , colorize(format( c(nTrans, lenMess)))
             , "\n"
             ))
     
     if(!is.null(formula)){
-      cat(crayon::blue("Distances:\n "))
-      cat(paste0("  ", format(mf$w.lo), " to "
-                , format(mf$w.hi)
+      cat("Distances:\n ")
+      cat(paste0("  "
+                , colorize(format(mf$w.lo))
+                , " to "
+                , colorize(format(mf$w.hi))
                 , ": "
-                , crayon::red(nDistances)
+                , colorize(nDistances)
                 , "\n"))
-      cat(crayon::blue("Sightings:\n "))
+      cat("Sightings:\n ")
       cat(paste("  "
                  , format(c("Groups:", "Individuals:"), justify = "right")
-                 , crayon::red(c(nGroups, nTargets))
+                 , colorize(c(nGroups, nTargets))
                  , "\n"))
       
     } else {
-      cat(crayon::blue("Specify 'formula', 'w.lo', and 'w.hi' to obtain distances, groups, and individuals."))
+      cat(colorize("Specify 'formula', 'w.lo', and 'w.hi' to obtain distances, groups, and individuals."))
     }
     
     res <- data.frame(

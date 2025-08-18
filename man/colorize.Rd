@@ -2,12 +2,12 @@
 % Please edit documentation in R/colorize.R
 \name{colorize}
 \alias{colorize}
-\title{colorize - Add color to result if terminal accepts it}
+\title{Add color to result if terminal accepts it}
 \usage{
 colorize(STR, col = NULL, bg = NULL)
 }
 \arguments{
-\item{STR}{The string to colorize.}
+\item{STR}{A vector of strings to colorize.}
 
 \item{col}{A string specifying the desired foreground color.
 This is passed straight to \code{crayon::style} and so must be 
@@ -26,19 +26,21 @@ If color is not allowed in the terminal, the input
 string is returned unperturbed.  If color is allowed, the input 
 string is returned with color and background ANSI code surrounding 
 the initial part of the string from character 1 to the character 
-before the [ in the last pair of [].
+before the [ in the first pair of [].
 }
 \description{
 Add ANSI color to a string using the 
 \code{crayon} package, if the R environment accepts color. 
-This function is needed because of the need to determine whether 
-output can be colorized.  This determination is left up to 
-\code{crayon::has_color()}. 
+This function is needed because some  
+output cannot be colorized.  Color determination 
+is made by \code{crayon::has_color()}. 
 
-In addition, for Rdistance results, we want to only colorize 
-numbers, not the reporting units.  Everything between the last set 
-of square brackets (\code{[...]}) is NOT colorized.
+Rdistance results often include units, e.g., "25 [m]". 
+Only colorize the numbers, not the units.  Everything between the 
+first set of square brackets (\code{[...]}) is NOT colorized. 
+Subsequent sets of brackets (e.g., "25 [m] + 30 [ft]") ARE colorized
+(i.e., "[ft]" is color).
 }
 \seealso{
-\code{crayon::style}
+\code{\link{crayon::style}}
 }
