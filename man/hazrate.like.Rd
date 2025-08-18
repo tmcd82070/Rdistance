@@ -9,46 +9,58 @@ hazrate.like(a, dist, covars, w.hi = NULL)
 \arguments{
 \item{a}{A vector or matrix of covariate 
 and expansion term 
-coefficients. Dimension is $k$ X $p$, where 
-$k$ (i.e., \code{nrow(a)}) is the number of coefficient
-vectors to evaluate (cases) and $p$ (i.e., \code{ncol(a)})
+coefficients. If matrix, dimension is 
+\emph{k} X \emph{p}, where 
+\emph{k} = \code{nrow(a)}) is the number of coefficient
+vectors to evaluate (cases) and \emph{p} 
+= \code{ncol(a)})
 is the number of covariate and expansion 
-coefficients in the likelihood. If \code{a} is a 
-dimensionless vector, it is interpreted to be a 
-single row with $k$ = 1. 
+coefficients in the likelihood (i.e., rows are 
+cases and columns are covariates). If \code{a} is a 
+dimensionless vector, it is interpreted as a 
+single row with \emph{k} = 1. 
 Covariate coefficients in \code{a} are the first 
-$q$ values ($q$ <= $p$), and must be on a log scale.}
+\emph{q} values (\emph{q} <= \emph{p}), and must 
+be on a log scale.}
 
-\item{dist}{A numeric vector of length $n$ or 
-a single-column matrix (dimension $n$X1) containing 
+\item{dist}{A numeric vector of length \emph{n} or 
+a single-column matrix (dimension \emph{n}X1) containing 
 detection distances at which to evaluate the likelihood.}
 
-\item{covars}{A numeric vector of length $q$ or 
-matrix of dimension $n$X$q$ containing covariate values 
-associated with distances in argument \code{d}}
+\item{covars}{A numeric vector of length \emph{q} or a
+matrix of dimension \emph{n}X\emph{q} containing 
+covariate values 
+associated with distances in argument \code{dist}.}
 
 \item{w.hi}{A numeric scalar containing maximum 
-distance. The right-hand cutoff or upper limit.}
+distance. The right-hand cutoff or upper limit. 
+Ignored by some likelihoods (such as halfnorm, 
+negexp, and hazrate), but is a fixed parameter
+in other likelihoods (such as oneStep, heber, 
+and uniform).}
 }
 \value{
 A list containing the following two components:
 \itemize{
-  \item \bold{L.unscaled}: A matrix of size $n$X$k$X$b$ 
+  \item \bold{L.unscaled}: A matrix of size 
+   \emph{n}X\emph{k}X\emph{b} 
    containing likelihood values evaluated at 
    distances in \code{dist}.
-    Each row is associated with 
+   Each row is associated with 
    a single distance, and each column is associated with 
    a single case (row of \code{a}).  This matrix is  
    "unscaled" because the underlying likelihood does 
    not integrate to one. Values in \code{L.unscaled} 
    are always greater than or equal to zero.
    
- \item \bold{params}: A $n$X$k$X$b$ array of the 
- likelihood's (canonical) parameters, First page contains 
- parameter values related to covariates (i.e., $s = exp(x'a)$),
+ \item \bold{params}: A \emph{n}X\emph{k}X\emph{b} array 
+ of the 
+ likelihood's (canonical) parameters. First page contains 
+ parameter values related to covariates (i.e., 
+ \emph{s = exp(x'a)}),
  while subsequent pages contain other parameters. 
- $b$ = 1 for halfnorm, negexp; $b$ = 2 for hazrate and 
- others.
+ \emph{b} = 1 for halfnorm, negexp; \emph{b} = 2 for 
+ hazrate and others.
  Rows correspond to distances in \code{dist}. Columns 
  correspond to rows from argument \code{a}. 
 }
@@ -88,8 +100,8 @@ abline(v = 50, lty = 2)
          
 }
 \seealso{
-\code{\link{dfuncEstim}},
-         \code{\link{hazrate.like}},
-         \code{\link{negexp.like}}
+\code{\link{dfuncEstim}}, 
+         \code{\link{abundEstim}},
+         other \code{<likelihood>.like} functions
 }
 \keyword{models}

@@ -112,22 +112,13 @@ subset of fitted Rdistance model components.
 \description{
 Parse an 'Rdistance' formula and produce a list containing all model 
 parameters.
-}
-\details{
-This routine is not intended to be called by the user.  It is called 
-from the model estimation routines in \code{Rdistance}.
+This routine is not normally called directly by the user, but 
+it might be helpful in simulations.  It is called 
+internally from the model estimation routines.
 }
 \examples{
 
-data(sparrowSiteData)
-data(sparrowDetectionData)
-
-sparrowDf <- Rdistance::RdistDf(sparrowSiteData
-   , sparrowDetectionData
-   , by = NULL
-   , pointSurvey = FALSE
-   , observer = "single"
-   , .detectionCol = "detections")
+data(sparrowDf)
    
 ml <- Rdistance::parseModel(sparrowDf
    , formula = dist ~ 1 + observer + groupsize(groupsize)
@@ -145,6 +136,8 @@ print.default(ml)
 
 }
 \seealso{
-[RdistDf()], which returns an Rdistance \emph{data} frame;
-[dfuncEstim()], which returns an Rdistance \emph{fitted} model.
+\code{\link{RdistDf}}, which returns an 
+Rdistance \emph{data} frame;
+\code{\link{dfuncEstim}}, which returns an 
+Rdistance \emph{fitted} model.
 }

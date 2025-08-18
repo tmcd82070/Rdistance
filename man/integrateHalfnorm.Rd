@@ -35,33 +35,30 @@ function \code{pnorm()}, which is very accurate.
 }
 \examples{
 
-# Fake a distance function object
+# Fake distance function object w/ minimum inputs for integration
 d <- units::set_units(rep(1,4),"m") # Only units needed, not values
 obs <- factor(rep(c("obs1", "obs2"), 2))
+beta <- c(3.5, -0.5)
+w.hi <- 125
+w.lo <- 20
 ml <- list(
-    mf = model.frame(d ~ obs) 
+    mf = model.frame(d ~ obs)
+  , par = beta 
   , likelihood = "halfnorm"
-  , expansions = 0
-  , w.lo = units::set_units(0, "m")
-  , w.hi = units::set_units(125, "m")
-  , outputUnits = units(units::set_units(1,"m"))
-  , transType = "line"
+  , w.lo = units::set_units(w.lo, "m")
+  , w.hi = units::set_units(w.hi, "m")
 )
 class(ml) <- "dfunc"
 integrateHalfnorm(ml)
 
-# Check:
-w.hi <- 125
-w.lo <- 0
-s1 <- 40
-s2 <- exp(log(s1) + log(0.5))
-obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
-obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
-c(obs1Scaler, obs2Scaler)
+# Check: Integral of exp(-x^2/(2*s^2)) from 0 to w.hi-w.lo
+b <- exp(c(beta[1], beta[1] + beta[2]))
+intgral <- (pnorm(w.hi, mean=w.lo, sd = b) - 0.5) * sqrt(2*pi)*b
+intgral
 
 
 }
 \seealso{
-[integrateNumeric()]; [integrateNegexp()]; 
-[integrateOneStep()]
+\code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+\code{\link{integrateOneStep}}
 }
