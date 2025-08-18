@@ -9,46 +9,58 @@ oneStep.like(a, dist, covars, w.hi = NULL)
 \arguments{
 \item{a}{A vector or matrix of covariate 
 and expansion term 
-coefficients. Dimension is $k$ X $p$, where 
-$k$ (i.e., \code{nrow(a)}) is the number of coefficient
-vectors to evaluate (cases) and $p$ (i.e., \code{ncol(a)})
+coefficients. If matrix, dimension is 
+\emph{k} X \emph{p}, where 
+\emph{k} = \code{nrow(a)}) is the number of coefficient
+vectors to evaluate (cases) and \emph{p} 
+= \code{ncol(a)})
 is the number of covariate and expansion 
-coefficients in the likelihood. If \code{a} is a 
-dimensionless vector, it is interpreted to be a 
-single row with $k$ = 1. 
+coefficients in the likelihood (i.e., rows are 
+cases and columns are covariates). If \code{a} is a 
+dimensionless vector, it is interpreted as a 
+single row with \emph{k} = 1. 
 Covariate coefficients in \code{a} are the first 
-$q$ values ($q$ <= $p$), and must be on a log scale.}
+\emph{q} values (\emph{q} <= \emph{p}), and must 
+be on a log scale.}
 
-\item{dist}{A numeric vector of length $n$ or 
-a single-column matrix (dimension $n$X1) containing 
+\item{dist}{A numeric vector of length \emph{n} or 
+a single-column matrix (dimension \emph{n}X1) containing 
 detection distances at which to evaluate the likelihood.}
 
-\item{covars}{A numeric vector of length $q$ or 
-matrix of dimension $n$X$q$ containing covariate values 
-associated with distances in argument \code{d}}
+\item{covars}{A numeric vector of length \emph{q} or a
+matrix of dimension \emph{n}X\emph{q} containing 
+covariate values 
+associated with distances in argument \code{dist}.}
 
 \item{w.hi}{A numeric scalar containing maximum 
-distance. The right-hand cutoff or upper limit.}
+distance. The right-hand cutoff or upper limit. 
+Ignored by some likelihoods (such as halfnorm, 
+negexp, and hazrate), but is a fixed parameter
+in other likelihoods (such as oneStep, heber, 
+and uniform).}
 }
 \value{
 A list containing the following two components:
 \itemize{
-  \item \bold{L.unscaled}: A matrix of size $n$X$k$X$b$ 
+  \item \bold{L.unscaled}: A matrix of size 
+   \emph{n}X\emph{k}X\emph{b} 
    containing likelihood values evaluated at 
    distances in \code{dist}.
-    Each row is associated with 
+   Each row is associated with 
    a single distance, and each column is associated with 
    a single case (row of \code{a}).  This matrix is  
    "unscaled" because the underlying likelihood does 
    not integrate to one. Values in \code{L.unscaled} 
    are always greater than or equal to zero.
    
- \item \bold{params}: A $n$X$k$X$b$ array of the 
- likelihood's (canonical) parameters, First page contains 
- parameter values related to covariates (i.e., $s = exp(x'a)$),
+ \item \bold{params}: A \emph{n}X\emph{k}X\emph{b} array 
+ of the 
+ likelihood's (canonical) parameters. First page contains 
+ parameter values related to covariates (i.e., 
+ \emph{s = exp(x'a)}),
  while subsequent pages contain other parameters. 
- $b$ = 1 for halfnorm, negexp; $b$ = 2 for hazrate and 
- others.
+ \emph{b} = 1 for halfnorm, negexp; \emph{b} = 2 for 
+ hazrate and others.
  Rows correspond to distances in \code{dist}. Columns 
  correspond to rows from argument \code{a}. 
 }
@@ -61,41 +73,24 @@ distributions.
 Rdistance's \code{oneStep} likelihood is a mixture of two 
 non-overlapping uniform distributions. The 'oneStep' density function
 is  
-\deqn{f(d|p, \theta) = pU(d;0,\theta) + (1-p)U(d;\theta,w)}
-where U(x;a,b) is a regular uniform distribution on the interval 
-a to b, and w is the nominal strip width (i.e., \code{w.hi} in Rdistance). 
-Specifically, the 'oneStep' density is
 \deqn{f(d|p, \theta) = \frac{p}{\theta}I(0 <= d <= \theta) + 
-       \frac{1 - p}{w - \theta}I(\theta <= d <= w)}.
-The unknown parameters are \eqn{\theta}{T} and \eqn{p}{p}.
+       \frac{1 - p}{w - \theta}I(\theta < d <= w),}
+where \eqn{I(x)} is the indicator function for event \eqn{x}, 
+and \eqn{w} is the nominal strip width (i.e., \code{w.hi} in Rdistance). 
+\eqn{w} is fixed - given by the user. 
+The unknown parameters to be estimated 
+are \eqn{\theta}{T} and \eqn{p}{p}.
  
-Covariates effect parameter \eqn{\theta}{T} 
-via the log link function, i.e., \eqn{\theta = exp(x'b)}{T = exp(x'b)},
+Covariates influence values of \eqn{\theta}{T} 
+via a log link function, i.e., \eqn{\theta = exp(x'b)}{T = exp(x'b)},
 where \eqn{x} is the vector of covariate values 
 associated with distance \eqn{d}, and \eqn{b}
 is the vector of estimated coefficients.
 }
 \examples{
 
-# theta profile likelihood 
-# theta= 10, p = 100 / 120 = 0.833
-whi <- 50
-x <- c( runif(100, min=0, max=10), runif(20, min=10, max=whi))
-Xmat <- matrix(1, nrow=length(x), ncol = 1)
-T <- seq(0.01, whi, length=300)
-nLLVec <- NULL
-for (tt in T){ 
-  ll <- oneStep.like(a = c(log(tt), 0.833)
-                   , dist = x
-                   , covars = Xmat
-                   ,  w.hi = whi)
-  nLLVec <- c(nLLVec, -sum(log(ll$L.unscaled)))
-}
-plot(T, nLLVec, type="l")
-
-
-# Estimated oneStep distance function ----
-whi <- units::set_units(250, "m")
+# Fit oneStep to simulated data
+whi <- 250
 T <- 100
 p <- 0.85
 n <- 200 
@@ -109,81 +104,14 @@ distDf <- RdistDf(siteDf, detectDf)
 fit <- dfuncEstim(distDf
                  , formula = dist ~ 1
                  , likelihood = "oneStep"
-                 , w.hi = units::set_units(250, "m")
+                 , w.hi = units::set_units(whi, "m")
                  )
-theta <- exp(fit$par[1]) # take next order statistics >theta
-p <- fit$par[2]
-tmp <- hist(x, n = 30, plot=F)
-scalar <- p / theta
-tmp$density <- tmp$density / scalar
-y2 <- ((1-p)*theta) / ((whi-theta)*p) # or (1-p)/(whi-theta)/scalar
-barplot(tmp$density
-      , width = diff(tmp$breaks[1:2])
-      , space = 0
-)
-axis(1)
-lines(x=c(0,theta), y = c(1,1), col="red", lwd = 2)
-lines(x=c(theta,whi), y = rep(y2,2), col="red", lwd=2)
-lines(x=c(theta,theta), y = c(1,y2), col="red", lwd=2)
+plot(fit)
+thetaHat <- exp(coef(fit)[1]) 
+pHat <- coef(fit)[2]
+c(thetaHat, pHat) # should be close to c(100,0.85)
 
-# ============= two thetas =============================
-# theta 1 = 10, theta 2 = 20
-whi <- 50
-n <- c(200, 200)
-p <- 0.8
-theta <- c(10,20)
-rp <- rbinom(sum(n), 1, p)
-i1 <- seq(1, n[1])
-i2 <- seq(n[1]+1, n[1]+n[2])
-x <- c( 
-  rp[i1]*runif(n[1], min=0, max=theta[1]) + (1-rp[i1])*runif(n[1], min=theta[1], max=whi)
-, rp[i2]*runif(n[2], min=0, max=theta[2]) + (1-rp[i2])*runif(n[2], min=theta[2], max=whi)
-      )
-Xmat <- matrix(1, nrow=length(x), ncol = 1)
-Xmat <- cbind( Xmat, matrix(c(rep(0,n[1]), rep(1,n[2])), nrow=length(x), 1))
-
-library(dfoptim)
-strt <- c(log(5), log(5), 0.5) # get ml start value from 'step1Estimates.R'
-lowLim <- c(log(1e-3), log(1e-3), 1e-3)
-higLim <- c(log(whi-1e-3), log(whi-1e-3), 1 - 1e-3)
-fit <- dfoptim::hjkb(
-    par = strt
-  , fn = nLL
-  , lower = lowLim
-  , upper = higLim
-  , dist = x
-  , covars = Xmat
-  , w.hi = whi
-)
-
-thetaHat <- matrix(c(1,1,0,1), 2,2) \%*\% matrix(fit$par[1:2],2,1)
-thetaHat <- exp(thetaHat)
-p <- fit$par[3]
-scalar <- p / thetaHat
-y2 <- ((1-p)*thetaHat) / ((whi-thetaHat)*p) # or (1-p)/(whi-theta)/scalar
-
-par(mfrow=c(1,2))
-tmp <- hist(x[i1], n = 30, plot=F)
-tmp$density <- tmp$density / scalar[1]
-barplot(tmp$density
-      , width = diff(tmp$breaks[1:2])
-      , space = 0
-)
-axis(1)
-lines(x=c(0,thetaHat[1]), y = c(1,1), col="red", lwd = 2)
-lines(x=c(thetaHat[1],whi), y = rep(y2[1],2), col="red", lwd=2)
-lines(x=c(thetaHat[1],thetaHat[1]), y = c(1,y2[1]), col="red", lwd=2)
-
-tmp <- hist(x[i2], n = 30, plot=F)
-tmp$density <- tmp$density / scalar[2]
-barplot(tmp$density
-      , width = diff(tmp$breaks[1:2])
-      , space = 0
-)
-axis(1)
-lines(x=c(0,thetaHat[2]), y = c(1,1), col="blue", lwd = 2)
-lines(x=c(thetaHat[2],whi), y = rep(y2[2],2), col="blue", lwd=2)
-lines(x=c(thetaHat[2],thetaHat[2]), y = c(1,y2[2]), col="blue", lwd=2)
+summary(abundEstim(fit, ci=NULL)) 
 
 }
 \references{
@@ -197,7 +125,7 @@ DOI: 10.1080/03610929708832026
  79:4, 395-410, DOI:10.1080/00949650701810406
 }
 \seealso{
-\code{\link{dfuncEstim}},
-         \code{\link{hazrate.like}},
-         \code{\link{negexp.like}}
+\code{\link{dfuncEstim}}, 
+         \code{\link{abundEstim}},
+         other \code{<likelihood>.like} functions
 }
