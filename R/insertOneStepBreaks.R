@@ -26,14 +26,17 @@ insertOneStepBreaks <- function(obj = x
   
   parms <- predict(object = obj
                  , newdata = newData
-                 , type = "parameters")
+                 , type = "parameters")[, 1]
+  parms <- units::set_units(parms, units(xseq), mode = "standard")
+  parms <- parms + obj$w.lo # matrix + scalar
   
   epsilon <- matrix(c(-1,1) * 100 * .Machine$double.neg.eps
-                  , nrow = nrow(parms)
+                  , nrow = length(parms)
                   , ncol = 2
                   , byrow = TRUE)
-  breaks <- parms[,1] + epsilon
-  breaks <- units::set_units(c(t(breaks)), units(xseq), mode="standard")
+  epsilon <- units::set_units(epsilon, units(xseq), mode = "standard")
+  breaks <- parms + epsilon # vector length n + n X 2 matrix
+  breaks <- c(t(breaks))
   xseq <- sort(c(xseq, breaks))
   xseq
 }

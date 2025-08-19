@@ -296,7 +296,7 @@ plot.dfunc.para <- function( x,
   if(plotBars){
     if(x$w.lo != zero){
       ybarhgts <- c(NA,ybarhgts)
-      xscl <- c(xscl[1], xscl)
+      xscl <- c(x$w.lo, xscl)
       # the following is because barplot draws the border
       # of the NA box when line density >= 0.  Makes no sense, but there it is.
       # This produces a line to 0 when w.lo > 0

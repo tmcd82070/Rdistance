@@ -263,6 +263,8 @@ predict.dfunc <- function(object
                           , nrow = nrow(paramsLink)
                           , ncol = p-q
                           , byrow = TRUE)
+      # types 'dfunc' and 'likelihood' need the extra params attached
+      # other types do not; but, attach extras anyway
       paramsLink <- cbind(paramsLink, extraParams)
     } else {
       extraParams <- NULL
@@ -290,8 +292,17 @@ predict.dfunc <- function(object
                                , propUnitSurveyed = propUnitSurveyed
                                 )  
          , {  # the default = parameters
-             cbind(exp(paramsLink[,1]), # All link functions are exp...thus far
-                   extraParams )
+             parms <- cbind(exp(paramsLink[,1]), # All link functions are exp...thus far
+                            extraParams )
+             varyingParmName <- likeParamNames(object$likelihood)[1]
+             if( q < p ){
+               extraParmNames <- names(coef(object))[(q+1):p]
+             } else {
+               extraParmNames <- NULL
+             }
+             dimnames(parms) <- list(rownames(newdata)
+                                   , c(varyingParmName, extraParmNames))
+             parms
            }
     )
   )

@@ -2,7 +2,7 @@
 #' 
 #' @description Returns names of the likelihood parameters. This is 
 #' a helper function and is not
-#' necessary for estimation.  It is a nice to label some 
+#' necessary for estimation.  It is nice to label some 
 #' outputs in \code{Rdistance} with 
 #' parameter names like "sigma" or "knee", depending on the likelihood, 
 #' and this routine provides a way to do that. 
@@ -31,6 +31,7 @@ likeParamNames <- function(like.form){
          hazrate = c("Sigma", "Beta"),
          uniform = c("Threshold", "Knee"), 
          negexp = c("Beta"),
+         oneStep = c("Theta", "p"),
          Gamma = c("Shape", "Scale"),
          {    
            #   Assume this is a user-defined likelihood
