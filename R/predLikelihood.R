@@ -47,6 +47,10 @@ predLikelihood <- function(object
   # resorting to a loop and keeping the predict dfuncs methods.
   # This is something that could be modified in the future.
   
+  # cat(colorize("in predLikelihood...\n", col="yellow", bg = "bgRed"))
+  # cat(colorize(paste("dim(params) = ", paste(dim(params), collapse=","), "\n"),  col="yellow", bg = "bgRed"))
+  # cat(colorize(paste("length(d) = ", paste(length(d), collapse=","), "\n"), col="yellow", bg = "bgRed"))
+  
   y <- Rdistance::predDfuncs(object = object
                                 , params = params
                                 , distances = d

@@ -14,12 +14,13 @@
 #' 
 #' @details There are, in general, several expansions that can be called cosine. The cosine expansion used here is:
 #'   \itemize{
-#'     \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
-#'     \item \bold{Second term}: \deqn{h_2(x)=\cos(3\pi x),}{h2(x) = cos(3*Pi*x),}
+#'     \item \bold{First term}: \deqn{h_1(x)=(1+\cos(2\pi x))/(2n),}{h1(x) = (1 + cos(2*Pi*x))/(2n),}
+#'     \item \bold{Second term}: \deqn{h_2(x)=(1 + \cos(4\pi x))/(2n),}{h2(x) = (1+cos(4*Pi*x))/(2n),}
 #'     \item \bold{Third term}: \deqn{h_3(x)=\cos(4\pi x),}{h3(x) = cos(4*Pi*x),}
 #'     \item \bold{Fourth term}: \deqn{h_4(x)=\cos(5\pi x),}{h4(x) = cos(5*Pi*x),}
 #'     \item \bold{Fifth term}: \deqn{h_5(x)=\cos(6\pi x),}{h5(x) = cos(6*Pi*x),}
 #'   }
+#'   where n is number of expansions (i.e., \code{expansions}).
 #'   The maximum number of expansion terms computed is 5.
 #' @return A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the cosine expansions of 
 #'   \code{x}. Column 1 is the first expansion term of \code{x}, column 2 is the second expansion term of \code{x}, and so on 
@@ -45,22 +46,22 @@ cosine.expansion <- function(x, expansions){
     
     if( expansions < 1 ) stop( "Number of expansions must be >= 1" )
     
-    expansion = matrix(nrow=length(x), ncol=expansions)
+    expansion = array(dim = c(nrow(x), ncol(x), expansions))
 
-    expansion[,1] = cos(2*pi*x)
+    expansion[,,1] = (1 + cos(2*pi*x)) / 2 / expansions
     
     # I realize I could do this in a for loop, but I think this is faster.    
     if(expansions >= 2){
-        expansion[,2] = cos(3*pi*x)
+        expansion[,,2] = (1 + cos(4*pi*x)) / 2 / expansions
     }
     if(expansions >= 3){
-        expansion[,3] = cos(4*pi*x)
+        expansion[,,3] = (1 + cos(6*pi*x)) / 2 / expansions
     }
     if(expansions >= 4){
-        expansion[,4]=  cos(5*pi*x)
+        expansion[,,4]=  (1 + cos(8*pi*x)) / 2 / expansions
     }
     if(expansions >= 5){
-        expansion[,5] = cos(6*pi*x)
+        expansion[,,5] = (1 + cos(10*pi*x)) / 2 / expansions
     }      
    
     return(expansion)

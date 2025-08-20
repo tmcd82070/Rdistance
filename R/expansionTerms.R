@@ -84,10 +84,20 @@
 expansionTerms <- function(a, d, series, nexp, w){
   
   if( nexp > 0 ){
-    dscl <- units::set_units(d/w, NULL)   # unit conversion here; drop units is safe
+    # dimensions:
+    #  d = length(d) = number of distances
+    #  n = length(w) 
+    #  nexp = number of expasions
+    # Note:
+    #  nrow(a) == length(w) for likes with breaks (e.g., oneStep)
+    #  nrow(a) != length(w) for likes with no breaks, in which case n = 1
     
+    dscl <- units::set_units(outer(d, w, "/"), NULL) # d X n
+    
+    indOutside <- dscl > 1  # save this for later
+
     if (series=="cosine"){
-      exp.term <- cosine.expansion( dscl, nexp )
+      exp.term <- cosine.expansion( dscl, nexp ) # returns d X n X nexp array
     } else if (series=="hermite"){
       # dscl <- units::drop_units(dist/sigma) # not sure /sigma matters; I think we can use /w
       exp.term <- hermite.expansion( dscl, nexp )
@@ -99,19 +109,21 @@ expansionTerms <- function(a, d, series, nexp, w){
 
     if(is.matrix(a)){
       coefLocs <- (ncol(a)-(nexp-1)):(ncol(a))
-      expCoeffs <- a[, coefLocs, drop = FALSE]  # k X q
+      expCoeffs <- a[, coefLocs, drop = FALSE]  # n X nexp
     } else {
       coefLocs <- (length(a)-(nexp-1)):(length(a))
-      expCoeffs <- matrix(a[coefLocs], nrow = 1) # 1 X q
+      expCoeffs <- matrix(a[coefLocs], nrow = 1) # 1 X nexp
     }
     
-    expTerms <- (1 + exp.term %*% t(expCoeffs)) # (nXk)
-    
-    # Standardize the terms using the following statements:
-    # expTerms <- expTerms / (1 + rowSums(expCoeffs))
-    # OR, expCoeffs <- expCoeffs / rowSums(expCoeffs) # sum to 1
-    #     expTerms <- (1 + c(exp.term %*% t(expCoeffs))) 
-    
+    jMat <- kronecker(diag(nexp), matrix(1, 1, nrow(exp.term))) # nexp X (nexp*d)
+    bigCoeffs <- expCoeffs %*% jMat # n X nexp * nexp X (nexp*d) = n X (nexp*d)
+    bigCoeffs <- array(bigCoeffs
+                     , dim = c(nrow(expCoeffs), nrow(exp.term), nexp))
+    bigCoeffs <- aperm(bigCoeffs, c(2,1,3)) # was nXdXnexp; now dXnXnexp; constant w/i pages
+    expTerms <- apply(exp.term * bigCoeffs, c(1,2), sum) # apply(dXnXnExp) = dXn; sums across nexp
+
+    expTerms[ indOutside ] <- 1 # blank out values > w
+
   } else {  
     expTerms <- 1
   }
