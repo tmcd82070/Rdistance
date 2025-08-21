@@ -1,4 +1,4 @@
-#' @title dE.single - Estimate single-observer line-transect distance function
+#' @title Estimate single-observer line-transect distance function
 #' 
 #' @description Fits a detection function to off-transect 
 #' distances collected by a single observer. 

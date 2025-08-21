@@ -1,4 +1,4 @@
-#' @title unnest - Unnest an RdistDf data frame
+#' @title Unnest an RdistDf data frame
 #' 
 #' @description Unnest an RdistDf data frame by expanding 
 #' the embedded 'detections' column.  This unnest

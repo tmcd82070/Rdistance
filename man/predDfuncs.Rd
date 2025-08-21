@@ -2,7 +2,7 @@
 % Please edit documentation in R/predDfuncs.R
 \name{predDfuncs}
 \alias{predDfuncs}
-\title{predDfuncs - Predict distance functions}
+\title{Predict distance functions}
 \usage{
 predDfuncs(object, params, distances, isSmooth)
 }

@@ -1,6 +1,6 @@
-#' @name sparrowDetectionData
-#' 
 #' @title Brewer's Sparrow detection data 
+#' 
+#' @name sparrowDetectionData
 #' 
 #' @description 
 #' Detection data from line transect surveys for 

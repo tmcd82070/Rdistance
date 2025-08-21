@@ -1,4 +1,4 @@
-#' @title autoDistSamp - Automated classical distance analysis
+#' @title Automated classical distance analysis
 #' 
 #' @description Perform automated likelihood, expansion, and series
 #' selection for a classic distance sampling analysis.  Estimate 

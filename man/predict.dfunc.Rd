@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.dfunc.R
 \name{predict.dfunc}
 \alias{predict.dfunc}
-\title{predict.dfunc - Predict distance functions}
+\title{Predict distance functions}
 \usage{
 \method{predict}{dfunc}(
   object,

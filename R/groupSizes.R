@@ -1,4 +1,4 @@
-#' @title groupSizes - Group Sizes
+#' @title Group Sizes
 #'
 #' @description 
 #' Extract the group size information from 

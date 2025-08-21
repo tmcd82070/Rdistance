@@ -2,7 +2,7 @@
 % Please edit documentation in R/effort.R
 \name{effort}
 \alias{effort}
-\title{effort - Effort information}
+\title{Effort information}
 \usage{
 effort(x, ...)
 }

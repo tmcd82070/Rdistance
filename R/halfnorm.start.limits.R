@@ -1,4 +1,4 @@
-#' @title halfnorm.start.limits - Start and limit values for halfnorm distance function
+#' @title Start and limit values for halfnorm distance function
 #' 
 #' @description Compute starting values and limits for the half normal distance
 #' function. 

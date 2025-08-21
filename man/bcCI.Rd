@@ -2,7 +2,7 @@
 % Please edit documentation in R/bcCI.R
 \name{bcCI}
 \alias{bcCI}
-\title{bcCI - Bias corrected bootstraps}
+\title{Bias corrected bootstraps}
 \usage{
 bcCI(x.bs, x, ci = 0.95)
 }

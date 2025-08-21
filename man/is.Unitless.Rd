@@ -2,7 +2,7 @@
 % Please edit documentation in R/is.Unitless.R
 \name{is.Unitless}
 \alias{is.Unitless}
-\title{is.Unitless - Test whether object is unitless}
+\title{Test whether object is unitless}
 \usage{
 is.Unitless(obj)
 }

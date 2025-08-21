@@ -2,7 +2,7 @@
 % Please edit documentation in R/nCovars.R
 \name{nCovars}
 \alias{nCovars}
-\title{nCovars - Number of covariates}
+\title{Number of covariates}
 \usage{
 nCovars(X)
 }

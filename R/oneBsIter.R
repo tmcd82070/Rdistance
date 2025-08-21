@@ -1,4 +1,4 @@
-#' @title oneBsIter - Computations for one bootstrap iteration
+#' @title Computations for one bootstrap iteration
 #' 
 #' @description
 #' An internal (un-exported) function to perform density and 

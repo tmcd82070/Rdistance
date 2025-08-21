@@ -1,4 +1,4 @@
-#' @title predict.dfunc - Predict distance functions
+#' @title Predict distance functions
 #' 
 #' @description Predict either likelihood parameters, 
 #' distance functions, site-specific density, or 

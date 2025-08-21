@@ -1,4 +1,4 @@
-#' @title transectType - Type of transects
+#' @title Type of transects
 #' 
 #' @description Return the type of transects represented in either a fitted 
 #' distance function or Rdistance data frame. 

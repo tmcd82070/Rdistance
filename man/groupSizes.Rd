@@ -2,7 +2,7 @@
 % Please edit documentation in R/groupSizes.R
 \name{groupSizes}
 \alias{groupSizes}
-\title{groupSizes - Group Sizes}
+\title{Group Sizes}
 \usage{
 groupSizes(ml, ...)
 }

@@ -1,4 +1,4 @@
-#' @title predDfuncs - Predict distance functions
+#' @title Predict distance functions
 #' 
 #' @description
 #' An internal prediction function to predict a distance 

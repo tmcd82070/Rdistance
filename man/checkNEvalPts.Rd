@@ -2,7 +2,7 @@
 % Please edit documentation in R/checkNEvalPts.R
 \name{checkNEvalPts}
 \alias{checkNEvalPts}
-\title{checkNEvalPts - Check number of numeric integration intervals}
+\title{Check number of numeric integration intervals}
 \usage{
 checkNEvalPts(nEvalPts)
 }

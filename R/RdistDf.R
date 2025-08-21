@@ -1,4 +1,4 @@
-#' @title RdistDf - Construct Rdistance nested data frames
+#' @title Construct Rdistance nested data frames
 #' 
 #' @description Makes an \code{Rdistance} data frame from 
 #' separate transect and detection 

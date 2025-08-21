@@ -1,4 +1,4 @@
-#' @title gxEstim - Estimate g(0) or g(x)
+#' @title Estimate g(0) or g(x)
 #' 
 #' @description Estimate distance function scaling factor
 #' , g(0) or g(x), for a specified distance function.

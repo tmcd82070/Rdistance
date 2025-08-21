@@ -1,4 +1,4 @@
-#' @title estimateN - Abundance point estimates
+#' @title Abundance point estimates
 #' 
 #' @description Estimate abundance from an Rdistance fitted model. 
 #' This function is called internally by \code{abundEstim}.  Most users will call 

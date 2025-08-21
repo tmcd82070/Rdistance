@@ -1,4 +1,4 @@
-#' @title parseModel - Parse Rdistance model
+#' @title Parse Rdistance model
 #' 
 #' @description 
 #' Parse an 'Rdistance' formula and produce a list containing all model 

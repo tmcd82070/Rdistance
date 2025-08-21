@@ -3,7 +3,7 @@
 \docType{data}
 \name{thrasherSiteData}
 \alias{thrasherSiteData}
-\title{thrasherSiteData - Sage Thrasher site data.}
+\title{Sage Thrasher site data.}
 \format{
 A data.frame containing 120 rows and 6 columns.  Each row represents
 a surveyed site (point).  Column descriptions: 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/hazrate.like.R
 \name{hazrate.like}
 \alias{hazrate.like}
-\title{hazrate.like - Hazard rate likelihood}
+\title{Hazard rate likelihood}
 \usage{
 hazrate.like(a, dist, covars, w.hi = NULL)
 }

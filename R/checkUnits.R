@@ -1,4 +1,4 @@
-#' @title checkUnits - Check for the presence of units
+#' @title Check for the presence of units
 #' 
 #' @description
 #' Check for the presence of physical measurement units on key

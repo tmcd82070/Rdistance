@@ -1,4 +1,4 @@
-#' @title nCovars - Number of covariates
+#' @title Number of covariates
 #' 
 #' @description
 #' Return number of covariates in a distance model

@@ -1,4 +1,4 @@
-#' @title predDensity - Density on transects
+#' @title Density on transects
 #' 
 #' @description
 #' An internal prediction method for computing density 

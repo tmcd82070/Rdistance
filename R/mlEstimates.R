@@ -1,4 +1,4 @@
-#' @title mlEstimates - Distance function maximum likelihood estimates
+#' @title Distance function maximum likelihood estimates
 #' 
 #' @description
 #' Estimate parameters of a distance function using maximum likelihood.

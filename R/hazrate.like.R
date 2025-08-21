@@ -1,4 +1,4 @@
-#' @title hazrate.like - Hazard rate likelihood 
+#' @title Hazard rate likelihood 
 #' 
 #' @description Computes the hazard rate distance function. 
 #'

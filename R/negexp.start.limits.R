@@ -1,4 +1,4 @@
-#' @title negexp.start.limits - Start and limit values for negexp distance function
+#' @title Start and limit values for negexp distance function
 #' 
 #' @description Compute starting values and limits for the negative 
 #' exponential distance

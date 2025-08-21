@@ -2,7 +2,7 @@
 % Please edit documentation in R/halfnorm.like.R
 \name{halfnorm.like}
 \alias{halfnorm.like}
-\title{halfnorm.like - Half-normal distance function}
+\title{Half-normal distance function}
 \usage{
 halfnorm.like(a, dist, covars, w.hi = NULL)
 }

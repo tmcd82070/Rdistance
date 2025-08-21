@@ -1,4 +1,4 @@
-#' @title halfnorm.like - Half-normal distance function
+#' @title Half-normal distance function
 #' 
 #' @description Evaluate the half-normal distance function, 
 #' for sighting distances, potentially including covariates

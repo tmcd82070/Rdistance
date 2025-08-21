@@ -1,4 +1,4 @@
-#' @title dE.multi - Estimate multiple-observer line-transect distance functions
+#' @title Estimate multiple-observer line-transect distance functions
 #' 
 #' @description Fits a detection function to off-transect 
 #' distances collected by multiple observers. 

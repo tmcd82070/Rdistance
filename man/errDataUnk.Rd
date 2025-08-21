@@ -2,7 +2,7 @@
 % Please edit documentation in R/errDataUnk.R
 \name{errDataUnk}
 \alias{errDataUnk}
-\title{errDataUnk - Unknown error message}
+\title{Unknown error message}
 \usage{
 errDataUnk(txt, attri)
 }

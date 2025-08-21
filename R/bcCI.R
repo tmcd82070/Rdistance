@@ -1,4 +1,4 @@
-#' @title bcCI - Bias corrected bootstraps
+#' @title Bias corrected bootstraps
 #' 
 #' @description
 #' Calculate bias-corrected confidence intervals for bootstrap data

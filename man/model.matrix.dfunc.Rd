@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.matrix.dfunc.R
 \name{model.matrix.dfunc}
 \alias{model.matrix.dfunc}
-\title{model.matrix - Rdistance model matrix}
+\title{Rdistance model matrix}
 \usage{
 \method{model.matrix}{dfunc}(object, \dots)
 }

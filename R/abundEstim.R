@@ -1,4 +1,4 @@
-#' @title abundEstim - Distance Sampling Abundance Estimates 
+#' @title Distance Sampling Abundance Estimates 
 #'   
 #' @description Estimate abundance (or density) from an estimated detection
 #'   function and supplemental information on observed group sizes, transect

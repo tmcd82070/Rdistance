@@ -1,4 +1,4 @@
-#' @title coef.dfunc - Coefficients of an estimated detection function
+#' @title Coefficients of an estimated detection function
 #' 
 #' @description Extract distance model coefficients from 
 #' an estimated detection function object.

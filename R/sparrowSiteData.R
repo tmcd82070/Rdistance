@@ -1,6 +1,6 @@
-#' @name sparrowSiteData
-#' 
 #' @title Brewer's Sparrow site data
+#' 
+#' @name sparrowSiteData
 #' 
 #' @description  
 #' Site data from line transect surveys for 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/checkUnits.R
 \name{checkUnits}
 \alias{checkUnits}
-\title{checkUnits - Check for the presence of units}
+\title{Check for the presence of units}
 \usage{
 checkUnits(ml)
 }

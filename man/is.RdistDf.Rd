@@ -2,7 +2,7 @@
 % Please edit documentation in R/is.RdistDf.R
 \name{is.RdistDf}
 \alias{is.RdistDf}
-\title{checkRdistDf - Check RdistDf data frames}
+\title{Check RdistDf data frames}
 \usage{
 is.RdistDf(df, verbose = FALSE)
 }

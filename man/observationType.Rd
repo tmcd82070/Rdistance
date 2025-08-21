@@ -2,7 +2,7 @@
 % Please edit documentation in R/observationType.R
 \name{observationType}
 \alias{observationType}
-\title{observationType - Type of observations}
+\title{Type of observations}
 \usage{
 observationType(x)
 }

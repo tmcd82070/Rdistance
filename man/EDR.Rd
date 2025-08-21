@@ -2,7 +2,7 @@
 % Please edit documentation in R/EDR.R
 \name{EDR}
 \alias{EDR}
-\title{EDR - Effective Detection Radius (EDR) for point transects}
+\title{Effective Detection Radius (EDR) for point transects}
 \usage{
 EDR(object, newdata = NULL)
 }

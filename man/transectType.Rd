@@ -2,7 +2,7 @@
 % Please edit documentation in R/transectType.R
 \name{transectType}
 \alias{transectType}
-\title{transectType - Type of transects}
+\title{Type of transects}
 \usage{
 transectType(x)
 }

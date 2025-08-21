@@ -2,7 +2,7 @@
 % Please edit documentation in R/nLL.R
 \name{nLL}
 \alias{nLL}
-\title{nLL - Negative log likelihood of distances}
+\title{Negative log likelihood of distances}
 \usage{
 nLL(a, ml)
 }

@@ -1,6 +1,6 @@
-#' @name thrasherDf
-#' 
 #' @title Sage Thrasher detection data frame in Rdistance >4.0.0 format
+#' 
+#' @name thrasherDf
 #' 
 #' @description  
 #' Point transect data collected in central Wyoming on 120 points

@@ -1,4 +1,4 @@
-#' @title AIC.dfunc - AIC-related fit statistics for detection functions
+#' @title AIC-related fit statistics for detection functions
 #' 
 #' @description Computes AICc, AIC, or BIC for estimated distance functions.
 #' 

@@ -1,4 +1,4 @@
-#' @title plot.dfunc.para - Plot parametric distance functions
+#' @title Plot parametric distance functions
 #' 
 #' @description
 #' Plot method for parametric line and point transect distance functions. 

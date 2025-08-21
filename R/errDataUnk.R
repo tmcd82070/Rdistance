@@ -1,4 +1,4 @@
-#' @title errDataUnk - Unknown error message
+#' @title Unknown error message
 #' 
 #' @description
 #' Constructs a string stating what is "unknown" that is 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RdistDf.R
 \name{RdistDf}
 \alias{RdistDf}
-\title{RdistDf - Construct Rdistance nested data frames}
+\title{Construct Rdistance nested data frames}
 \usage{
 RdistDf(
   transectDf,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/distances.R
 \name{distances}
 \alias{distances}
-\title{distances - Observation distances}
+\title{Observation distances}
 \usage{
 distances(ml, na.rm = TRUE, ...)
 }

@@ -1,4 +1,4 @@
-#' @title is.smoothed - Tests for smoothed distance functions
+#' @title Tests for smoothed distance functions
 #' 
 #' @description
 #' Determines whether a distance function is a non-parametric

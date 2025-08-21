@@ -1,6 +1,6 @@
-#' @name thrasherSiteData
+#' @title Sage Thrasher site data. 
 #' 
-#' @title thrasherSiteData - Sage Thrasher site data. 
+#' @name thrasherSiteData
 #' 
 #' @description Point transect data collected in central 
 #' Wyoming from 120 points surveyed for Sage Thrashers by the Wyoming 

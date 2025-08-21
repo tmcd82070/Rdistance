@@ -2,7 +2,7 @@
 % Please edit documentation in R/unnest.R
 \name{unnest}
 \alias{unnest}
-\title{unnest - Unnest an RdistDf data frame}
+\title{Unnest an RdistDf data frame}
 \usage{
 unnest(data, ...)
 }

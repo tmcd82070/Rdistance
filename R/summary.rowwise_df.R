@@ -1,4 +1,4 @@
-#' @title summary.rowwise_df - Summary method for Rdistance data frames 
+#' @title Summary method for Rdistance data frames 
 #' 
 #' @description Summary method for distance sampling data frames. 
 #' \code{Rdistance} data frames are rowwise tibbles. This routine is a 

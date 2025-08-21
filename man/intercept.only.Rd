@@ -2,7 +2,7 @@
 % Please edit documentation in R/intercept.only.R
 \name{intercept.only}
 \alias{intercept.only}
-\title{intercept.only - Detect intercept-only distance function}
+\title{Detect intercept-only distance function}
 \usage{
 intercept.only(object)
 }

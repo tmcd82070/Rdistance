@@ -1,4 +1,4 @@
-#' @title checkNEvalPts - Check number of numeric integration intervals
+#' @title Check number of numeric integration intervals
 #' 
 #' @description
 #' Check that number of integration intervals is odd and 

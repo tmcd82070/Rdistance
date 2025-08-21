@@ -1,4 +1,4 @@
-#' @title maximize.g - Find coordinate of function maximum 
+#' @title Find coordinate of function maximum 
 #' 
 #' @description Find the x coordinate that maximizes g(x).
 #' 

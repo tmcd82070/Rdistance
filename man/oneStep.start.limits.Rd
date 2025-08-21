@@ -58,5 +58,5 @@ abline(v = exp(sl$start["(Intercept)"]))
 
 }
 \seealso{
-[oneStep.like()]
+\code{\link{oneStep.like}}
 }

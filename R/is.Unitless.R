@@ -1,4 +1,4 @@
-#' @title is.Unitless - Test whether object is unitless
+#' @title Test whether object is unitless
 #' 
 #' @description Tests whether a 'units' object is actually 
 #' unitless.  

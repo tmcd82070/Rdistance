@@ -1,4 +1,4 @@
-#' @title distances - Observation distances
+#' @title Observation distances
 #'
 #' @description 
 #' Extract the observation distances (i.e., responses for 

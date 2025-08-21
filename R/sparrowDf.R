@@ -1,7 +1,7 @@
-#' @name sparrowDf 
-#' 
 #' @title Brewer's Sparrow detection data frame
 #' in Rdistance >4.0.0 format.
+#' 
+#' @name sparrowDf 
 #' 
 #' @description 
 #' Detection data from line transect surveys for Brewer's sparrow on 72 transects 

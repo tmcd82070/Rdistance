@@ -1,4 +1,4 @@
-#' @title is.points - Tests for point surveys
+#' @title Tests for point surveys
 #' 
 #' @description
 #' Determines whether a distance function is for a point survey 

@@ -1,4 +1,4 @@
-#' @title effort - Effort information
+#' @title Effort information
 #'
 #' @description 
 #' Extract effort information from an Rdistance data frame. Effort is 

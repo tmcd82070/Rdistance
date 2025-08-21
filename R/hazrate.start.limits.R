@@ -1,4 +1,4 @@
-#' @title hazrate.start.limits - Start and limit values for hazrate distance function
+#' @title Start and limit values for hazrate distance function
 #' 
 #' @description Compute starting values and limits for the hazard rate distance
 #' function. 

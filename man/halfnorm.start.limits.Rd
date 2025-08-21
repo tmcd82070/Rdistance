@@ -2,7 +2,7 @@
 % Please edit documentation in R/halfnorm.start.limits.R
 \name{halfnorm.start.limits}
 \alias{halfnorm.start.limits}
-\title{halfnorm.start.limits - Start and limit values for halfnorm distance function}
+\title{Start and limit values for halfnorm distance function}
 \usage{
 halfnorm.start.limits(ml)
 }

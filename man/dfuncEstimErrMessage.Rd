@@ -2,7 +2,7 @@
 % Please edit documentation in R/dfuncEstimErrMessage.R
 \name{dfuncEstimErrMessage}
 \alias{dfuncEstimErrMessage}
-\title{dfuncEstimErrMessage - dfuncEstim error messages}
+\title{dfuncEstim error messages}
 \usage{
 dfuncEstimErrMessage(txt, attri)
 }

@@ -1,4 +1,4 @@
-#' @title print.dfunc - Print method for distance function object
+#' @title Print method for distance function object
 #' 
 #' @description Print method for distance function objects produced 
 #' by \code{dfuncEstim}.

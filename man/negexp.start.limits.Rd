@@ -2,7 +2,7 @@
 % Please edit documentation in R/negexp.start.limits.R
 \name{negexp.start.limits}
 \alias{negexp.start.limits}
-\title{negexp.start.limits - Start and limit values for negexp distance function}
+\title{Start and limit values for negexp distance function}
 \usage{
 negexp.start.limits(ml)
 }

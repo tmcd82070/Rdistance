@@ -1,4 +1,4 @@
-#' @title nLL - Negative log likelihood of distances
+#' @title Negative log likelihood of distances
 #' 
 #' @description Return the negative log likelihood of 
 #' observed detection distances given a likelihood

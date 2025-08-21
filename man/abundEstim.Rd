@@ -2,7 +2,7 @@
 % Please edit documentation in R/abundEstim.R
 \name{abundEstim}
 \alias{abundEstim}
-\title{abundEstim - Distance Sampling Abundance Estimates}
+\title{Distance Sampling Abundance Estimates}
 \usage{
 abundEstim(
   object,

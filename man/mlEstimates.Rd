@@ -2,7 +2,7 @@
 % Please edit documentation in R/mlEstimates.R
 \name{mlEstimates}
 \alias{mlEstimates}
-\title{mlEstimates - Distance function maximum likelihood estimates}
+\title{Distance function maximum likelihood estimates}
 \usage{
 mlEstimates(ml, strt.lims)
 }

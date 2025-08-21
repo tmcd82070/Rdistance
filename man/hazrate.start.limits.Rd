@@ -2,7 +2,7 @@
 % Please edit documentation in R/hazrate.start.limits.R
 \name{hazrate.start.limits}
 \alias{hazrate.start.limits}
-\title{hazrate.start.limits - Start and limit values for hazrate distance function}
+\title{Start and limit values for hazrate distance function}
 \usage{
 hazrate.start.limits(ml)
 }

@@ -1,10 +1,10 @@
-#' @name sparrowDfuncObserver 
-#' 
 #' @title Brewer's Sparrow detection function
+#' 
+#' @name sparrowDfuncObserver 
 #' 
 #' @description 
 #' Pre-estimated Brewer's sparrow detection function that 
-#' included and 'observer' effect.  Included to speed up 
+#' includes an 'observer' effect.  Included to speed up 
 #' example execution times. See 'Examples'.
 #' 
 #' @docType data
@@ -20,7 +20,7 @@
 #' 
 #' @examples
 #' \dontrun{
-#' # the following code was used to generate 'sparrowDfuncObserver'
+#' # the following code generated 'sparrowDfuncObserver'
 #' data(sparrowDf)
 #' sparrowDfuncObserver <- sparrowDf |> 
 #'             dfuncEstim(formula = dist ~ observer

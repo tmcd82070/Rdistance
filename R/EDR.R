@@ -1,4 +1,4 @@
-#' @title EDR - Effective Detection Radius (EDR) for point transects
+#' @title Effective Detection Radius (EDR) for point transects
 #'   
 #' @description Computes Effective Detection Radius (EDR) for estimated 
 #'   detection functions on point transects.  

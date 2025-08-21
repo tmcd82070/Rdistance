@@ -2,7 +2,7 @@
 % Please edit documentation in R/negexp.like.R
 \name{negexp.like}
 \alias{negexp.like}
-\title{negexp.like - Negative exponential likelihood}
+\title{Negative exponential likelihood}
 \usage{
 negexp.like(a, dist, covars, w.hi = NULL)
 }

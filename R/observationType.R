@@ -1,4 +1,4 @@
-#' @title observationType - Type of observations
+#' @title Type of observations
 #' 
 #' @description Return the type of observations (single or multiple observers) 
 #' represented in either a fitted distance function or Rdistance data frame. 

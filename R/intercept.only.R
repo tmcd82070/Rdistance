@@ -1,4 +1,4 @@
-#' @title intercept.only - Detect intercept-only distance function
+#' @title Detect intercept-only distance function
 #' 
 #' @description
 #' Utility function to detect whether a distance function has 

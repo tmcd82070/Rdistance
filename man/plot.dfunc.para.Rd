@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.dfunc.para.R
 \name{plot.dfunc.para}
 \alias{plot.dfunc.para}
-\title{plot.dfunc.para - Plot parametric distance functions}
+\title{Plot parametric distance functions}
 \usage{
 \method{plot}{dfunc.para}(
   x,

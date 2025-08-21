@@ -2,7 +2,7 @@
 % Please edit documentation in R/is.smoothed.R
 \name{is.smoothed}
 \alias{is.smoothed}
-\title{is.smoothed - Tests for smoothed distance functions}
+\title{Tests for smoothed distance functions}
 \usage{
 is.smoothed(object)
 }

@@ -1,4 +1,4 @@
-#' @title model.matrix - Rdistance model matrix
+#' @title Rdistance model matrix
 #'
 #' @description 
 #' Extract the model matrix ("X" matrix) from an Rdistance model object.

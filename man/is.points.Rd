@@ -2,7 +2,7 @@
 % Please edit documentation in R/is.points.R
 \name{is.points}
 \alias{is.points}
-\title{is.points - Tests for point surveys}
+\title{Tests for point surveys}
 \usage{
 is.points(x)
 }

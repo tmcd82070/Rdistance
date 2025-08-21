@@ -2,7 +2,7 @@
 % Please edit documentation in R/predLikelihood.R
 \name{predLikelihood}
 \alias{predLikelihood}
-\title{predLikelihood - Distance function values at observations}
+\title{Distance function values at observations}
 \usage{
 predLikelihood(object, params)
 }

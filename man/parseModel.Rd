@@ -2,7 +2,7 @@
 % Please edit documentation in R/parseModel.R
 \name{parseModel}
 \alias{parseModel}
-\title{parseModel - Parse Rdistance model}
+\title{Parse Rdistance model}
 \usage{
 parseModel(
   data,
@@ -33,7 +33,9 @@ are \code{RdistDf}'s.}
 is the name of the vector containing off-transect or radial detection distances.  
 The right-hand side contains the names of covariate 
 vectors to fit in the detection
-function, and potentially group sizes. 
+function, and potentially group sizes. Group sizes are specified 
+by including \code{+ groupsize(<variable>)} in the RHS 
+(see 'Group Sizes' section).
 Covariates can be either detection level 
 or transect level and can appear in  \code{data} or exist in the 
 global working environment. Regular R scoping 

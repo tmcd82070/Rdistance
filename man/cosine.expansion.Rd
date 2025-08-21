@@ -2,30 +2,33 @@
 % Please edit documentation in R/cosine.expansion.R
 \name{cosine.expansion}
 \alias{cosine.expansion}
-\title{cosine.expansion - Cosine expansion terms}
+\title{Cosine expansion terms}
 \usage{
 cosine.expansion(x, expansions)
 }
 \arguments{
-\item{x}{A numeric vector of distances at which to evaluate 
-the expansion series. For distance analysis, \code{x} is
-of the proportion of a strip transect's half-width 
-at which a group of individuals were sighted, i.e., \eqn{d/w}.}
+\item{x}{A numeric matrix of distances at which to evaluate 
+the expansion series. For distance analysis, \code{x} should
+be the proportion of the maximum sighting distance
+at which a group was sighted, i.e., \eqn{x = d/w}, where \eqn{d}
+is sighting distance and \eqn{w} is maximum sighting distance.}
 
-\item{expansions}{A scalar specifying the number of expansion terms to compute. Must be one of the 
+\item{expansions}{A scalar specifying the number of 
+expansion terms to compute. Must be one of the 
 integers 1, 2, 3, 4, or 5.}
 }
 \value{
-A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are the cosine expansions of 
-  \code{x}. Column 1 is the first expansion term of \code{x}, column 2 is the second expansion term of \code{x}, and so on 
-  up to \code{expansions}.
+A 3D array of size \code{nrow(x)} X \code{ncol(x)} X \code{expansions}.
+  The 'pages' (3rd dimension) of this array are the cosine expansions of 
+  \code{x}. i.e., page 1 is the first expansion term of \code{x}, 
+  page 2 is the second expansion term of \code{x}, etc.
 }
 \description{
-Computes the cosine expansion terms used to modify the 
+Computes the cosine expansion terms that modify the 
 shape of distance likelihood functions.
 }
 \details{
-There are, in general, several expansions that can be called cosine. The cosine expansion used here is:
+The cosine expansion used here is:
   \itemize{
     \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
     \item \bold{Second term}: \deqn{h_2(x)=\cos(3\pi x),}{h2(x) = cos(3*Pi*x),}
@@ -33,16 +36,17 @@ There are, in general, several expansions that can be called cosine. The cosine 
     \item \bold{Fourth term}: \deqn{h_4(x)=\cos(5\pi x),}{h4(x) = cos(5*Pi*x),}
     \item \bold{Fifth term}: \deqn{h_5(x)=\cos(6\pi x),}{h5(x) = cos(6*Pi*x),}
   }
-  The maximum number of expansion terms computed is 5.
+  The maximum number of expansion terms is 5.
 }
 \examples{
-x <- seq(0, 1, length = 200)
+x <- matrix(seq(0, 1, length = 200), ncol = 1)
 cos.expn <- cosine.expansion(x, 5)
 plot(range(x), range(cos.expn), type="n")
-matlines(x, cos.expn, col=rainbow(5), lty = 1)
+matlines(x, cos.expn[,1,1:5], col=rainbow(5), lty = 1)
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}, and the discussion 
-  of user defined likelihoods in \code{\link{dfuncEstim}}.
+\code{\link{dfuncEstim}}, 
+         \code{\link{hermite.expansion}}, 
+         \code{\link{simple.expansion}}
 }
 \keyword{models}

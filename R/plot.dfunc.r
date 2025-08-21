@@ -1,6 +1,4 @@
-#' @aliases plot.dfunc 
-#'   
-#' @title plot.dfunc - Plot method for distance (detection) functions
+#' @title Plot method for distance (detection) functions
 #'   
 #' @description Plot method for objects of class '\code{dfunc}'.  Objects of 
 #' class '\code{dfunc}' are estimated distance functions produced by 

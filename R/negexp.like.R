@@ -1,4 +1,4 @@
-#' @title negexp.like - Negative exponential likelihood
+#' @title Negative exponential likelihood
 #' 
 #' @description Computes the negative exponential distance function. 
 #' 

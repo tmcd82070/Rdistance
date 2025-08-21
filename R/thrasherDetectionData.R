@@ -1,6 +1,6 @@
-#' @name thrasherDetectionData
-#' 
 #' @title Sage Thrasher detection data 
+#' 
+#' @name thrasherDetectionData
 #' 
 #' @description  
 #' Point transect data collected in central Wyoming from 120 points

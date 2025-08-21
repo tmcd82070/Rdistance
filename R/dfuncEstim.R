@@ -1,4 +1,4 @@
-#' @title dfuncEstim - Estimate a distance-based detection function
+#' @title Estimate a distance-based detection function
 #' 
 #' @description Fits a detection function using maximum likelihood. 
 #'

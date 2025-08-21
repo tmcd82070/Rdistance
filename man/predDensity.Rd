@@ -2,7 +2,7 @@
 % Please edit documentation in R/predDensity.R
 \name{predDensity}
 \alias{predDensity}
-\title{predDensity - Density on transects}
+\title{Density on transects}
 \usage{
 predDensity(object, propUnitSurveyed = 1)
 }

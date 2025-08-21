@@ -1,4 +1,4 @@
-#' @title predLikelihood - Distance function values at observations
+#' @title Distance function values at observations
 #' 
 #' @description
 #' An internal prediction function to predict (compute) 
