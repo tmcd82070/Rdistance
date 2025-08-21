@@ -58,6 +58,7 @@ predDfuncs <- function(object
     like <- utils::getFromNamespace(paste0( object$likelihood, ".like"), "Rdistance")    
     d <- distances - object$w.lo
 
+    # don't need covars since params are always computed
     XIntOnly <- matrix(1, nrow = length(d), ncol = 1)
     
     y <- like(
@@ -69,14 +70,30 @@ predDfuncs <- function(object
     y <- y$L.unscaled # (nXk) = (length(d) X nrow(params))
 
     if(object$expansions > 0){
-      # expansion terms are always constant across distances
-      # Hence, length of params does not matter, return n = length(d) vector
+      if(!(object$likelihood %in% differentiableLikelihoods())){
+        # Expansion series depend on parameters, apply expansion between 0 and Theta
+        W <- units::set_units(exp(params[,1]), units(d), mode="standard")
+      } else { 
+        # Most likelihoods: expansions constant across params
+        W <- rep(object$w.hi - object$w.lo, nrow(params))
+      }
+      
+      # Dimensions: k = length(d); n = length(W) = nrow(params)
+      # The following call to expansionTerms returns matrix size k X n 
+      # for all likelihoods
+
       exp.terms <- Rdistance::expansionTerms(a = params
                                              , d = d 
                                              , series = object$series
                                              , nexp = object$expansions
-                                             , w = object$w.hi - object$w.lo)
-      y <- y * exp.terms # (nXk) * (nXk)
+                                             , w = W)
+
+      # cat(colorize('in predDfuncs ****\n'))
+      # cat(paste("dim(exp.terms) = ", paste(dim(exp.terms), collapse=","), "\n"))
+      # cat(paste("dim(y) = ", paste(dim(y), collapse=","), "\n"))
+      
+      y <- y * exp.terms # (kXq) * (kXn) OR (kXq) * (kX1); where q = nrow(params)
+                         # for oneStep, q = n
       
       # without monotonicity restraints, function can go negative, 
       # especially in a gap between datapoints. Don't want this in distance
@@ -151,10 +168,11 @@ predDfuncs <- function(object
     
     if(object$expansions > 0){
       exp.terms <- Rdistance::expansionTerms(a = params
-                                             , d = d
+                                             , d = d 
                                              , series = object$series
                                              , nexp = object$expansions
-                                             , w = object$w.hi - object$w.lo)
+                                             , w = W)
+
       f.at.x0 <- f.at.x0 * exp.terms # (1Xk) * (1)
       f.at.x0[ !is.na(f.at.x0) & (f.at.x0 <= 0) ] <- getOption("Rdistance_zero")
     }
