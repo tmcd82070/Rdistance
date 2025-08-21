@@ -47,7 +47,7 @@
 #'   
 #' data(sparrowDfuncObserver) # pre-estimated object
 #' \dontrun{                 
-#' # Command to produce 'sparrowDfuncObserver'
+#' # Commands that produced 'sparrowDfuncObserver'
 #' sparrowDfuncObserver <- sparrowDf |> 
 #'          dfuncEstim( 
 #'            formula = dist ~ observer
@@ -55,9 +55,11 @@
 #' }     
 #' sparrowDfuncObserver
 #' summary(sparrowDfuncObserver)
-#' plot(sparrowDfuncObserver)                   
+#' plot(sparrowDfuncObserver)
+#' plot(sparrowDfuncObserver
+#'    , newdata = data.frame(observer = c("obs1", "obs2", "obs3"
+#'                                      , "obs4", "obs5")))
 #'
-#' @keywords model
 #' @export
 
 dfuncEstim <- function (  data, ... ){
@@ -93,8 +95,8 @@ dfuncEstim <- function (  data, ... ){
   #   nCovars > 0 : model has 'nCovars' besides intercept,
   #                 e.g., dist ~ observer + height => nCovars = 2
 
-  nCovars <- length(attr(terms(res$mf), "term.labels"))
-  if( attr(terms(res$mf), "intercept") == 0 ){
+  nCovars <- length(attr(stats::terms(res$mf), "term.labels"))
+  if( attr(stats::terms(res$mf), "intercept") == 0 ){
     nCovars <- -nCovars  
   }
   res$nCovars <- nCovars

@@ -30,6 +30,7 @@
 #'   \code{\link{print.abund}}
 #'   
 #' @examples 
+#' # a simulated RdistDf
 #' set.seed(87654)
 #' x <- rnorm(1000, mean=0, sd=20)
 #' x <- x[x >= 0]
@@ -69,7 +70,6 @@
 #' 
 #' 
 #' @export
-#' @importFrom stats predict
 lines.dfunc <- function(x
                         , newdata = NULL
                         , prob = NULL

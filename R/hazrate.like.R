@@ -37,7 +37,6 @@
 #' abline(v = 50, lty = 2)
 #' 
 #'          
-#' @keywords models
 #' @export
 
 hazrate.like <- function(a 

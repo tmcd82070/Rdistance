@@ -30,7 +30,7 @@
 #' simp.expn <- simple.expansion(x, 4)
 #' plot(range(x), range(simp.expn), type="n")
 #' matlines(x, simp.expn, col=rainbow(4), lty = 1) 
-#' @keywords models
+#' 
 #' @export
 
 simple.expansion <- function(x, expansions){

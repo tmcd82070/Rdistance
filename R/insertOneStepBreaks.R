@@ -20,11 +20,11 @@
 
 # Do not export
 
-insertOneStepBreaks <- function(obj = x
-                              , newData = newdata
+insertOneStepBreaks <- function(obj 
+                              , newData 
                               , xseq){
   
-  parms <- predict(object = obj
+  parms <- stats::predict(object = obj
                  , newdata = newData
                  , type = "parameters")[, 1]
   parms <- units::set_units(parms, units(xseq), mode = "standard")

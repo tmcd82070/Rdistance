@@ -25,7 +25,6 @@
 #' dfunc
 #' 
 #' @export
-#' @importFrom stats pnorm
 print.dfunc <- function( x, ... ){
 
   # This routine must handle x with estimated coefficients and 
@@ -57,7 +56,7 @@ print.dfunc <- function( x, ... ){
   isSmooth <- is.smoothed(x)
   fuzz <- getOption("Rdistance_fuzz")
   
-  coefs <- coef(x)
+  coefs <- stats::coef(x)
   if( is.null(x$varcovar) && !isSmooth ){
     
     # No bootstraps yet, SE's pending
@@ -99,7 +98,7 @@ print.dfunc <- function( x, ... ){
       mess <- colorize("FAILURE", col="white", bg = "bgRed")
       mess <- paste0( mess, " (Exit code= ", x$convergence, ", ", x$message, ")")
     }
-    pWaldZ <- 2*pnorm(-abs(waldZ), 0, 1 )
+    pWaldZ <- 2*stats::pnorm(-abs(waldZ), 0, 1 )
     coefMat <- cbind(format(coefs)
                      , format(seCoef)
                      , format(waldZ)

@@ -49,7 +49,6 @@
 #' 
 #' summary(fit)
 #' }
-#' @keywords models
 #' @export
 
 summary.abund <- function( object

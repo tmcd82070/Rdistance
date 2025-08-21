@@ -38,5 +38,4 @@
 #' \emph{The Condor: Ornithological Applications} 120:439–455. 
 #' \doi{10.1650/CONDOR-17-200.1}
 #' 
-#' @keywords datasets
 NULL

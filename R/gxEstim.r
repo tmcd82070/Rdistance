@@ -90,7 +90,6 @@
 #' abline(h=0.75)
 #' abline(v=units::set_units(50,"m"))
 #'   
-#' @keywords model
 #' @export
 
 gxEstim <- function( fit ){

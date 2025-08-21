@@ -32,9 +32,6 @@
 #' effectiveDistance(dfunc) # same
 #' EDR(dfunc, newdata = data.frame(bare=30)) # vector length 1
 #'   
-#' @keywords modeling
-#'   
-#' @importFrom stats predict
 #' @export
 
 EDR <- function(object, newdata = NULL){

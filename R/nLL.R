@@ -70,9 +70,7 @@
 #' scaler2 <- pnorm(125, mean = 0, sd = 40) - 0.5 
 #' -sum(log(l2/scaler2))
 #'  
-#' @keywords models
 #' @export
-#' @importFrom stats predict
 
 nLL <- function(a
                 , ml

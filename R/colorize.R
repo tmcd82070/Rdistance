@@ -32,7 +32,7 @@
 #' the initial part of the string from character 1 to the character 
 #' before the [ in the first pair of []. 
 #' 
-#' @seealso \code{\link{crayon::style}}
+#' @seealso \code{crayon::style}
 #' 
 #' 
 # Do not export. In Rdistance namespace only

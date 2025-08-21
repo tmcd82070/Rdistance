@@ -285,7 +285,6 @@
 #' dfunc
 #' plot(dfunc)                   
 #'
-#' @keywords model
 #' @export
 dE.single <- function(   data
                             , formula

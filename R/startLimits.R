@@ -61,8 +61,6 @@
 #'   startLimits(modList)
 #'   
 #'   
-#' @keywords models
-#' 
 #' @export
 startLimits <- function( ml ){
 

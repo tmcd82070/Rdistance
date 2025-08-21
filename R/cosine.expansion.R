@@ -38,7 +38,7 @@
 #' cos.expn <- cosine.expansion(x, 5)
 #' plot(range(x), range(cos.expn), type="n")
 #' matlines(x, cos.expn[,1,1:5], col=rainbow(5), lty = 1)
-#' @keywords models
+#' 
 #' @export
 
 cosine.expansion <- function(x, expansions){

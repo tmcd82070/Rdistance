@@ -1,16 +1,16 @@
 # Submission comments
 
-This submission (v4.0.5) fixes two important bugs present in version 4.0.3.
+This submission (v4.1.0) implements a new method relative to v4.0.5
 
 Details on the specific changes are in **NEWS**. 
 
 # Current submission
 
-* 4.0.5
+* 4.1.0
 
 # Prior submission
 
-* 4.0.3   
+* 4.0.5   
 
 # Local Check
 

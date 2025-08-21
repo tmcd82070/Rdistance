@@ -7,12 +7,10 @@
 #' 
 #' @inherit startLimits return
 #' 
-#' @importFrom stats median
-#' 
 #' @export
 hazrate.start.limits <- function (ml){
   
-  X <- model.matrix(ml)
+  X <- stats::model.matrix(ml)
   dist <- Rdistance::distances(ml)  
   
   ncovars <- ncol(X)

@@ -16,7 +16,7 @@
 
 intercept.only <- function(object){
   
-  mt <- terms(object$mf)
+  mt <- stats::terms(object$mf)
   if( attr(mt,"intercept") == 0 ){
     # it has no intecept, so not "intecept only"
     return(FALSE)

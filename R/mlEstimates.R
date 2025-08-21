@@ -14,7 +14,6 @@
 #' and additional components specific to Rdistance.
 #' 
 #' @export
-#' @importFrom stats nlminb optim
 
 mlEstimates <- function( ml
                        , strt.lims

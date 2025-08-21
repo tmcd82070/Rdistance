@@ -49,7 +49,6 @@
 #' AIC(dfunc, criterion="AIC")  # AIC
 #' AIC(dfunc, criterion="BIC")  # BIC
 #' 
-#' @keywords model
 #' @export
 
 AIC.dfunc=function (object, ..., criterion="AICc") 
@@ -66,7 +65,7 @@ AIC.dfunc=function (object, ..., criterion="AICc")
     criterion <- "AICc"
   }
     
-  p <- length(coef(object))
+  p <- length(stats::coef(object))
   ans <- -2*object$loglik + (k*p) + (k * p * (p + 1))/(n - p - 1)
   attr(ans, "criterion") <- criterion
   ans

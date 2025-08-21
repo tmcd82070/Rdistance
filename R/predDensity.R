@@ -46,7 +46,7 @@ predDensity <- function(object
   # missing distances.  So, we use unnest(object$data), which has 
   # all observations, and we filter to the right ones. 
   
-  mt <- terms(object$mf)
+  mt <- stats::terms(object$mf)
   distVar <- all.vars(mt)[attributes(mt)$response]
   groupSizeVar <- all.vars(mt)[attributes(mt)$offset]
   effVar <- attr(object$data, "effortColumn")

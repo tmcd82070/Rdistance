@@ -60,7 +60,7 @@ integrateHalfnorm <- function(object
   w.lo <- units::set_units(object$w.lo, NULL)
   w.hi <- units::set_units(object$w.hi, NULL)
   
-  outArea <- (pnorm(q = w.hi
+  outArea <- (stats::pnorm(q = w.hi
                   , mean = w.lo
                   , sd = y) - 0.5) * sqrt(2*pi)*y
   

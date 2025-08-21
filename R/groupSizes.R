@@ -23,9 +23,7 @@
 #' groupSizes(sparrowModel)  
 #' 
 #' @export
-#' @importFrom stats model.offset
 #' 
 groupSizes <- function(ml, ...){
-  #ml$mf[, attr(terms(ml$mf), "offset")]
   stats::model.offset(ml$mf)
 }

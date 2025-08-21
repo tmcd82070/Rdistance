@@ -28,7 +28,6 @@
 #' coef(dfunc)
 #' }
 #'  
-#' @keywords model
 #' @export
 
 coef.dfunc <- function(object, ...){

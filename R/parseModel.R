@@ -44,7 +44,6 @@
 #' print.default(ml)
 #' 
 #' @export
-#' @importFrom stats terms.formula model.frame runif na.pass
 parseModel <- function(data
                           , formula = NULL
                           , likelihood = "halfnorm"
@@ -180,11 +179,11 @@ parseModel <- function(data
       formula = formula
       , data = dataWUnits$data
       , drop.unused.levels = TRUE
-      , na.action = na.pass
+      , na.action = stats::na.pass
     )    
 
   # Store a reduced data frame for abundance estimation later ----
-  allVars <- c(all.vars( terms(mf) ) # for covariates
+  allVars <- c(all.vars( stats::terms(mf) ) # for covariates
                , attr(data, "detectionColumn")
                , attr(data, "effortCol")
                , dplyr::group_vars(data))

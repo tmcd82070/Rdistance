@@ -62,8 +62,6 @@
 #' }
 #' 
 #'            
-#' @keywords model
-#' @importFrom graphics mtext
 #' @export
 
 autoDistSamp <- function (data

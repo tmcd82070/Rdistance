@@ -29,14 +29,12 @@
 #' \code{\link{effectiveDistance}}
 #' 
 #' @examples
-#' data(sparrowDf)
-#' dfunc <- sparrowDf |> dfuncEstim(formula=dist~bare)
+#' data(sparrowDfuncObserver)
 #' 
-#' ESW(dfunc) # vector length 356 = number of groups
-#' ESW(dfunc, newdata = data.frame(bare = c(30,40))) # vector length 2
+#' ESW(sparrowDfuncObserver) # vector length 356 = number of groups
+#' ESW(sparrowDfuncObserver, newdata = data.frame(observer = 
+#'    c("obs2", "obs4"))) # vector length 2
 #' 
-#' @keywords modeling
-#' @importFrom stats predict
 #' @export
 
 ESW <- function( object, newdata = NULL ){

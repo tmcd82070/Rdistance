@@ -210,14 +210,13 @@
 #'            )
 #' 
 #' # Same - Nicer output 
-#' # Set ci=0.95 (or another value) to estimate bootstrap CI's on ESW, density, and abundance.
+#' # Set ci=0.95 (or another value) to estimate bootstrap CI's 
 #' fit <- abundEstim(dfunc
 #'                 , area = units::set_units(4105, "km^2")
 #'                 , ci = NULL
 #'                 )
 #'          
 #' @export
-#' @importFrom graphics lines par
 abundEstim <- function(object
                      , area = NULL
                      , propUnitSurveyed = 1.0
@@ -291,7 +290,7 @@ abundEstim <- function(object
     # --- Apply estimation to each ID group ----
     B <- bsData |> 
       dplyr::group_by(id) |> 
-      dplyr::group_modify(.f = Rdistance:::oneBsIter # In Rdistance, not exported
+      dplyr::group_modify(.f = oneBsIter # oneBsIter is in Rdistance, not exported
                         , data = object$data
                         , formula = object$formula  
                         , likelihood = object$likelihood 
@@ -317,8 +316,8 @@ abundEstim <- function(object
     # Replace varcovar with bootstrap varcovar
     bsCoefs <- B |> 
       dplyr::ungroup() |> 
-      dplyr::select(dplyr::all_of(names(coef(object))))
-    object$varcovar <- var(bsCoefs)
+      dplyr::select(dplyr::all_of(names(stats::coef(object))))
+    object$varcovar <- stats::var(bsCoefs)
     
 
   } else {
@@ -363,14 +362,14 @@ abundEstim <- function(object
     # rearrange columns    
     ans$estimates <- ans$estimates |> 
       dplyr::select(id
-                  , dplyr::all_of(names(coef(object)))  
+                  , dplyr::all_of(names(stats::coef(object)))  
                   , dplyr::starts_with("density")
                   , dplyr::starts_with("abundance")
                   , dplyr::starts_with("avgEffDistance")
                   , dplyr::everything())
     B <- B |> 
       dplyr::select(id
-                  , dplyr::all_of(names(coef(object)))  
+                  , dplyr::all_of(names(stats::coef(object)))  
                   , dplyr::starts_with("density")
                   , dplyr::starts_with("abundance")
                   , dplyr::starts_with("avgEffDistance")

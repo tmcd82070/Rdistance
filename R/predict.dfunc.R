@@ -210,8 +210,6 @@
 #' @export
 #' 
 #' 
-#' @importFrom stats terms as.formula delete.response model.frame model.matrix coef
-#' 
 predict.dfunc <- function(object
                         , newdata = NULL
                         , type = c("parameters")
@@ -232,11 +230,11 @@ predict.dfunc <- function(object
   if( !isSmooth ){
     if ( is.null(newdata) | (type == "likelihood") ) {
       # Case: Use original covars
-      X <- model.matrix(object)
+      X <- stats::model.matrix(object)
     } else {
       # We have NEWDATA to deal with
-      Terms <- terms( object$mf )
-      Terms <- delete.response( Terms ) # model.frame (below) fails if there's a response, go figure.
+      Terms <- stats::terms( object$mf )
+      Terms <- stats::delete.response( Terms ) # model.frame (below) fails if there's a response, go figure.
       gsName <- all.vars(Terms)[ attr(Terms, "offset") ] # there is always an offset
       if( !(gsName %in% names(newdata)) ){
         # gotta add a fake groupsize to newdata so model.frame (below) works
@@ -245,15 +243,15 @@ predict.dfunc <- function(object
         names(newdata)[length(names(newdata))] <- gsName
       }
       xLevs <- lapply( object$mf, levels ) # get unspecified levels of factors
-      m <- model.frame( formula = Terms
+      m <- stats::model.frame( formula = Terms
                       , data = newdata
                       , xlev = xLevs )
-      X <- model.matrix( object = Terms
+      X <- stats::model.matrix( object = Terms
                        , data = m
                        , contrasts.arg = attr(object$mf,"contrasts") )
     }
     
-    BETA <- coef(object)
+    BETA <- stats::coef(object)
     p <- length(BETA)
     q <- ncol(X)
     paramsLink <- X %*% BETA[1:q] # could be extra parameters tacked on. e.g., knee for logistc or expansion terms
@@ -296,7 +294,7 @@ predict.dfunc <- function(object
                             extraParams )
              varyingParmName <- likeParamNames(object$likelihood)[1]
              if( q < p ){
-               extraParmNames <- names(coef(object))[(q+1):p]
+               extraParmNames <- names(stats::coef(object))[(q+1):p]
              } else {
                extraParmNames <- NULL
              }

@@ -41,7 +41,6 @@
 #'   \code{\link{integrateNumeric}},
 #'   \code{\link{integrateNegexp}}
 #' 
-#' @keywords modeling
 #' @export
 
 effectiveDistance <- function(object, newdata = NULL){

@@ -13,7 +13,8 @@ Optim <- function(ml, strt.lims){
   
   contRl <- list(trace = getOption("Rdistance_trace")
                  , maxit = getOption("Rdistance_maxIters")
-                 , reltol = getOption("Rdistance_likeTol")
+                 , factr = getOption("Rdistance_likeTol")
+                 , pgtol = getOption("Rdistance_likeTol")
   )
   
   fit <- stats::optim(

@@ -28,7 +28,7 @@
 #' herm.expn <- hermite.expansion(x, 4)
 #' plot(range(x), range(herm.expn), type="n")
 #' matlines(x, herm.expn, col=rainbow(4), lty = 1) 
-#' @keywords model
+#' 
 #' @export
 
 hermite.expansion <- function(x, expansions){

@@ -117,8 +117,8 @@ estimateN <- function(object
     phat <- NA
   }
 
-  Coefs <- data.frame(matrix(coef(object), nrow = 1))
-  names(Coefs) <- names(coef(object))
+  Coefs <- data.frame(matrix(stats::coef(object), nrow = 1))
+  names(Coefs) <- names(stats::coef(object))
   
   if(Rdistance::is.points(object)){
     avgEDD <- mean( sqrt(phat) * w, na.rm = TRUE)

@@ -1,3 +1,15 @@
+Changes in version 4.1.0 (2025-08-21)
+==============
+Version 4.1.0 added the 'oneStep' distance function and associated methods.
+
+*   Added `oneStep.like`, a mixture of non-overlapping uniform densities, 
+as a distance function.  Included associated print, plot, summary, and 
+expansion methods. 
+*   Implemented reporting of bootstrap coefficient standard errors, after 
+bootstrap resampling is complete.  Prior to bootstrapping, asymptotic se's 
+are reported when known. 
+*   Substantial documentation updates and clarifications.
+
 Changes in version 4.0.5 (2025-04-10)
 ==============
 Bug fixes:

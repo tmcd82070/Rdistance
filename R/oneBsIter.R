@@ -34,7 +34,6 @@
 #' and other relevant statistics for 
 #' one iteration of the bootstrap. 
 #' 
-#' @importFrom graphics lines
 #' 
 oneBsIter <- function(indexDf
                       , key
@@ -58,7 +57,7 @@ oneBsIter <- function(indexDf
   
   bsdf <- data[indexDf$rowIndex,]
   
-  dfunc.bs <- Rdistance::dfuncEstim(data = bsdf,
+  dfunc.bs <- dfuncEstim(data = bsdf,
                          formula = formula,  
                          likelihood = likelihood, 
                          w.lo = w.lo,
@@ -71,7 +70,7 @@ oneBsIter <- function(indexDf
                          warn = warn)
 
   # Note: Convergence is checked in estimateN. If nonConvergent, nEst$density returns NA
-  nEst <- Rdistance::estimateN(
+  nEst <- estimateN(
       dfunc.bs
     , area = area
     , propUnitSurveyed = propUnitSurveyed

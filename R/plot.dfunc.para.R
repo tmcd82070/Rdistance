@@ -120,7 +120,7 @@
 #' 
 #' @examples
 #' 
-#' # Example data
+#' # Simulated data
 #' set.seed(87654)
 #' x <- rnorm(1000, mean=0, sd=20)
 #' x <- x[x >= 0]
@@ -144,9 +144,6 @@
 #' plot(dfunc)
 #' plot(dfunc, nbins=25)
 #'
-#' @importFrom stats predict
-#' @importFrom graphics hist par barplot axTicks axis lines matpoints text
-#' @importFrom grDevices rainbow
 plot.dfunc.para <- function( x, 
                         include.zero=FALSE, 
                         nbins="Sturges", 
@@ -206,7 +203,7 @@ plot.dfunc.para <- function( x,
     # Note: x$mf is the model frame. It has only non-missing values between w.lo and w.hi
     # x$mf[,-1] has covariates in un-expanded-for-indicator variables format 
     
-    covNames <- labels(terms(x$mf)) # Intercept not included here
+    covNames <- labels(stats::terms(x$mf)) # Intercept not included here
     newdata <- matrix(NA, nrow = 1, ncol = length(covNames))
     colnames(newdata) <- covNames
     newdata <- data.frame(newdata)
@@ -215,7 +212,7 @@ plot.dfunc.para <- function( x,
     
     # origDist <- Rdistance::distances(x) 
     # inStrip <- (x$w.lo <= d) & (d <= x$w.hi)
-    factor.names <- attr(terms(x$mf), "dataClasses")
+    factor.names <- attr(stats::terms(x$mf), "dataClasses")
     factor.names <- names(factor.names)[ factor.names %in% c("factor","character") ]
     for( nm in covNames ) {
       if( nm %in% factor.names ) {
@@ -357,7 +354,7 @@ plot.dfunc.para <- function( x,
   if(circles){
     d <- Rdistance::distances(x)
     g <- apply(y, 2, FUN = function(y, x.seq, d){
-      approx(x.seq, y, xout = d)$y
+      stats::approx(x.seq, y, xout = d)$y
     }
     , x.seq = x.seq
     , d = d )

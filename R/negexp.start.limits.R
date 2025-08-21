@@ -9,10 +9,9 @@
 #' @inherit startLimits return
 #' 
 #' @export
-#' @importFrom stats median
 negexp.start.limits <- function (ml){
   
-  X <- model.matrix(ml)
+  X <- stats::model.matrix(ml)
   dist <- Rdistance::distances(ml)  
   
   ncovars <- nCovars(X)

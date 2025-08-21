@@ -21,9 +21,7 @@
 #' fit$x.scl            # same thing
 #' }
 #' 
-#' @keywords model
 #' @export
-#' @importFrom stats optim 
 
 maximize.g <- function( fit, covars = NULL ){
 
@@ -82,7 +80,7 @@ whi <- units::set_units(whi, NULL)
 
 x.start <- (wlo + whi) / 10 + wlo
 
-x.max <- optim(par = x.start, 
+x.max <- stats::optim(par = x.start, 
                fn = g.neg,  
                method = "L-BFGS-B", 
                lower=wlo, 

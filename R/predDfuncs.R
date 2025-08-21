@@ -23,7 +23,6 @@
 #' functions specified by rows of params.
 #' 
 #' @export
-#' @importFrom  stats approx
 predDfuncs <- function(object
                      , params
                      , distances

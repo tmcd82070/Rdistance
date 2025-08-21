@@ -57,10 +57,7 @@
 #' summary(dfunc)
 #' summary(dfunc, criterion="BIC")
 #' 
-#' @keywords models
 #' @export
-#' @importFrom stats pnorm
-
 summary.dfunc <- function( object, criterion="AICc", ... ){
 
   object <- print.dfunc(x = object, ...)
