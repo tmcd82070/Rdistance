@@ -24,15 +24,7 @@ $$
 8.    _Gamma likelihood_: Add the Gamma likelihood back into the package.  You took out Gamma at version 4.0.0.
 1.    _Logistic, Uniform, Triangle, and Huber Likelihoods_: Implement logistic and uniform likelihoods.  You took them out of version 4.0.0. I think you need to use the EM algorithm. See next note. You placed the old versions in `CodeParkingLot/OtherLikelihoods`.
 
-8.   _Uniform likelihood_: Fix this.  I am pretty sure you need to use the EM algorithm. See this [Stack Exchange post](https://stats.stackexchange.com/questions/591598/em-algorithm-on-a-mixture-of-two-uniforms). I have the following:
-$$
-z = 0.5I(w_l < x < \theta)
-$$
-and 
-$$
-\theta = [\sum(z) / n](w_h - w_l) + w_l
-$$
-this is close to correct, but not. I think the $z$ need to change each iteration.  See papers Mukai sent you.
+
 9.  *Stepwise variable selection*: Write `add1` and `drop1` and `extractAIC` so that `step` function will work with distance function objects. 
 
 
