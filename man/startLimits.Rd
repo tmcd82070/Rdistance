@@ -70,4 +70,3 @@ Returns starting values and limits (boundaries) for the parameters of
 \seealso{
 \code{\link{dfuncEstim}}
 }
-\keyword{models}

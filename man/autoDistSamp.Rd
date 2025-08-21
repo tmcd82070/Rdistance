@@ -249,4 +249,3 @@ autoDistSamp(data = sparrowDf
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
 }
-\keyword{model}

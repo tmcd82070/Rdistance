@@ -4,7 +4,7 @@
 \alias{insertOneStepBreaks}
 \title{Insert oneStep Likelihood breaks}
 \usage{
-insertOneStepBreaks(obj = x, newData = newdata, xseq)
+insertOneStepBreaks(obj, newData, xseq)
 }
 \arguments{
 \item{obj}{A fitted Rdistance model object}

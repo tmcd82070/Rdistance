@@ -38,8 +38,8 @@ x <- seq(0, 1, length = 200)
 simp.expn <- simple.expansion(x, 4)
 plot(range(x), range(simp.expn), type="n")
 matlines(x, simp.expn, col=rainbow(4), lty = 1) 
+
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{hermite.expansion}}
 }
-\keyword{models}

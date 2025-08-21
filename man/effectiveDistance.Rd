@@ -52,4 +52,3 @@ Numeric integration is used for all others.
   \code{\link{integrateNumeric}},
   \code{\link{integrateNegexp}}
 }
-\keyword{modeling}

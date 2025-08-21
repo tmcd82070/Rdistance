@@ -33,4 +33,3 @@ fit$x.scl            # same thing
 \seealso{
 \code{\link{dfuncEstim}}
 }
-\keyword{model}

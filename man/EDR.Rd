@@ -62,4 +62,3 @@ EDR(dfunc, newdata = data.frame(bare=30)) # vector length 1
 \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
 \code{\link{effectiveDistance}}
 }
-\keyword{modeling}

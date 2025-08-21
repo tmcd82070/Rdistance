@@ -74,4 +74,3 @@ Sage-Grouse: Implications for the umbrella species concept.
 \code{\link{thrasherSiteData}}, \code{\link{thrasherDetectionData}},
 \code{\link{RdistDf}}
 }
-\keyword{datasets}

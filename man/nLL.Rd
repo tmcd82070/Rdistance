@@ -92,4 +92,3 @@ scaler2 <- pnorm(125, mean = 0, sd = 40) - 0.5
 See \code{\link{halfnorm.like}} and links there; 
  \code{\link{dfuncEstim}}
 }
-\keyword{models}

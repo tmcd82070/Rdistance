@@ -63,4 +63,3 @@ summary(fit)
 \code{\link{summary.dfunc}}, \code{\link{print.dfunc}}, 
 \code{\link{print.abund}}
 }
-\keyword{models}

@@ -104,4 +104,3 @@ abline(v = 50, lty = 2)
          \code{\link{abundEstim}},
          other \code{<likelihood>.like} functions
 }
-\keyword{models}

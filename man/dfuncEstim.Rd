@@ -288,7 +288,7 @@ summary(dfunc)
   
 data(sparrowDfuncObserver) # pre-estimated object
 \dontrun{                 
-# Command to produce 'sparrowDfuncObserver'
+# Commands that produced 'sparrowDfuncObserver'
 sparrowDfuncObserver <- sparrowDf |> 
          dfuncEstim( 
            formula = dist ~ observer
@@ -296,7 +296,10 @@ sparrowDfuncObserver <- sparrowDf |>
 }     
 sparrowDfuncObserver
 summary(sparrowDfuncObserver)
-plot(sparrowDfuncObserver)                   
+plot(sparrowDfuncObserver)
+plot(sparrowDfuncObserver
+   , newdata = data.frame(observer = c("obs1", "obs2", "obs3"
+                                     , "obs4", "obs5")))
 
 }
 \references{
@@ -308,4 +311,3 @@ Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
 \code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
 Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}).
 }
-\keyword{model}

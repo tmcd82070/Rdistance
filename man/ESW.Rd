@@ -55,15 +55,14 @@ ESW is area under
   the half-width of the surveys, \eqn{(w.hi - w.lo)}
 }
 \examples{
-data(sparrowDf)
-dfunc <- sparrowDf |> dfuncEstim(formula=dist~bare)
+data(sparrowDfuncObserver)
 
-ESW(dfunc) # vector length 356 = number of groups
-ESW(dfunc, newdata = data.frame(bare = c(30,40))) # vector length 2
+ESW(sparrowDfuncObserver) # vector length 356 = number of groups
+ESW(sparrowDfuncObserver, newdata = data.frame(observer = 
+   c("obs2", "obs4"))) # vector length 2
 
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{EDR}}, 
 \code{\link{effectiveDistance}}
 }
-\keyword{modeling}

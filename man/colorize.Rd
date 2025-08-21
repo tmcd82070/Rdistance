@@ -42,5 +42,5 @@ Subsequent sets of brackets (e.g., "25 [m] + 30 [ft]") ARE colorized
 (i.e., "[ft]" is color).
 }
 \seealso{
-\code{\link{crayon::style}}
+\code{crayon::style}
 }

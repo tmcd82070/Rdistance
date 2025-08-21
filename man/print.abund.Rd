@@ -46,10 +46,10 @@ fit <- abundEstim(object = dfunc
 print(fit)
 summary(fit)
 }
+
 }
 \seealso{
 \code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 
 \code{\link{summary.dfunc}}, \code{\link{print.dfunc}}, 
 \code{\link{summary.abund}}
 }
-\keyword{models}

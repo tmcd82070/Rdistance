@@ -221,7 +221,7 @@ abundDf <- estimateN(dfunc
            )
 
 # Same - Nicer output 
-# Set ci=0.95 (or another value) to estimate bootstrap CI's on ESW, density, and abundance.
+# Set ci=0.95 (or another value) to estimate bootstrap CI's 
 fit <- abundEstim(dfunc
                 , area = units::set_units(4105, "km^2")
                 , ci = NULL

@@ -43,6 +43,7 @@ Line plot method for objects of class '\code{dfunc}'
 that adds distance functions to an existing plot.
 }
 \examples{
+# a simulated RdistDf
 set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]

@@ -38,4 +38,3 @@ coef(dfunc)
 \seealso{
 \code{\link{AIC}}, \code{\link{dfuncEstim}}
 }
-\keyword{model}

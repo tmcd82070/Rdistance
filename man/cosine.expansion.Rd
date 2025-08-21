@@ -43,10 +43,10 @@ x <- matrix(seq(0, 1, length = 200), ncol = 1)
 cos.expn <- cosine.expansion(x, 5)
 plot(range(x), range(cos.expn), type="n")
 matlines(x, cos.expn[,1,1:5], col=rainbow(5), lty = 1)
+
 }
 \seealso{
 \code{\link{dfuncEstim}}, 
          \code{\link{hermite.expansion}}, 
          \code{\link{simple.expansion}}
 }
-\keyword{models}

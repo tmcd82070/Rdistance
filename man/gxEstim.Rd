@@ -103,4 +103,3 @@ abline(v=units::set_units(50,"m"))
 \seealso{
 \code{\link{dfuncEstim}}
 }
-\keyword{model}

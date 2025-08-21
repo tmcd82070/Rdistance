@@ -42,4 +42,3 @@ Sage-Grouse: Implications for the umbrella species concept.
 \seealso{
 \code{\link{thrasherSiteData}}
 }
-\keyword{datasets}

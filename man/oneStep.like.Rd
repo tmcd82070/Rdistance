@@ -101,6 +101,8 @@ detectDf <- data.frame(transect = tranID, dist = x)
 siteDf <- data.frame(transect = 1:10
                , length = rep(units::set_units(10,"m"), 10))
 distDf <- RdistDf(siteDf, detectDf)
+
+# Estimation
 fit <- dfuncEstim(distDf
                  , formula = dist ~ 1
                  , likelihood = "oneStep"

@@ -150,7 +150,7 @@ Plot method for parametric line and point transect distance functions.
 }
 \examples{
 
-# Example data
+# Simulated data
 set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]

@@ -53,4 +53,3 @@ in Wyoming, USA. \emph{Avian Conservation and Ecology} 15(2):16.
 \seealso{
 \code{\link{sparrowDetectionData}}
 }
-\keyword{datasets}

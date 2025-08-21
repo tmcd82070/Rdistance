@@ -70,4 +70,3 @@ summary(dfunc, criterion="BIC")
 \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, 
 \code{\link{print.abund}}, \code{\link{print.abund}}
 }
-\keyword{models}
