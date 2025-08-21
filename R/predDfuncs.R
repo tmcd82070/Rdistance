@@ -70,17 +70,17 @@ predDfuncs <- function(object
     y <- y$L.unscaled # (nXk) = (length(d) X nrow(params))
 
     if(object$expansions > 0){
-      # Some expansion series depend on parameters
-      if(object$likelihood %in% c("oneStep")){
+      if(!(object$likelihood %in% differentiableLikelihoods())){
+        # Expansion series depend on parameters, apply expansion between 0 and Theta
         W <- units::set_units(exp(params[,1]), units(d), mode="standard")
       } else { 
         # Most likelihoods: expansions constant across params
-        W <- object$w.hi - object$w.lo
+        W <- rep(object$w.hi - object$w.lo, nrow(params))
       }
       
-      # Dimensions: k = length(d); n = length(W) 
-      # The following call to expansionTerms returns a k X 1 matrix
-      # for most likelihoods, or kXn  matrix for oneStep
+      # Dimensions: k = length(d); n = length(W) = nrow(params)
+      # The following call to expansionTerms returns matrix size k X n 
+      # for all likelihoods
 
       exp.terms <- Rdistance::expansionTerms(a = params
                                              , d = d 
