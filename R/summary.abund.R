@@ -90,11 +90,11 @@ summary.abund <- function( object
     ci <- paste( colorize(format(ests$density_lo)), 
                  "to", 
                  colorize(format(ests$density_hi)) )
-    ptEst <- colorize( colorize(format(ests$density)), col = "bold" )
+    ptEst <- colorize( format(ests$density) )
     mess <- paste(mess, c(ptEst, ci))
   } else {
     mess <- c("Density in sampled area:")
-    ptEst <- colorize( colorize(format(ests$density)), col = "bold" )
+    ptEst <- colorize( format(ests$density) )
     mess <- paste(mess, ptEst)
   }
   cat(paste0(mess, "\n"))
