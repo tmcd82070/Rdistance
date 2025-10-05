@@ -106,6 +106,18 @@ nLL <- function(a
              )
   key <- L$L.unscaled
   
+  # cat(crayon::green("In nLL:\n"))
+  # cat(crayon::green("a = \n"))
+  # print(a)
+  # cat(crayon::green("length(d) = "))
+  # print(length(d)); cat("\n")
+  # cat(crayon::green("dim(X) = "))
+  # cat(paste(dim(X), collapse = ", "))
+  # cat("\n")
+  # cat(crayon::green("L = "))
+  # print(L$L.unscaled); cat("\n")
+  
+  
   # Evaluate and apply the expansions ----
   if( ml$expansions > 0 ){
     # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
@@ -132,7 +144,12 @@ nLL <- function(a
   #           object = ml
   #         , type = "likelihood"
   # )
+  
+  # cat(crayon::green("Ready to call effectiveDistance from nLL...\n"))
+  ml$par <- a
   intgral <- effectiveDistance(ml)
+  # cat(crayon::red("Back from effectiveDistance\n"))
+  # print(intgral)
 
   key <- key / intgral
   # 

@@ -54,15 +54,20 @@ hazrate.like <- function(a
   
   # What's in a? : 
   #   a = [(Intercept), b1, ..., bp, k, <expansion coef>]
+  #
+  # Dimensions:
+  #   m = number of "cases" = nrow(a)
+  #   q = number of coefficients = ncol(covars)
+  #   n = number of data distances = length(dist)
   q <- nCovars(covars) # in Rdistance, not exported
   if(is.matrix(a)){
-    beta <- a[, 1:q, drop = FALSE]  # k X q
-    K <- a[, q+1, drop = FALSE]     # k X 1
+    beta <- a[, 1:q, drop = FALSE]  # m X q
+    K <- a[, q+1, drop = FALSE]     # m X 1
   } else {
     beta <- matrix(a[1:q], nrow = 1) # 1 X q
     K <- matrix(a[q+1], nrow = 1)     # 1 X 1
   }
-  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
+  s <- covars %*% t(beta) # (nXq) %*% (qXm) = nXm
   sigma <- exp(s)  # link function here
 
   dist <- units::set_units(dist, NULL)
@@ -75,7 +80,7 @@ hazrate.like <- function(a
             , ncol = ncol(sigma)
             , byrow = TRUE
             )
-  key <- -( dist/sigma )^(-K)  # (nXk / nXk) ^ (kX1)
+  key <- -( dist/sigma )^(-K)  # (nXm / nXm) ^ (mX1)
   key <- 1 - exp(key)
 
   sigma <- array(c(sigma, K)
