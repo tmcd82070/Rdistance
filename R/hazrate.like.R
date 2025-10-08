@@ -63,23 +63,10 @@ hazrate.like <- function(a
   #   n = number of data distances = length(dist) = nrow(covars)
   q <- nCovars(covars) # in Rdistance, not exported
   dist <- units::set_units(dist, NULL) # drop units
-  # n <- length(dist)
-  # dist <- matrix(dist, n, 1)
-  
+
   if(is.matrix(a)){
     beta <- a[, 1:q, drop = FALSE]  # m X q
     K <- a[1, q+1, drop = TRUE]     # 1 X 1
-    # m <- nrow(beta) # = nrow(a) if a is matrix, could be 1
-    
-    # dist <- matrix(dist
-    #                , nrow = n
-    #                , ncol = m
-    # ) 
-    # K <- matrix(K
-    #             , nrow = n
-    #             , ncol = m
-    #             , byrow = TRUE
-    # )
   } else {
     beta <- matrix(a[1:q], nrow = 1)  # 1 X q
     K <- a[q+1]     # 1 X 1
@@ -87,19 +74,10 @@ hazrate.like <- function(a
   s <- covars %*% t(beta) # (nXq) %*% (qXm) = nXm
   sigma <- exp(s)  # link function here
 
-  # cat(crayon::red("dim(dist) = \n"))
-  # print(dim(dist))
-  # print(length(dist))
-  # cat(crayon::red("dim(sigma) = \n"))
-  # print(dim(sigma))
-  # print(length(sigma))
-  # cat(crayon::red("dim(K) = \n"))
-  # print(dim(K))
-  # print(length(K))
-  
   # take logs here to speed calculations. When logged, we don't have to 
   # expand K or dist to matrix dimentions, which is slow.  They must be vectors
-  # of length equal to n = nrow(sigma) 
+  # of length equal to n = nrow(sigma). This works provided K is constant over 
+  # observations (does not depend on covariates).
   # hazrate = 1 - exp(-(dist/sigma)^(-K))
   key <- log( dist ) - log( sigma )  # ((n vector) / nXm) ^ (nXm)
   key <- -K * key
