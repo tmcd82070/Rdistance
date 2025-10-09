@@ -117,8 +117,11 @@ halfnorm.like <- function(a
     stop(paste("Argument 'dist' must be a vector or single-column matrix.",
             "Found array with", length(dim(dist)), "dimensions."))
   }
+  
+  # cat(crayon::red("In Halfnorm.like...\n"))
   q <- nCovars(covars)
   if(is.matrix(a)){
+    # cat(crayon::red("A is matrix\n"))
     beta <- a[,1:q, drop = FALSE]  # k X q
   } else {
     beta <- matrix(a[1:q], nrow = 1) # 1 X q
@@ -126,19 +129,25 @@ halfnorm.like <- function(a
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   sigma <- exp(s)  # link function here
 
+  # print(dim(sigma))
+  
   # Dropping units of dist is save b/c checked already
   # 'key' is unit-less
   dist <- units::set_units(dist, NULL)
-  dist <- matrix(dist
-            , nrow = length(dist)
-            , ncol = ncol(sigma)
-            ) 
+  # dist <- matrix(dist
+  #           , nrow = length(dist)
+  #           , ncol = ncol(sigma)
+  #           ) 
   # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
-  key <- -(dist*dist)/(2*c(sigma*sigma))  
+  # cat("length(dist) = \n")
+  # print(length(dist))
+  # print(dist[1:5])
+  key <- -(dist*dist)  # vector length n
+  key <- key / (2*sigma*sigma)  # (n vector) / nXk 
   key <- exp(key)  # exp of density function here, not link.
 
   return( list(L.unscaled = key, 
-               params = sigma))
+               params = s))  # return params on log scale
     
   
 }

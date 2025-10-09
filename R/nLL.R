@@ -104,7 +104,8 @@ nLL <- function(a
              , dist = d
              , covars = X
              )
-  key <- L$L.unscaled
+  key <- L$L.unscaled  # (n vector)
+  parms <- L$params
   
   # cat(crayon::green("In nLL:\n"))
   # cat(crayon::green("a = \n"))
@@ -114,9 +115,9 @@ nLL <- function(a
   # cat(crayon::green("dim(X) = "))
   # cat(paste(dim(X), collapse = ", "))
   # cat("\n")
-  # cat(crayon::green("L = "))
-  # print(L$L.unscaled); cat("\n")
-  
+  # cat(crayon::green("dim(key) = "))
+  # print(dim(key)); cat("\n")
+
   
   # Evaluate and apply the expansions ----
   if( ml$expansions > 0 ){
@@ -145,13 +146,109 @@ nLL <- function(a
   #         , type = "likelihood"
   # )
   
+  # ---- Compute constant of integration ----
   # cat(crayon::green("Ready to call effectiveDistance from nLL...\n"))
-  ml$par <- a
-  intgral <- effectiveDistance(ml)
+  # cat(crayon::green("dim(parms) = "))
+  # cat(paste(dim(parms), collapse = ", "))
+  # cat("\n")
+  # print(table(parms[,1]))
+  # ml$par <- a
+  # intgral <- effectiveDistance(ml)
+  
   # cat(crayon::red("Back from effectiveDistance\n"))
   # print(intgral)
+  
+  # all code that replicates effectiveDistance()
+  # likExpan <- paste0(ml$likelihood, "_", ml$expansions)
+  # ml$par <- a
+  # 
+  # esw <- switch(likExpan
+  #               , "halfnorm_0" = integrateHalfnorm(ml, newdata)
+  #               , "negexp_0" = integrateNegexp(ml, newdata)
+  #               , "oneStep_0" = integrateOneStep(ml, newdata)
+  #               , integrateNumeric(ml, newdata)
+  # )
+  
+  # I had integration in separate routines (see early commits for v4.1.0)
+  # But, I move integration here b/c is runs much faster.
+  #   esw <- switch(likExpan
+  #               , "halfnorm_0" = integrateHalfnorm(object, newdata)
+  #               , "negexp_0" = integrateNegexp(object, newdata)
+  #               , "oneStep_0" = integrateOneStep(object, newdata)
+  #               , integrateNumeric(object, newdata)
+  # )
+  
+  likExpan <- paste0(ml$likelihood, "_", ml$expansions)
+  if( likExpan == "halfnorm_0" ){
+    # CASE: Halfnormal, 0 expansions
+    parms <- exp(parms)
+    outArea <- (stats::pnorm(q = ml$w.hi
+                             , mean = ml$w.lo
+                             , sd = parms) - 0.5) * sqrt(2*pi) * parms
+  } else if( likExpan == "negexp_0" ){
+    # CASE: Negative exponential, 0 expansions
+    parms <- exp(parms)
+    rng <- units::set_units(ml$w.hi - ml$w.lo, NULL)
+    outArea <- (1 - exp(-parms*(rng))) / parms
+  } else {
+    # CASE: All other cases = Numerical integration
 
-  key <- key / intgral
+    nInts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) # nInts MUST BE odd!!!
+    seqx = seq(ml$w.lo, ml$w.hi, length=nInts)
+    
+    d <- seqx - ml$w.lo
+    
+    # don't need covars since params are always computed
+    XIntOnly <- matrix(1, nrow = length(d), ncol = 1)
+    # parms <- cbind(log(parms[,1]), parms[,2])
+    
+    y <- f.like(
+        a = parms
+      , dist = d
+      , covars = XIntOnly
+      , w.hi = object$w.hi
+    )
+    y <- y$L.unscaled # (nXk) = (length(d) X nrow(parms))
+    
+    # cat(crayon::green("dim(y) = "))
+    # cat(paste(dim(y), collapse = ", "))
+    # cat("\n")
+    # cat("values in y[60,]:")
+    # print(table(y[60,]))
+  
+    dx <- x[2] - x[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
+    
+    if(is.points(ml)){
+      x <- units::set_units(x, NULL)
+      x <- matrix(x, nrow(y), ncol(y))
+      y <- x * y  # element-wise
+    }
+    
+    intCoefs <- c(rep( c(2,4), ((nInts-1)/2) ), 1) # here is where we need nInts to be odd
+    intCoefs[1] <- 1
+    # intCoefs <- matrix(intCoefs, ncol = 1)
+  
+    outArea <- intCoefs * y  # (n vector) * (n X k)
+    outArea <- colSums(outArea) * dx / 3
+    # outArea <- (t(y) %*% intCoefs) * dx / 3
+    # outArea <- drop(outArea) # convert from matrix to vector
+  
+  }
+
+  if( is.points(ml) ){
+    outArea <- units::set_units(outArea, NULL)
+    outArea <- sqrt( 2 * outArea )  # cannot sqrt units (unless like m^2 are assigned)
+    outArea <- units::set_units(outArea, object$outputUnits, mode = "standard") # add back units
+  }
+
+  # cat(crayon::green("length(outArea) = "))
+  # cat(paste(length(outArea), collapse = ", "))
+  # cat("\n")
+  key <- drop(key)
+  # print(length(key))
+  # print(table(outArea))
+
+  key <- key / outArea
   # 
   # if( !is.null(getOption("Rdistance_optimizer")) &&
   #     (getOption("Rdistance_optimizer") == "optim") ){
@@ -193,5 +290,7 @@ nLL <- function(a
   }
   
   # cat(paste("nLL =", format(nLL), "\n"))
+  # readline("Continue? [Enter = Yes] ")
+  
   nLL
 }
