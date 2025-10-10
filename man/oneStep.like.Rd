@@ -91,7 +91,7 @@ is the vector of estimated coefficients.
 
 # Fit oneStep to simulated data
 whi <- 250
-T <- 100
+T <- 100  # true threshold
 p <- 0.85
 n <- 200 
 x <- c( runif(n*p, min=0, max=T), runif(n*(1-p), min=T, max=whi))

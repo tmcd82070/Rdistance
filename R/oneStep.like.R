@@ -42,7 +42,7 @@
 #' 
 #' # Fit oneStep to simulated data
 #' whi <- 250
-#' T <- 100
+#' T <- 100  # true threshold
 #' p <- 0.85
 #' n <- 200 
 #' x <- c( runif(n*p, min=0, max=T), runif(n*(1-p), min=T, max=whi))
@@ -81,10 +81,10 @@ oneStep.like <- function(a
   q <- nCovars(covars)
   if(is.matrix(a)){
     beta <- a[,1:q, drop = FALSE]  # k X q
-    p <- a[, q+1, drop = FALSE]     # k X 1
+    p <- a[1, q+1, drop = TRUE]     # 1 X 1
   } else {
     beta <- matrix(a[1:q], nrow = 1) # 1 X q
-    p <- matrix(a[q+1], nrow = 1)     # 1 X 1
+    p <- a[q+1]     # 1 X 1
   }
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   theta <- exp(s)  # link function here
@@ -92,10 +92,10 @@ oneStep.like <- function(a
   # Dropping units of dist is safe b/c checked already
   # 'key' is unit-less
   dist <- units::set_units(dist, NULL)
-  dist <- matrix(dist
-                 , nrow = length(dist)
-                 , ncol = ncol(theta)
-  ) 
+  # dist <- matrix(dist
+  #                , nrow = length(dist)
+  #                , ncol = ncol(theta)
+  # ) 
   
   if(is.null(w.hi)){
     w.hi <- max(dist)  # no units b/c removed above
@@ -104,11 +104,11 @@ oneStep.like <- function(a
   }
   
   # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
-  p <- matrix(p, nrow = nrow(theta), ncol = ncol(theta))
+  # p <- matrix(p, nrow = nrow(theta), ncol = ncol(theta))
   key <- (0 <= dist & dist <= theta) + 
          (((1-p) * theta) / ((w.hi - theta) * p)) * (theta < dist & dist <= w.hi)
 
   return( list(L.unscaled = key, 
-               params = theta))
+               params = cbind(s, p)))
 
 }

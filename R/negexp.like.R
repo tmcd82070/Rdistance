@@ -45,16 +45,16 @@ negexp.like <- function(a
   sigma <- exp(s)  # link function here
 
   dist <- units::set_units(dist, NULL)
-  dist <- matrix(dist
-                 , nrow = length(dist)
-                 , ncol = ncol(sigma)
-  ) 
+  # dist <- matrix(dist
+  #                , nrow = length(dist)
+  #                , ncol = ncol(sigma)
+  # ) 
   
   key = -sigma * dist  # (nXk) * (nXk)
   key <- exp(key)
   
   return( list(L.unscaled = key, 
-               params = sigma)
+               params = s)
   )  
 
 }

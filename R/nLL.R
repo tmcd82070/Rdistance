@@ -108,7 +108,8 @@ nLL <- function(a
   parms <- L$params
   
   # cat(crayon::green("In nLL:\n"))
-  # cat(crayon::green("a = \n"))
+  # cat(paste0(crayon::green("Is 'key' a vector ("), is.vector(key)
+  #          , crayon::green(") or a matrix ("), is.matrix(key), ")\n"))
   # print(a)
   # cat(crayon::green("length(d) = "))
   # print(length(d)); cat("\n")
@@ -178,6 +179,14 @@ nLL <- function(a
   #               , integrateNumeric(object, newdata)
   # )
   
+  # The following IF cases were implemented because speed increases 
+  # dramatically when we know the integrals (i.e., avoid numerical 
+  # integration when we can). 
+  # I evaluate integrals here, and do not call separate functions 
+  # like integrateHalfnorm or integrateNegexp, because those functions 
+  # do more.  They have a newdata= parameter and they return units on 
+  # the answer.  It is faster to do these here, BUT, this means that you 
+  # are evaluating integrals both here and in other routines (i.e., ESW)
   likExpan <- paste0(ml$likelihood, "_", ml$expansions)
   if( likExpan == "halfnorm_0" ){
     # CASE: Halfnormal, 0 expansions
@@ -190,6 +199,11 @@ nLL <- function(a
     parms <- exp(parms)
     rng <- units::set_units(ml$w.hi - ml$w.lo, NULL)
     outArea <- (1 - exp(-parms*(rng))) / parms
+  } else if( likExpan == "oneStep_0" ){
+    # CASE: One step, 0 expansions
+    Theta <- exp(parms[,1])
+    p <- parms[,2]
+    outArea <- Theta / p
   } else {
     # CASE: All other cases = Numerical integration
 
@@ -206,9 +220,12 @@ nLL <- function(a
         a = parms
       , dist = d
       , covars = XIntOnly
-      , w.hi = object$w.hi
+      , w.hi = ml$w.hi
     )
     y <- y$L.unscaled # (nXk) = (length(d) X nrow(parms))
+
+    # cat(paste0(crayon::red("Is 'y' a vector ("), is.vector(y)
+    #            , crayon::red(") or a matrix ("), is.matrix(y), ")\n"))
     
     # cat(crayon::green("dim(y) = "))
     # cat(paste(dim(y), collapse = ", "))
@@ -216,7 +233,7 @@ nLL <- function(a
     # cat("values in y[60,]:")
     # print(table(y[60,]))
   
-    dx <- x[2] - x[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
+    dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
     
     if(is.points(ml)){
       x <- units::set_units(x, NULL)

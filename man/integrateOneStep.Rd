@@ -45,6 +45,6 @@ c(obs1Scaler, obs2Scaler)
 
 }
 \seealso{
-[integrateNumeric()]; [integrateNegexp()]; 
-[integrateOneStep()]
+\code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+\code{\link{integrateHalfnorm}}
 }

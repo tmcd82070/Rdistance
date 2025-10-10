@@ -13,8 +13,8 @@
 #' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
 #' return length is \code{length(distances(object))}. 
 #' 
-#' @seealso [integrateNumeric()]; [integrateNegexp()]; 
-#' [integrateOneStep()] 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+#' \code{\link{integrateHalfnorm}} 
 #' 
 #' @examples
 #' 
@@ -40,8 +40,6 @@ integrateOneStep <- function(object
   
   Theta <- y[,1]
   p <- y[,2]
-  
-  w.lo <- units::set_units(object$w.lo, NULL)
 
   outArea <- Theta / p
   
