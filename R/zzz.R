@@ -22,6 +22,11 @@
     , Rdistance_zero      = .Machine$double.eps
     , Rdistance_warn      = FALSE
     , Rdistance_intEvalPts= 101  # MUST BE ODD (for Simpson's rule)
+    , Rdistance_knownLikelihoods= c("halfnorm"
+                                  , "negexp"
+                                  , "hazrate"
+                                  , "oneStep"
+                                    )
   )
   toset <- !(names(op.Rdist) %in% names(op))
   if (any(toset)) options(op.Rdist[toset])
@@ -32,7 +37,7 @@
 .onUnload <- function(libpath){
   
   # un-option Rdist options by full name, not just grep("Rdistance_", names(op))
-  # in case user has an options starting with "Rdistance_".
+  # in case user has an option starting with "Rdistance_".
   op.Rdist <- list(
       "Rdistance_optimizer" = NULL
     , "Rdistance_evalMax"   = NULL
@@ -48,7 +53,8 @@
     , "Rdistance_fuzz"      = NULL
     , "Rdistance_zero"      = NULL
     , "Rdistance_warn"      = NULL
-    , "Rdidtance_intEvalPts"= NULL
+    , "Rdistance_intEvalPts"= NULL
+    , "Rdistance_knownLikelihoods" = NULL
   )
   
   options(op.Rdist)

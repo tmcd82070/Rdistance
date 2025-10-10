@@ -66,6 +66,13 @@ parseModel <- function(data
   # control <- options()[grep("Rdist_", names(options()))]
   checkNEvalPts(getOption("Rdistance_intEvalPts")) # In Rdistance, not exported
   
+  # Check that we know the likelihood ----
+  if( !( likelihood %in% getOption("Rdistance_knownLikelihoods")) ){
+    stop(paste("Unknown likelihood. Likelihood must be one of"
+             , paste(getOption("Rdistance_knownLikelihoods"), collapse = ", ")
+             , "(case sensitive)."))
+  }
+  
   # Check for a response ----
   # Otherwise, as.character(formula) is length 2, not 3
   if( is.null(formula) ){
