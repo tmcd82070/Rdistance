@@ -98,7 +98,7 @@ nLL <- function(a
   # Returns one value per observation. Expansions, if any, 
   # are applied below, after this.
   f.like <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")    
-  d <- distances(ml) - ml$w.lo
+  d <- distances(ml) - ml$w.lo # observed distances, n of them
   X <- stats::model.matrix(ml)
   L <- f.like( a = a
              , dist = d
@@ -124,12 +124,35 @@ nLL <- function(a
   if( ml$expansions > 0 ){
     # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
     # but, this may save a tiny bit of time when ml$expansions = 0
+    
+    if(!(ml$likelihood %in% differentiableLikelihoods())){
+      # Expansion domain depends on parameters.
+      # e.g., Apply expansion between 0 and theta for oneStep
+      W <- units::set_units(exp(parms[,1]), units(d), mode="standard")
+    } else { 
+      # Most likelihoods: expansions constant across params
+      W <- ml$w.hi - ml$w.lo
+    }
+    
+    # Dimensions: n = length(d) = nrow(parms); k = length(W) 
+    # Here, W is either length 1 or n
+    # The following call to expansionTerms returns matrix size (n X k); here,
+    #  either nx1 or nxn.
     exp.terms <- Rdistance::expansionTerms(a = a
                                          , d = d
                                          , series = ml$series
                                          , nexp = ml$expansions
-                                         , w = ml$w.hi - ml$w.lo)
-    key <- key * exp.terms
+                                         , w = W)
+    
+    if( ncol(exp.terms) > 1 ){
+      # W is len k; so exp.terms is kxk
+      exp.terms <- diag(exp.terms)
+    }
+    
+    key <- key * drop(exp.terms)
+
+    key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")
+    
   }
     
   # without monotonicity restraints, function can go negative, 
@@ -211,7 +234,7 @@ nLL <- function(a
     intCoefs <- getOption("Rdistance_intCoefs")    
     
     seqx = seq(ml$w.lo, ml$w.hi, length=nInts) # could store in options() to speed things
-    d <- seqx - ml$w.lo # could store in options() to speed things
+    d <- seqx - ml$w.lo # could store in options() to speed things; all distances, nInts of them
     dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
     
     # don't need covars since params are always computed
@@ -223,17 +246,24 @@ nLL <- function(a
       , covars = XIntOnly
       , w.hi = ml$w.hi
     )
-    y <- y$L.unscaled # (nXk) = (length(d) X nrow(parms))
+    y <- y$L.unscaled # (nInts x n) = (length(d) X nrow(parms))
 
-    # cat(paste0(crayon::red("Is 'y' a vector ("), is.vector(y)
-    #            , crayon::red(") or a matrix ("), is.matrix(y), ")\n"))
+    if( ml$expansions > 0 ){
+      if(!(ml$likelihood %in% differentiableLikelihoods())){
+        W <- units::set_units(exp(parms[,1]), units(d), mode="standard")
+      } else { 
+        W <- rep(ml$w.hi - ml$w.lo, nrow(parms))
+      }
+      exp.terms <- Rdistance::expansionTerms(a = parms
+                                             , d = d
+                                             , series = ml$series
+                                             , nexp = ml$expansions
+                                             , w = W)
+      y <- y * exp.terms
+      y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
+      
+    }
     
-    # cat(crayon::green("dim(y) = "))
-    # cat(paste(dim(y), collapse = ", "))
-    # cat("\n")
-    # cat("values in y[60,]:")
-    # print(table(y[60,]))
-  
     
     if(is.points(ml)){
       x <- units::set_units(x, NULL)
@@ -283,6 +313,7 @@ nLL <- function(a
   # likelihoods are unitless, and we've done all the conversions we need.
   # I.e., effectiveDistance (called above) has units of distances.
   key <- units::set_units(key, NULL)
+  
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
   # cat(paste("Parameter:", crayon::red(paste(a, collapse=", ")), "\n"))
@@ -302,7 +333,8 @@ nLL <- function(a
     nLL <- getOption("Rdistance_posInf") # positive b/c already flipped over by -1
   }
   
-  # cat(paste("nLL =", format(nLL), "\n"))
+  cat(crayon::green(paste(paste(a, collapse=", "))))
+  cat(crayon::green(paste(" ,", format(nLL, digits = 20), "\n")))
   # readline("Continue? [Enter = Yes] ")
   
   nLL

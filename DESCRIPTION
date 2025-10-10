@@ -45,6 +45,7 @@ Description: Distance-sampling (<doi:10.1007/978-3-319-19219-2>)
 License: GNU General Public License
 URL: https://github.com/tmcd82070/Rdistance/wiki
 BugReports: https://github.com/tmcd82070/Rdistance/issues
+LazyData: TRUE
 Suggests: 
     testthat (>= 3.0.0),
 Depends: R (>= 4.1.0), units
