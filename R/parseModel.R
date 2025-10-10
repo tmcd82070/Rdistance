@@ -64,7 +64,9 @@ parseModel <- function(data
   # Control parameters ----
   # if you want, could save control options in output object.
   # control <- options()[grep("Rdist_", names(options()))]
-  checkNEvalPts(getOption("Rdistance_intEvalPts")) # In Rdistance, not exported
+  
+  # checkNEvalPts computes and sets Simpson coefficients in options()
+  checkNEvalPts(getOption("Rdistance_intEvalPts")) # not exported
   
   # Check that we know the likelihood ----
   if( !( likelihood %in% getOption("Rdistance_knownLikelihoods")) ){

@@ -2,6 +2,11 @@
 
 .onLoad <- function(libname, pkgname){
 
+  # To speed numeric integration, store Simpson coefs in options()
+  nEvalPts <- 101  # MUST BE ODD
+  intCoefs <- c(rep( c(2,4), ((nEvalPts-1)/2) ), 1) 
+  intCoefs[1] <- 1
+  
   # ** If you add an option here, MAKE SURE you add it 
   # to op.Rdist in function .onUnload below. **
   
@@ -21,7 +26,8 @@
     , Rdistance_fuzz      = .Machine$double.eps
     , Rdistance_zero      = .Machine$double.eps
     , Rdistance_warn      = FALSE
-    , Rdistance_intEvalPts= 101  # MUST BE ODD (for Simpson's rule)
+    , Rdistance_intEvalPts= nEvalPts  
+    , Rdistance_intCoefs  = intCoefs
     , Rdistance_knownLikelihoods= c("halfnorm"
                                   , "negexp"
                                   , "hazrate"
@@ -54,6 +60,7 @@
     , "Rdistance_zero"      = NULL
     , "Rdistance_warn"      = NULL
     , "Rdistance_intEvalPts"= NULL
+    , "Rdistance_intCoefs"  = NULL
     , "Rdistance_knownLikelihoods" = NULL
   )
   

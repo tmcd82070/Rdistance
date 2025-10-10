@@ -207,15 +207,16 @@ nLL <- function(a
   } else {
     # CASE: All other cases = Numerical integration
 
-    nInts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) # nInts MUST BE odd!!!
-    seqx = seq(ml$w.lo, ml$w.hi, length=nInts)
+    nInts <- getOption("Rdistance_intEvalPts") # already checked it's odd, in parseModel::checkNevalPts
+    intCoefs <- getOption("Rdistance_intCoefs")    
     
-    d <- seqx - ml$w.lo
+    seqx = seq(ml$w.lo, ml$w.hi, length=nInts) # could store in options() to speed things
+    d <- seqx - ml$w.lo # could store in options() to speed things
+    dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
     
     # don't need covars since params are always computed
-    XIntOnly <- matrix(1, nrow = length(d), ncol = 1)
-    # parms <- cbind(log(parms[,1]), parms[,2])
-    
+    XIntOnly <- matrix(1, nrow = length(d), ncol = 1) # could store in options() to speed things
+
     y <- f.like(
         a = parms
       , dist = d
@@ -233,18 +234,13 @@ nLL <- function(a
     # cat("values in y[60,]:")
     # print(table(y[60,]))
   
-    dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
     
     if(is.points(ml)){
       x <- units::set_units(x, NULL)
       x <- matrix(x, nrow(y), ncol(y))
       y <- x * y  # element-wise
     }
-    
-    intCoefs <- c(rep( c(2,4), ((nInts-1)/2) ), 1) # here is where we need nInts to be odd
-    intCoefs[1] <- 1
-    # intCoefs <- matrix(intCoefs, ncol = 1)
-  
+
     outArea <- intCoefs * y  # (n vector) * (n X k)
     outArea <- colSums(outArea) * dx / 3
     # outArea <- (t(y) %*% intCoefs) * dx / 3
