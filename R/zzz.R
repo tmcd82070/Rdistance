@@ -27,7 +27,7 @@
     , Rdistance_zero      = .Machine$double.eps
     , Rdistance_warn      = FALSE
     , Rdistance_intEvalPts= nEvalPts  
-    , Rdistance_intCoefs  = intCoefs
+    , Rdistance_intCoefs  = intCoefs # not really needed; Set in 'checkNEvalPts'
     , Rdistance_knownLikelihoods= c("halfnorm"
                                   , "negexp"
                                   , "hazrate"

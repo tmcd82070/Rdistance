@@ -210,10 +210,10 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m")
       Coefficients:
-                   Estimate      SE          z            p(>|z|)   
-      (Intercept)   4.079325514  0.05714809  71.38166236  0.00000000
-      a1            0.345899344  0.13834328   2.50029742  0.01240891
-      a2           -0.007169272  0.10471435  -0.06846504  0.94541545
+                   Estimate      SE          z           p(>|z|)   
+      (Intercept)   4.079325523  0.05714808  71.3816727  0.00000000
+      a1            0.345899401  0.13834322   2.5002989  0.01240886
+      a2           -0.007169283  0.10471427  -0.0684652  0.94541532
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
@@ -241,16 +241,16 @@
          = "m")
       Coefficients:
                    Estimate      SE           z            p(>|z|)     
-      (Intercept)   3.379022069  0.170031939  19.87286675  6.989499e-88
-      bare          0.011262251  0.002783443   4.04615847  5.206499e-05
-      a1            0.253160857  0.152435242   1.66077643  9.675836e-02
-      a2           -0.002002772  0.110140598  -0.01818377  9.854922e-01
+      (Intercept)   3.379022911  0.170032029  19.87286125  6.990264e-88
+      bare          0.011262240  0.002783444   4.04615273  5.206627e-05
+      a1            0.253161809  0.152435436   1.66078056  9.675753e-02
+      a2           -0.002003448  0.110141139  -0.01818983  9.854874e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 59.63415 [m] (range 46.28205 [m] to 74.44282 [m]) 
-      Average probability of detection: 0.2880877 (range 0.2235848 to 0.3596271)
+      Average effective strip width (ESW): 59.63415 [m] (range 46.28207 [m] to 74.4428 [m]) 
+      Average probability of detection: 0.2880877 (range 0.2235849 to 0.3596271)
       Scaling: g(0 [m]) = 1
       Log likelihood: -1655.091 
       AICc: 3318.296
@@ -259,8 +259,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 8.876391e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 364375.9
+      Density in sampled area: 8.87639e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 364375.8
 
 ---
 
@@ -272,16 +272,16 @@
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
                    Estimate      SE           z            p(>|z|)     
-      (Intercept)   3.379022805  0.170032017  19.87286202  6.990157e-88
-      bare          0.011262242  0.002783446   4.04615060  5.206674e-05
-      a1            0.253160841  0.152437890   1.66074748  9.676417e-02
-      a2           -0.002002868  0.110144844  -0.01818395  9.854921e-01
+      (Intercept)   3.379022911  0.170032029  19.87286125  6.990264e-88
+      bare          0.011262240  0.002783444   4.04615273  5.206627e-05
+      a1            0.253161809  0.152435436   1.66078056  9.675753e-02
+      a2           -0.002003448  0.110141139  -0.01818983  9.854874e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 44.72562 [m] (range 34.71155 [m] to 55.83212 [m]) 
-      Average probability of detection: 0.2160658 (range 0.1676887 to 0.2697204)
+      Average effective strip width (ESW): 44.72561 [m] (range 34.71155 [m] to 55.8321 [m]) 
+      Average probability of detection: 0.2160658 (range 0.1676887 to 0.2697203)
       Scaling: g(0 [m]) = 0.75
       Log likelihood: -1655.091 
       AICc: 3318.296
@@ -290,8 +290,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 0.0001183518 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 485834.3
+      Density in sampled area: 0.0001183519 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 485834.4
 
 # halfnorm-Bootstraps
 

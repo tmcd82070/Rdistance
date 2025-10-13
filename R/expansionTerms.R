@@ -113,17 +113,23 @@ expansionTerms <- function(a, d, series, nexp, w){
       stop( paste( "Unknown expansion series", series, "requested." ))
     }
 
+    # keep in mind: nrow(expCoeffs) must equal length(w)
     if(is.matrix(a)){
-      # I think a is always a matrix
+      if( nrow(a) != length(w) ){
+        stop("nrow(a) != length(w) in expansionTerms function.")
+      }
       coefLocs <- (ncol(a)-(nexp-1)):(ncol(a))
       expCoeffs <- a[, coefLocs, drop = FALSE]  # n X nexp
     } else {
       coefLocs <- (length(a)-(nexp-1)):(length(a))
-      expCoeffs <- matrix(a[coefLocs], nrow = 1) # 1 X nexp
+      expCoeffs <- matrix(a[coefLocs]
+                        , nrow = length(w)
+                        , ncol = nexp
+                        , byrow = TRUE ) # length(w) X nexp
     }
     
     jMat <- kronecker(diag(nexp), matrix(1, 1, nrow(exp.term))) # nexp X (nexp*d)
-    bigCoeffs <- expCoeffs %*% jMat # n X nexp * nexp X (nexp*d) = n X (nexp*d)
+    bigCoeffs <- expCoeffs %*% jMat # (n X nexp) * (nexp X (nexp*d)) = n X (nexp*d)
     bigCoeffs <- array(bigCoeffs
                      , dim = c(nrow(expCoeffs), nrow(exp.term), nexp))
     bigCoeffs <- aperm(bigCoeffs, c(2,1,3)) # was nXdXnexp; now dXnXnexp; constant w/i pages

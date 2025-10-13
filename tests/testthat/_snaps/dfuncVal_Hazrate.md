@@ -37,7 +37,7 @@
          outputUnits = "m")
       Coefficients:
                    Estimate  SE         z          p(>|z|)      
-      (Intercept)  3.774729  0.1079167  34.978162  4.833460e-268
+      (Intercept)  3.774729  0.1079167  34.978162  4.833461e-268
       k            2.405957  0.3096556   7.769785   7.861954e-15
       
       Message: Success; Asymptotic SE's
@@ -98,18 +98,18 @@
          outputUnits = "m")
       Coefficients:
                     Estimate     SE         z           p(>|z|)      
-      (Intercept)    3.91559085  0.1444321  27.1102575  7.453582e-162
-      observerobs2   0.17191983  0.2027944   0.8477543   3.965748e-01
-      observerobs3   0.06574319  0.1658299   0.3964496   6.917734e-01
-      observerobs4  -0.38573845  0.1757132  -2.1952732   2.814401e-02
-      observerobs5  -0.09584640  0.1671430  -0.5734395   5.663472e-01
-      k              2.76472118  0.3481398   7.9414107   1.998946e-15
+      (Intercept)    3.91558993  0.1444321  27.1102456  7.455990e-162
+      observerobs2   0.17191702  0.2027945   0.8477400   3.965828e-01
+      observerobs3   0.06574510  0.1658300   0.3964609   6.917650e-01
+      observerobs4  -0.38573966  0.1757132  -2.1952801   2.814351e-02
+      observerobs5  -0.09584549  0.1671431  -0.5734338   5.663510e-01
+      k              2.76471844  0.3481394   7.9414113   1.998936e-15
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [m] to 150 [m] 
-      Average effective strip width (ESW): 64.83158 [m] (range 46.60934 [m] to 77.35058 [m]) 
-      Average probability of detection: 0.4322105 (range 0.3107289 to 0.5156706)
+      Average effective strip width (ESW): 64.83155 [m] (range 46.60926 [m] to 77.35035 [m]) 
+      Average probability of detection: 0.4322103 (range 0.3107284 to 0.515669)
       Scaling: g(0 [m]) = 1
       Log likelihood: -1627.509 
       AICc: 3267.26
@@ -118,8 +118,8 @@
          Individuals seen: 371 in 353 groups 
        Average group size: 1.050992 
          Group size range: 1 to 3 
-      Density in sampled area: 8.12496e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 333529.6
+      Density in sampled area: 8.124965e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 333529.8
 
 # hazrate-NoCovarWloWhi
 
@@ -132,7 +132,7 @@
          outputUnits = "m")
       Coefficients:
                    Estimate  SE         z          p(>|z|)      
-      (Intercept)  3.814338  0.1117919  34.119989  3.727892e-255
+      (Intercept)  3.814338  0.1117919  34.119989  3.727893e-255
       k            2.481511  0.3484759   7.121041   1.071152e-12
       
       Message: Success; Asymptotic SE's
@@ -161,8 +161,8 @@
          0, series = "cosine", x.scl = w.20, g.x.scl = 1, outputUnits = "m")
       Coefficients:
                    Estimate  SE         z          p(>|z|)      
-      (Intercept)  3.894830  0.1031639  37.753805  6.514759e-312
-      k            2.933948  0.3696785   7.936486   2.079906e-15
+      (Intercept)  3.894830  0.1031639  37.753805  6.514747e-312
+      k            2.933948  0.3696785   7.936486   2.079907e-15
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
@@ -219,7 +219,7 @@
       Coefficients:
                    Estimate    SE         z          p(>|z|)     
       (Intercept)   2.9185280  0.4528771   6.444415  1.160469e-10
-      k             2.2401149  0.2029433  11.038131  2.501838e-28
+      k             2.2401149  0.2029433  11.038131  2.501839e-28
       a1           -0.3749832  0.1759458  -2.131243  3.306915e-02
       a2           -0.3825795  0.1988336  -1.924119  5.433966e-02
       
@@ -249,11 +249,11 @@
          = "m")
       Coefficients:
                    Estimate     SE           z          p(>|z|)     
-      (Intercept)   2.57285360  0.348271939   7.387485  1.496324e-13
+      (Intercept)   2.57285361  0.348271942   7.387485  1.496325e-13
       bare          0.01312417  0.004277266   3.068356  2.152400e-03
-      k             2.43201406  0.239839529  10.140172  3.664540e-24
-      a1           -0.32652796  0.194667765  -1.677360  9.347207e-02
-      a2           -0.23085353  0.175986293  -1.311770  1.895978e-01
+      k             2.43201406  0.239839532  10.140172  3.664544e-24
+      a1           -0.32652796  0.194667766  -1.677360  9.347207e-02
+      a2           -0.23085353  0.175986295  -1.311770  1.895978e-01
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
@@ -281,11 +281,11 @@
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
                    Estimate     SE           z          p(>|z|)     
-      (Intercept)   2.57285360  0.348271936   7.387485  1.496323e-13
+      (Intercept)   2.57285361  0.348271942   7.387485  1.496325e-13
       bare          0.01312417  0.004277266   3.068356  2.152400e-03
-      k             2.43201406  0.239839527  10.140172  3.664538e-24
-      a1           -0.32652795  0.194667764  -1.677360  9.347208e-02
-      a2           -0.23085353  0.175986291  -1.311770  1.895978e-01
+      k             2.43201406  0.239839532  10.140172  3.664544e-24
+      a1           -0.32652796  0.194667766  -1.677360  9.347207e-02
+      a2           -0.23085353  0.175986295  -1.311770  1.895978e-01
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
@@ -312,8 +312,8 @@
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
                    Estimate  SE         z          p(>|z|)      
-      (Intercept)  3.852207  0.1429937  26.939699  7.532080e-160
-      k            2.821023  0.4312821   6.541015   6.110275e-11
+      (Intercept)  3.852207  0.1429937  26.939698  7.532086e-160
+      k            2.821023  0.4312821   6.541015   6.110274e-11
       
       Message: Success; Bootstrap SE's
       Function: HAZRATE  

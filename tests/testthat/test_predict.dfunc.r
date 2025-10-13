@@ -2,9 +2,6 @@
 library(Rdistance)
 # context("predict.dfunc")
 
-data("sparrowDetectionData")
-data("sparrowSiteData")
-
 w.lo <- 0
 w.hi <- units::set_units(150, "m")
 
@@ -85,16 +82,14 @@ test_that("predict distinct", {
 
 test_that("predict default snapshot", {
   p <- predict(dfuncObs)
-  expect_snapshot_value(p
-                        , style = "json2")
+  expect_snapshot(p)
 })
 
 
 test_that("predict dfuncs snapshot", {
   p <- predict(dfuncObs, type = "dfuncs", distances = d, 
                newdata = newdata)
-  expect_snapshot_value(p
-                        , style = "json2")
+  expect_snapshot(p)
 })
 
 test_that("predict likelihood snapshot", {
@@ -102,6 +97,5 @@ test_that("predict likelihood snapshot", {
                , distances = d  # ignored
                , newdata = newdata  # ignored
                )
-  expect_snapshot_value(p
-                        , style = "json2")
+  expect_snapshot(p)
 })

@@ -107,6 +107,7 @@ nLL <- function(a
   key <- L$L.unscaled  # (n vector)
   parms <- L$params
   
+  
   # cat(crayon::green("In nLL:\n"))
   # cat(paste0(crayon::green("Is 'key' a vector ("), is.vector(key)
   #          , crayon::green(") or a matrix ("), is.matrix(key), ")\n"))
@@ -139,22 +140,40 @@ nLL <- function(a
     # The following call to expansionTerms returns matrix size (n X k); here,
     #  either nx1 or nxn.
     exp.terms <- Rdistance::expansionTerms(a = a
-                                         , d = d
-                                         , series = ml$series
-                                         , nexp = ml$expansions
-                                         , w = W)
+                                           , d = d
+                                           , series = ml$series
+                                           , nexp = ml$expansions
+                                           , w = W)
     
     if( ncol(exp.terms) > 1 ){
       # W is len k; so exp.terms is kxk
       exp.terms <- diag(exp.terms)
     }
     
-    key <- key * drop(exp.terms)
+    key <- key * exp.terms
 
     key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")
     
-  }
+    # For expansion calculation when integrating (below), we need 
+    # the expansion factor coefficients in 'parms'
+    coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
+    parms <- cbind(parms
+                 , matrix(a[coefLocs]
+                        , nrow = nrow(parms)
+                        , ncol=ml$expansions
+                        , byrow = TRUE
+                 ))  # n X ([#canonical] + nexp)
     
+    
+  }
+
+  # Apply d if point survey ----
+  if(is.points(ml)){
+    x <- units::set_units(d, NULL)
+    key <- x * key  # element-wise
+  }
+  
+      
   # without monotonicity restraints, function can go negative, 
   # especially in a gap between datapoints. Don't want this in distance
   # sampling and screws up the convergence. In future, could
@@ -235,7 +254,7 @@ nLL <- function(a
     
     seqx = seq(ml$w.lo, ml$w.hi, length=nInts) # could store in options() to speed things
     d <- seqx - ml$w.lo # could store in options() to speed things; all distances, nInts of them
-    dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
+    dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts-1); could do diff(dx) if unequal intervals
     
     # don't need covars since params are always computed
     XIntOnly <- matrix(1, nrow = length(d), ncol = 1) # could store in options() to speed things
@@ -264,9 +283,8 @@ nLL <- function(a
       
     }
     
-    
     if(is.points(ml)){
-      x <- units::set_units(x, NULL)
+      x <- units::set_units(d, NULL)
       x <- matrix(x, nrow(y), ncol(y))
       y <- x * y  # element-wise
     }
@@ -281,7 +299,7 @@ nLL <- function(a
   if( is.points(ml) ){
     outArea <- units::set_units(outArea, NULL)
     outArea <- sqrt( 2 * outArea )  # cannot sqrt units (unless like m^2 are assigned)
-    outArea <- units::set_units(outArea, object$outputUnits, mode = "standard") # add back units
+    outArea <- units::set_units(outArea, ml$outputUnits, mode = "standard") # add back units
   }
 
   # cat(crayon::green("length(outArea) = "))
@@ -290,7 +308,7 @@ nLL <- function(a
   key <- drop(key)
   # print(length(key))
   # print(table(outArea))
-
+  
   key <- key / outArea
   # 
   # if( !is.null(getOption("Rdistance_optimizer")) &&
@@ -333,8 +351,8 @@ nLL <- function(a
     nLL <- getOption("Rdistance_posInf") # positive b/c already flipped over by -1
   }
   
-  cat(crayon::green(paste(paste(a, collapse=", "))))
-  cat(crayon::green(paste(" ,", format(nLL, digits = 20), "\n")))
+  # cat(crayon::green(paste(paste(a, collapse=", "))))
+  # cat(crayon::green(paste(" ,", format(nLL, digits = 20), "\n")))
   # readline("Continue? [Enter = Yes] ")
   
   nLL

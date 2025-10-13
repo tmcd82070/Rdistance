@@ -324,8 +324,19 @@ dE.single <- function(   data
     origOp <- options(Rdistance_optimizer = "hookeJeeves"
                       , Rdistance_intEvalPts = 301 #Until get known integrals coded
                       )
+  } else {
+    # Check univariate and Hooke-Jeeves; can't do univariate problems ----
+    termLabs <- attr(terms(modelList$formula), "term.labels")
+    termLabs <- termLabs[!grepl("groupsize\\(", termLabs)]
+    if( (length(termLabs) == 0) && 
+        (getOption("Rdistance_optimizer") == "hookeJeeves") &&
+        (modelList$likelihood != "hazrate") ){
+        stop(paste("Cannot estimate an intercept-only model using 'hookeJeeves'.",
+                   "Reset optimizer with options(Rdistance_optimizer = 'nlminb'), or restart R",
+                   "and re-attach Rdistance"))  
+    }
   }
-  
+    
   # Perform optimization
   fit <- mlEstimates( ml = modelList
                     , strt.lims = strt.lims
