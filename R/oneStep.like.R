@@ -92,11 +92,7 @@ oneStep.like <- function(a
   # Dropping units of dist is safe b/c checked already
   # 'key' is unit-less
   dist <- units::set_units(dist, NULL)
-  # dist <- matrix(dist
-  #                , nrow = length(dist)
-  #                , ncol = ncol(theta)
-  # ) 
-  
+
   if(is.null(w.hi)){
     w.hi <- max(dist)  # no units b/c removed above
   } else {
