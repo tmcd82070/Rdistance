@@ -47,6 +47,11 @@ EDR <- function(object, newdata = NULL){
                 , "oneStep_0" = integrateOneStepPoints(object, newdata)
                 , integrateNumeric(object, newdata)
   )
+
+  edr <- units::set_units(edr, NULL)
+  edr <- sqrt( 2 * edr )  # cannot sqrt units (unless like m^2 are assigned)
+  edr <- units::set_units(edr, object$outputUnits, mode = "standard") # add back units
+
   
   edr
 }

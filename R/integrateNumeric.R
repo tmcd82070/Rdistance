@@ -33,10 +33,18 @@
 #'      4f(x3) + 2f(x4) + ... + 2f(x(n-2)) + 4f(x(n-1)) + f(xn))}
 #' where \eqn{h} is the interval size (w.hi - w.lo) / n.
 #' 
+#' Physical units on the return values
+#' are the original (linear) units if \code{object} contains line-transect data
+#' (e.g., [m]), or square of the original units if \code{object} contains
+#' point-transect data (e.g., [m^2]). Point-transect units are squared because
+#' the likelihood consists of the detection function (which is unitless) 
+#' multiplied by distances (which have units).  
+#' 
 #' @return A vector of areas under distance functions. 
 #' If \code{newdata} is specified, return length is 
 #' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
 #' return length is \code{length(distances(object))}. 
+#' 
 #' 
 #' @examples
 #' 
@@ -86,17 +94,16 @@ integrateNumeric <- function(object
                       , type = "dfuncs"
   )
   
+  # we want units on x
   x <- attr(y, "distances") # these are 0 to w, not w.lo to w.hi, which is what we want
   
   # we want units on dx
   dx <- x[2] - x[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
   
   if(is.points(object)){
-    x <- units::set_units(x, NULL)
-    x <- matrix(x, nrow(y), ncol(y))
     y <- x * y  # element-wise
   }
-  
+
   # Numerical integration ----
   # Apply composite Simpson's 1/3 rule 
   #
@@ -108,12 +115,6 @@ integrateNumeric <- function(object
   
   outArea <- (t(y) %*% intCoefs) * dx / 3
   outArea <- drop(outArea) # convert from matrix to vector
-  
-  if( is.points(object) ){
-    outArea <- units::set_units(outArea, NULL)
-    outArea <- sqrt( 2 * outArea )  # cannot sqrt units (unless like m^2 are assigned)
-    outArea <- units::set_units(outArea, object$outputUnits, mode = "standard") # add back units
-  }
   
   # Trapazoid rule: Computation used in Rdistance version < 0.2.2
   # y1 <- y[,-1,drop=FALSE]
