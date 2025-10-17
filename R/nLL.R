@@ -169,8 +169,7 @@ nLL <- function(a
 
   # Apply d if point survey ----
   if(is.points(ml)){
-    x <- units::set_units(d, NULL)
-    key <- x * key  # element-wise
+    key <- d * key  # element-wise
   }
   
       
@@ -284,9 +283,7 @@ nLL <- function(a
     }
     
     if(is.points(ml)){
-      x <- units::set_units(d, NULL)
-      x <- matrix(x, nrow(y), ncol(y))
-      y <- x * y  # element-wise
+      y <- d * y  # element-wise
     }
 
     outArea <- intCoefs * y  # (n vector) * (n X k)
