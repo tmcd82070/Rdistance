@@ -293,16 +293,16 @@ nLL <- function(a
   
   }
 
-  if( is.points(ml) ){
-    outArea <- units::set_units(outArea, NULL)
-    outArea <- sqrt( 2 * outArea )  # cannot sqrt units (unless like m^2 are assigned)
-    outArea <- units::set_units(outArea, ml$outputUnits, mode = "standard") # add back units
-  }
+  # if( is.points(ml) ){
+  #   outArea <- units::set_units(outArea, NULL)
+  #   outArea <- sqrt( 2 * outArea )  # cannot sqrt units (unless like m^2 are assigned)
+  #   outArea <- units::set_units(outArea, ml$outputUnits, mode = "standard") # add back units
+  # }
 
   # cat(crayon::green("length(outArea) = "))
   # cat(paste(length(outArea), collapse = ", "))
   # cat("\n")
-  key <- drop(key)
+  # key <- drop(key)
   # print(length(key))
   # print(table(outArea))
   
