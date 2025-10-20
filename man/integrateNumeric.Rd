@@ -57,6 +57,13 @@ Simpson's composite approximation to the area under the curve is
      4f(x_{n-1}) + f(x_{n}))}{(1/3)h(f(x0) + 4f(x1) + 2f(x2) + 
      4f(x3) + 2f(x4) + ... + 2f(x(n-2)) + 4f(x(n-1)) + f(xn))}
 where \eqn{h} is the interval size (w.hi - w.lo) / n.
+
+Physical units on the return values
+are the original (linear) units if \code{object} contains line-transect data
+(e.g., [m]), or square of the original units if \code{object} contains
+point-transect data (e.g., [m^2]). Point-transect units are squared because
+the likelihood consists of the detection function (which is unitless) 
+multiplied by distances (which have units).
 }
 
 \examples{

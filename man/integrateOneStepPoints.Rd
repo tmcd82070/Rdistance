@@ -35,17 +35,26 @@ Returned integral is exact.
 }
 \examples{
 
-# Check:
-w.hi <- 125
-w.lo <- 0
-s1 <- 40
-s2 <- exp(log(s1) + log(0.5))
-obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
-obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
-c(obs1Scaler, obs2Scaler)
+fit <- dfuncEstim(thrasherDf, dist~1, likelihood = "oneStep")
+integrateOneStepPoints(fit, newdata = data.frame(`(Intercept)`=1))
+EDR(fit, newdata = data.frame(`(Intercept)`=1))
+
+# Check: 
+Theta <- exp(fit$par[1])
+p <- fit$par[2]
+w.hi <- fit$w.hi
+w.lo <- fit$w.lo
+g.at0 <- w.lo
+g.atT <- Theta
+g.atTPlusFuzz <- (((1-p) * Theta) / ((w.hi - Theta) * p))*Theta
+g.atWhi <- (((1-p) * Theta) / ((w.hi - Theta) * p))*w.hi
+area.0.to.T <- (Theta - w.lo) * (g.atT - g.at0) / 2 # triangle; Theta^2/2
+area.T.to.w <- (w.hi - Theta) * (g.atTPlusFuzz + g.atWhi) / 2 # trapazoid
+area <- area.0.to.T + area.T.to.w
+edr <- sqrt( 2*area )
 
 }
 \seealso{
-[integrateNumeric()]; [integrateNegexp()]; 
-[integrateOneStep()]
+\code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+\code{\link{integrateOneStep}}
 }
