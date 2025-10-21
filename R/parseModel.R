@@ -54,6 +54,7 @@ parseModel <- function(data
                           , x.scl = 0
                           , g.x.scl = 1
                           , outputUnits = NULL
+                          , asymptoticSE = TRUE
                           ){
 
   # Check validity of data set ----
@@ -212,6 +213,7 @@ parseModel <- function(data
              , x.scl = dataWUnits$x.scl
              , g.x.scl = g.x.scl
              , outputUnits = dataWUnits$outputUnits
+             , asymptoticSE = asymptoticSE
   )
   
   # Enforce minimum number of spline basis functions ----

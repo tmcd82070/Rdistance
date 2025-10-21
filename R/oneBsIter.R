@@ -53,6 +53,7 @@ oneBsIter <- function(indexDf
                       , pb
                       , plot.bs
                       , plotCovValues
+                      , asymptoticSE = FALSE
 ){
   
   bsdf <- data[indexDf$rowIndex,]
@@ -67,7 +68,8 @@ oneBsIter <- function(indexDf
                          x.scl = x.scl, 
                          g.x.scl = g.x.scl,
                          outputUnits = outputUnits,
-                         warn = warn)
+                         warn = warn, 
+                         asymptoticSE = asymptoticSE)
 
   # Note: Convergence is checked in estimateN. If nonConvergent, nEst$density returns NA
   nEst <- estimateN(

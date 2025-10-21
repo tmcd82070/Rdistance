@@ -18,16 +18,28 @@ HookeJeeves <- function(ml, strt.lims){
                  , tol = getOption("Rdistance_likeTol")
   )
   
+  verboseLevel <- getOption("Rdistance_verbosity")
+  if( verboseLevel >= 1 ){
+    cat(colorize("HOOKEJEEVES non-gradient maximization ----\n", col = "red"))
+  }
+  
   fit <- dfoptim::hjkb(
       par = strt.lims$start
     , fn = nLL
     , lower = strt.lims$low
     , upper = strt.lims$high
     , control = contRl
+    , verbosity = verboseLevel
     , ml = ml
   )
   
   names(fit$par) <- strt.lims$names
+  if( ml$asymptoticSE ){
+    fit$varcovar <- Rdistance::varcovarEstim(fit, ml)
+  } else {
+    fit$varcovar <- NULL
+  }
+  
   fit$varcovar <- Rdistance::varcovarEstim(fit, ml)
 
   # final few things ----

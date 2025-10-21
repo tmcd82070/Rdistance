@@ -29,17 +29,27 @@ Nlminb <- function(ml, strt.lims){
                  , x.tol = getOption("Rdistance_coefTol")
   )
   
+  verboseLevel <- getOption("Rdistance_verbosity")
+  if( verboseLevel >= 1 ){
+    cat(colorize("NLMINB gradient maximization ----\n", col = "red"))
+  }
+  
   fit <- stats::nlminb(
     start = strt.lims$start
     , objective = nLL
     , lower = strt.lims$low
     , upper = strt.lims$high
+    , verbosity = verboseLevel
     , control = contRl
     , ml = ml
   )
   
   names(fit$par) <- strt.lims$names
-  fit$varcovar <- Rdistance::varcovarEstim(fit, ml)
+  if( ml$asymptoticSE ){
+    fit$varcovar <- Rdistance::varcovarEstim(fit, ml)
+  } else {
+    fit$varcovar <- NULL
+  }
   
   # final few things ----
   fit$limits <- strt.lims[c("low", "high")]
@@ -48,6 +58,5 @@ Nlminb <- function(ml, strt.lims){
   names(fit)[names(fit) == "objective"] <- "loglik"
   fit$loglik <- -fit$loglik  
 
-  
   fit
 } 

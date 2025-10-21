@@ -20,12 +20,26 @@
 #' @export
 #' 
 varcovarEstim <- function( x, ml ){
-
+  
+  # varcovar gets called from maximization routines (Nlminb, Optim, HookesJeeves)
+  # AND 'abundEstim'. 
+  
   nP <- length(x$par)
   nmsP <- names(x$par)
+
+  verboseLevel <- getOption("Rdistance_verbosity")
+  warn <- getOption("Rdistance_warn")
+  
+  if( verboseLevel >= 1 ){
+    cat(colorize("VarCovar estimation ----\n", col = "red"))
+  }
   
   if( !(ml$likelihood %in% differentiableLikelihoods()) ){
     # varcovar is PENDING bootstrapping ----
+    if( verboseLevel >= 1 ){
+      cat(colorize("  Bootstraps pending\n"))
+    }
+    
     varcovar <- NULL
   } else {
     # we want to estimate varcovar
@@ -35,13 +49,16 @@ varcovarEstim <- function( x, ml ){
         , FUN = nLL
         , eps = getOption("Rdistance_hessEps")
         , ml = ml
+        , verbosity = verboseLevel
       )
     } else {
       # Optim returns a hessian, others may, use it.
+      if( verboseLevel >= 1 ){
+        cat(colorize("  Using Hessian from final iteration\n"))
+      }
       hessian <- x$hessian
     }
   
-    warn <- getOption("Rdistance_warn")
     if (x$convergence != 0) {
       if (warn) warning("Distance function did not converge, or converged to (Inf,-Inf)")
       varcovar <- matrix(NaN, nP, nP)
@@ -64,7 +81,6 @@ varcovarEstim <- function( x, ml ){
     dimnames(varcovar) <- list(nmsP, nmsP)
   }
  
-  # The other place varcovar gets estimated is in 'abundEstim'
   
   varcovar
   

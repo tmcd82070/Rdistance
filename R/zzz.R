@@ -28,6 +28,7 @@
     , Rdistance_warn      = FALSE
     , Rdistance_intEvalPts= nEvalPts  
     , Rdistance_intCoefs  = intCoefs # not really needed; Set in 'checkNEvalPts'
+    , Rdistance_verbosity = 0
     , Rdistance_knownLikelihoods= c("halfnorm"
                                   , "negexp"
                                   , "hazrate"
@@ -62,6 +63,7 @@
     , "Rdistance_intEvalPts"= NULL
     , "Rdistance_intCoefs"  = NULL
     , "Rdistance_knownLikelihoods" = NULL
+    , "Rdistance_verbosity" = NULL
   )
   
   options(op.Rdist)
