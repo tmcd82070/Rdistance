@@ -4,7 +4,7 @@
 \alias{nLL}
 \title{Negative log likelihood of distances}
 \usage{
-nLL(a, ml)
+nLL(a, ml, verbosity)
 }
 \arguments{
 \item{a}{A vector of likelihood parameter values. Length and 

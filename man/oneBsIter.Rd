@@ -22,7 +22,8 @@ oneBsIter(
   propUnitSurveyed,
   pb,
   plot.bs,
-  plotCovValues
+  plotCovValues,
+  asymptoticSE = FALSE
 )
 }
 \arguments{
@@ -156,6 +157,23 @@ A plot must already exist because this uses \code{lines}.}
 
 \item{plotCovValues}{Data frame containing values of covariates to plot, 
 if \code{plot.bs} is TRUE.}
+
+\item{asymptoticSE}{Logical variable for whether to calculate 
+asymptotic standard errors. The default (TRUE) estimates an
+asymptotic variance-covariance matrix for parameters based on the 
+likelihood's Hessian (2nd derivative). If maximization 
+has been performed by Nlminb or HookesJeeves, the asymptotic 
+Hessian is estimated using numeric second deriviatives 
+of the likelihood at the maximum likelihood solution. If 
+maximization was performed by Optim, the last Hessian of 
+the maximization is returned 
+by Optim and used
+(see \code{\link{varcovarEstim}} and \code{\link{secondDeriv}}). 
+Asymptotic standard errors will not be estimated if 
+\code{asymptoticSE = FALSE}. If not estimated, 
+bootstrap iterations will run faster because the numeric Hessian, 
+which is discarded during bootstrapping,
+will not be calculated every iteration.}
 }
 \value{
 A data frame containing density and abundance 

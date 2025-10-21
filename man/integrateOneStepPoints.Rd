@@ -41,6 +41,7 @@ EDR(fit, newdata = data.frame(`(Intercept)`=1))
 
 # Check: 
 Theta <- exp(fit$par[1])
+Theta <- units::set_units(Theta, "m")
 p <- fit$par[2]
 w.hi <- fit$w.hi
 w.lo <- fit$w.lo

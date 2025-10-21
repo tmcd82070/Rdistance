@@ -15,7 +15,8 @@ dE.single(
   x.scl = w.lo,
   g.x.scl = 1,
   warn = TRUE,
-  outputUnits = NULL
+  outputUnits = NULL,
+  asymptoticSE = TRUE
 )
 }
 \arguments{
@@ -114,6 +115,23 @@ nautical miles ("nm" is nano meters), "in" - inches,
 If \code{outputUnits} is unspecified (NULL),
 output units will be the same as those on 
 distances in \code{data}.}
+
+\item{asymptoticSE}{Logical variable for whether to calculate 
+asymptotic standard errors. The default (TRUE) estimates an
+asymptotic variance-covariance matrix for parameters based on the 
+likelihood's Hessian (2nd derivative). If maximization 
+has been performed by Nlminb or HookesJeeves, the asymptotic 
+Hessian is estimated using numeric second deriviatives 
+of the likelihood at the maximum likelihood solution. If 
+maximization was performed by Optim, the last Hessian of 
+the maximization is returned 
+by Optim and used
+(see \code{\link{varcovarEstim}} and \code{\link{secondDeriv}}). 
+Asymptotic standard errors will not be estimated if 
+\code{asymptoticSE = FALSE}. If not estimated, 
+bootstrap iterations will run faster because the numeric Hessian, 
+which is discarded during bootstrapping,
+will not be calculated every iteration.}
 }
 \value{
 An object of class 'dfunc'.  Objects of class 'dfunc' 
@@ -127,12 +145,14 @@ are lists containing the following components:
     two parameters). }
     
   \item{varcovar}{The variance-covariance matrix for coefficients 
-    of the distance function, estimated by the inverse of the fit's Hessian
-    evaluated at the estimates.  Rdistance estimates the 
-    Hessian as the second derivative of the log likelihood surface 
+    of the distance function, estimated by the inverse of the fit's Hessian.  
+    If maximization has been performed by Nlminb or HookesJeeves, Rdistance estimates the 
+    Hessian from the second derivative of the log likelihood surface 
     at the final estimates, where second derivatives are estimated by 
-    numeric differentiation (see \code{\link{secondDeriv}}.  There is no guarantee this 
-    matrix is positive-definite and should be viewed with caution.  
+    numeric differentiation (see \code{\link{secondDeriv}}. If Optim 
+    performed the maximization, Rdistance uses the Hessian returned 
+    by Optim.  The variance-covariance matrix is re-set to NULL 
+    if the Hessian is not positive-definite.  
     Error estimates derived from bootstrapping are generally 
     more reliable. I.e., re-compute coefficient confidence intervals 
     using the bootstrap values in component \code{$B} of an abundance object.}   
@@ -203,6 +223,12 @@ are lists containing the following components:
   
   \item{outputUnits}{The measurement units used for output.  All 
     distance measurements are converted to these units internally. }
+    
+  \item{asymptoticSE}{Logical indicating whether the variance-
+  covariance matrix in component \code{varcovar} is asymptotic (TRUE) (i.e., 
+  based on the Hessian of maximization) or bootstrap (FALSE) (i.e., 
+  estimated after bootstrap iterations). 
+  }
     
   \item{x.scl}{The \emph{actual} distance at which 
     the distance function is scaled to some value.  
