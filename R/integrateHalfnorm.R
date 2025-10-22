@@ -15,7 +15,7 @@
 #' return length is \code{length(distances(object))}. 
 #' 
 #' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
-#' \code{\link{integrateOneStep}} 
+#' \code{\link{integrateOneStepLines}} 
 #' 
 #' @examples
 #' 

@@ -50,7 +50,7 @@ ESW <- function( object, newdata = NULL ){
   esw <- switch(likExpan
             , "halfnorm_0" = integrateHalfnorm(object, newdata)
             , "negexp_0" = integrateNegexp(object, newdata)
-            , "oneStep_0" = integrateOneStep(object, newdata)
+            , "oneStep_0" = integrateOneStepLines(object, newdata)
             , integrateNumeric(object, newdata)
   )
   

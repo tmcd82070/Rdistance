@@ -189,29 +189,13 @@ nLL <- function(a
     # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
     
     parms[,1] <- exp(parms[,1]) # invlink(Theta)
-    outArea <- integrateOneStep(parms, Units = ml$outputUnits)
+    outArea <- integrateOneStepLines(parms, Units = ml$outputUnits)
     
     if( verbosity >= 3 ){
       cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
     }
     
   } else if( likExpan == "oneStep_0_TRUE"){
-    # for Points, key has units due to multiplication by d.
-    # Hence, here, we want outArea to have units.
-    # for lines, key has no units.
-    # Theta <- units::set_units(exp(parms[,1]), ml$outputUnits, mode="standard")
-    # p <- parms[,2]
-    # w.hi <- ml$w.hi # has units
-    # fatT <- (((1-p) * Theta) / ((w.hi - Theta) * p)) # height of f from Theta to w.hi
-    # 
-    # # Triangle between 0 and Theta
-    # part1 <- Theta * Theta / 2
-    # # Trapazoid between Theta and w.hi
-    # gAtT <- fatT * Theta
-    # gAtw <- fatT * w.hi
-    # part2 <- (gAtw + gAtT) * (w.hi - Theta) / 2 
-    # 
-    # outArea <- part1 + part2
 
     parms[,1] <- exp(parms[,1])
     outArea <- integrateOneStepPoints(parms, w.hi = ml$w.hi, Units=ml$outputUnits)
