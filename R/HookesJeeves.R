@@ -39,8 +39,6 @@ HookeJeeves <- function(ml, strt.lims){
   } else {
     fit$varcovar <- NULL
   }
-  
-  fit$varcovar <- Rdistance::varcovarEstim(fit, ml)
 
   # final few things ----
   fit$limits <- strt.lims[c("low", "high")]
