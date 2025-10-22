@@ -28,7 +28,7 @@
 #' 
 #' @export
 #' 
-integrateOneStep <- function(object
+integrateOneStepLines <- function(object
                             , newdata = NULL
                             , Units = NULL
                               ){
