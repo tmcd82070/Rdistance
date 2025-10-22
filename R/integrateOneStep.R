@@ -1,17 +1,16 @@
-#' @title Integrate One-step function 
+#' @title Integrate Line-transect One-step function 
 #' 
 #' @description
-#' Compute integral of the one-step distance function. 
+#' Compute integral of the one-step distance function for line 
+#' transects. 
 #' 
-#' @inheritParams effectiveDistance
+#' @inheritParams integrateOneStepPoints 
+#' @inheritParams effectiveDistance 
 #' 
 #' @details 
 #' Returned integral is exact.
 #' 
-#' @return A vector of areas under distance functions. 
-#' If \code{newdata} is specified, return length is 
-#' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
-#' return length is \code{length(distances(object))}. 
+#' @inherit integrateOneStepPoints return
 #' 
 #' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
 #' \code{\link{integrateHalfnorm}} 
@@ -31,22 +30,23 @@
 #' 
 integrateOneStep <- function(object
                             , newdata = NULL
+                            , Units = NULL
                               ){
 
-  y <- stats::predict(object = object
-                      , newdata = newdata
-                      , type = "parameters"
-  )
+  if( inherits(object, "dfunc") ){
+    Units <- object$outputUnits
+    object <- stats::predict(object = object
+                        , newdata = newdata
+                        , type = "parameters"
+    )
+  } 
   
-  Theta <- y[,1]
-  p <- y[,2]
+  Theta <- units::set_units(object[,1], Units, mode = "standard")
+  p <- object[,2]
 
   outArea <- Theta / p
   
-  outArea <- units::set_units(outArea
-                              , object$outputUnits
-                              , mode = "standard")
-  
+
   outArea 
   
 }

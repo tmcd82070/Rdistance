@@ -171,36 +171,112 @@ nLL <- function(a
     outArea <- (stats::pnorm(q = ml$w.hi
                              , mean = ml$w.lo
                              , sd = parms) - 0.5) * sqrt(2*pi) * parms
+    if( verbosity >= 3 ){
+      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+    }
+    
   } else if( likExpan == "negexp_0_FALSE" ){
     # CASE: Negative exponential, 0 expansions, Lines
     parms <- exp(parms)
     rng <- units::set_units(ml$w.hi - ml$w.lo, NULL)
     outArea <- (1 - exp(-parms*(rng))) / parms
+    if( verbosity >= 3 ){
+      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+    }
+    
   } else if( likExpan == "oneStep_0_FALSE" ){
     # CASE: One step, 0 expansions, lines
-    Theta <- exp(parms[,1])
-    p <- parms[,2]
-    outArea <- Theta / p
+    # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
+    
+    parms[,1] <- exp(parms[,1]) # invlink(Theta)
+    outArea <- integrateOneStep(parms, Units = ml$outputUnits)
+    
+    if( verbosity >= 3 ){
+      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+    }
+    
   } else if( likExpan == "oneStep_0_TRUE"){
     # for Points, key has units due to multiplication by d.
     # Hence, here, we want outArea to have units.
     # for lines, key has no units.
+    # Theta <- units::set_units(exp(parms[,1]), ml$outputUnits, mode="standard")
+    # p <- parms[,2]
+    # w.hi <- ml$w.hi # has units
+    # fatT <- (((1-p) * Theta) / ((w.hi - Theta) * p)) # height of f from Theta to w.hi
+    # 
+    # # Triangle between 0 and Theta
+    # part1 <- Theta * Theta / 2
+    # # Trapazoid between Theta and w.hi
+    # gAtT <- fatT * Theta
+    # gAtw <- fatT * w.hi
+    # part2 <- (gAtw + gAtT) * (w.hi - Theta) / 2 
+    # 
+    # outArea <- part1 + part2
+
+    parms[,1] <- exp(parms[,1])
+    outArea <- integrateOneStepPoints(parms, w.hi = ml$w.hi, Units=ml$outputUnits)
+    if( verbosity >= 3 ){
+      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+    }
+
+  } else if( grepl("oneStep", likExpan )){
+    # CASE: oneStep (point or line) with expansions = Numeric integration by Trapazoid Rule
+    # Note: I realize this is not super efficient because it repleats a lot of code
+    #       from the Simpson's rule case (next if clause), but the huge discontinuity
+    #       of the oneStep likelihood demands we evaluate at Theta and Theta+fuzz,
+    #       and with unequal intevals, we gotta use the Trapazoid rule.
+
     Theta <- units::set_units(exp(parms[,1]), ml$outputUnits, mode="standard")
     p <- parms[,2]
-    w.hi <- ml$w.hi # has units
-    fatT <- (((1-p) * Theta) / ((w.hi - Theta) * p)) # height of f from Theta to w.hi
     
-    # Triangle between 0 and Theta
-    part1 <- Theta * Theta / 2
-    # Trapazoid between Theta and w.hi
-    gAtT <- fatT * Theta
-    gAtw <- fatT * w.hi
-    part2 <- (gAtw + gAtT) * (w.hi - Theta) / 2 
+    nInts <- getOption("Rdistance_intEvalPts") # odd not a requirement here
+  
+    ThetaPlus <- Theta + units::set_units(getOption("Rdistance_fuzz")
+                                        , ml$outputUnits
+                                        , mode = "standard")
+    # This really slows down oneStep with expansions, but, no other way
+    # If there are covariates, Theta is different on every row
+    XIntOnly <- matrix(1, nrow = 2*nInts, ncol = 1) 
+    outArea <- rep(NA, length(Theta))
+    for(i in 1:length(Theta)){
+      seqx = c(seq(ml$w.lo, Theta[i], length=nInts) 
+             , seq(ThetaPlus[i], ml$w.hi, length=nInts ))
+      d <- seqx - ml$w.lo 
+      dx <- diff(d)  
+      
+      y <- f.like(
+          a = parms[i,]
+        , dist = d
+        , covars = XIntOnly
+        , w.hi = ml$w.hi
+      )
+      y <- y$L.unscaled # (nInts x 1) = (length(d) X 1) in this case only
+      
+      if( ml$expansions > 0 ){
+        # we know this is the oneStep case
+        exp.terms <- Rdistance::expansionTerms(a = parms[i,]
+                                               , d = d
+                                               , series = ml$series
+                                               , nexp = ml$expansions
+                                               , w = Theta[i])
+        y <- y * exp.terms
+        y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
+        
+      }
+      
+      if(is.points(ml)){
+        y <- d * y  # element-wise
+      }
+      
+      outArea[i] <- sum( dx * (y[-1,] + y[-nrow(y), ]) / 2 ) 
+    }
     
-    outArea <- part1 + part2
-
-  } else {
-    # CASE: All other cases = Numerical integration
+    if( verbosity >= 3 ){
+      cat(paste(" Numeric 1", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+    }
+  
+ } else {
+    # CASE: All other cases = Numeric integration by Simpson's Rule
 
     nInts <- getOption("Rdistance_intEvalPts") # already checked it's odd, in parseModel::checkNevalPts
     intCoefs <- getOption("Rdistance_intCoefs")    
@@ -242,6 +318,10 @@ nLL <- function(a
 
     outArea <- intCoefs * y  # (n vector) * (n X k)
     outArea <- colSums(outArea) * dx / 3
+    
+    if( verbosity >= 3 ){
+      cat(paste(" Numeric", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+    }
 
   }
 
@@ -274,7 +354,7 @@ nLL <- function(a
   if( (verbosity >= 2)  &&
       (length(unique(outArea)) <= 1) # check only works w/o covars
   ){
-    integrateKey(ml, key, likExpan)
+    integrateKey(ml, key, likExpan, f0 = 1 / unique(outArea) )
   }
   
   nLL

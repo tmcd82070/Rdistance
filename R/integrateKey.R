@@ -25,7 +25,7 @@ integrateKey <- function(ml, key, likExpan, f0){
   
   if( grepl("FALSE", likExpan) ){
     # line survey g(0) = 1; f(0) = ESW
-    keyUni <- c(f0, key)
+    keyUni <- c(units::set_units(f0, NULL) , key)
   } else {
     # Point survey g(0) = f(0) = 0
     keyUni <- c( 0, units::set_units(key, NULL) )

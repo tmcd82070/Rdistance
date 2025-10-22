@@ -1,18 +1,37 @@
-#' @title Integrate Point survey One-step function
+#' @title Integrate Point-survey One-step function
 #' 
 #' @description
 #' Compute integral of the one-step distance function
 #' for point-surveys. 
 #' 
-#' @inheritParams effectiveDistance
+#' @param object Either an Rdistance fitted distance function,
+#' (an object that inherits from class "dfunc"; usually produced 
+#' by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
+#' distance function parameters (e.g., matrix(fit$par,1)). 
+#' If a matrix, each row corresponds to a 
+#' distance function and each column is a parameter. Argument 
+#' \code{newdata} is ignored if \code{object} is a matrix.
+#' 
+#' @param w.hi Maximum sighting distance. Ignored if \code{object} 
+#' is a fitted Rdistance distance function.
+#' 
+#' @param Units Physical units to apply to the first column of 
+#' \code{object} when it is a matrix.  Ignored if \code{object}
+#' is a fitted Rdistance distance function.
+#' 
+#' @inheritParams effectiveDistance 
 #' 
 #' @details 
 #' Returned integral is exact.
 #' 
 #' @return A vector of areas under distance functions. 
-#' If \code{newdata} is specified, return length is 
-#' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
-#' return length is \code{length(distances(object))}. 
+#' If \code{object} is a distance function and 
+#' \code{newdata} is specified, return length is 
+#' \code{nrow(newdata)}.  If \code{object} is a distance function and 
+#' \code{newdata} is NULL, 
+#' return length is \code{length(distances(object))}. If 
+#' \code{object} is a matrix of parameters, return length is 
+#' \code{nrow(object)}. 
 #' 
 #' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
 #' \code{\link{integrateOneStep}} 
@@ -42,16 +61,25 @@
 #' 
 integrateOneStepPoints <- function(object
                             , newdata = NULL
+                            , w.hi = NULL
+                            , Units = NULL
                               ){
 
-  y <- stats::predict(object = object
-                      , newdata = newdata
-                      , type = "parameters"
-  )
+  # need this if b/c sometimes this is called from nLL (object is just a 
+  # matrix of parameters) and other times it is called from EDR (object is 
+  # fitted object)
+  if( inherits(object, "dfunc") ){
+    Units <- object$outputUnits
+    w.hi <- object$w.hi # override input if it's given
+    Units <- object$outputUnits # override if given
+    object <- stats::predict(object = object
+                        , newdata = newdata
+                        , type = "parameters"
+    )
+  } 
   
-  Theta <- units::set_units(y[,1], object$outputUnits, mode = "standard")
-  p <- y[,2]
-  w.hi <- object$w.hi # has units
+  Theta <- units::set_units(object[,1], Units, mode = "standard")
+  p <- object[,2]
   fatT <- (((1-p) * Theta) / ((w.hi - Theta) * p)) # height of f from Theta to w.hi
 
   # Triangle between 0 and Theta
@@ -63,6 +91,6 @@ integrateOneStepPoints <- function(object
   
   outArea <- part1 + part2
   
-  outArea # units are object$outputUnits^2
+  outArea # units should be object$outputUnits^2
   
 }
