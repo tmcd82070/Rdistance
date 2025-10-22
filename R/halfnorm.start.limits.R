@@ -26,7 +26,7 @@ halfnorm.start.limits <- function (ml){
   # otherwise this always runs
   dist2 <- units::set_units(dist2, NULL)
   dist2 <- dist2[dist2 > 0]
-  sdHalf <- max(sqrt(sum( dist2^2 )/length(dist2)), 10*fuzz)
+  sdHalf <- max(sqrt(sum( dist2^2 )/length(dist2)), fuzz)
   
   start <- c(log(sdHalf)
              , rep(zero, ncovars - 1)

@@ -23,7 +23,7 @@
     , Rdistance_maxBSFailPropForWarning = 0.2
     , Rdistance_negInf    = -1 / .Machine$double.neg.eps
     , Rdistance_posInf    =  1 / .Machine$double.neg.eps
-    , Rdistance_fuzz      = .Machine$double.eps
+    , Rdistance_fuzz      = 100 * .Machine$double.eps
     , Rdistance_zero      = .Machine$double.eps
     , Rdistance_warn      = FALSE
     , Rdistance_intEvalPts= nEvalPts  
