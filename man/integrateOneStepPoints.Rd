@@ -2,13 +2,18 @@
 % Please edit documentation in R/integrateOneStepPoints.R
 \name{integrateOneStepPoints}
 \alias{integrateOneStepPoints}
-\title{Integrate Point survey One-step function}
+\title{Integrate Point-survey One-step function}
 \usage{
-integrateOneStepPoints(object, newdata = NULL)
+integrateOneStepPoints(object, newdata = NULL, w.hi = NULL, Units = NULL)
 }
 \arguments{
-\item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+\item{object}{Either an Rdistance fitted distance function,
+(an object that inherits from class "dfunc"; usually produced 
+by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
+distance function parameters (e.g., matrix(fit$par,1)). 
+If a matrix, each row corresponds to a 
+distance function and each column is a parameter. Argument 
+\code{newdata} is ignored if \code{object} is a matrix.}
 
 \item{newdata}{A data frame containing new values for 
 covariates at which either
@@ -19,12 +24,23 @@ ESW's or EDR's will be computed. If NULL and
   If not NULL, covariate values in \code{newdata}
   are used. 
   See \bold{Value} section for more information.}
+
+\item{w.hi}{Maximum sighting distance. Ignored if \code{object} 
+is a fitted Rdistance distance function.}
+
+\item{Units}{Physical units to apply to the first column of 
+\code{object} when it is a matrix.  Ignored if \code{object}
+is a fitted Rdistance distance function.}
 }
 \value{
 A vector of areas under distance functions. 
-If \code{newdata} is specified, return length is 
-\code{nrow(newdata)}.  If \code{newdata} is NULL, 
-return length is \code{length(distances(object))}.
+If \code{object} is a distance function and 
+\code{newdata} is specified, return length is 
+\code{nrow(newdata)}.  If \code{object} is a distance function and 
+\code{newdata} is NULL, 
+return length is \code{length(distances(object))}. If 
+\code{object} is a matrix of parameters, return length is 
+\code{nrow(object)}.
 }
 \description{
 Compute integral of the one-step distance function
