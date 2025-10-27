@@ -1,7 +1,8 @@
-#' @title Integrate Half-normal 
+#' @title Integrate Half-normal line surveys
 #' 
 #' @description
-#' Compute integral of the half-normal distance function. 
+#' Compute integral of the half-normal distance function for 
+#' line-transect surveys.
 #' 
 #' @inheritParams effectiveDistance
 #' 
@@ -33,7 +34,7 @@
 #'   , w.hi = units::set_units(w.hi, "m")
 #' )
 #' class(ml) <- "dfunc"
-#' integrateHalfnorm(ml)
+#' integrateHalfnormLines(ml)
 #' 
 #' # Check: Integral of exp(-x^2/(2*s^2)) from 0 to w.hi-w.lo
 #' b <- exp(c(beta[1], beta[1] + beta[2]))
@@ -43,29 +44,37 @@
 #' 
 #' @export
 #' 
-integrateHalfnorm <- function(object
+integrateHalfnormLines <- function(object
                             , newdata = NULL
+                            , w.lo = NULL
+                            , w.hi = NULL
+                            , Units = NULL
                               ){
 
-  y <- stats::predict(object = object
-                      , newdata = newdata
-                      , type = "parameters"
-  )
+  if( inherits(object, "dfunc") ){
+    Units <- object$outputUnits
+    w.lo <- object$w.lo
+    w.hi <- object$w.hi
+    object <- stats::predict(object = object
+                             , newdata = newdata
+                             , type = "parameters"
+    )
+  } 
   
   # Drop units b/c pnorm hickups when y is vector 
   # (but not matrix, interesting...?)
   # It is safe to drop units b/c we converted everything 
   # to same units in parseModel.
   
-  w.lo <- units::set_units(object$w.lo, NULL)
-  w.hi <- units::set_units(object$w.hi, NULL)
+  w.lo <- units::set_units(w.lo, NULL)
+  w.hi <- units::set_units(w.hi, NULL)
   
   outArea <- (stats::pnorm(q = w.hi
                   , mean = w.lo
-                  , sd = y) - 0.5) * sqrt(2*pi)*y
+                  , sd = object) - 0.5) * sqrt(2*pi)*object
   
   outArea <- units::set_units(outArea
-                              , object$outputUnits
+                              , Units
                               , mode = "standard")
   
   outArea 

@@ -4,7 +4,17 @@
 \alias{integrateNumeric}
 \title{Numeric Integration}
 \usage{
-integrateNumeric(object, newdata = NULL)
+integrateNumeric(
+  object,
+  newdata = NULL,
+  w.lo = NULL,
+  w.hi = NULL,
+  Units = NULL,
+  expansions = NULL,
+  series = NULL,
+  isPoints = NULL,
+  likelihood = NULL
+)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,

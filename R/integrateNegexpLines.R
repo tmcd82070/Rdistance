@@ -39,24 +39,30 @@
 #' 
 #' @export
 #' 
-integrateNegexp <- function(object
+integrateNegexpLines <- function(object
                             , newdata = NULL
+                            , w.lo = NULL
+                            , w.hi = NULL
+                            , Units = NULL
                               ){
 
-  y <- stats::predict(object = object
-                      , newdata = newdata
-                      , type = "parameters"
-  )
+  if( inherits(object, "dfunc") ){
+    Units <- object$outputUnits
+    w.lo <- object$w.lo
+    w.hi <- object$w.hi
+    object <- stats::predict(object = object
+                             , newdata = newdata
+                             , type = "parameters"
+    )
+  } 
   
   # Remove units b/c cannot exp units object.
-  
-  w.lo <- units::set_units(object$w.lo, NULL)
-  w.hi <- units::set_units(object$w.hi, NULL)
-  
-  outArea <- (1 - exp(-y*(w.hi - w.lo))) / y
+  w <- units::set_units(w.hi - w.lo, NULL)
+
+  outArea <- (1 - exp(-object*w)) / object
   
   outArea <- units::set_units(outArea
-                              , object$outputUnits
+                              , Units
                               , mode = "standard")
   
   outArea 

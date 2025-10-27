@@ -33,8 +33,8 @@
 #' \code{object} is a matrix of parameters, return length is 
 #' \code{nrow(object)}. 
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
-#' \code{\link{integrateOneStep}} 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateOneStepNumeric}}; 
+#' \code{\link{integrateOneStepLines}} 
 #' 
 #' @examples
 #' 
@@ -69,7 +69,6 @@ integrateOneStepPoints <- function(object
   # matrix of parameters) and other times it is called from EDR (object is 
   # fitted object)
   if( inherits(object, "dfunc") ){
-    Units <- object$outputUnits
     w.hi <- object$w.hi # override input if it's given
     Units <- object$outputUnits # override if given
     object <- stats::predict(object = object

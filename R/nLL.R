@@ -98,6 +98,7 @@ nLL <- function(a
   L <- f.like( a = a
              , dist = d
              , covars = X
+             , w.hi = ml$w.hi - ml$w.lo # needed only for oneStep
              )
   key <- L$L.unscaled  # (n vector)
   parms <- L$params
@@ -111,6 +112,7 @@ nLL <- function(a
       # Expansion domain depends on parameters.
       # e.g., Apply expansion between 0 and theta for oneStep
       W <- units::set_units(exp(parms[,1]), units(d), mode="standard")
+      W <- W - ml$w.lo
     } else { 
       # Most likelihoods: expansions constant across params
       W <- ml$w.hi - ml$w.lo
@@ -136,17 +138,6 @@ nLL <- function(a
     # b/c no monotonicity restraints yet, function can go negative, 
     key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")
     
-    # For expansion calculation when integrating (below), we need 
-    # the expansion factor coefficients in 'parms'
-    coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
-    parms <- cbind(parms
-                 , matrix(a[coefLocs]
-                        , nrow = nrow(parms)
-                        , ncol=ml$expansions
-                        , byrow = TRUE
-                 ))  # n X ([#canonical] + nexp)
-    
-    
   }
 
   # Apply d if point survey ----
@@ -154,8 +145,6 @@ nLL <- function(a
     key <- d * key  # element-wise
   }
   
-      
-
   # The following IF cases were implemented to speed calculations 
   # dramatically when we know the integrals (i.e., avoid numerical 
   # integration when we can). 
@@ -167,148 +156,116 @@ nLL <- function(a
   likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", is.points(ml))
   if( likExpan == "halfnorm_0_FALSE" ){
     # CASE: Halfnormal, 0 expansions, Lines
-    parms <- exp(parms)
-    outArea <- (stats::pnorm(q = ml$w.hi
-                             , mean = ml$w.lo
-                             , sd = parms) - 0.5) * sqrt(2*pi) * parms
-    if( verbosity >= 3 ){
-      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
-    }
+    intType <- "Exact"
     
+    parms <- exp(parms)
+    outArea <- integrateHalfnormLines(parms
+                                    , w.lo = ml$w.lo
+                                    , w.hi = ml$w.hi
+                                    , Units = ml$outputUnits
+                                      )
+    
+  } else if( likExpan == "halfnorm_0_TRUE" ){
+    # CASE: Halfnormal, 0 expansions, Points
+    intType = "Exact"
+    
+    parms <- exp(parms)
+    outArea <- integrateHalfnormPoints(parms
+                                      , w.lo = ml$w.lo
+                                      , w.hi = ml$w.hi
+                                      , Units = ml$outputUnits
+    )
   } else if( likExpan == "negexp_0_FALSE" ){
     # CASE: Negative exponential, 0 expansions, Lines
-    parms <- exp(parms)
-    rng <- units::set_units(ml$w.hi - ml$w.lo, NULL)
-    outArea <- (1 - exp(-parms*(rng))) / parms
-    if( verbosity >= 3 ){
-      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
-    }
+    intType = "Exact"
     
+    parms <- exp(parms)
+    outArea <- integrateNegexpLines(parms
+                                  , w.lo = ml$w.lo
+                                  , w.hi = ml$w.hi
+                                  , Units = ml$outputUnits
+    )
+    
+    # rng <- units::set_units(ml$w.hi - ml$w.lo, NULL)
+    # outArea <- (1 - exp(-parms*(rng))) / parms
+
+  } else if( likExpan == "hazrate_0_FALSE" ){
+    # CASE: Hazrate, 0 expansions, Lines
+    intType = "Exact"
+    
+    parms[,1] <- exp(parms[,1])
+    outArea <- integrateHazrateLines(parms
+                                      , w.lo = ml$w.lo
+                                      , w.hi = ml$w.hi
+                                      , Units = ml$outputUnits
+    )
   } else if( likExpan == "oneStep_0_FALSE" ){
     # CASE: One step, 0 expansions, lines
     # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
+    intType = "Exact"
     
     parms[,1] <- exp(parms[,1]) # invlink(Theta)
     outArea <- integrateOneStepLines(parms, Units = ml$outputUnits)
-    
-    if( verbosity >= 3 ){
-      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
-    }
-    
   } else if( likExpan == "oneStep_0_TRUE"){
-
+    intType = "Exact"
+    
     parms[,1] <- exp(parms[,1])
     outArea <- integrateOneStepPoints(parms, w.hi = ml$w.hi, Units=ml$outputUnits)
-    if( verbosity >= 3 ){
-      cat(paste(" Exact", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
-    }
-
   } else if( grepl("oneStep", likExpan )){
     # CASE: oneStep (point or line) with expansions = Numeric integration by Trapazoid Rule
-    # Note: I realize this is not super efficient because it repleats a lot of code
-    #       from the Simpson's rule case (next if clause), but the huge discontinuity
-    #       of the oneStep likelihood demands we evaluate at Theta and Theta+fuzz,
-    #       and with unequal intevals, we gotta use the Trapazoid rule.
+    # We know ml$expansions > 0 in this case
+    # For expansion calculation we need expansion coefficients in 'parms'
+    # Do NOT exp() parameter b/c raw likelihood is called inside integrateOneStepNumeric
+    # and the likelihood applies the link function
+    intType = "Trapazoid"
+    
+    coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
+    parms <- cbind(parms
+                   , matrix(a[coefLocs]
+                            , nrow = nrow(parms)
+                            , ncol=ml$expansions
+                            , byrow = TRUE
+                   ))  # n X ([#canonical] + nexp)
 
-    Theta <- units::set_units(exp(parms[,1]), ml$outputUnits, mode="standard")
-    p <- parms[,2]
+    outArea <- integrateOneStepNumeric(parms
+                                     , w.lo = ml$w.lo
+                                     , w.hi = ml$w.hi
+                                     , Units = ml$outputUnits
+                                     , expansions = ml$expansions
+                                     , series = ml$series
+                                     , isPoints = is.points(ml))
     
-    nInts <- getOption("Rdistance_intEvalPts") # odd not a requirement here
-  
-    ThetaPlus <- Theta + units::set_units(getOption("Rdistance_fuzz")
-                                        , ml$outputUnits
-                                        , mode = "standard")
-    # This really slows down oneStep with expansions, but, no other way
-    # If there are covariates, Theta is different on every row
-    XIntOnly <- matrix(1, nrow = 2*nInts, ncol = 1) 
-    outArea <- rep(NA, length(Theta))
-    for(i in 1:length(Theta)){
-      seqx = c(seq(ml$w.lo, Theta[i], length=nInts) 
-             , seq(ThetaPlus[i], ml$w.hi, length=nInts ))
-      d <- seqx - ml$w.lo 
-      dx <- diff(d)  
-      
-      y <- f.like(
-          a = parms[i,]
-        , dist = d
-        , covars = XIntOnly
-        , w.hi = ml$w.hi
-      )
-      y <- y$L.unscaled # (nInts x 1) = (length(d) X 1) in this case only
-      
-      if( ml$expansions > 0 ){
-        # we know this is the oneStep case
-        exp.terms <- Rdistance::expansionTerms(a = parms[i,]
-                                               , d = d
-                                               , series = ml$series
-                                               , nexp = ml$expansions
-                                               , w = Theta[i])
-        y <- y * exp.terms
-        y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
-        
-      }
-      
-      if(is.points(ml)){
-        y <- d * y  # element-wise
-      }
-      
-      outArea[i] <- sum( dx * (y[-1,] + y[-nrow(y), ]) / 2 ) 
-    }
-    
-    if( verbosity >= 3 ){
-      cat(paste(" Numeric 1", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
-    }
-  
  } else {
     # CASE: All other cases = Numeric integration by Simpson's Rule
-
-    nInts <- getOption("Rdistance_intEvalPts") # already checked it's odd, in parseModel::checkNevalPts
-    intCoefs <- getOption("Rdistance_intCoefs")    
+    # do NOT exp parameters
+    intType = "Simpson"
     
-    seqx = seq(ml$w.lo, ml$w.hi, length=nInts) # could store in options() to speed things
-    d <- seqx - ml$w.lo # could store in options() to speed things; all distances, nInts of them
-    dx <- seqx[2] - seqx[1]  # or (w.hi - w.lo) / (nInts-1); could do diff(dx) if unequal intervals
-    
-    # don't need covars since params are always computed
-    XIntOnly <- matrix(1, nrow = length(d), ncol = 1) # could store in options() to speed things
-
-    y <- f.like(
-        a = parms
-      , dist = d
-      , covars = XIntOnly
-      , w.hi = ml$w.hi
-    )
-    y <- y$L.unscaled # (nInts x n) = (length(d) X nrow(parms))
-
     if( ml$expansions > 0 ){
-      if(!(ml$likelihood %in% differentiableLikelihoods())){
-        W <- units::set_units(exp(parms[,1]), units(d), mode="standard")
-      } else { 
-        W <- rep(ml$w.hi - ml$w.lo, nrow(parms))
-      }
-      exp.terms <- Rdistance::expansionTerms(a = parms
-                                             , d = d
-                                             , series = ml$series
-                                             , nexp = ml$expansions
-                                             , w = W)
-      y <- y * exp.terms
-      y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
-      
-    }
-    
-    if(is.points(ml)){
-      y <- d * y  # element-wise
+      coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
+      parms <- cbind(parms
+                     , matrix(a[coefLocs]
+                              , nrow = nrow(parms)
+                              , ncol=ml$expansions
+                              , byrow = TRUE
+                     ))  
     }
 
-    outArea <- intCoefs * y  # (n vector) * (n X k)
-    outArea <- colSums(outArea) * dx / 3
-    
-    if( verbosity >= 3 ){
-      cat(paste(" Numeric", colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
-    }
-
+    outArea <- integrateNumeric(parms
+                              , w.lo = ml$w.lo
+                              , w.hi = ml$w.hi
+                              , Units = ml$outputUnits
+                              , expansions = ml$expansions
+                              , series = ml$series
+                              , isPoints = is.points(ml)
+                              , likelihood = ml$likelihood
+                              )
+   
   }
 
+  if( verbosity >= 3 ){
+    cat(paste(" ", intType, colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+  }
+  
   key <- key / outArea
 
   # Note: Key or d*Key should integrate to 1.0 every iteration

@@ -1,7 +1,7 @@
 #' @title Integrate Line-transect One-step function 
 #' 
 #' @description
-#' Compute integral of the one-step distance function for line 
+#' Compute exact integral of the one-step distance function for line 
 #' transects. 
 #' 
 #' @inheritParams integrateOneStepPoints 

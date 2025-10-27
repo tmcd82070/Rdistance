@@ -59,7 +59,8 @@ Imports: graphics,
          progress, 
          tibble, 
          tidyselect,
-         dfoptim
+         dfoptim,
+         expint
 RoxygenNote: 7.3.3
 Encoding: UTF-8
 Config/testthat/edition: 3

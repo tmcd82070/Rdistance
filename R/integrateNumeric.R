@@ -83,50 +83,73 @@
 #' 
 integrateNumeric <- function(object
                            , newdata = NULL
+                           , w.lo = NULL
+                           , w.hi = NULL
+                           , Units = NULL
+                           , expansions = NULL
+                           , series = NULL
+                           , isPoints = NULL
+                           , likelihood = NULL
                              ){
   
-  nInts <- checkNEvalPts(getOption("Rdistance_intEvalPts")) - 1 # nInts MUST BE even!!!
-  seqx = seq(object$w.lo, object$w.hi, length=nInts + 1)
-  
-  y <- stats::predict(object = object
-                      , newdata = newdata
-                      , distances = seqx
-                      , type = "dfuncs"
+  if( inherits(object, "dfunc") ){
+    w.lo <- object$w.lo
+    w.hi <- object$w.hi 
+    Units <- object$outputUnits 
+    expansions <- object$expansions
+    series <- object$series
+    isPoints <- is.points(object)
+    likelihood <- object$likelihood 
+    
+    # Now convert object to parameters
+    object <- stats::predict(object = object
+                             , newdata = newdata
+                             , type = "parameters"
+    )
+    object[,1] <- log(object[,1]) # predict returns real param, f.like needs link value
+    # If object has expansions, their coefficients come back from predict
+  } 
+
+  nInts <- getOption("Rdistance_intEvalPts") # already checked it's odd, in parseModel::checkNevalPts
+  intCoefs <- getOption("Rdistance_intCoefs")
+  zero <- units::set_units(0, Units, mode="standard")
+
+  d <- seq(zero, w.hi - w.lo, length=nInts) 
+  dx <- d[2] - d[1]  # or (w.hi - w.lo) / (nInts-1); could do diff(dx) if unequal intervals
+
+  # don't need covars since params are always computed
+  XIntOnly <- matrix(1, nrow = length(d), ncol = 1) 
+
+  f.like <- utils::getFromNamespace(paste0( likelihood, ".like"), "Rdistance")    
+
+  y <- f.like(
+      a = object
+    , dist = d
+    , covars = XIntOnly
+    , w.hi = w.hi - w.lo # I don't think we need w.hi in f.like here
   )
-  
-  # we want units on x
-  x <- attr(y, "distances") # these are 0 to w, not w.lo to w.hi, which is what we want
-  
-  # we want units on dx
-  dx <- x[2] - x[1]  # or (w.hi - w.lo) / (nInts); could do diff(dx) if unequal intervals
-  
-  if(is.points(object)){
-    y <- x * y  # element-wise
+  y <- y$L.unscaled # (nInts x n) = (length(d) X nrow(parms))
+
+  if( expansions > 0 ){
+    # we know that likelihood is a differentiableLikelihoods (not oneStep)
+    W <- rep(w.hi - w.lo, nrow(object))
+    exp.terms <- Rdistance::expansionTerms(a = object
+                                           , d = d
+                                           , series = series
+                                           , nexp = expansions
+                                           , w = W)
+    y <- y * exp.terms
+    y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
+
   }
 
-  # Numerical integration ----
-  # Apply composite Simpson's 1/3 rule 
-  #
-  # Simpson's rule coefficients on f(x0), f(x1), ..., f(x(nEvalPts))
-  # i.e., 1, 4, 2, 4, 2, ..., 2, 4, 1
-  intCoefs <- c(rep( c(2,4), (nInts/2) ), 1) # here is where we need nInts to be even
-  intCoefs[1] <- 1
-  intCoefs <- matrix(intCoefs, ncol = 1)
+  if(isPoints){
+    y <- d * y  # element-wise
+  }
   
-  outArea <- (t(y) %*% intCoefs) * dx / 3
-  outArea <- drop(outArea) # convert from matrix to vector
-  
-  # Trapazoid rule: Computation used in Rdistance version < 0.2.2
-  # y1 <- y[,-1,drop=FALSE]
-  # y  <- y[,-ncol(y),drop=FALSE]
-  # esw <- dx*rowSums(y + y1)/2
-  
-  # Trapezoid rule. (dx/2)*(f(x1) + 2f(x_2) + ... + 2f(x_n-1) + f(n)) 
-  # Faster than above, maybe.
-  # ends <- c(1,nrow(y))
-  # esw <- (dx/2) * (colSums( y[ends, ,drop=FALSE] ) + 
-  #                  2*colSums(y[-ends, ,drop=FALSE] ))
- 
+  outArea <- intCoefs * y  # (n vector) * (n X k)
+  outArea <- colSums(outArea) * dx / 3
+
   outArea 
   
 }
