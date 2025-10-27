@@ -2,26 +2,31 @@
 % Please edit documentation in R/simple.expansion.r
 \name{simple.expansion}
 \alias{simple.expansion}
-\title{Calculate simple polynomial expansion for detection function likelihoods}
+\title{Simple polynomial expansion factors}
 \usage{
 simple.expansion(x, expansions)
 }
 \arguments{
-\item{x}{In a distance analysis, \code{x} is a numeric vector of the proportion of a strip transect's half-width 
-at which a group of individuals were sighted.  If \eqn{w} is the strip transect half-width or maximum sighting 
-distance, and \eqn{d} is the perpendicular off-transect distance to a sighted group (\eqn{d\leq w}{d <= w}), 
-\code{x} is usually \eqn{d/w}.  More generally, \code{x} is a vector of numeric values}
+\item{x}{A numeric matrix of distances at which to evaluate 
+the expansion series. For distance analysis, \code{x} should
+be the proportion of the maximum sighting distance
+at which a group was sighted, i.e., \eqn{x = d/w}, where \eqn{d}
+is sighting distance and \eqn{w} is maximum sighting distance.}
 
-\item{expansions}{A scalar specifying the number of expansion terms to compute. Must be one of the integers 1, 2, 3, or 4.}
+\item{expansions}{A scalar specifying the number of 
+expansion terms to compute. Must be one of the 
+integers 1, 2, 3, 4, or 5.}
 }
 \value{
-A matrix of size \code{length(x)} X \code{expansions}.  The columns of this matrix are 
-the Simple polynomial expansions of \code{x}. Column 1 is the first expansion term of \code{x}, 
-column 2 is the second \code{x}, and so on up to \code{expansions}.
+A 3D array of size \code{nrow(x)} X \code{ncol(x)} X \code{expansions}.
+  The 'pages' (3rd dimension) of this array are the cosine expansions of 
+  \code{x}. i.e., page 1 is the first expansion term of \code{x}, 
+  page 2 is the second expansion term of \code{x}, etc.
 }
 \description{
-Computes simple polynomial expansion terms used in the likelihood of a distance analysis. More generally, will compute
-  polynomial expansions of any numeric vector.
+Computes simple polynomial expansion terms 
+for use in distance analysis. The Simple (and other expansions) 
+allow "wiggle" in estimated distance functions.
 }
 \details{
 The polynomials computed here are:
@@ -34,12 +39,15 @@ The polynomials computed here are:
   The maximum number of expansion terms computed is 4.
 }
 \examples{
-x <- seq(0, 1, length = 200)
+x <- matrix(seq(0, 1, length = 200), ncol = 1)
 simp.expn <- simple.expansion(x, 4)
 plot(range(x), range(simp.expn), type="n")
-matlines(x, simp.expn, col=rainbow(4), lty = 1) 
+matlines(x, simp.expn[,1,1:4], col=rainbow(4), lty = 1)
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{cosine.expansion}}, \code{\link{hermite.expansion}}
+\code{\link{dfuncEstim}}
+, \code{\link{cosine.expansion}}
+, \code{\link{sine.expansion}}
+, \code{\link{hermite.expansion}}.
 }

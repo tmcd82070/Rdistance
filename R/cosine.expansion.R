@@ -17,12 +17,17 @@
 #' @details The cosine expansion used here is:
 #'   \itemize{
 #'     \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
-#'     \item \bold{Second term}: \deqn{h_2(x)=\cos(3\pi x),}{h2(x) = cos(3*Pi*x),}
-#'     \item \bold{Third term}: \deqn{h_3(x)=\cos(4\pi x),}{h3(x) = cos(4*Pi*x),}
-#'     \item \bold{Fourth term}: \deqn{h_4(x)=\cos(5\pi x),}{h4(x) = cos(5*Pi*x),}
-#'     \item \bold{Fifth term}: \deqn{h_5(x)=\cos(6\pi x),}{h5(x) = cos(6*Pi*x),}
+#'     \item \bold{Second term}: \deqn{h_2(x)=\cos(4\pi x),}{h2(x) = cos(4*Pi*x),}
+#'     \item \bold{Third term}: \deqn{h_3(x)=\cos(6\pi x),}{h3(x) = cos(6*Pi*x),}
+#'     \item \bold{Fourth term}: \deqn{h_4(x)=\cos(8\pi x),}{h4(x) = cos(8*Pi*x),}
+#'     \item \bold{Fifth term}: \deqn{h_5(x)=\cos(10\pi x),}{h5(x) = cos(10*Pi*x),}
 #'   }
 #'   The maximum number of expansion terms is 5.
+#'   
+#' The cosine expansion frequency in Rdistance is 2*pi. Each term is two pi more than 
+#' the previous. The sine expansion frequency in Rdistance is pi. Consequently, 
+#' the sine and cosine expansions fit different models. 
+#'   
 #'   
 #' @return A 3D array of size \code{nrow(x)} X \code{ncol(x)} X \code{expansions}.
 #'   The 'pages' (3rd dimension) of this array are the cosine expansions of 
@@ -56,18 +61,21 @@ cosine.expansion <- function(x, expansions){
   
   # I realize I could do this in a for loop, but I think this is faster.    
   if(expansions >= 2){
-    expansion[,,2] = cos(3*pi*x)
+    expansion[,,2] = cos(4*pi*x)
   }
   if(expansions >= 3){
-    expansion[,,3] = cos(4*pi*x)
+    expansion[,,3] = cos(6*pi*x)
   }
   if(expansions >= 4){
-    expansion[,,4]= cos(5*pi*x)
+    expansion[,,4]= cos(8*pi*x)
   }
   if(expansions >= 5){
-    expansion[,,5] = cos(6*pi*x)
+    expansion[,,5] = cos(10*pi*x)
   }      
-
+  
+  # Cosine expansion range = 0 to -1
+  expansion <- (expansion / 2) - 0.5
+  
   return(expansion)
             
 }

@@ -104,11 +104,14 @@ expansionTerms <- function(a, d, series, nexp, w){
 
     if (series=="cosine"){
       exp.term <- cosine.expansion( dscl, nexp ) # returns d X n X nexp array
+    } else if (series=="sine"){
+      exp.term <- sine.expansion( dscl, nexp ) # returns d X n X nexp array
     } else if (series=="hermite"){
-      # dscl <- units::drop_units(dist/sigma) # not sure /sigma matters; I think we can use /w
       exp.term <- hermite.expansion( dscl, nexp )
     } else if (series == "simple") {
       exp.term <- simple.expansion( dscl, nexp )
+    } else if (series == "bspline") {
+      exp.term <- bspline.expansion( dscl, nexp )
     } else {
       stop( paste( "Unknown expansion series", series, "requested." ))
     }
@@ -135,6 +138,8 @@ expansionTerms <- function(a, d, series, nexp, w){
     bigCoeffs <- aperm(bigCoeffs, c(2,1,3)) # was nXdXnexp; now dXnXnexp; constant w/i pages
     expTerms <- 1 + apply(exp.term * bigCoeffs, c(1,2), sum) # apply(dXnXnExp) = dXn; sums across nexp
 
+    # expTerms <- t(t(expTerms) / expTerms[1,]) # Make sure value for g(0) is 1.0
+      
     expTerms[ indOutside ] <- 1 # blank out values > w
 
   } else {  
