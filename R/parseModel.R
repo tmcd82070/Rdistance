@@ -216,11 +216,6 @@ parseModel <- function(data
              , asymptoticSE = asymptoticSE
   )
   
-  # Enforce minimum number of spline basis functions ----
-  if (ml$expansions < 2 & ml$series == "bspline"){
-      ml$expansions <- 2
-      warning("Minimum spline expansions = 2. Proceeding with 2.")
-  }
 
   # Check x.scl, and override x.scl for Gamma likelihood ----
   if ( length(ml$x.scl) > 1 ){
