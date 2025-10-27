@@ -75,7 +75,7 @@ hazrate.like <- function(a
   sigma <- exp(s)  # link function here
 
   # take logs here to speed calculations. When logged, we don't have to 
-  # expand K or dist to matrix dimentions, which is slow.  They must be vectors
+  # expand K or dist to matrix dimensions, which is slow.  They must be vectors
   # of length equal to n = nrow(sigma). This works provided K is constant over 
   # observations (does not depend on covariates).
   # hazrate = 1 - exp(-(dist/sigma)^(-K))

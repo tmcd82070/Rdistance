@@ -67,8 +67,6 @@
 #' summary(abundEstim(fit, ci=NULL)) 
 #' 
 #' @export
-
-
 oneStep.like <- function(a
                 , dist
                 , covars 
@@ -98,7 +96,7 @@ oneStep.like <- function(a
   } else {
     w.hi <- units::set_units(w.hi, NULL) # already checked units
   }
-  
+
   # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
   # p <- matrix(p, nrow = nrow(theta), ncol = ncol(theta))
   key <- (0 <= dist & dist <= theta) + 
