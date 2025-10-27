@@ -48,6 +48,12 @@ EDR <- function(object, newdata = NULL){
     
   } else if( likExpan == "halfnorm_0" ){
     edr <- integrateHalfnormPoints(object, newdata = newdata)
+
+  } else if( likExpan == "hazrate_0" ){
+    edr <- integrateHazratePoints(object, newdata = newdata)
+
+  } else if( likExpan == "negexp_0" ){
+    edr <- integrateNegexpPoints(object, newdata = newdata)
     
   } else if( grepl("oneStep", likExpan) ){
     edr <- integrateOneStepNumeric(object, newdata = newdata)

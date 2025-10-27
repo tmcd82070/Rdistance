@@ -186,9 +186,17 @@ nLL <- function(a
                                   , Units = ml$outputUnits
     )
     
-    # rng <- units::set_units(ml$w.hi - ml$w.lo, NULL)
-    # outArea <- (1 - exp(-parms*(rng))) / parms
-
+  } else if( likExpan == "negexp_0_TRUE" ){
+    # CASE: Negative exponential, 0 expansions, Points
+    intType = "Exact"
+    
+    parms <- exp(parms)
+    outArea <- integrateNegexpPoints(parms
+                                    , w.lo = ml$w.lo
+                                    , w.hi = ml$w.hi
+                                    , Units = ml$outputUnits
+    )
+    
   } else if( likExpan == "hazrate_0_FALSE" ){
     # CASE: Hazrate, 0 expansions, Lines
     intType = "Exact"
@@ -199,6 +207,17 @@ nLL <- function(a
                                       , w.hi = ml$w.hi
                                       , Units = ml$outputUnits
     )
+  } else if( likExpan == "hazrate_0_TRUE" ){
+    # CASE: Hazrate, 0 expansions, Points
+    intType = "Exact"
+    
+    parms[,1] <- exp(parms[,1])
+    outArea <- integrateHazratePoints(parms
+                                     , w.lo = ml$w.lo
+                                     , w.hi = ml$w.hi
+                                     , Units = ml$outputUnits
+    )
+    
   } else if( likExpan == "oneStep_0_FALSE" ){
     # CASE: One step, 0 expansions, lines
     # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
@@ -213,6 +232,7 @@ nLL <- function(a
     outArea <- integrateOneStepPoints(parms, w.hi = ml$w.hi, Units=ml$outputUnits)
   } else if( grepl("oneStep", likExpan )){
     # CASE: oneStep (point or line) with expansions = Numeric integration by Trapazoid Rule
+    # Must integrate from 0 to Theta, then Theta+ to w.hi
     # We know ml$expansions > 0 in this case
     # For expansion calculation we need expansion coefficients in 'parms'
     # Do NOT exp() parameter b/c raw likelihood is called inside integrateOneStepNumeric

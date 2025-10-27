@@ -1,14 +1,15 @@
-#' @title Integrate Negative exponential 
+#' @title Integrate Negative exponential point surveys
 #' 
 #' @description
-#' Compute integral of the negative exponential distance function. 
+#' Compute integral of the negative exponential distance function
+#' for point surveys
 #' 
 #' @inheritParams effectiveDistance
 #' 
 #' @inherit integrateHalfnormLines return
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
-#' \code{\link{integrateOneStepLines}} 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
+#' \code{\link{integrateHazratePoints}} 
 #' 
 #' @examples
 #' 
@@ -36,7 +37,7 @@
 #' 
 #' @export
 #' 
-integrateNegexpLines <- function(object
+integrateNegexpPoints <- function(object
                             , newdata = NULL
                             , w.lo = NULL
                             , w.hi = NULL
@@ -55,8 +56,9 @@ integrateNegexpLines <- function(object
   
   # Remove units b/c cannot exp units object.
   w <- units::set_units(w.hi - w.lo, NULL)
+  aw <- object * w
 
-  outArea <- (1 - exp(-object*w)) / object
+  outArea <- (1 - exp(-aw) * (aw + 1)) / (object * object)
   
   outArea <- units::set_units(outArea
                               , Units
