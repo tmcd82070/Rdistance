@@ -130,13 +130,59 @@ testthat::test_that( paste0(lhood,  "-NoCovarsFt"),{
 }
 )
 
-# Expansions, no covar ----
-testthat::test_that( paste0(lhood, "-NoCovarExpansions"),{
+# Cosine Expansions, no covar ----
+testthat::test_that( paste0(lhood, "-NoCovarCosExpansions"),{
   fit <- thrasherDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
-                                 , likelihood = lhood
-                                 , expansions = 2
-                                 , outputUnits = "m"
-                                 ) |> 
+                                  , likelihood = lhood
+                                  , expansions = 2
+                                  , outputUnits = "m"
+                                  , series = "cosine"
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
+  testthat::expect_snapshot(summary(fit)
+                            , transform = scrub_environ)
+}
+)
+
+# Sine Expansions, no covar ----
+testthat::test_that( paste0(lhood, "-NoCovarSinExpansions"),{
+  fit <- thrasherDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                  , likelihood = lhood
+                                  , expansions = 2
+                                  , outputUnits = "m"
+                                  , series = "sine"
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
+  testthat::expect_snapshot(summary(fit)
+                            , transform = scrub_environ)
+}
+)
+
+# Hermite Expansions, no covar ----
+testthat::test_that( paste0(lhood, "-NoCovarHermExpansions"),{
+  fit <- thrasherDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                  , likelihood = lhood
+                                  , expansions = 2
+                                  , outputUnits = "m"
+                                  , series = "hermite"
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
+  testthat::expect_snapshot(summary(fit)
+                            , transform = scrub_environ)
+}
+)
+
+# Simple Expansions, no covar ----
+testthat::test_that( paste0(lhood, "-NoCovarSimpExpansions"),{
+  fit <- thrasherDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                  , likelihood = lhood
+                                  , expansions = 2
+                                  , outputUnits = "m"
+                                  , series = "simple"
+  ) |> 
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
