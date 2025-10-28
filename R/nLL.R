@@ -155,7 +155,7 @@ nLL <- function(a
   # are evaluating integrals both here and in other routines (i.e., ESW)
   likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", is.points(ml))
   if( likExpan == "halfnorm_0_FALSE" ){
-    # CASE: Halfnormal, 0 expansions, Lines
+    # CASE: Halfnormal, 0 expansions, Lines ----
     intType <- "Exact"
     
     parms <- exp(parms)
@@ -164,9 +164,9 @@ nLL <- function(a
                                     , w.hi = ml$w.hi
                                     , Units = ml$outputUnits
                                       )
-    
+
   } else if( likExpan == "halfnorm_0_TRUE" ){
-    # CASE: Halfnormal, 0 expansions, Points
+    # CASE: Halfnormal, 0 expansions, Points ----
     intType = "Exact"
     
     parms <- exp(parms)
@@ -175,8 +175,9 @@ nLL <- function(a
                                       , w.hi = ml$w.hi
                                       , Units = ml$outputUnits
     )
+    
   } else if( likExpan == "negexp_0_FALSE" ){
-    # CASE: Negative exponential, 0 expansions, Lines
+    # CASE: Negative exponential, 0 expansions, Lines ----
     intType = "Exact"
     
     parms <- exp(parms)
@@ -187,7 +188,7 @@ nLL <- function(a
     )
     
   } else if( likExpan == "negexp_0_TRUE" ){
-    # CASE: Negative exponential, 0 expansions, Points
+    # CASE: Negative exponential, 0 expansions, Points ----
     intType = "Exact"
     
     parms <- exp(parms)
@@ -198,7 +199,7 @@ nLL <- function(a
     )
     
   } else if( likExpan == "hazrate_0_FALSE" ){
-    # CASE: Hazrate, 0 expansions, Lines
+    # CASE: Hazrate, 0 expansions, Lines ----
     intType = "Exact"
 
     parms[,1] <- exp(parms[,1])
@@ -208,19 +209,21 @@ nLL <- function(a
                                       , Units = ml$outputUnits
     )
   } else if( likExpan == "oneStep_0_FALSE" ){
-    # CASE: One step, 0 expansions, lines
+    # CASE: One step, 0 expansions, lines ----
     # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
     intType = "Exact"
     
     parms[,1] <- exp(parms[,1]) # invlink(Theta)
     outArea <- integrateOneStepLines(parms, Units = ml$outputUnits)
   } else if( likExpan == "oneStep_0_TRUE"){
+    # CASE: One step, 0 expansions, points ----
     intType = "Exact"
     
     parms[,1] <- exp(parms[,1])
     outArea <- integrateOneStepPoints(parms, w.hi = ml$w.hi, Units=ml$outputUnits)
   } else if( grepl("oneStep", likExpan )){
-    # CASE: oneStep (point or line) with expansions = Numeric integration by Trapazoid Rule
+    # CASE: oneStep (point or line) with expansions ----
+    # Numeric integration by Trapazoid Rule
     # Must integrate from 0 to Theta, then Theta+ to w.hi
     # We know ml$expansions > 0 in this case
     # For expansion calculation we need expansion coefficients in 'parms'
@@ -245,7 +248,7 @@ nLL <- function(a
                                      , isPoints = is.points(ml))
     
  } else {
-    # CASE: All other cases = Numeric integration by Simpson's Rule
+    # CASE: All other cases = Numeric integration by Simpson's Rule ----
     # do NOT exp parameters
     intType = "Simpson"
     
