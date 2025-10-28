@@ -33,13 +33,16 @@
 #'   , w.hi = units::set_units(w.hi, "m")
 #' )
 #' class(ml) <- "dfunc"
-#' integrateHalfnorm(ml)
+#' integrateHalfnormPoints(ml)
 #' 
-#' # Check: Integral of exp(-x^2/(2*s^2)) from 0 to w.hi-w.lo
-#' b <- exp(c(beta[1], beta[1] + beta[2]))
-#' intgral <- (pnorm(w.hi, mean=w.lo, sd = b) - 0.5) * sqrt(2*pi)*b
+#' # Check: Integral of x exp(-x^2/(2*s^2)) from 0 to w = w.hi-w.lo
+#' sigma <- exp(c(beta[1], beta[1] + beta[2]))
+#' w <- w.hi - w.lo
+#' intgral <- sigma^2 * (1 - exp(-w^2 / (2*sigma^2)))
 #' intgral
 #' 
+#' # Effective detection radius
+#' sqrt(2 * intgral)
 #' 
 #' @export
 #' 
