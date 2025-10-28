@@ -200,24 +200,13 @@ nLL <- function(a
   } else if( likExpan == "hazrate_0_FALSE" ){
     # CASE: Hazrate, 0 expansions, Lines
     intType = "Exact"
-    
+
     parms[,1] <- exp(parms[,1])
     outArea <- integrateHazrateLines(parms
                                       , w.lo = ml$w.lo
                                       , w.hi = ml$w.hi
                                       , Units = ml$outputUnits
     )
-  } else if( likExpan == "hazrate_0_TRUE" ){
-    # CASE: Hazrate, 0 expansions, Points
-    intType = "Exact"
-    
-    parms[,1] <- exp(parms[,1])
-    outArea <- integrateHazratePoints(parms
-                                     , w.lo = ml$w.lo
-                                     , w.hi = ml$w.hi
-                                     , Units = ml$outputUnits
-    )
-    
   } else if( likExpan == "oneStep_0_FALSE" ){
     # CASE: One step, 0 expansions, lines
     # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p

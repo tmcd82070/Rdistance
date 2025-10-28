@@ -48,9 +48,8 @@ EDR <- function(object, newdata = NULL){
     
   } else if( likExpan == "halfnorm_0" ){
     edr <- integrateHalfnormPoints(object, newdata = newdata)
-
-  } else if( likExpan == "hazrate_0" ){
-    edr <- integrateHazratePoints(object, newdata = newdata)
+    
+  # Don't have hazrate_0 points, see integrateHazratePoints in code parking lot
 
   } else if( likExpan == "negexp_0" ){
     edr <- integrateNegexpPoints(object, newdata = newdata)
