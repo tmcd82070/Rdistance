@@ -4,9 +4,8 @@
 
   # To speed numeric integration, store Simpson coefs in options()
   nEvalPts <- 101  # MUST BE ODD
-  intCoefs <- c(rep( c(2,4), ((nEvalPts-1)/2) ), 1) 
-  intCoefs[1] <- 1
-  
+  intCoefs <- simpsonCoefs( nEvalPts )
+
   # ** If you add an option here, MAKE SURE you add it 
   # to op.Rdist in function .onUnload below. **
   

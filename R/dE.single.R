@@ -345,7 +345,6 @@ dE.single <- function( data
                           , outputUnits = outputUnits
                           , asymptoticSE = asymptoticSE
                         )
-  
   strt.lims <- Rdistance::startLimits(modelList)
   
   if(verboseLevel >= 2){
@@ -360,13 +359,14 @@ dE.single <- function( data
 
   # Check whether need to use non-gradient optimizer ----
   if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
+    # checkNEvalPts(getOption("Rdistance_intEvalPts")) # make sure coefs match, before save
     origOp <- options(Rdistance_optimizer = "hookeJeeves")
     nInts <- getOption("Rdistance_intEvalPts")
     if(nInts < 301){
       # bump up integral points
       options(Rdistance_intEvalPts = 301)
     }
-    checkNEvalPts(getOption("Rdistance_intEvalPts")) # set coeffs
+    checkNEvalPts(getOption("Rdistance_intEvalPts")) # make sure coefs match
   } else {
     # Check univariate and Hooke-Jeeves; can't do univariate problems ----
     termLabs <- attr(terms(modelList$formula), "term.labels")

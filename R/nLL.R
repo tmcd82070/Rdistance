@@ -208,6 +208,7 @@ nLL <- function(a
                                       , w.hi = ml$w.hi
                                       , Units = ml$outputUnits
     )
+    
   } else if( likExpan == "oneStep_0_FALSE" ){
     # CASE: One step, 0 expansions, lines ----
     # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
@@ -215,6 +216,7 @@ nLL <- function(a
     
     parms[,1] <- exp(parms[,1]) # invlink(Theta)
     outArea <- integrateOneStepLines(parms, Units = ml$outputUnits)
+    
   } else if( likExpan == "oneStep_0_TRUE"){
     # CASE: One step, 0 expansions, points ----
     intType = "Exact"

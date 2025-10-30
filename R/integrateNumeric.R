@@ -110,8 +110,15 @@ integrateNumeric <- function(object
     # If object has expansions, their coefficients come back from predict
   } 
 
+  # This check of nInts and intCoefs slows things down, but integrateNumeric 
+  # gets called from ESW/EDR and NLL. User could change nInts or intCoeffs 
+  # in between calls to ESW/EDR and NLL, so we have not choice but to check.
   nInts <- getOption("Rdistance_intEvalPts") # already checked it's odd, in parseModel::checkNevalPts
-  intCoefs <- getOption("Rdistance_intCoefs")
+  intCoefs <- getOption("Rdistance_intCoefs") # Next, check intCoefs are correct
+  if( nInts != length(intCoefs) || sum(intCoefs) != (3*(nInts-1)) ){
+    intCoefs <- simpsonCoefs( nInts ) # oddity checked
+    options("Rdistance_intCoefs" = intCoefs )
+  }
   zero <- units::set_units(0, Units, mode="standard")
 
   d <- seq(zero, w.hi - w.lo, length=nInts) 

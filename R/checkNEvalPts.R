@@ -36,8 +36,7 @@ checkNEvalPts <- function(nEvalPts){
   }
   
   # Store Simpson coefficients in options() to speed calculations a little
-  intCoefs <- c(rep( c(2,4), ((nEvalPts-1)/2) ), 1) # here is where we need nInts to be odd
-  intCoefs[1] <- 1
+  intCoefs <- simpsonCoefs( nEvalPts )
   options("Rdistance_intCoefs" = intCoefs)
   
   invisible(nEvalPts)
