@@ -211,9 +211,9 @@
          = "m", series = "cosine")
       Coefficients:
                    Estimate   SE          z          p(>|z|)     
-      (Intercept)  4.0755827  0.05583971  72.987182  0.0000000000
-      a1           0.4586695  0.13026429   3.521068  0.0004298118
-      a2           0.1449905  0.10347736   1.401181  0.1611600763
+      (Intercept)  4.0755827  0.05583971  72.987181  0.0000000000
+      a1           0.4586695  0.13026429   3.521068  0.0004298119
+      a2           0.1449905  0.10347736   1.401181  0.1611600633
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
@@ -240,16 +240,16 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "sine")
       Coefficients:
-                   Estimate     SE          z           p(>|z|)   
-      (Intercept)   3.94297581  0.04184577  94.2263949  0.00000000
-      a1           -0.46829149  0.24913637  -1.8796593  0.06015452
-      a2            0.09272547  0.16466456   0.5631174  0.57335497
+                   Estimate     SE          z           p(>|z|)  
+      (Intercept)   3.94297934  0.04184599  94.2259684  0.0000000
+      a1           -0.46828901  0.24913668  -1.8796470  0.0601562
+      a2            0.09272591  0.16466424   0.5631211  0.5733524
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of SINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 56.55167 [m] 
-      Probability of detection: 0.2731965
+      Effective strip width (ESW): 56.55192 [m] 
+      Probability of detection: 0.2731977
       Scaling: g(0 [m]) = 1
       Log likelihood: -1665.683 
       AICc: 3337.435
@@ -258,8 +258,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.185308e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 377056.9
+      Density in sampled area: 9.185266e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 377055.2
 
 # halfnorm-NoCovarHermExpansions
 
@@ -270,26 +270,26 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "hermite")
       Coefficients:
-                   Estimate     SE          z           p(>|z|)     
-      (Intercept)   5.19333438  0.56794951    9.144007  6.018009e-20
-      a1           -0.23634426  0.01158634  -20.398535  1.723019e-92
-      a2            0.09705946  0.01058790    9.167014  4.863023e-20
+                   Estimate     SE         z        p(>|z|)     
+      (Intercept)   5.20109063  0.3434287  15.1446  8.225366e-52
+      a1           -0.23632145         NA       NA            NA
+      a2            0.09717399         NA       NA            NA
       
-      Message: Success; Asymptotic SE's
+      Message: VARIANCE FAILURE (singular variance-covariance matrix)
       Function: HALFNORM with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 53.19849 [m] 
-      Probability of detection: 0.2569975
+      Effective strip width (ESW): 53.19099 [m] 
+      Probability of detection: 0.2569613
       Scaling: g(0 [m]) = 1
       Log likelihood: -1654.988 
-      AICc: 3316.043
+      AICc: 3316.044
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.764271e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 400823.3
+      Density in sampled area: 9.765648e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 400879.8
 
 # halfnorm-NoCovarSimpExpansions
 
@@ -301,7 +301,7 @@
          = "m", series = "simple")
       Coefficients:
                    Estimate   SE        z          p(>|z|)      
-      (Intercept)   3.993693  0.114389  34.913265  4.677177e-267
+      (Intercept)   3.993693  0.114389  34.913259  4.678189e-267
       a1           -8.536728  3.372958  -2.530932   1.137599e-02
       a2           15.366334  8.416601   1.825717   6.789287e-02
       
@@ -331,15 +331,15 @@
          = "m")
       Coefficients:
                    Estimate    SE           z          p(>|z|)     
-      (Intercept)  3.38598826  0.167121549  20.260632  2.862628e-91
-      bare         0.01105555  0.002704431   4.087940  4.352201e-05
-      a1           0.34055069  0.165192354   2.061540  3.925153e-02
-      a2           0.15481273  0.114443556   1.352743  1.761377e-01
+      (Intercept)  3.38598825  0.167121548  20.260632  2.862623e-91
+      bare         0.01105555  0.002704431   4.087940  4.352200e-05
+      a1           0.34055067  0.165192360   2.061540  3.925155e-02
+      a2           0.15481275  0.114443555   1.352743  1.761377e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 55.60094 [m] (range 43.29358 [m] to 69.32325 [m]) 
+      Average effective strip width (ESW): 55.60094 [m] (range 43.29357 [m] to 69.32325 [m]) 
       Average probability of detection: 0.2686036 (range 0.2091477 to 0.3348949)
       Scaling: g(0 [m]) = 1
       Log likelihood: -1654.264 
@@ -362,15 +362,15 @@
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
                    Estimate    SE           z          p(>|z|)     
-      (Intercept)  3.38598826  0.167121549  20.260632  2.862628e-91
-      bare         0.01105555  0.002704431   4.087940  4.352201e-05
-      a1           0.34055069  0.165192354   2.061540  3.925153e-02
-      a2           0.15481273  0.114443556   1.352743  1.761377e-01
+      (Intercept)  3.38598825  0.167121548  20.260632  2.862623e-91
+      bare         0.01105555  0.002704431   4.087940  4.352200e-05
+      a1           0.34055067  0.165192360   2.061540  3.925155e-02
+      a2           0.15481275  0.114443555   1.352743  1.761377e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 55.60094 [m] (range 43.29358 [m] to 69.32325 [m]) 
+      Average effective strip width (ESW): 55.60094 [m] (range 43.29357 [m] to 69.32325 [m]) 
       Average probability of detection: 0.2686036 (range 0.2091477 to 0.3348949)
       Scaling: g(0 [m]) = 0.75
       Log likelihood: -1654.264 
