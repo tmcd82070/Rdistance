@@ -4,12 +4,23 @@
 #' Compute integral of the negative exponential distance function
 #' for point surveys
 #' 
-#' @inheritParams effectiveDistance
+#' @inheritParams integrateOneStepPoints
 #' 
-#' @inherit integrateHalfnormLines return
+#' @inheritSection integrateOneStepPoints Note
+#'  
+#' @inherit integrateOneStepPoints return
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
-#' \code{\link{integrateHazratePoints}} 
+#' @details 
+#' 
+#' Returned integrals are
+#' \deqn{\int_0^{w} xe^{-a_i x} dx = \frac{1 - e^{-a_i w} (a_i w + 1)}{a_i^2},}{
+#' Integral( x exp(-a*x) ) = (1 - exp(-a*w)(a*w + 1)) / a^2,}
+#' where \eqn{w = w.hi - w.lo} and \eqn{a_i}{a} is the estimated 
+#' negative exponential distance 
+#' function parameter for the 
+#' i-th observed distance. 
+#' 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}} 
 #' 
 #' @examples
 #' 
@@ -27,11 +38,11 @@
 #'   , w.hi = units::set_units(w.hi, "m")
 #' )
 #' class(ml) <- "dfunc"
-#' integrateNegexp(ml)
+#' integrateNegexpPoints(ml)
 #' 
-#' # Check: Integral of exp(-bx) from 0 to w.hi-w.lo
+#' # Check: Integral of x*exp(-bx) from 0 to w.hi-w.lo
 #' b <- c(exp(beta[1]), exp(beta[1] + beta[2]))
-#' intgral <- (1 - exp(-b*(w.hi - w.lo))) / b
+#' intgral <- (1 - exp(-b*(w.hi - w.lo)) * (b*(w.hi - w.lo) + 1)) / (b^2)
 #' intgral
 #' 
 #' 

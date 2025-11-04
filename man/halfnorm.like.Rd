@@ -100,13 +100,18 @@ halfnorm.like(log(20), d, covs)
 plot(d, halfnorm.like(log(20), d, covs)$L.unscaled, type="l", col="red")
 lines(d, halfnorm.like(log(40), d, covs)$L.unscaled, col="blue")
 
-# Matrix inputs:
-d <- matrix(c(0,10,20), ncol = 1) # 3X1
-covs <- matrix(c(rep(1,nrow(d)), rep(.5,nrow(d))), nrow = nrow(d)) # 3X2
-coefs <- matrix(log(c(15,5,10,10)), nrow=2) # 2X2
+# Evaluate 3 functions at once using matrix of coefficients:
+# sigma ~ 20, 30, 40
+coefs <- matrix(log(c(7.39,7.33, 4.48,44.80, 2.72,216.54))
+               , byrow = TRUE
+               , ncol=2) # (3 coef vectors)X(2 covars)
+covs <- matrix(c(rep(1,length(d))
+               , rep(0.5,length(d)))
+               , nrow = length(d)) # 100 X 2
 L <- halfnorm.like( coefs, d, covs ) 
-L$L.unscaled # 3X2
-L$params     # 3X2; exp(log(15)+0.5log(10)) and exp(log(5)+0.5log(10))
+L$L.unscaled # 100 X (3 coef vectors)
+L$params     # 100 X (3 coef vectors); ~ log(c(20,30,40))
+matplot(d, L$L.unscaled, type="l")
 
 }
 \seealso{

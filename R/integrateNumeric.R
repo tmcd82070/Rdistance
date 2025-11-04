@@ -3,12 +3,22 @@
 #' @description
 #' Numerically integrate under a distance function. 
 #' 
-#' @inheritParams effectiveDistance
+#' @inheritParams integrateOneStepPoints
+#' @inheritParams dE.single
+#' 
+#' @inheritSection integrateOneStepPoints Note
+#'  
+#' @inherit integrateOneStepPoints return
+#' 
+#' @param isPoints Boolean. TRUE if integration is for point surveys.  
+#' FALSE for line-transect surveys. Line-transect surveys integrate 
+#' under the distance function, g(x), while point surveys integrate under 
+#' the distance function times distances, xg(x). 
 #' 
 #' @section Numeric Integration: 
 #' Rdistance uses Simpson's composite 1/3 rule to numerically 
-#' integrate distance functions from 0 to 
-#' \code{object$w.hi - object$w.lo}. The number of points evaluated 
+#' integrate distance functions from 0 to the maximum sighting distance
+#' (\code{w.hi - w.lo}). The number of points evaluated 
 #' during numerical integration is controlled by 
 #' \code{options(Rdistance_intEvalPts)} (default 101).
 #' Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
@@ -21,7 +31,7 @@
 #' to several decimal points for smooth distance functions
 #' (e.g., hazrate, halfnorm, negexp)
 #' and that all 'Rdistance_intEvalPts' >= 101 produce 
-#' identical results if the distance function is smooth. 
+#' identical results if the distance function is not smooth. 
 #'   
 #' \emph{Details}: Let \code{n} = \code{options(Rdistance_intEvalPts)}.
 #' Evaluate the distance function at \code{n} equal-spaced 
@@ -37,47 +47,25 @@
 #' are the original (linear) units if \code{object} contains line-transect data
 #' (e.g., [m]), or square of the original units if \code{object} contains
 #' point-transect data (e.g., [m^2]). Point-transect units are squared because
-#' the likelihood consists of the detection function (which is unitless) 
-#' multiplied by distances (which have units).  
-#' 
-#' @return A vector of areas under distance functions. 
-#' If \code{newdata} is specified, return length is 
-#' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
-#' return length is \code{length(distances(object))}. 
+#' the likelihood is the product of the detection function (which is unitless) 
+#' and distances (which have units).  
 #' 
 #' 
 #' @examples
 #' 
-#' # Fake distance function object w/ minimum inputs for integration
-#' d <- units::set_units(rep(1,4),"m") # Only units needed, not values
-#' df <- data.frame(1) # Need attributes only
-#' attr(df, "transType") <- "line"
-#' obs <- factor(rep(c("obs1", "obs2"), 2))
-#' beta <- c(3.5, -0.5)
-#' w.hi <- 125
-#' w.lo <- 20
-#' ml <- list(
-#'     mf = model.frame(d ~ obs)
-#'   , data = df
-#'   , par = beta 
-#'   , likelihood = "halfnorm"
-#'   , w.lo = units::set_units(w.lo, "m")
-#'   , w.hi = units::set_units(w.hi, "m")
-#'   , outputUnits = units(d)
-#'   , expansions = 0
-#'   , x.scl = units::set_units(w.lo, "m")
-#'   , g.x.scl = 1
-#' )
-#' class(ml) <- "dfunc"
-#' exact <- integrateHalfnorm(ml) # exact area
-#' apprx <- integrateNumeric(ml)  # Numeric approx
+#' # A halfnorm distance function 
+#' fit <- dfuncEstim(sparrowDf, dist~1, likelihood = "halfnorm")
+#' 
+#' exact <- integrateHalfnormLines(fit)[1,] # exact area
+#' apprx <- integrateNumeric(fit)[1]  # Numeric approx
 #' pd <- options(digits = 20)
 #' cbind(exact, apprx)
 #' absDiff <- abs(apprx - exact) 
+#' absDiff
 #' options(pd)
 #' 
-#' # Approximation to halfnorm is good to this number of digits
-#' equalDigits <- round(log10(absDiff),1)  
+#' # halfnorm approx good to this number of digits
+#' round(log10(absDiff),1)  
 #'
 #' @export
 #' 

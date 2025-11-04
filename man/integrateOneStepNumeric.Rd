@@ -16,39 +16,66 @@ integrateOneStepNumeric(
 )
 }
 \arguments{
-\item{object}{Either an Rdistance fitted distance function,
+\item{object}{Either an Rdistance fitted distance function
 (an object that inherits from class "dfunc"; usually produced 
 by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
-distance function parameters (e.g., matrix(fit$par,1)). 
+distance function parameters (e.g., \code{matrix(fit$par,1)}). 
 If a matrix, each row corresponds to a 
-distance function and each column is a parameter. Argument 
-\code{newdata} is ignored if \code{object} is a matrix.}
+distance function and each column is a parameter. If 
+\code{object} is a matrix, it should not have measurement units. 
+Only quantities derived from function parameters (e.g., ESW) have units. 
+Rdistance function parameters themselves never have units.}
 
 \item{newdata}{A data frame containing new values for 
-covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{object} contains covariates, the  
-  covariates stored in
-  \code{object} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+the distance function covariates. If NULL and 
+\code{object} is a fitted distance function, the  
+observed covariates stored in
+\code{object} are used (behavior similar to \code{\link{predict.lm}}).
+Argument \code{newdata} is ignored if \code{object} is a matrix.}
 
-\item{w.hi}{Maximum sighting distance. Ignored if \code{object} 
-is a fitted Rdistance distance function.}
+\item{w.lo}{Minimum sighting distance or left-truncation value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function. 
+Must have physical measurement units.}
 
-\item{Units}{Physical units to apply to the first column of 
-\code{object} when it is a matrix.  Ignored if \code{object}
-is a fitted Rdistance distance function.}
+\item{w.hi}{Maximum sighting distance or right-trunction value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function.
+Must have physical measurement units.}
+
+\item{Units}{Physical units of sighting distances if 
+\code{object} is a matrix. Sighting distance units can differ from units 
+of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
+is a fitted distance function.}
+
+\item{expansions}{A scalar specifying the number of terms 
+in \code{series} to compute. Depending on the series, 
+this could be 0 through 5.  The default of 0 equates 
+to no expansion terms of any type.  No expansion terms 
+are allowed (i.e., \code{expansions} is forced to 0) if 
+covariates are present in the detection function 
+(i.e., right-hand side of \code{formula} includes
+something other than \code{1}).}
+
+\item{series}{If \code{expansions} > 0, this string 
+specifies the type of expansion to use. Valid values at 
+present are 'simple', 'hermite', and 'cosine'.}
+
+\item{isPoints}{Boolean. TRUE if integration is for point surveys.
+FALSE for line-transect surveys. Line-transect surveys integrate 
+under the distance function, g(x), while point surveys integrate under 
+the distance function times distances, xg(x).}
 }
 \value{
 A vector of areas under distance functions. 
 If \code{object} is a distance function and 
-\code{newdata} is specified, return length is 
+\code{newdata} is specified, the returned vector's length is 
 \code{nrow(newdata)}.  If \code{object} is a distance function and 
 \code{newdata} is NULL, 
-return length is \code{length(distances(object))}. If 
-\code{object} is a matrix of parameters, return length is 
+returned vector's length is \code{length(distances(object))}. If 
+\code{object} is a matrix, return's length is 
 \code{nrow(object)}.
 }
 \description{
@@ -58,32 +85,22 @@ oneStep functions that contain expansion factors.
 }
 \details{
 The \code{\link{oneStep.like}} function has an extremely large 
-discontinuity in Theta. Accurate numeric integration requires special 
-use of the Trapazoid rule. Rdistance's Simpson's rule routine 
-(\code{\link{integrateNumeric}}) will not work for oneStep.
+discontinuity at Theta. Accurate numeric integration requires 
+inserting Theta and Theta+ (a value just larger than Theta) 
+into the series of points being evaluated. Because this creates 
+un-equal intervals, the Trapazoid rule must be used. 
+Rdistance's Simpson's rule routine 
+(\code{\link{integrateNumeric}}) will not work for oneStep likelihoods 
+that have expansions.
 }
-\examples{
+\section{Note}{
 
-fit <- dfuncEstim(thrasherDf, dist~1, likelihood = "oneStep")
-integrateOneStepPoints(fit, newdata = data.frame(`(Intercept)`=1))
-EDR(fit, newdata = data.frame(`(Intercept)`=1))
-
-# Check: 
-Theta <- exp(fit$par[1])
-Theta <- units::set_units(Theta, "m")
-p <- fit$par[2]
-w.hi <- fit$w.hi
-w.lo <- fit$w.lo
-g.at0 <- w.lo
-g.atT <- Theta
-g.atTPlusFuzz <- (((1-p) * Theta) / ((w.hi - Theta) * p))*Theta
-g.atWhi <- (((1-p) * Theta) / ((w.hi - Theta) * p))*w.hi
-area.0.to.T <- (Theta - w.lo) * (g.atT - g.at0) / 2 # triangle; Theta^2/2
-area.T.to.w <- (w.hi - Theta) * (g.atTPlusFuzz + g.atWhi) / 2 # trapazoid
-area <- area.0.to.T + area.T.to.w
-edr <- sqrt( 2*area )
-
+Users will not normally call this function. It is called 
+internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
+Users normally 
+call \code{\link{effectiveDistance}} to compute integrals.
 }
+
 \seealso{
 \code{\link{integrateNumeric}}; 
 \code{\link{integrateOneStepLines}}; \code{\link{integrateOneStepPoints}}

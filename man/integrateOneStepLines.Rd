@@ -7,36 +7,36 @@
 integrateOneStepLines(object, newdata = NULL, Units = NULL)
 }
 \arguments{
-\item{object}{Either an Rdistance fitted distance function,
+\item{object}{Either an Rdistance fitted distance function
 (an object that inherits from class "dfunc"; usually produced 
 by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
-distance function parameters (e.g., matrix(fit$par,1)). 
+distance function parameters (e.g., \code{matrix(fit$par,1)}). 
 If a matrix, each row corresponds to a 
-distance function and each column is a parameter. Argument 
-\code{newdata} is ignored if \code{object} is a matrix.}
+distance function and each column is a parameter. If 
+\code{object} is a matrix, it should not have measurement units. 
+Only quantities derived from function parameters (e.g., ESW) have units. 
+Rdistance function parameters themselves never have units.}
 
 \item{newdata}{A data frame containing new values for 
-covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{object} contains covariates, the  
-  covariates stored in
-  \code{object} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+the distance function covariates. If NULL and 
+\code{object} is a fitted distance function, the  
+observed covariates stored in
+\code{object} are used (behavior similar to \code{\link{predict.lm}}).
+Argument \code{newdata} is ignored if \code{object} is a matrix.}
 
-\item{Units}{Physical units to apply to the first column of 
-\code{object} when it is a matrix.  Ignored if \code{object}
-is a fitted Rdistance distance function.}
+\item{Units}{Physical units of sighting distances if 
+\code{object} is a matrix. Sighting distance units can differ from units 
+of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
+is a fitted distance function.}
 }
 \value{
 A vector of areas under distance functions. 
 If \code{object} is a distance function and 
-\code{newdata} is specified, return length is 
+\code{newdata} is specified, the returned vector's length is 
 \code{nrow(newdata)}.  If \code{object} is a distance function and 
 \code{newdata} is NULL, 
-return length is \code{length(distances(object))}. If 
-\code{object} is a matrix of parameters, return length is 
+returned vector's length is \code{length(distances(object))}. If 
+\code{object} is a matrix, return's length is 
 \code{nrow(object)}.
 }
 \description{
@@ -44,21 +44,64 @@ Compute exact integral of the one-step distance function for line
 transects.
 }
 \details{
-Returned integral is exact.
+Returned integrals are
+\deqn{\int_0^{w} (\frac{p}{\theta_i}I(0\leq x \leq \theta_i) + 
+   \frac{1-p}{w - \theta_i}I(\theta_i < x \leq w)) dx = \frac{\theta_i}{p},}{
+Integral((p/Theta)I(0<=x<=Theta) + ((1-p)/(w-Theta))I(Theta<x<=w)) = Theta / p,} 
+where \eqn{w = w.hi - w.lo}, \eqn{\theta_i}{Theta} is the estimated one-step
+distance function
+threshold for the i-th observed distance, and \eqn{p}{p} is the estimated 
+one-step proportion.
 }
+\section{Note}{
+
+Users will not normally call this function. It is called 
+internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
+Users normally 
+call \code{\link{effectiveDistance}} to compute integrals.
+}
+
 \examples{
 
+# A oneStep distance function on simulated data
+whi <- 250
+T <- 100  # true threshold
+p <- 0.85 # true proportion <T
+n <- 200  # num simulated points
+x <- c( runif(n*p, min=0, max=T), runif(n*(1-p), min=T, max=whi))
+x <- units::set_units(x, "m")
+tranID <- sample(rep(1:10, each=n/10), replace=FALSE)
+detectDf <- data.frame(transect = tranID, dist = x)
+siteDf <- data.frame(transect = 1:10
+               , length = rep(units::set_units(10,"m"), 10))
+distDf <- RdistDf(siteDf, detectDf)
+
+# Estimation
+fit <- dfuncEstim(distDf
+                 , formula = dist ~ 1
+                 , likelihood = "oneStep"
+                 , w.hi = units::set_units(whi, "m")
+                 )
+table(integrateOneStepLines(fit))
+table(ESW(fit))
+
 # Check:
-w.hi <- 125
-w.lo <- 0
-s1 <- 40
-s2 <- exp(log(s1) + log(0.5))
-obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
-obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
-c(obs1Scaler, obs2Scaler)
+T.hat <- exp(fit$par[1])
+p.hat <- fit$par[2]
+gAtT <- ((1-p.hat) * T.hat) / (p.hat * (whi - T.hat))
+
+plot(fit)
+abline(h = gAtT, col="blue")
+
+areaLE.T <- (1.0) * T.hat
+areaGT.T <- gAtT * (whi - T.hat)
+areaLE.T + areaGT.T  # ESW
+
+# Equivalent
+T.hat / p.hat
 
 }
 \seealso{
-\code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
-\code{\link{integrateHalfnorm}}
+\code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
+\code{\link{integrateHalfnormLines}}
 }

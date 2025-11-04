@@ -5,40 +5,26 @@
 #' using numeric integration. This function is only called for 
 #' oneStep functions that contain expansion factors. 
 #' 
-#' @inheritParams integrateOneStepPoints 
-#' @inheritParams effectiveDistance 
+#' @inheritParams integrateOneStepPoints
+#' @inheritParams dE.single
+#' @inheritParams integrateNumeric
+#' 
+#' @inheritSection integrateOneStepPoints Note
+#'  
+#' @inherit integrateOneStepPoints return
 #' 
 #' @details 
 #' The \code{\link{oneStep.like}} function has an extremely large 
-#' discontinuity in Theta. Accurate numeric integration requires special 
-#' use of the Trapazoid rule. Rdistance's Simpson's rule routine 
-#' (\code{\link{integrateNumeric}}) will not work for oneStep. 
-#' 
-#' @inherit integrateOneStepPoints return
+#' discontinuity at Theta. Accurate numeric integration requires 
+#' inserting Theta and Theta+ (a value just larger than Theta) 
+#' into the series of points being evaluated. Because this creates 
+#' un-equal intervals, the Trapazoid rule must be used. 
+#' Rdistance's Simpson's rule routine 
+#' (\code{\link{integrateNumeric}}) will not work for oneStep likelihoods 
+#' that have expansions. 
 #' 
 #' @seealso \code{\link{integrateNumeric}}; 
 #' \code{\link{integrateOneStepLines}}; \code{\link{integrateOneStepPoints}}
-#' 
-#' @examples
-#' 
-#' fit <- dfuncEstim(thrasherDf, dist~1, likelihood = "oneStep")
-#' integrateOneStepPoints(fit, newdata = data.frame(`(Intercept)`=1))
-#' EDR(fit, newdata = data.frame(`(Intercept)`=1))
-#' 
-#' # Check: 
-#' Theta <- exp(fit$par[1])
-#' Theta <- units::set_units(Theta, "m")
-#' p <- fit$par[2]
-#' w.hi <- fit$w.hi
-#' w.lo <- fit$w.lo
-#' g.at0 <- w.lo
-#' g.atT <- Theta
-#' g.atTPlusFuzz <- (((1-p) * Theta) / ((w.hi - Theta) * p))*Theta
-#' g.atWhi <- (((1-p) * Theta) / ((w.hi - Theta) * p))*w.hi
-#' area.0.to.T <- (Theta - w.lo) * (g.atT - g.at0) / 2 # triangle; Theta^2/2
-#' area.T.to.w <- (w.hi - Theta) * (g.atTPlusFuzz + g.atWhi) / 2 # trapazoid
-#' area <- area.0.to.T + area.T.to.w
-#' edr <- sqrt( 2*area )
 #' 
 #' @export
 #' 
@@ -114,7 +100,7 @@ integrateOneStepNumeric <- function(object
     )
     y <- y$L.unscaled # (nInts x 1) = (length(d) X 1) in this case
 
-    yL <- y #debugging
+    # yL <- y #debugging
     
     if( expansions > 0 ){
       W <- expTheta - w.lo

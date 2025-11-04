@@ -14,6 +14,11 @@
 #'   \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate"))}.
 #'   
 #' @inheritParams startLimits
+#' 
+#' @param verbosity The level of output produced during estimation. 
+#' \code{verbosity} = 0 produces no output. Increasing values 
+#' of \code{verbosity} >= 1 produce increasing levels of intermediate details.
+#' This is mostly used for de-bugging and checking convergence.
 #'  
 #' @details
 #' \bold{Expansion Terms}: If \code{ml$expansions} = k (k > 0), 
@@ -36,45 +41,32 @@
 #'  \code{\link{dfuncEstim}}
 #' 
 #' @examples
-#' set.seed(238642)
 #' 
-#' d <- rnorm(1000, mean = 0, sd = 40)
-#' d <- units::set_units(d[0 <= d], "m")
-#' 
-#' # Min info in model list to compute likelihood
-#' ml <- list(
-#'     mf = model.frame(d ~ 1) 
-#'   , likelihood = "halfnorm"
-#'   , expansions = 0
-#'   , w.lo = units::set_units(0, "m")
-#'   , w.hi = units::set_units(125, "m")
-#'   , outputUnits = units(units::set_units(1,"m"))
-#'   , x.scl = units::set_units(0,"m")
-#'   , g.x.scl = 1
-#'   , data = 1
-#' )
-#' attr(ml$data, "transType") <- "line"
-#' class(ml) <- "dfunc"
-#' nLL(log(40), ml)
+#' # A halfnorm distance function 
+#' fit <- dfuncEstim(sparrowDf, dist~1, likelihood = "halfnorm")
+#' nLL(fit$par, fit, 3)
+#' fit$loglik
+#' ESW(fit)[1]
 #' 
 #' # Another way, b/c we have pnorm()
+#' d <- distances(fit)
 #' ones <- matrix(1, nrow = length(d), ncol = 1)
-#' l <- halfnorm.like(log(40), d, ones)
-#' scaler <-(pnorm(units::drop_units(ml$w.hi)
-#'   , units::drop_units(ml$w.lo)
-#'   , sd = l$params) - 0.5) * sqrt(2*pi) * l$params
-#' -sum(log(l$L.unscaled/scaler))
-#'
+#' l <- halfnorm.like(fit$par, d, ones)
+#' esw <-(pnorm(units::drop_units(fit$w.hi)
+#'   , units::drop_units(fit$w.lo)
+#'   , sd = exp(l$params)) - 0.5) * sqrt(2*pi) * exp(l$params)
+#' -sum(log(l$L.unscaled/esw))
+#' 
 #' # A third way, b/c we have pnorm() and dnorm(). 
-#' l2 <- dnorm(units::drop_units(d), mean = 0, sd = 40)
-#' scaler2 <- pnorm(125, mean = 0, sd = 40) - 0.5 
-#' -sum(log(l2/scaler2))
+#' l2 <- dnorm(units::drop_units(d), mean = 0, sd = exp(fit$par))
+#' scaler <- pnorm(units::drop_units(fit$w.hi), mean = 0, sd = exp(fit$par)) - 0.5 
+#' -sum(log(l2/scaler))
 #'  
 #' @export
 
 nLL <- function(a
                 , ml
-                , verbosity 
+                , verbosity = 0
                 ){
   
   
@@ -222,7 +214,11 @@ nLL <- function(a
     intType = "Exact"
     
     parms[,1] <- exp(parms[,1])
-    outArea <- integrateOneStepPoints(parms, w.hi = ml$w.hi, Units=ml$outputUnits)
+    outArea <- integrateOneStepPoints(parms
+                                    , w.lo = ml$w.lo
+                                    , w.hi = ml$w.hi
+                                    , Units=ml$outputUnits)
+    
   } else if( grepl("oneStep", likExpan )){
     # CASE: oneStep (point or line) with expansions ----
     # Numeric integration by Trapazoid Rule

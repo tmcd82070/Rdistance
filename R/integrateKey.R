@@ -10,6 +10,15 @@
 #' 
 #' @param key The scaled distance function.  
 #' 
+#' @param likExpan A string specifying the current estimation case.
+#' Format of the string is <likelihood>_<num expansions>_<points?>. 
+#' E.g., "halfnorm_0_FALSE" specifies halfnormal, no expansions, and 
+#' line transect data. 
+#' 
+#' @param f0 The value of f(0) when integrating line transects. 
+#' This should be the ESW for the case. 
+#' 
+#' 
 #' @return Nothing.  Prints information on integrals to the screen.
 #' 
 integrateKey <- function(ml, key, likExpan, f0){
@@ -39,7 +48,7 @@ integrateKey <- function(ml, key, likExpan, f0){
   dx <- seqx[2] - seqx[1]  
   
   # for f(w.hi), use f(x) at largest dObs (rule = 2) 
-  fy <- approx(dObsUni, keyUni, xout = d, rule = c(1,2) )$y
+  fy <- stats::approx(dObsUni, keyUni, xout = d, rule = c(1,2) )$y
   keyIntegral <- sum(fy*intCoefs)*dx/3 
 
   cat(paste0("  Integral of key ("

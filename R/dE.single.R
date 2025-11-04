@@ -369,7 +369,7 @@ dE.single <- function( data
     checkNEvalPts(getOption("Rdistance_intEvalPts")) # make sure coefs match
   } else {
     # Check univariate and Hooke-Jeeves; can't do univariate problems ----
-    termLabs <- attr(terms(modelList$formula), "term.labels")
+    termLabs <- attr(stats::terms(modelList$formula), "term.labels")
     termLabs <- termLabs[!grepl("groupsize\\(", termLabs)]
     if( (length(termLabs) == 0) && 
         (getOption("Rdistance_optimizer") == "hookeJeeves") &&

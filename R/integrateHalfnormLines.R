@@ -4,18 +4,24 @@
 #' Compute integral of the half-normal distance function for 
 #' line-transect surveys.
 #' 
-#' @inheritParams effectiveDistance
+#' @inheritParams integrateOneStepPoints
+#' 
+#' @inheritSection integrateOneStepPoints Note
+#'  
+#' @inherit integrateOneStepPoints return
 #' 
 #' @details 
-#' Returned integral is computed using R's base 
-#' function \code{pnorm()}, which is very accurate.
+#' Returned integrals are
+#' \deqn{\int_0^{w} e^{-x^2/2\sigma_i^2} dx = \sqrt{2\pi}\sigma_i (\Phi(w) - 0.5),}{
+#' Integral(e^{-x^2/(2s^2)}) = sqrt(2*pi)*s*(Pnorm(w) - 0.5),}
+#' where \eqn{w = w.hi - w.lo}, \eqn{\sigma_i}{s} is the estimated half-normal distance 
+#' function parameter for the 
+#' i-th observed distance, and \eqn{\Phi}{Pnorm} is the standard normal 
+#' cummulative probability function. 
+#' Rdistance uses R's base 
+#' function \code{pnorm()}, which for all intents and purposes is exact.
 #' 
-#' @return A vector of areas under distance functions. 
-#' If \code{newdata} is specified, return length is 
-#' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
-#' return length is \code{length(distances(object))}. 
-#' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
 #' \code{\link{integrateOneStepLines}} 
 #' 
 #' @examples

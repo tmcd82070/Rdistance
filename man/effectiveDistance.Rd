@@ -50,5 +50,5 @@ Numeric integration is used for all others.
   \code{\link{ESW}},
   \code{\link{EDR}}, 
   \code{\link{integrateNumeric}},
-  \code{\link{integrateNegexp}}
+  \code{\link{integrateNegexpLines}}
 }

@@ -17,24 +17,70 @@ integrateNumeric(
 )
 }
 \arguments{
-\item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+\item{object}{Either an Rdistance fitted distance function
+(an object that inherits from class "dfunc"; usually produced 
+by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
+distance function parameters (e.g., \code{matrix(fit$par,1)}). 
+If a matrix, each row corresponds to a 
+distance function and each column is a parameter. If 
+\code{object} is a matrix, it should not have measurement units. 
+Only quantities derived from function parameters (e.g., ESW) have units. 
+Rdistance function parameters themselves never have units.}
 
 \item{newdata}{A data frame containing new values for 
-covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{object} contains covariates, the  
-  covariates stored in
-  \code{object} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+the distance function covariates. If NULL and 
+\code{object} is a fitted distance function, the  
+observed covariates stored in
+\code{object} are used (behavior similar to \code{\link{predict.lm}}).
+Argument \code{newdata} is ignored if \code{object} is a matrix.}
+
+\item{w.lo}{Minimum sighting distance or left-truncation value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function. 
+Must have physical measurement units.}
+
+\item{w.hi}{Maximum sighting distance or right-trunction value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function.
+Must have physical measurement units.}
+
+\item{Units}{Physical units of sighting distances if 
+\code{object} is a matrix. Sighting distance units can differ from units 
+of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
+is a fitted distance function.}
+
+\item{expansions}{A scalar specifying the number of terms 
+in \code{series} to compute. Depending on the series, 
+this could be 0 through 5.  The default of 0 equates 
+to no expansion terms of any type.  No expansion terms 
+are allowed (i.e., \code{expansions} is forced to 0) if 
+covariates are present in the detection function 
+(i.e., right-hand side of \code{formula} includes
+something other than \code{1}).}
+
+\item{series}{If \code{expansions} > 0, this string 
+specifies the type of expansion to use. Valid values at 
+present are 'simple', 'hermite', and 'cosine'.}
+
+\item{isPoints}{Boolean. TRUE if integration is for point surveys.
+FALSE for line-transect surveys. Line-transect surveys integrate 
+under the distance function, g(x), while point surveys integrate under 
+the distance function times distances, xg(x).}
+
+\item{likelihood}{String specifying the likelihood to fit. Built-in 
+likelihoods at present are "halfnorm", "hazrate", and "negexp".}
 }
 \value{
 A vector of areas under distance functions. 
-If \code{newdata} is specified, return length is 
-\code{nrow(newdata)}.  If \code{newdata} is NULL, 
-return length is \code{length(distances(object))}.
+If \code{object} is a distance function and 
+\code{newdata} is specified, the returned vector's length is 
+\code{nrow(newdata)}.  If \code{object} is a distance function and 
+\code{newdata} is NULL, 
+returned vector's length is \code{length(distances(object))}. If 
+\code{object} is a matrix, return's length is 
+\code{nrow(object)}.
 }
 \description{
 Numerically integrate under a distance function.
@@ -42,8 +88,8 @@ Numerically integrate under a distance function.
 \section{Numeric Integration}{
  
 Rdistance uses Simpson's composite 1/3 rule to numerically 
-integrate distance functions from 0 to 
-\code{object$w.hi - object$w.lo}. The number of points evaluated 
+integrate distance functions from 0 to the maximum sighting distance
+(\code{w.hi - w.lo}). The number of points evaluated 
 during numerical integration is controlled by 
 \code{options(Rdistance_intEvalPts)} (default 101).
 Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
@@ -56,7 +102,7 @@ suggest 'Rdistance_intEvalPts' values >= 30 are accurate
 to several decimal points for smooth distance functions
 (e.g., hazrate, halfnorm, negexp)
 and that all 'Rdistance_intEvalPts' >= 101 produce 
-identical results if the distance function is smooth. 
+identical results if the distance function is not smooth. 
   
 \emph{Details}: Let \code{n} = \code{options(Rdistance_intEvalPts)}.
 Evaluate the distance function at \code{n} equal-spaced 
@@ -72,41 +118,32 @@ Physical units on the return values
 are the original (linear) units if \code{object} contains line-transect data
 (e.g., [m]), or square of the original units if \code{object} contains
 point-transect data (e.g., [m^2]). Point-transect units are squared because
-the likelihood consists of the detection function (which is unitless) 
-multiplied by distances (which have units).
+the likelihood is the product of the detection function (which is unitless) 
+and distances (which have units).
+}
+
+\section{Note}{
+
+Users will not normally call this function. It is called 
+internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
+Users normally 
+call \code{\link{effectiveDistance}} to compute integrals.
 }
 
 \examples{
 
-# Fake distance function object w/ minimum inputs for integration
-d <- units::set_units(rep(1,4),"m") # Only units needed, not values
-df <- data.frame(1) # Need attributes only
-attr(df, "transType") <- "line"
-obs <- factor(rep(c("obs1", "obs2"), 2))
-beta <- c(3.5, -0.5)
-w.hi <- 125
-w.lo <- 20
-ml <- list(
-    mf = model.frame(d ~ obs)
-  , data = df
-  , par = beta 
-  , likelihood = "halfnorm"
-  , w.lo = units::set_units(w.lo, "m")
-  , w.hi = units::set_units(w.hi, "m")
-  , outputUnits = units(d)
-  , expansions = 0
-  , x.scl = units::set_units(w.lo, "m")
-  , g.x.scl = 1
-)
-class(ml) <- "dfunc"
-exact <- integrateHalfnorm(ml) # exact area
-apprx <- integrateNumeric(ml)  # Numeric approx
+# A halfnorm distance function 
+fit <- dfuncEstim(sparrowDf, dist~1, likelihood = "halfnorm")
+
+exact <- integrateHalfnormLines(fit)[1,] # exact area
+apprx <- integrateNumeric(fit)[1]  # Numeric approx
 pd <- options(digits = 20)
 cbind(exact, apprx)
 absDiff <- abs(apprx - exact) 
+absDiff
 options(pd)
 
-# Approximation to halfnorm is good to this number of digits
-equalDigits <- round(log10(absDiff),1)  
+# halfnorm approx good to this number of digits
+round(log10(absDiff),1)  
 
 }

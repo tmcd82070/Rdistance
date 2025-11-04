@@ -10,6 +10,14 @@ integrateKey(ml, key, likExpan, f0)
 \item{ml}{The fitted object or model list}
 
 \item{key}{The scaled distance function.}
+
+\item{likExpan}{A string specifying the current estimation case.
+Format of the string is <likelihood>_<num expansions>_<points?>. 
+E.g., "halfnorm_0_FALSE" specifies halfnormal, no expansions, and 
+line transect data.}
+
+\item{f0}{The value of f(0) when integrating line transects. 
+This should be the ESW for the case.}
 }
 \value{
 Nothing.  Prints information on integrals to the screen.

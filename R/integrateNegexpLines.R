@@ -3,11 +3,23 @@
 #' @description
 #' Compute integral of the negative exponential distance function. 
 #' 
-#' @inheritParams effectiveDistance
+#' @inheritParams integrateOneStepPoints
 #' 
-#' @inherit integrateHalfnormLines return
+#' @inheritSection integrateOneStepPoints Note
+#'  
+#' @inherit integrateOneStepPoints return
+#'
+#' @details 
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+#' Returned integrals are
+#' \deqn{\int_0^{w} e^{-a_i x} dx = \frac{1}{a_i} (1 - e^{-a_i w}),}{
+#' Integral( exp(-a*x) ) = (1 - exp(-a*w)) / a,}
+#' where \eqn{w = w.hi - w.lo} and \eqn{a_i}{a} is the estimated 
+#' negative exponential distance 
+#' function parameter for the 
+#' i-th observed distance. 
+#'  
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpPoints}}; 
 #' \code{\link{integrateOneStepLines}} 
 #' 
 #' @examples
@@ -26,7 +38,7 @@
 #'   , w.hi = units::set_units(w.hi, "m")
 #' )
 #' class(ml) <- "dfunc"
-#' integrateNegexp(ml)
+#' integrateNegexpLines(ml)
 #' 
 #' # Check: Integral of exp(-bx) from 0 to w.hi-w.lo
 #' b <- c(exp(beta[1]), exp(beta[1] + beta[2]))

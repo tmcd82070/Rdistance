@@ -13,35 +13,69 @@ integrateHalfnormPoints(
 )
 }
 \arguments{
-\item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+\item{object}{Either an Rdistance fitted distance function
+(an object that inherits from class "dfunc"; usually produced 
+by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
+distance function parameters (e.g., \code{matrix(fit$par,1)}). 
+If a matrix, each row corresponds to a 
+distance function and each column is a parameter. If 
+\code{object} is a matrix, it should not have measurement units. 
+Only quantities derived from function parameters (e.g., ESW) have units. 
+Rdistance function parameters themselves never have units.}
 
 \item{newdata}{A data frame containing new values for 
-covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{object} contains covariates, the  
-  covariates stored in
-  \code{object} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+the distance function covariates. If NULL and 
+\code{object} is a fitted distance function, the  
+observed covariates stored in
+\code{object} are used (behavior similar to \code{\link{predict.lm}}).
+Argument \code{newdata} is ignored if \code{object} is a matrix.}
+
+\item{w.lo}{Minimum sighting distance or left-truncation value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function. 
+Must have physical measurement units.}
+
+\item{w.hi}{Maximum sighting distance or right-trunction value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function.
+Must have physical measurement units.}
+
+\item{Units}{Physical units of sighting distances if 
+\code{object} is a matrix. Sighting distance units can differ from units 
+of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
+is a fitted distance function.}
 }
 \value{
 A vector of areas under distance functions. 
-If \code{newdata} is specified, return length is 
-\code{nrow(newdata)}.  If \code{newdata} is NULL, 
-return length is \code{length(distances(object))}.
+If \code{object} is a distance function and 
+\code{newdata} is specified, the returned vector's length is 
+\code{nrow(newdata)}.  If \code{object} is a distance function and 
+\code{newdata} is NULL, 
+returned vector's length is \code{length(distances(object))}. If 
+\code{object} is a matrix, return's length is 
+\code{nrow(object)}.
 }
 \description{
 Compute integral of the half-normal distance function for 
 point surveys.
 }
 \details{
-Returned integral is 
-\deqn{\int_0^{w.hi} xe^{-x^2/2\sigma^2} dx}{Integral(xe^{-x^2/2\sigma^2})}, 
-which equals,
-\deqn{0.5\sigma^2(1 - e^{-w^2/2\sigma^2})}{0.5*s^2*(1 - exp(-w^2/2*s^2))}.
+Returned integrals are 
+\deqn{\int_0^{w} xe^{-x^2/2\sigma_i^2} dx = 0.5\sigma_i^2(1 - e^{-w^2/2\sigma_i^2}),}{
+Integral(xe^{-x^2/(2s^2)}) = 0.5*s^2*(1 - exp(-w^2/(2*s^2))),} 
+where \eqn{w = w.hi - w.lo} and \eqn{\sigma_i}{s} is the estimated half-normal 
+distance function parameter for the i-th observed distance.
 }
+\section{Note}{
+
+Users will not normally call this function. It is called 
+internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
+Users normally 
+call \code{\link{effectiveDistance}} to compute integrals.
+}
+
 \examples{
 
 # Fake distance function object w/ minimum inputs for integration
@@ -71,6 +105,6 @@ sqrt(2 * intgral)
 
 }
 \seealso{
-\code{\link{integrateNumeric}}; \code{\link{integrateNegexp}}; 
+\code{\link{integrateNumeric}}; \code{\link{integrateNegexpPoints}}; 
 \code{\link{integrateOneStepPoints}}
 }
