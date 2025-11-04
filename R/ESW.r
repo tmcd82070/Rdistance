@@ -46,13 +46,25 @@ ESW <- function( object, newdata = NULL ){
   } 
 
   likExpan <- paste0(object$likelihood, "_", object$expansions)
-  
-  esw <- switch(likExpan
-            , "halfnorm_0" = integrateHalfnorm(object, newdata)
-            , "negexp_0" = integrateNegexp(object, newdata)
-            , "oneStep_0" = integrateOneStep(object, newdata)
-            , integrateNumeric(object, newdata)
-  )
+
+  if( likExpan == "halfnorm_0" ){
+    esw <- integrateHalfnormLines(object, newdata = newdata)
+    
+  } else if( likExpan == "hazrate_0" ){
+    esw <- integrateHazrateLines(object, newdata = newdata)
+    
+  } else if( likExpan == "negexp_0" ){
+    esw <- integrateNegexpLines(object, newdata = newdata)
+    
+  } else if( likExpan == "oneStep_0" ){
+    esw <- integrateOneStepLines(object, newdata = newdata)
+    
+  } else if( grepl("oneStep", likExpan) ){
+    esw <- integrateOneStepNumeric(object, newdata = newdata)
+    
+  } else {
+    esw <- integrateNumeric(object, newdata = newdata)
+  }
   
   esw
   

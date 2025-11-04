@@ -30,7 +30,7 @@ insertOneStepBreaks <- function(obj
   parms <- units::set_units(parms, units(xseq), mode = "standard")
   parms <- parms + obj$w.lo # matrix + scalar
   
-  epsilon <- matrix(c(-1,1) * 100 * .Machine$double.neg.eps
+  epsilon <- matrix(c(-1,1) * getOption("Rdistance_fuzz")
                   , nrow = length(parms)
                   , ncol = 2
                   , byrow = TRUE)

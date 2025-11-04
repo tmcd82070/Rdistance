@@ -1,83 +1,130 @@
-#' @title Integrate Point survey One-step function
+#' @title Integrate Point-survey One-step function
 #' 
 #' @description
 #' Compute integral of the one-step distance function
 #' for point-surveys. 
 #' 
-#' @inheritParams effectiveDistance
+#' @param object Either an Rdistance fitted distance function
+#' (an object that inherits from class "dfunc"; usually produced 
+#' by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
+#' distance function parameters (e.g., \code{matrix(fit$par,1)}). 
+#' If a matrix, each row corresponds to a 
+#' distance function and each column is a parameter. If 
+#' \code{object} is a matrix, it should not have measurement units. 
+#' Only quantities derived from function parameters (e.g., ESW) have units. 
+#' Rdistance function parameters themselves never have units.
+#' 
+#' @param newdata A data frame containing new values for 
+#' the distance function covariates. If NULL and 
+#' \code{object} is a fitted distance function, the  
+#' observed covariates stored in
+#' \code{object} are used (behavior similar to \code{\link{predict.lm}}).
+#' Argument \code{newdata} is ignored if \code{object} is a matrix.
+#' 
+#' @param w.lo Minimum sighting distance or left-truncation value
+#' if \code{object} is a matrix.
+#' Ignored if \code{object} 
+#' is a fitted distance function. 
+#' Must have physical measurement units. 
+#' 
+#' @param w.hi Maximum sighting distance or right-trunction value
+#' if \code{object} is a matrix.
+#' Ignored if \code{object} 
+#' is a fitted distance function.
+#' Must have physical measurement units. 
+#' 
+#' @param Units Physical units of sighting distances if 
+#' \code{object} is a matrix. Sighting distance units can differ from units 
+#' of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
+#' is a fitted distance function.
+#' 
+#' @section Note:
+#' Users will not normally call this function. It is called 
+#' internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
+#' Users normally 
+#' call \code{\link{effectiveDistance}} to compute integrals.
 #' 
 #' @details 
-#' Returned integral is exact.
+#' Returned integrals are
+#' \deqn{\int_0^{w} x(\frac{p}{\theta_i}I(0\leq x \leq \theta_i) + \frac{1-p}{w - \theta_i}I(\theta_i < x \leq w)) dx = \frac{\theta_i}{2p}((1-p)w + \theta_i),}{
+#' Integral(x((p/Theta)I(0<=x<=Theta) + ((1-p)/(w-Theta))I(Theta<x<=w))) = Theta ((1-p)w + Theta) / (2p),} 
+#' where \eqn{w = w.hi - w.lo}, \eqn{\theta_i}{Theta} is the estimated one-step
+#' distance function
+#' threshold for the i-th observed distance, and \eqn{p}{p} is the estimated
+#' one-step proportion.
 #' 
 #' @return A vector of areas under distance functions. 
-#' If \code{newdata} is specified, return length is 
-#' \code{nrow(newdata)}.  If \code{newdata} is NULL, 
-#' return length is \code{length(distances(object))}. 
+#' If \code{object} is a distance function and 
+#' \code{newdata} is specified, the returned vector's length is 
+#' \code{nrow(newdata)}.  If \code{object} is a distance function and 
+#' \code{newdata} is NULL, 
+#' returned vector's length is \code{length(distances(object))}. If 
+#' \code{object} is a matrix, return's length is 
+#' \code{nrow(object)}. 
 #' 
-#' @seealso [integrateNumeric()]; [integrateNegexp()]; 
-#' [integrateOneStep()] 
+#' 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateOneStepNumeric}}; 
+#' \code{\link{integrateOneStepLines}} 
 #' 
 #' @examples
 #' 
-#' # Check:
-#' w.hi <- 125
-#' w.lo <- 0
-#' s1 <- 40
-#' s2 <- exp(log(s1) + log(0.5))
-#' obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
-#' obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
-#' c(obs1Scaler, obs2Scaler)
+#' fit <- dfuncEstim(thrasherDf, dist~1, likelihood = "oneStep")
+#' integrateOneStepPoints(fit, newdata = data.frame(`(Intercept)`=1))
+#' EDR(fit, newdata = data.frame(`(Intercept)`=1))
+#' 
+#' # Check: 
+#' Theta <- exp(fit$par[1])
+#' Theta <- units::set_units(Theta, "m")
+#' p <- fit$par[2]
+#' w.hi <- fit$w.hi
+#' w.lo <- fit$w.lo
+#' g.at0 <- w.lo
+#' g.atT <- Theta
+#' g.atTPlusFuzz <- (((1-p) * Theta) / ((w.hi - Theta) * p))*Theta
+#' g.atWhi <- (((1-p) * Theta) / ((w.hi - Theta) * p))*w.hi
+#' area.0.to.T <- (Theta - w.lo) * (g.atT - g.at0) / 2 # triangle; Theta^2/2
+#' area.T.to.w <- (w.hi - Theta) * (g.atTPlusFuzz + g.atWhi) / 2 # trapazoid
+#' area <- area.0.to.T + area.T.to.w
+#' edr <- sqrt( 2*area )
 #' 
 #' @export
 #' 
 integrateOneStepPoints <- function(object
                             , newdata = NULL
+                            , w.lo = NULL
+                            , w.hi = NULL
+                            , Units = NULL
                               ){
 
-  y <- stats::predict(object = object
-                      , newdata = newdata
-                      , type = "parameters"
-  )
+  # need this if b/c sometimes this is called from nLL (object is just a 
+  # matrix of parameters) and other times it is called from EDR (object is 
+  # fitted object)
+  if( inherits(object, "dfunc") ){
+    w.hi <- object$w.hi # override input if it's given
+    w.lo <- object$w.lo
+    Units <- object$outputUnits # override if given
+    object <- stats::predict(object = object
+                        , newdata = newdata
+                        , type = "parameters"
+    )
+  } 
   
-  Theta <- y[,1]
+  Theta <- units::set_units(object[,1], Units, mode = "standard")
+  p <- object[,2]
+  w <- w.hi - w.lo # must have units, or calculation fails below.
 
-  w.hi <- units::set_units(object$w.hi, NULL)
+  # Slower, but clearer:
+  # fatT <- (((1-p) * Theta) / ((w.hi - Theta) * p)) # height of f from Theta to w.hi
+  #   Triangle between 0 and Theta
+  # part1 <- Theta * Theta / 2
+  #   Trapazoid between Theta and w.hi
+  # gAtT <- fatT * Theta
+  # gAtw <- fatT * w.hi
+  # part2 <- (gAtw + gAtT) * (w.hi - Theta) / 2 
+  # outArea <- part1 + part2
   
-  x <- c(cbind(0
-             , Theta
-             , Theta + 100*getOption("Rdistance_fuzz")
-             ,  w.hi))  # matrix in vector form
-  x <- units::set_units(x, object$outputUnits, mode = "standard")
+  outArea <- 0.5 * Theta * ((1 - p) * w + Theta) / p
   
-  y <- stats::predict(object = object
-                      , newdata = newdata
-                      , type = "dfuncs"
-                      , distances = x
-  )
-  
-  # rows are parameters, and pages are parameters
-  x <- array( c(x), dim = c(nrow(newdata), 4, nrow(newdata)))
-  y <- array( c(y), dim = c(nrow(newdata), 4, nrow(newdata)))
-  
-  xy <- x*y
-  
-  # Triangle between 0 and Theta
-  part1 <- 0.5 * xy[1,2,] # should be length(nrow(newdata))
-  
-  # Trapazoid between Theta and w.hi
-  gAtT <- xy[1,3,]
-  gAtw <- xy[1,4,]
-  part2a <- (gAtw - gAtT) * (w.hi - Theta) / 2 # triangle
-  part2b <- gAtT * (w.hi - Theta) # base
-  
-  outArea <- part1 + part2a + part2b
-  
-  outArea <- sqrt( 2 * outArea)
-  
-  outArea <- units::set_units(outArea
-                              , object$outputUnits
-                              , mode = "standard")
-  
-  outArea 
+  outArea # units should be object$outputUnits^2
   
 }

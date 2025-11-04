@@ -53,13 +53,13 @@ print.abund <- function( x
   
   # ---- Density printout ----
   mess <- c("Density in sampled area:")
-  ptEst <- colorize( colorize(format(x$estimates$density)), col = "bold" )
+  ptEst <- colorize(format(x$estimates$density))
   mess <- paste(mess, ptEst)
   cat(paste0(mess, "\n"))
 
   # ---- Abundance printout ----
   mess <- paste0( "Abundance in ", format(x$estimates$area), " study area:")
-  ptEst <- colorize( colorize(format(x$estimates$abundance)), col = "bold" )
+  ptEst <- colorize(format(x$estimates$abundance))
   mess <- paste(mess, ptEst)
   cat(paste0(mess, "\n"))
 

@@ -54,34 +54,37 @@ hazrate.like <- function(a
   
   # What's in a? : 
   #   a = [(Intercept), b1, ..., bp, k, <expansion coef>]
+  #   or it is a matrix, in which case 
+  #   it is n X p containing cannonical parameters on the log scale
+  #
+  # Dimensions:
+  #   m = number of "cases" = nrow(a)
+  #   q = number of coefficients in variable part of model = ncol(covars)
+  #   n = number of data distances = length(dist) = nrow(covars)
   q <- nCovars(covars) # in Rdistance, not exported
+  dist <- units::set_units(dist, NULL) # drop units
+
   if(is.matrix(a)){
-    beta <- a[, 1:q, drop = FALSE]  # k X q
-    K <- a[, q+1, drop = FALSE]     # k X 1
+    beta <- a[, 1:q, drop = FALSE]  # m X q
+    K <- a[1, q+1, drop = TRUE]     # 1 X 1
   } else {
-    beta <- matrix(a[1:q], nrow = 1) # 1 X q
-    K <- matrix(a[q+1], nrow = 1)     # 1 X 1
+    beta <- matrix(a[1:q], nrow = 1)  # 1 X q
+    K <- a[q+1]     # 1 X 1
   }
-  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
+  s <- covars %*% t(beta) # (nXq) %*% (qXm) = nXm
   sigma <- exp(s)  # link function here
 
-  dist <- units::set_units(dist, NULL)
-  dist <- matrix(dist
-                 , nrow = length(dist)
-                 , ncol = ncol(sigma)
-  ) 
-  K <- matrix(K
-            , nrow = nrow(dist)
-            , ncol = ncol(sigma)
-            , byrow = TRUE
-            )
-  key <- -( dist/sigma )^(-K)  # (nXk / nXk) ^ (kX1)
-  key <- 1 - exp(key)
+  # take logs here to speed calculations. When logged, we don't have to 
+  # expand K or dist to matrix dimensions, which is slow.  They must be vectors
+  # of length equal to n = nrow(sigma). This works provided K is constant over 
+  # observations (does not depend on covariates).
+  # hazrate = 1 - exp(-(dist/sigma)^(-K))
+  key <- log( dist ) - log( sigma )  # ((n vector) / nXm) ^ (nXm)
+  key <- -K * key
+  key <- 1 - exp(-exp(key))
 
-  sigma <- array(c(sigma, K)
-               , dim = c(nrow(dist), ncol(sigma), 2))
   return( list(L.unscaled = key, 
-               params = sigma)
+               params = cbind(s, K)) # return params on log scale
           )  
 
 }

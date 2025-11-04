@@ -94,13 +94,18 @@
 #' plot(d, halfnorm.like(log(20), d, covs)$L.unscaled, type="l", col="red")
 #' lines(d, halfnorm.like(log(40), d, covs)$L.unscaled, col="blue")
 #' 
-#' # Matrix inputs:
-#' d <- matrix(c(0,10,20), ncol = 1) # 3X1
-#' covs <- matrix(c(rep(1,nrow(d)), rep(.5,nrow(d))), nrow = nrow(d)) # 3X2
-#' coefs <- matrix(log(c(15,5,10,10)), nrow=2) # 2X2
+#' # Evaluate 3 functions at once using matrix of coefficients:
+#' # sigma ~ 20, 30, 40
+#' coefs <- matrix(log(c(7.39,7.33, 4.48,44.80, 2.72,216.54))
+#'                , byrow = TRUE
+#'                , ncol=2) # (3 coef vectors)X(2 covars)
+#' covs <- matrix(c(rep(1,length(d))
+#'                , rep(0.5,length(d)))
+#'                , nrow = length(d)) # 100 X 2
 #' L <- halfnorm.like( coefs, d, covs ) 
-#' L$L.unscaled # 3X2
-#' L$params     # 3X2; exp(log(15)+0.5log(10)) and exp(log(5)+0.5log(10))
+#' L$L.unscaled # 100 X (3 coef vectors)
+#' L$params     # 100 X (3 coef vectors); ~ log(c(20,30,40))
+#' matplot(d, L$L.unscaled, type="l")
 #' 
 #' @export
 
@@ -117,8 +122,11 @@ halfnorm.like <- function(a
     stop(paste("Argument 'dist' must be a vector or single-column matrix.",
             "Found array with", length(dim(dist)), "dimensions."))
   }
+  
+  # cat(crayon::red("In Halfnorm.like...\n"))
   q <- nCovars(covars)
   if(is.matrix(a)){
+    # cat(crayon::red("A is matrix\n"))
     beta <- a[,1:q, drop = FALSE]  # k X q
   } else {
     beta <- matrix(a[1:q], nrow = 1) # 1 X q
@@ -126,19 +134,25 @@ halfnorm.like <- function(a
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   sigma <- exp(s)  # link function here
 
+  # print(dim(sigma))
+  
   # Dropping units of dist is save b/c checked already
   # 'key' is unit-less
   dist <- units::set_units(dist, NULL)
-  dist <- matrix(dist
-            , nrow = length(dist)
-            , ncol = ncol(sigma)
-            ) 
+  # dist <- matrix(dist
+  #           , nrow = length(dist)
+  #           , ncol = ncol(sigma)
+  #           ) 
   # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
-  key <- -(dist*dist)/(2*c(sigma*sigma))  
+  # cat("length(dist) = \n")
+  # print(length(dist))
+  # print(dist[1:5])
+  key <- drop(-(dist*dist))  # n-vector; use drop() in case dist is matrix
+  key <- key / (2*sigma*sigma)  # (n vector) / nXk 
   key <- exp(key)  # exp of density function here, not link.
 
   return( list(L.unscaled = key, 
-               params = sigma))
+               params = s))  # return params on log scale
     
   
 }

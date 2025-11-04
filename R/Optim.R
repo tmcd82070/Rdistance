@@ -17,6 +17,11 @@ Optim <- function(ml, strt.lims){
                  , pgtol = getOption("Rdistance_likeTol")
   )
   
+  verboseLevel <- getOption("Rdistance_verbosity")
+  if( verboseLevel >= 1 ){
+    cat(colorize("OPTIM gradient method L-BFGS-B maximization ----\n", col = "red"))
+  }
+  
   fit <- stats::optim(
       par = strt.lims$start
     , fn = nLL
@@ -26,12 +31,17 @@ Optim <- function(ml, strt.lims){
     , control = contRl
     , method = c("L-BFGS-B")
     , ml = ml
+    , verbosity = verboseLevel
   )
   
   names(fit$par) <- strt.lims$names
-  fit$varcovar <- Rdistance::varcovarEstim(fit, ml)
+  if( ml$asymptoticSE ){
+    fit$varcovar <- Rdistance::varcovarEstim(fit, ml)
+  } else {
+    fit$varcovar <- NULL
+  }
   fit$hessian <- NULL  # erase hessian from fit object
-  
+
   # final few things ----
   fit$limits <- strt.lims[c("low", "high")]
 

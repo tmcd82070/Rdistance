@@ -127,12 +127,14 @@ are lists containing the following components:
     two parameters). }
     
   \item{varcovar}{The variance-covariance matrix for coefficients 
-    of the distance function, estimated by the inverse of the fit's Hessian
-    evaluated at the estimates.  Rdistance estimates the 
-    Hessian as the second derivative of the log likelihood surface 
+    of the distance function, estimated by the inverse of the fit's Hessian.  
+    If maximization has been performed by Nlminb or HookesJeeves, Rdistance estimates the 
+    Hessian from the second derivative of the log likelihood surface 
     at the final estimates, where second derivatives are estimated by 
-    numeric differentiation (see \code{\link{secondDeriv}}.  There is no guarantee this 
-    matrix is positive-definite and should be viewed with caution.  
+    numeric differentiation (see \code{\link{secondDeriv}}. If Optim 
+    performed the maximization, Rdistance uses the Hessian returned 
+    by Optim.  The variance-covariance matrix is re-set to NULL 
+    if the Hessian is not positive-definite.  
     Error estimates derived from bootstrapping are generally 
     more reliable. I.e., re-compute coefficient confidence intervals 
     using the bootstrap values in component \code{$B} of an abundance object.}   
@@ -203,6 +205,12 @@ are lists containing the following components:
   
   \item{outputUnits}{The measurement units used for output.  All 
     distance measurements are converted to these units internally. }
+    
+  \item{asymptoticSE}{Logical indicating whether the variance-
+  covariance matrix in component \code{varcovar} is asymptotic (TRUE) (i.e., 
+  based on the Hessian of maximization) or bootstrap (FALSE) (i.e., 
+  estimated after bootstrap iterations). 
+  }
     
   \item{x.scl}{The \emph{actual} distance at which 
     the distance function is scaled to some value.  

@@ -14,6 +14,11 @@
 #'   \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate"))}.
 #'   
 #' @inheritParams startLimits
+#' 
+#' @param verbosity The level of output produced during estimation. 
+#' \code{verbosity} = 0 produces no output. Increasing values 
+#' of \code{verbosity} >= 1 produce increasing levels of intermediate details.
+#' This is mostly used for de-bugging and checking convergence.
 #'  
 #' @details
 #' \bold{Expansion Terms}: If \code{ml$expansions} = k (k > 0), 
@@ -36,192 +41,249 @@
 #'  \code{\link{dfuncEstim}}
 #' 
 #' @examples
-#' set.seed(238642)
 #' 
-#' d <- rnorm(1000, mean = 0, sd = 40)
-#' d <- units::set_units(d[0 <= d], "m")
-#' 
-#' # Min info in model list to compute likelihood
-#' ml <- list(
-#'     mf = model.frame(d ~ 1) 
-#'   , likelihood = "halfnorm"
-#'   , expansions = 0
-#'   , w.lo = units::set_units(0, "m")
-#'   , w.hi = units::set_units(125, "m")
-#'   , outputUnits = units(units::set_units(1,"m"))
-#'   , x.scl = units::set_units(0,"m")
-#'   , g.x.scl = 1
-#'   , data = 1
-#' )
-#' attr(ml$data, "transType") <- "line"
-#' class(ml) <- "dfunc"
-#' nLL(log(40), ml)
+#' # A halfnorm distance function 
+#' fit <- dfuncEstim(sparrowDf, dist~1, likelihood = "halfnorm")
+#' nLL(fit$par, fit, 3)
+#' fit$loglik
+#' ESW(fit)[1]
 #' 
 #' # Another way, b/c we have pnorm()
+#' d <- distances(fit)
 #' ones <- matrix(1, nrow = length(d), ncol = 1)
-#' l <- halfnorm.like(log(40), d, ones)
-#' scaler <-(pnorm(units::drop_units(ml$w.hi)
-#'   , units::drop_units(ml$w.lo)
-#'   , sd = l$params) - 0.5) * sqrt(2*pi) * l$params
-#' -sum(log(l$L.unscaled/scaler))
-#'
+#' l <- halfnorm.like(fit$par, d, ones)
+#' esw <-(pnorm(units::drop_units(fit$w.hi)
+#'   , units::drop_units(fit$w.lo)
+#'   , sd = exp(l$params)) - 0.5) * sqrt(2*pi) * exp(l$params)
+#' -sum(log(l$L.unscaled/esw))
+#' 
 #' # A third way, b/c we have pnorm() and dnorm(). 
-#' l2 <- dnorm(units::drop_units(d), mean = 0, sd = 40)
-#' scaler2 <- pnorm(125, mean = 0, sd = 40) - 0.5 
-#' -sum(log(l2/scaler2))
+#' l2 <- dnorm(units::drop_units(d), mean = 0, sd = exp(fit$par))
+#' scaler <- pnorm(units::drop_units(fit$w.hi), mean = 0, sd = exp(fit$par)) - 0.5 
+#' -sum(log(l2/scaler))
 #'  
 #' @export
 
 nLL <- function(a
                 , ml
+                , verbosity = 0
                 ){
   
   
   # Pull data from input list ----
   # rule is: parameters in 'a' never have units,  
   # even though they could (e.g., sigma of halfnorm)
-  #
-  # upon entry: 'dist', 'w.lo', and 'w.hi' all have units 
-  #
-  # could move these retrievals outside nLL, which might 
-  # speed things a little, but it's more params to pass in.
-  
+
   # Because of na.pass when building model frame, and 
   # other code in parseModel(), there could be missing distances 
-  # ONLY because they are inheritly missing (crew did not get a distance
+  # ONLY because they are inherently missing (crew did not get a distance
   # on an observation). Observations outside the strip are not present 
-  # in the model frame. model.frame returns rows for missing responses. 
-  # check and reduce X if necessary.
+  # in the model frame (ml$mf). 
 
   # Evaluate the "key" function ----
   # I call Buckland's "key" function just "likelihood".
   # Returns one value per observation. Expansions, if any, 
   # are applied below, after this.
-  # L <- f.like( a = a
-  #            , dist = dist
-  #            , covars = X
-  #            )
-  # key <- L$L.unscaled
+  f.like <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")    
+  d <- distances(ml) - ml$w.lo # observed distances, n of them
+  X <- stats::model.matrix(ml)
+  L <- f.like( a = a
+             , dist = d
+             , covars = X
+             , w.hi = ml$w.hi - ml$w.lo # needed only for oneStep
+             )
+  key <- L$L.unscaled  # (n vector)
+  parms <- L$params
   
   # Evaluate and apply the expansions ----
-  # if( ml$expansions > 0 ){
-  #   # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
-  #   # but, this may save a tiny bit of time when ml$expansions = 0
-  #   exp.terms <- Rdistance::expansionTerms(a = a
-  #                                        , d = dist
-  #                                        , series = ml$series
-  #                                        , nexp = ml$expansions
-  #                                        , w = ml$w.hi - ml$w.lo)
-  #   key <- key * exp.terms
-  # }
+  if( ml$expansions > 0 ){
+    # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
+    # but, this may save a tiny bit of time when ml$expansions = 0
     
-  # without monotonicity restraints, function can go negative, 
-  # especially in a gap between datapoints. Don't want this in distance
-  # sampling and screws up the convergence. In future, could
-  # apply monotonicity constraint here.
-  # if( ml$expansions > 0 ){
-  #   key[ which(key < 0) ] <- 0
-  # }
-  
+    if(!(ml$likelihood %in% differentiableLikelihoods())){
+      # Expansion domain depends on parameters.
+      # e.g., Apply expansion between 0 and theta for oneStep
+      W <- units::set_units(exp(parms[,1]), units(d), mode="standard")
+      W <- W - ml$w.lo
+    } else { 
+      # Most likelihoods: expansions constant across params
+      W <- ml$w.hi - ml$w.lo
+    }
+    
+    # Dimensions: n = length(d) = nrow(parms); k = length(W) 
+    # Here, W is either length 1 or n
+    # The following call to expansionTerms returns matrix size (n X k); here,
+    #  either nx1 or nxn.
+    exp.terms <- Rdistance::expansionTerms(a = a
+                                           , d = d
+                                           , series = ml$series
+                                           , nexp = ml$expansions
+                                           , w = W)
+    
+    if( ncol(exp.terms) > 1 ){
+      # W is len k; so exp.terms is kxk
+      exp.terms <- diag(exp.terms)
+    }
+    
+    key <- key * exp.terms
 
-  # Scale the likelihood ----
-  # Scalers should be unique to each observation and equal
-  # to integral under distance function for that observation. 
-  # Integrals are by defn unit-less.
-  # COULD MOVE THIS SPEED-UP TO ESW.
-  # if( ml$expansions <= -1 && 
-  #     (ml$likelihood %in% c("halfnorm"
-  #                         , "negexp"
-  #                         , "triangle"
-  #                         , "uniform"
-  #                         , "huber"
-  #                         )) &&
-  #     (!Rdistance::is.points(ml))
-  #     ){
-  #   # We know the integral in these cases.  
-  #   # Supposedly, this will speed things up
-  #   theta <- L$params # always n X p data frame of canonical likelihood parameters
-  #   if( ml$likelihood == "halfnorm"){
-  #     # We evaluate normal with mean set to w.lo, sd = sigma, from -Inf to w.hi, then
-  #     # subtract 0.5 from result for the area to left of mean (w.lo) 
-  #     # theta = sigma in this case.
-  #     sig <- theta$par1
-  #     scaler <- (pnorm(units::drop_units(ml$w.hi)
-  #                      , units::drop_units(ml$w.lo)
-  #                      , sig) - 0.5) * 
-  #       sqrt(2*pi) * sig
-  #   } else if( ml$likelihood == "negexp" ){
-  #     theta <- theta$par1
-  #     scaler <- unname(
-  #       (exp(-theta * units::drop_units(ml$w.lo)) -
-  #          exp(-theta * units::drop_units(ml$w.hi))) / theta)
-  #   } else if( ml$likelihood == "triangle" ){
-  #     scaler <- theta$par1 / 2
-  #   } else if( ml$likelihood == "uniform" ){
-  #     scaler <- theta$par1
-  #   } else if( ml$likelihood == "huber"){
-  #     beta <- theta$par1
-  #     range <- theta$par1 + theta$par2
-  #     integral0a <- (6*beta*range - 4*beta^2) / (6*range - 3*beta)
-  #     integralar <-  (range^2 / (2*range - beta)) - beta
-  #     scaler <- integral0a + integralar
-  #   }
-  #   
-  #   key = key / scaler
-  #   
-  #   # assign("tmpL", data.frame(a = theta$par1, L=key),  pos=.GlobalEnv)
-  #   
-  # } else {
-  #   # We numerically integrate.  These are integrals we 
-  #   # do not know 
-  #   # and any that have expansions
-  #   # and all point transects (cause x*g(x) unknown)
-  #   key = key / integrationConstant(a, ml)
-  # 
-  #   # integrationConstant does Int( x*g(x) ) for points
-  #   #          "          does  Int( g(x) ) for lines
-  #   # Here, multiply by x in numerator of point transects
-  #   if( Rdistance::is.points(ml) ){
-  #     key <- key * units::set_units(dist, NULL)
-  #   }
-  #   
-  # }
+    # b/c no monotonicity restraints yet, function can go negative, 
+    key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")
+    
+  }
 
-  ml$par <- a
-  key <- stats::predict(
-            object = ml
-          , type = "likelihood"
-  )
-  intgral <- effectiveDistance(ml)
-  
-  key <- key / intgral
-  
-  if( !is.null(getOption("Rdistance_optimizer")) &&
-      (getOption("Rdistance_optimizer") == "optim") ){
-    key <- key*10^9 # optim likes big numbers
+  # Apply d if point survey ----
+  if(is.points(ml)){
+    key <- d * key  # element-wise
   }
   
+  # The following IF cases were implemented to speed calculations 
+  # dramatically when we know the integrals (i.e., avoid numerical 
+  # integration when we can). 
+  # I evaluate integrals here, and do not call separate functions 
+  # like integrateHalfnorm or integrateNegexp, because those functions 
+  # do more.  They have a newdata= parameter and they return units on 
+  # the answer.  It is faster to do these here, BUT, this means that you 
+  # are evaluating integrals both here and in other routines (i.e., ESW)
+  likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", is.points(ml))
+  if( likExpan == "halfnorm_0_FALSE" ){
+    # CASE: Halfnormal, 0 expansions, Lines ----
+    intType <- "Exact"
+    
+    parms <- exp(parms)
+    outArea <- integrateHalfnormLines(parms
+                                    , w.lo = ml$w.lo
+                                    , w.hi = ml$w.hi
+                                    , Units = ml$outputUnits
+                                      )
 
-  # Given check in predict.dfunc, this is not needed here
-  # key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")   # happens at very bad values of parameters
+  } else if( likExpan == "halfnorm_0_TRUE" ){
+    # CASE: Halfnormal, 0 expansions, Points ----
+    intType = "Exact"
+    
+    parms <- exp(parms)
+    outArea <- integrateHalfnormPoints(parms
+                                      , w.lo = ml$w.lo
+                                      , w.hi = ml$w.hi
+                                      , Units = ml$outputUnits
+    )
+    
+  } else if( likExpan == "negexp_0_FALSE" ){
+    # CASE: Negative exponential, 0 expansions, Lines ----
+    intType = "Exact"
+    
+    parms <- exp(parms)
+    outArea <- integrateNegexpLines(parms
+                                  , w.lo = ml$w.lo
+                                  , w.hi = ml$w.hi
+                                  , Units = ml$outputUnits
+    )
+    
+  } else if( likExpan == "negexp_0_TRUE" ){
+    # CASE: Negative exponential, 0 expansions, Points ----
+    intType = "Exact"
+    
+    parms <- exp(parms)
+    outArea <- integrateNegexpPoints(parms
+                                    , w.lo = ml$w.lo
+                                    , w.hi = ml$w.hi
+                                    , Units = ml$outputUnits
+    )
+    
+  } else if( likExpan == "hazrate_0_FALSE" ){
+    # CASE: Hazrate, 0 expansions, Lines ----
+    intType = "Exact"
 
-  # # debugging...Key should integrate to 1.0 every iteration
-  # # this only works for no-covariate model
-  # dist <- distances(ml)
-  # tmpx <- seq(min(dist), max(dist), length = 101)
-  # tmpy <- approx(dist, key, xout = tmpx)$y
-  # intarea <- (tmpx[2] - tmpx[1]) * sum(tmpy * c(1, rep(2, length(tmpy)-2), 1)) / 2
-  # cat(paste("In nLL: Integral of key vector =", intarea, "\n"))
+    parms[,1] <- exp(parms[,1])
+    outArea <- integrateHazrateLines(parms
+                                      , w.lo = ml$w.lo
+                                      , w.hi = ml$w.hi
+                                      , Units = ml$outputUnits
+    )
+    
+  } else if( likExpan == "oneStep_0_FALSE" ){
+    # CASE: One step, 0 expansions, lines ----
+    # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
+    intType = "Exact"
+    
+    parms[,1] <- exp(parms[,1]) # invlink(Theta)
+    outArea <- integrateOneStepLines(parms, Units = ml$outputUnits)
+    
+  } else if( likExpan == "oneStep_0_TRUE"){
+    # CASE: One step, 0 expansions, points ----
+    intType = "Exact"
+    
+    parms[,1] <- exp(parms[,1])
+    outArea <- integrateOneStepPoints(parms
+                                    , w.lo = ml$w.lo
+                                    , w.hi = ml$w.hi
+                                    , Units=ml$outputUnits)
+    
+  } else if( grepl("oneStep", likExpan )){
+    # CASE: oneStep (point or line) with expansions ----
+    # Numeric integration by Trapazoid Rule
+    # Must integrate from 0 to Theta, then Theta+ to w.hi
+    # We know ml$expansions > 0 in this case
+    # For expansion calculation we need expansion coefficients in 'parms'
+    # Do NOT exp() parameter b/c raw likelihood is called inside integrateOneStepNumeric
+    # and the likelihood applies the link function
+    intType = "Trapazoid"
+    
+    coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
+    parms <- cbind(parms
+                   , matrix(a[coefLocs]
+                            , nrow = nrow(parms)
+                            , ncol=ml$expansions
+                            , byrow = TRUE
+                   ))  # n X ([#canonical] + nexp)
+
+    outArea <- integrateOneStepNumeric(parms
+                                     , w.lo = ml$w.lo
+                                     , w.hi = ml$w.hi
+                                     , Units = ml$outputUnits
+                                     , expansions = ml$expansions
+                                     , series = ml$series
+                                     , isPoints = is.points(ml))
+    
+ } else {
+    # CASE: All other cases = Numeric integration by Simpson's Rule ----
+    # do NOT exp parameters
+    intType = "Simpson"
+    
+    if( ml$expansions > 0 ){
+      coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
+      parms <- cbind(parms
+                     , matrix(a[coefLocs]
+                              , nrow = nrow(parms)
+                              , ncol=ml$expansions
+                              , byrow = TRUE
+                     ))  
+    }
+
+    outArea <- integrateNumeric(parms
+                              , w.lo = ml$w.lo
+                              , w.hi = ml$w.hi
+                              , Units = ml$outputUnits
+                              , expansions = ml$expansions
+                              , series = ml$series
+                              , isPoints = is.points(ml)
+                              , likelihood = ml$likelihood
+                              )
+   
+  }
+
+  if( verbosity >= 3 ){
+    cat(paste(" ", intType, colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+  }
   
-  # likelihoods are unitless, and we've done all the conversions we need.
-  # I.e., effectiveDistance (called above) has units of distances.
+  key <- key / outArea
+
+  # Note: Key or d*Key should integrate to 1.0 every iteration
+  # Note 2: if POINTS, key has units, remove them b/c nlminb can't handle em.
   key <- units::set_units(key, NULL)
   
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
-  # cat(paste("Parameter:", crayon::red(paste(a, collapse=", ")), "\n"))
-  # cat(paste("Neg Log Likelihood:", crayon::red(nLL), "\n"))
-  
   # Rules: 
   #   RULE 1 FOR LIKELIHOODS: No matter how bad the guess at a, you cannot return Inf, -Inf, NA, or NaN
   #   This means f.like can return NA, but not NaN (div by 0), Inf or -Inf for any row of data
@@ -234,7 +296,17 @@ nLL <- function(a
   if( is.infinite(nLL) ){
     nLL <- getOption("Rdistance_posInf") # positive b/c already flipped over by -1
   }
+
+  # Diagnostics 
+  if( verbosity >= 1 ){
+    cat(paste0("  Coeffs: ", colorize(paste(a, collapse = ", "))))
+    cat(paste(" -log(likelihood) =", colorize(nLL), "\n"))
+  }
+  if( (verbosity >= 2)  &&
+      (length(unique(outArea)) <= 1) # check only works w/o covars
+  ){
+    integrateKey(ml, key, likExpan, f0 = 1 / unique(outArea) )
+  }
   
-  # cat(paste("nLL =", format(nLL), "\n"))
   nLL
 }

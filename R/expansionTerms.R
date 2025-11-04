@@ -104,31 +104,42 @@ expansionTerms <- function(a, d, series, nexp, w){
 
     if (series=="cosine"){
       exp.term <- cosine.expansion( dscl, nexp ) # returns d X n X nexp array
+    } else if (series=="sine"){
+      exp.term <- sine.expansion( dscl, nexp ) # returns d X n X nexp array
     } else if (series=="hermite"){
-      # dscl <- units::drop_units(dist/sigma) # not sure /sigma matters; I think we can use /w
       exp.term <- hermite.expansion( dscl, nexp )
     } else if (series == "simple") {
       exp.term <- simple.expansion( dscl, nexp )
+    } else if (series == "bspline") {
+      exp.term <- bspline.expansion( dscl, nexp )
     } else {
       stop( paste( "Unknown expansion series", series, "requested." ))
     }
 
+    # keep in mind: nrow(expCoeffs) must equal length(w)
     if(is.matrix(a)){
-      # I think a is always a matrix
+      if( nrow(a) != length(w) ){
+        stop("nrow(a) != length(w) in expansionTerms function.")
+      }
       coefLocs <- (ncol(a)-(nexp-1)):(ncol(a))
       expCoeffs <- a[, coefLocs, drop = FALSE]  # n X nexp
     } else {
       coefLocs <- (length(a)-(nexp-1)):(length(a))
-      expCoeffs <- matrix(a[coefLocs], nrow = 1) # 1 X nexp
+      expCoeffs <- matrix(a[coefLocs]
+                        , nrow = length(w)
+                        , ncol = nexp
+                        , byrow = TRUE ) # length(w) X nexp
     }
     
     jMat <- kronecker(diag(nexp), matrix(1, 1, nrow(exp.term))) # nexp X (nexp*d)
-    bigCoeffs <- expCoeffs %*% jMat # n X nexp * nexp X (nexp*d) = n X (nexp*d)
+    bigCoeffs <- expCoeffs %*% jMat # (n X nexp) * (nexp X (nexp*d)) = n X (nexp*d)
     bigCoeffs <- array(bigCoeffs
                      , dim = c(nrow(expCoeffs), nrow(exp.term), nexp))
     bigCoeffs <- aperm(bigCoeffs, c(2,1,3)) # was nXdXnexp; now dXnXnexp; constant w/i pages
     expTerms <- 1 + apply(exp.term * bigCoeffs, c(1,2), sum) # apply(dXnXnExp) = dXn; sums across nexp
 
+    # expTerms <- t(t(expTerms) / expTerms[1,]) # Make sure value for g(0) is 1.0
+      
     expTerms[ indOutside ] <- 1 # blank out values > w
 
   } else {  

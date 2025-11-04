@@ -15,7 +15,6 @@ hazrate.start.limits <- function (ml){
   
   ncovars <- ncol(X)
 
-  fuzz <- getOption("Rdistance_fuzz")
   zero <- getOption("Rdistance_zero")
   posInf <- getOption("Rdistance_posInf")
   negInf <- getOption("Rdistance_negInf")

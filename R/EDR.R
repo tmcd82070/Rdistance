@@ -43,10 +43,28 @@ EDR <- function(object, newdata = NULL){
 
   likExpan <- paste0(object$likelihood, "_", object$expansions)
   
-  edr <- switch(likExpan
-                , "oneStep_0" = integrateOneStepPoints(object, newdata)
-                , integrateNumeric(object, newdata)
-  )
+  if( likExpan == "oneStep_0" ){
+    edr <- integrateOneStepPoints(object, newdata = newdata)
+    
+  } else if( likExpan == "halfnorm_0" ){
+    edr <- integrateHalfnormPoints(object, newdata = newdata)
+    
+  # Don't have hazrate_0 points, see integrateHazratePoints in code parking lot
+
+  } else if( likExpan == "negexp_0" ){
+    edr <- integrateNegexpPoints(object, newdata = newdata)
+    
+  } else if( grepl("oneStep", likExpan) ){
+    edr <- integrateOneStepNumeric(object, newdata = newdata)
+    
+  } else {
+    edr <- integrateNumeric(object, newdata = newdata)
+  }
+
+  edr <- units::set_units(edr, NULL)
+  edr <- sqrt( 2 * edr )  # cannot sqrt units (unless like m^2 are assigned)
+  edr <- units::set_units(edr, object$outputUnits, mode = "standard") # add back units
+
   
   edr
 }

@@ -108,9 +108,12 @@ dfuncEstim <- function (  data, ... ){
     res$LhoodType <- res$likelihood  # Gamma and smu
   }
 
-  # restore options
-  options(op)
-  
+  # restore options, but make sure intEvalPts and intCoeffs match b/c 
+  # they could have changed.
+  options(op) # restores old intEvalPts and intCoeffs that may not match
+  intCoefs <- simpsonCoefs(getOption("Rdistance_intEvalPts"))
+  options(Rdistance_intCoefs = intCoefs)
+
   res 
 }
 

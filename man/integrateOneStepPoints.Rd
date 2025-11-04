@@ -2,50 +2,105 @@
 % Please edit documentation in R/integrateOneStepPoints.R
 \name{integrateOneStepPoints}
 \alias{integrateOneStepPoints}
-\title{Integrate Point survey One-step function}
+\title{Integrate Point-survey One-step function}
 \usage{
-integrateOneStepPoints(object, newdata = NULL)
+integrateOneStepPoints(
+  object,
+  newdata = NULL,
+  w.lo = NULL,
+  w.hi = NULL,
+  Units = NULL
+)
 }
 \arguments{
-\item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+\item{object}{Either an Rdistance fitted distance function
+(an object that inherits from class "dfunc"; usually produced 
+by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
+distance function parameters (e.g., \code{matrix(fit$par,1)}). 
+If a matrix, each row corresponds to a 
+distance function and each column is a parameter. If 
+\code{object} is a matrix, it should not have measurement units. 
+Only quantities derived from function parameters (e.g., ESW) have units. 
+Rdistance function parameters themselves never have units.}
 
 \item{newdata}{A data frame containing new values for 
-covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{object} contains covariates, the  
-  covariates stored in
-  \code{object} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+the distance function covariates. If NULL and 
+\code{object} is a fitted distance function, the  
+observed covariates stored in
+\code{object} are used (behavior similar to \code{\link{predict.lm}}).
+Argument \code{newdata} is ignored if \code{object} is a matrix.}
+
+\item{w.lo}{Minimum sighting distance or left-truncation value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function. 
+Must have physical measurement units.}
+
+\item{w.hi}{Maximum sighting distance or right-trunction value
+if \code{object} is a matrix.
+Ignored if \code{object} 
+is a fitted distance function.
+Must have physical measurement units.}
+
+\item{Units}{Physical units of sighting distances if 
+\code{object} is a matrix. Sighting distance units can differ from units 
+of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
+is a fitted distance function.}
 }
 \value{
 A vector of areas under distance functions. 
-If \code{newdata} is specified, return length is 
-\code{nrow(newdata)}.  If \code{newdata} is NULL, 
-return length is \code{length(distances(object))}.
+If \code{object} is a distance function and 
+\code{newdata} is specified, the returned vector's length is 
+\code{nrow(newdata)}.  If \code{object} is a distance function and 
+\code{newdata} is NULL, 
+returned vector's length is \code{length(distances(object))}. If 
+\code{object} is a matrix, return's length is 
+\code{nrow(object)}.
 }
 \description{
 Compute integral of the one-step distance function
 for point-surveys.
 }
 \details{
-Returned integral is exact.
+Returned integrals are
+\deqn{\int_0^{w} x(\frac{p}{\theta_i}I(0\leq x \leq \theta_i) + \frac{1-p}{w - \theta_i}I(\theta_i < x \leq w)) dx = \frac{\theta_i}{2p}((1-p)w + \theta_i),}{
+Integral(x((p/Theta)I(0<=x<=Theta) + ((1-p)/(w-Theta))I(Theta<x<=w))) = Theta ((1-p)w + Theta) / (2p),} 
+where \eqn{w = w.hi - w.lo}, \eqn{\theta_i}{Theta} is the estimated one-step
+distance function
+threshold for the i-th observed distance, and \eqn{p}{p} is the estimated
+one-step proportion.
 }
+\section{Note}{
+
+Users will not normally call this function. It is called 
+internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
+Users normally 
+call \code{\link{effectiveDistance}} to compute integrals.
+}
+
 \examples{
 
-# Check:
-w.hi <- 125
-w.lo <- 0
-s1 <- 40
-s2 <- exp(log(s1) + log(0.5))
-obs1Scaler <- (pnorm(w.hi, mean=w.lo, sd = s1) - 0.5) * sqrt(2*pi)*s1
-obs2Scaler <- (pnorm(w.hi, mean=w.lo, sd = s2) - 0.5) * sqrt(2*pi)*s2
-c(obs1Scaler, obs2Scaler)
+fit <- dfuncEstim(thrasherDf, dist~1, likelihood = "oneStep")
+integrateOneStepPoints(fit, newdata = data.frame(`(Intercept)`=1))
+EDR(fit, newdata = data.frame(`(Intercept)`=1))
+
+# Check: 
+Theta <- exp(fit$par[1])
+Theta <- units::set_units(Theta, "m")
+p <- fit$par[2]
+w.hi <- fit$w.hi
+w.lo <- fit$w.lo
+g.at0 <- w.lo
+g.atT <- Theta
+g.atTPlusFuzz <- (((1-p) * Theta) / ((w.hi - Theta) * p))*Theta
+g.atWhi <- (((1-p) * Theta) / ((w.hi - Theta) * p))*w.hi
+area.0.to.T <- (Theta - w.lo) * (g.atT - g.at0) / 2 # triangle; Theta^2/2
+area.T.to.w <- (w.hi - Theta) * (g.atTPlusFuzz + g.atWhi) / 2 # trapazoid
+area <- area.0.to.T + area.T.to.w
+edr <- sqrt( 2*area )
 
 }
 \seealso{
-[integrateNumeric()]; [integrateNegexp()]; 
-[integrateOneStep()]
+\code{\link{integrateNumeric}}; \code{\link{integrateOneStepNumeric}}; 
+\code{\link{integrateOneStepLines}}
 }

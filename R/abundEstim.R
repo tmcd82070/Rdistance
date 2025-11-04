@@ -302,6 +302,7 @@ abundEstim <- function(object
                         , g.x.scl = object$g.x.scl
                         , outputUnits = object$outputUnits
                         , warn = FALSE
+                        , asymptoticSE = FALSE
                         , area = area
                         , propUnitSurveyed = propUnitSurveyed
                         , pb = pb

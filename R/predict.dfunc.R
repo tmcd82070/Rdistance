@@ -254,6 +254,14 @@ predict.dfunc <- function(object
     BETA <- stats::coef(object)
     p <- length(BETA)
     q <- ncol(X)
+    
+    # cat(crayon::red("In predict.dfunc:\n"))
+    # cat(crayon::red("BETA = \n"))
+    # print(BETA)
+    # cat(crayon::red("dim(X) = "))
+    # cat(paste(dim(X), collapse = ", "))
+    # cat("\n\n")
+    
     paramsLink <- X %*% BETA[1:q] # could be extra parameters tacked on. e.g., knee for logistc or expansion terms
   
     if(q < p){

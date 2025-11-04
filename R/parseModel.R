@@ -54,6 +54,7 @@ parseModel <- function(data
                           , x.scl = 0
                           , g.x.scl = 1
                           , outputUnits = NULL
+                          , asymptoticSE = TRUE
                           ){
 
   # Check validity of data set ----
@@ -64,7 +65,16 @@ parseModel <- function(data
   # Control parameters ----
   # if you want, could save control options in output object.
   # control <- options()[grep("Rdist_", names(options()))]
-  checkNEvalPts(getOption("Rdistance_intEvalPts")) # In Rdistance, not exported
+  
+  # checkNEvalPts computes and sets Simpson coefficients in options()
+  checkNEvalPts(getOption("Rdistance_intEvalPts")) # not exported
+  
+  # Check that we know the likelihood ----
+  if( !( likelihood %in% getOption("Rdistance_knownLikelihoods")) ){
+    stop(paste("Unknown likelihood. Likelihood must be one of"
+             , paste(getOption("Rdistance_knownLikelihoods"), collapse = ", ")
+             , "(case sensitive)."))
+  }
   
   # Check for a response ----
   # Otherwise, as.character(formula) is length 2, not 3
@@ -203,13 +213,9 @@ parseModel <- function(data
              , x.scl = dataWUnits$x.scl
              , g.x.scl = g.x.scl
              , outputUnits = dataWUnits$outputUnits
+             , asymptoticSE = asymptoticSE
   )
   
-  # Enforce minimum number of spline basis functions ----
-  if (ml$expansions < 2 & ml$series == "bspline"){
-      ml$expansions <- 2
-      warning("Minimum spline expansions = 2. Proceeding with 2.")
-  }
 
   # Check x.scl, and override x.scl for Gamma likelihood ----
   if ( length(ml$x.scl) > 1 ){

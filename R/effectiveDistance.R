@@ -39,7 +39,7 @@
 #'   \code{\link{ESW}},
 #'   \code{\link{EDR}}, 
 #'   \code{\link{integrateNumeric}},
-#'   \code{\link{integrateNegexp}}
+#'   \code{\link{integrateNegexpLines}}
 #' 
 #' @export
 

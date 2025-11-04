@@ -31,12 +31,16 @@ shape of distance likelihood functions.
 The cosine expansion used here is:
   \itemize{
     \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
-    \item \bold{Second term}: \deqn{h_2(x)=\cos(3\pi x),}{h2(x) = cos(3*Pi*x),}
-    \item \bold{Third term}: \deqn{h_3(x)=\cos(4\pi x),}{h3(x) = cos(4*Pi*x),}
-    \item \bold{Fourth term}: \deqn{h_4(x)=\cos(5\pi x),}{h4(x) = cos(5*Pi*x),}
-    \item \bold{Fifth term}: \deqn{h_5(x)=\cos(6\pi x),}{h5(x) = cos(6*Pi*x),}
+    \item \bold{Second term}: \deqn{h_2(x)=\cos(4\pi x),}{h2(x) = cos(4*Pi*x),}
+    \item \bold{Third term}: \deqn{h_3(x)=\cos(6\pi x),}{h3(x) = cos(6*Pi*x),}
+    \item \bold{Fourth term}: \deqn{h_4(x)=\cos(8\pi x),}{h4(x) = cos(8*Pi*x),}
+    \item \bold{Fifth term}: \deqn{h_5(x)=\cos(10\pi x),}{h5(x) = cos(10*Pi*x),}
   }
   The maximum number of expansion terms is 5.
+  
+The cosine expansion frequency in Rdistance is 2*pi. Each term is two pi more than 
+the previous. The sine expansion frequency in Rdistance is pi. Consequently, 
+the sine and cosine expansions fit different models.
 }
 \examples{
 x <- matrix(seq(0, 1, length = 200), ncol = 1)

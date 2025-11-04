@@ -11,9 +11,11 @@ checkNEvalPts(nEvalPts)
 }
 \value{
 The first element of nEvalPts is returned if it is acceptable.
-If nEvalPts is not acceptable, an error is thrown.
+If nEvalPts is not acceptable, an error is thrown. Simpson's composite
+coefficients are store in options()
 }
 \description{
 Check that number of integration intervals is odd and 
-sufficiently large.
+sufficiently large. Plus, compute and store the Simpson's Composite
+rule coefficients.
 }

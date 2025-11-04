@@ -11,16 +11,17 @@
 #' @details Rdistance's \code{oneStep} likelihood is a mixture of two 
 #' non-overlapping uniform distributions. The 'oneStep' density function
 #' is  
-#' \deqn{f(d|p, \theta) = \frac{p}{\theta}I(0 <= d <= \theta) + 
-#'        \frac{1 - p}{w - \theta}I(\theta < d <= w),}
+#' \deqn{f(d|p, \theta) = \frac{p}{\theta}I(0 \leq d \leq \theta) + 
+#'        \frac{1 - p}{w - \theta}I(\theta \le d \leq w),}{
+#'        f(d|p,T) = (p/T)I(0<=d<=T) + ((1-p)/(w-T))I(T<d<=w),}
 #' where \eqn{I(x)} is the indicator function for event \eqn{x}, 
-#' and \eqn{w} is the nominal strip width (i.e., \code{w.hi} in Rdistance). 
-#' \eqn{w} is fixed - given by the user. 
+#' and \eqn{w} is the nominal strip width (i.e., \code{w.hi - w.lo} in Rdistance). 
 #' The unknown parameters to be estimated 
-#' are \eqn{\theta}{T} and \eqn{p}{p}.
+#' are \eqn{\theta}{T} and \eqn{p}{p}
+#' (\eqn{w} is fixed - given by the user). 
 #'  
 #' Covariates influence values of \eqn{\theta}{T} 
-#' via a log link function, i.e., \eqn{\theta = exp(x'b)}{T = exp(x'b)},
+#' via a log link function, i.e., \eqn{\theta = e^{x'b}}{T = exp(x'b)},
 #' where \eqn{x} is the vector of covariate values 
 #' associated with distance \eqn{d}, and \eqn{b}
 #' is the vector of estimated coefficients. 
@@ -42,7 +43,7 @@
 #' 
 #' # Fit oneStep to simulated data
 #' whi <- 250
-#' T <- 100
+#' T <- 100  # true threshold
 #' p <- 0.85
 #' n <- 200 
 #' x <- c( runif(n*p, min=0, max=T), runif(n*(1-p), min=T, max=whi))
@@ -67,8 +68,6 @@
 #' summary(abundEstim(fit, ci=NULL)) 
 #' 
 #' @export
-
-
 oneStep.like <- function(a
                 , dist
                 , covars 
@@ -81,10 +80,10 @@ oneStep.like <- function(a
   q <- nCovars(covars)
   if(is.matrix(a)){
     beta <- a[,1:q, drop = FALSE]  # k X q
-    p <- a[, q+1, drop = FALSE]     # k X 1
+    p <- a[1, q+1, drop = TRUE]     # 1 X 1
   } else {
     beta <- matrix(a[1:q], nrow = 1) # 1 X q
-    p <- matrix(a[q+1], nrow = 1)     # 1 X 1
+    p <- a[q+1]     # 1 X 1
   }
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   theta <- exp(s)  # link function here
@@ -92,23 +91,19 @@ oneStep.like <- function(a
   # Dropping units of dist is safe b/c checked already
   # 'key' is unit-less
   dist <- units::set_units(dist, NULL)
-  dist <- matrix(dist
-                 , nrow = length(dist)
-                 , ncol = ncol(theta)
-  ) 
-  
+
   if(is.null(w.hi)){
     w.hi <- max(dist)  # no units b/c removed above
   } else {
     w.hi <- units::set_units(w.hi, NULL) # already checked units
   }
-  
+
   # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
-  p <- matrix(p, nrow = nrow(theta), ncol = ncol(theta))
+  # p <- matrix(p, nrow = nrow(theta), ncol = ncol(theta))
   key <- (0 <= dist & dist <= theta) + 
          (((1-p) * theta) / ((w.hi - theta) * p)) * (theta < dist & dist <= w.hi)
 
   return( list(L.unscaled = key, 
-               params = theta))
+               params = cbind(s, p)))
 
 }

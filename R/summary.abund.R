@@ -111,11 +111,11 @@ summary.abund <- function( object
     ci <- paste( colorize(format(ests$abundance_lo)), 
                  "to", 
                  colorize(format(ests$abundance_hi)) )
-    ptEst <- colorize( colorize(format(ests$abundance)), col = "bold" )
+    ptEst <- colorize(format(ests$abundance))
     mess <- paste(mess, c(ptEst, ci))
   } else {
     mess <- paste0( "Abundance in ", format(ests$area), " study area:")
-    ptEst <- colorize( colorize(format(ests$abundance)), col = "bold" )
+    ptEst <- colorize(format(ests$abundance))
     mess <- paste(mess, ptEst)
   }
   cat(paste0(mess, "\n"))
