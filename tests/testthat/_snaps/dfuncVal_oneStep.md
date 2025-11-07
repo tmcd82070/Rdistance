@@ -281,25 +281,25 @@
       Coefficients:
                    Estimate   
       (Intercept)   4.54329478
-      p             0.96642617
-      a1           -0.20919709
-      a2            0.03788777
+      p             0.96642590
+      a1           -0.20919770
+      a2            0.03788589
       
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 48.4394 
-      Probability of detection: 0.2340068
+      Effective strip width (ESW): 48.44066 
+      Probability of detection: 0.2340128
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1666.774 
+      Log likelihood: -1666.775 
       AICc: 3341.663
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 0.0001072359 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 440203.5
+      Density in sampled area: 0.0001072332 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 440192.1
 
 # oneStep-NoCovarSimpExpansions
 
@@ -311,26 +311,26 @@
          = "m", series = "simple")
       Coefficients:
                    Estimate  
-      (Intercept)   4.3956831
-      p             0.9218832
-      a1           -3.7664433
-      a2            3.3869379
+      (Intercept)   4.3956830
+      p             0.9218827
+      a1           -3.7663111
+      a2            3.3867734
       
-      Message: FAILURE (Exit code= 1, did not converge)
+      Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 66.12078 
-      Probability of detection: 0.319424
+      Effective strip width (ESW): 66.12432 
+      Probability of detection: 0.3194412
       Scaling: g(0 [m]) = 1
       Log likelihood: -1676.64 
-      AICc: 3361.394
+      AICc: 3361.395
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: NA
-      Abundance in 4105 [km^2] study area: NA
+      Density in sampled area: 7.855574e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 322471.3
 
 # oneStep-ContCovarExpansions
 
