@@ -50,14 +50,14 @@
 #'            , expansions = 0
 #'            , plot = FALSE
 #'            , ci = NULL
-#'            , area = units::set_units(1, "hectare")
+#'            , area = 1 %ha%.
 #' )
 #' 
 #' \dontrun{
 #' autoDistSamp(data = sparrowDf
 #'     , formula = dist ~ 1 + groupsize(groupsize)
 #'     , ci = 0.95
-#'     , area = units::set_units(1, "hectare")
+#'     , area = 1 %ha%.
 #' )     
 #' }
 #' 
@@ -67,7 +67,7 @@
 autoDistSamp <- function (data
                           , formula
                           , likelihoods = c("halfnorm", "hazrate", "negexp")
-                          , w.lo = units::set_units(0,"m")
+                          , w.lo = setUnits(0,"m")
                           , w.hi = NULL
                           , expansions = 0:3
                           , series = c("cosine")

@@ -230,7 +230,7 @@ parseModel <- function(data
   }
   
   if ( !is.character(ml$x.scl) ){
-    isZero <- units::set_units(ml$x.scl, NULL) == 0
+    isZero <- dropUnits(ml$x.scl) == 0
     if ( isZero & ml$likelihood == "Gamma" ){
         ml$x.scl <- "max"
         warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")

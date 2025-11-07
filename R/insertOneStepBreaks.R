@@ -27,14 +27,14 @@ insertOneStepBreaks <- function(obj
   parms <- stats::predict(object = obj
                  , newdata = newData
                  , type = "parameters")[, 1]
-  parms <- units::set_units(parms, units(xseq), mode = "standard")
+  parms <- setUnits(parms, units(xseq))
   parms <- parms + obj$w.lo # matrix + scalar
   
   epsilon <- matrix(c(-1,1) * getOption("Rdistance_fuzz")
                   , nrow = length(parms)
                   , ncol = 2
                   , byrow = TRUE)
-  epsilon <- units::set_units(epsilon, units(xseq), mode = "standard")
+  epsilon <- setUnits(epsilon, units(xseq))
   breaks <- parms + epsilon # vector length n + n X 2 matrix
   breaks <- c(t(breaks))
   xseq <- sort(c(xseq, breaks))

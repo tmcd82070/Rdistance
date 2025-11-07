@@ -92,12 +92,12 @@ fit <- dfuncEstim(sparrowDf, dist ~ groupsize(groupsize))
 gxEstim(fit)
   
 fit <- dfuncEstim(sparrowDf, dist ~ groupsize(groupsize)
-                , x.scl = units::set_units(50,"m")
+                , x.scl = 50 \%m\%.
                 , g.x.scl = 0.75)
 gxEstim(fit)
 plot(fit)
 abline(h=0.75)
-abline(v=units::set_units(50,"m"))
+abline(v=50\%m\%.)
   
 }
 \seealso{

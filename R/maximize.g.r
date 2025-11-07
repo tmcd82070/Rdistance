@@ -48,9 +48,9 @@ g.neg <-  function(x,
     # above here, we needed x, w.lo, and w.hi to be unitless
     # because they had to pass through optim(). Now, we need 
     # them to have units because we are about to call the likelihood.
-    x <- units::set_units(x, correctUnits, mode = "standard")
-    w.lo <- units::set_units(w.lo, correctUnits, mode = "standard")
-    w.hi <- units::set_units(w.hi, correctUnits, mode = "standard")
+    x <- setUnits(x, correctUnits)
+    w.lo <- setUnits(w.lo, correctUnits)
+    w.hi <- setUnits(w.hi, correctUnits)
     
     g.x <- f.like( a = params, 
                    dist = x, 
@@ -72,11 +72,11 @@ g.neg <-  function(x,
 
 correctUnits <- fit$outputUnits
 
-wlo <- units::set_units(fit$w.lo, correctUnits, mode = "standard")
-whi <- units::set_units(fit$w.hi, correctUnits, mode = "standard")
+wlo <- setUnits(fit$w.lo, correctUnits)
+whi <- setUnits(fit$w.hi, correctUnits)
 
-wlo <- units::set_units(wlo, NULL)
-whi <- units::set_units(whi, NULL)
+wlo <- dropUnits(wlo)
+whi <- dropUnits(whi)
 
 x.start <- (wlo + whi) / 10 + wlo
 

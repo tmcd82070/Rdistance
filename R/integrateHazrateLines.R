@@ -36,7 +36,7 @@
 #' table(integrateHazrateLines(fit))
 #' 
 #' # Check: Integral of 1 - exp(-(x/s)^(-k)) from 0 to w.hi-w.lo
-#' w <- units::set_units(fit$w.hi - fit$w.lo, NULL)
+#' w <- dropUnits(fit$w.hi - fit$w.lo)
 #' params <- predict(fit)
 #' sigma <- params[,1]
 #' minusk <- -params[,2]
@@ -64,15 +64,13 @@ integrateHazrateLines <- function(object
     )
   } 
   
-  w <- units::set_units(w.hi - w.lo, NULL)
+  w <- dropUnits(w.hi - w.lo)
   sigma <- object[,1]
   minusk <- -object[,2]
 
   outArea <- w + sigma * expint::gammainc(1/minusk, (w/sigma)^(minusk)) / minusk
     
-  outArea <- units::set_units(outArea
-                              , Units
-                              , mode = "standard")
+  outArea <- setUnits(outArea, Units)
   
   outArea 
   

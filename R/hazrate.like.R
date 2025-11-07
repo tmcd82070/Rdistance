@@ -62,7 +62,7 @@ hazrate.like <- function(a
   #   q = number of coefficients in variable part of model = ncol(covars)
   #   n = number of data distances = length(dist) = nrow(covars)
   q <- nCovars(covars) # in Rdistance, not exported
-  dist <- units::set_units(dist, NULL) # drop units
+  dist <- dropUnits(dist) # drop units
 
   if(is.matrix(a)){
     beta <- a[, 1:q, drop = FALSE]  # m X q

@@ -47,13 +47,13 @@ that adds distance functions to an existing plot.
 set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]
-x <- units::set_units(x, "mi")
+x <- setUnits(x, "mi")
 Df <- data.frame(transectID = "A"
                , distance = x
                 ) |> 
   dplyr::nest_by( transectID
                , .key = "detections") |> 
-  dplyr::mutate(length = units::set_units(100,"km"))              
+  dplyr::mutate(length = setUnits(100,"km"))              
 attr(Df, "detectionColumn") <- "detections"
 attr(Df, "obsType") <- "single"
 attr(Df, "transType") <- "line"

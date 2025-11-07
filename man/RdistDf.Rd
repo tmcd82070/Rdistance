@@ -226,10 +226,11 @@ in units of \code{outputUnits}. Valid conversions must exist between
 units or an error is thrown.  For example, meters cannot be converted
 into hectares.
   
-Measurement units can be assigned using  
-\code{units()<-} after attaching the \code{units} 
-package or with \code{x <- units::set_units(x, "<units>")}. 
-See \code{units::valid_udunits()}
+Measurement units can be assigned using one of Rdistance's 
+unit helper routines (see \code{help(unitHelpers)}), or from 
+routines in the \code{units} package (e.g., 
+\code{x <- units::set_units(x, "<units>")}). 
+See \code{units::}\code{\link[units]{valid_udunits}}
 for a list of valid symbolic units. 
 
 If measurements are truly unit-less, or measurement units are unknown, 
@@ -247,7 +248,7 @@ is.RdistDf(sparrowDf, verbose = T)
 summary(sparrowDf)
 summary(sparrowDf
       , formula = dist ~ groupsize(groupsize)
-      , w.hi = units::set_units(100, "m"))
+      , w.hi = 100 \%m\%.)
 
 # Equivalent to above: 
 sparrowDf <- sparrowDetectionData |> 

@@ -79,7 +79,7 @@ call \code{\link{effectiveDistance}} to compute integrals.
 \examples{
 
 # Fake distance function object w/ minimum inputs for integration
-d <- units::set_units(rep(1,4),"m") # Only units needed, not values
+d <- rep(1,4) \%m\%. # Only units needed, not values
 obs <- factor(rep(c("obs1", "obs2"), 2))
 beta <- c(3.5, -0.5)
 w.hi <- 125
@@ -88,8 +88,8 @@ ml <- list(
     mf = model.frame(d ~ obs)
   , par = beta 
   , likelihood = "halfnorm"
-  , w.lo = units::set_units(w.lo, "m")
-  , w.hi = units::set_units(w.hi, "m")
+  , w.lo = w.lo \%#\% "m"
+  , w.hi = w.hi \%#\% "m"
 )
 class(ml) <- "dfunc"
 integrateHalfnormPoints(ml)

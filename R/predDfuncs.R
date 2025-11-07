@@ -40,7 +40,7 @@ predDfuncs <- function(object
       stop("Distances must have measurement units.")
     }
     # Make sure input distances are converted properly b.c. likelihoods drop units.
-    distances <- units::set_units(distances, object$outputUnits, mode = "standard")
+    distances <- setUnits(distances, object$outputUnits)
   }
   
   if( isSmooth ){
@@ -71,7 +71,7 @@ predDfuncs <- function(object
     if(object$expansions > 0){
       if(!(object$likelihood %in% differentiableLikelihoods())){
         # Expansion series depend on parameters, apply expansion between 0 and Theta
-        W <- units::set_units(exp(params[,1]), units(d), mode="standard")
+        W <- setUnits(exp(params[,1]), units(d))
       } else { 
         # Most likelihoods: expansions constant across params
         W <- rep(object$w.hi - object$w.lo, nrow(params))
@@ -131,7 +131,7 @@ predDfuncs <- function(object
                 , fit = object
     )
     # x0 is a distance, needs units
-    x0 <- units::set_units(x0, object$outputUnits, mode = "standard")
+    x0 <- setUnits(x0, object$outputUnits)
     
   } else if( is.character(object$x.scl) && (object$x.scl == "max") ){
     # Technically, we could do this. Just like Gamma, we could 

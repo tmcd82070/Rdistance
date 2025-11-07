@@ -7,6 +7,7 @@
 %   R/unitHelper_setUnits.R
 \name{\%#\%}
 \alias{\%#\%}
+\alias{unitHelpers}
 \alias{\%acre\%}
 \alias{\%cm\%}
 \alias{\%ft\%}
@@ -102,11 +103,13 @@ x \%#\% "acres"            # Same
 x \%#\% NULL    # Drop units
 dropUnits(x)  # Same
 
-# \%#\% Precedence same as "^"; above "+" and "*"
-# The following does not work: 
+# \%#\%'s precedence is below "^" but above "+" and "*"
+# The following fails: 
 # 2 \%#\% "m" / (2 \%#\% "ha") \%#\% "in/acre"
-# The following works:
+# The following succeeds:
 (2 \%#\% "m" / (2 \%#\% "ha")) \%#\% "in/acre"
+1 \%m\%. ^ 2      # [m]
+(1 \%m\%.) ^ 2    # [m^2]
 
 
 # For fixed unit assignment, 2nd argument does not matter

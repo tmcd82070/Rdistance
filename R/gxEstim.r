@@ -83,12 +83,12 @@
 #' gxEstim(fit)
 #'   
 #' fit <- dfuncEstim(sparrowDf, dist ~ groupsize(groupsize)
-#'                 , x.scl = units::set_units(50,"m")
+#'                 , x.scl = 50 %m%.
 #'                 , g.x.scl = 0.75)
 #' gxEstim(fit)
 #' plot(fit)
 #' abline(h=0.75)
-#' abline(v=units::set_units(50,"m"))
+#' abline(v=50%m%.)
 #'   
 #' @export
 
@@ -116,7 +116,7 @@ gxEstim <- function( fit ){
   
   # overide x.scl for Gamma likelihood
   if( !is.character(x.scl) ){
-    x.scl.xUnits <- units::set_units(x.scl, NULL)
+    x.scl.xUnits <- dropUnits(x.scl)
     isZero <- x.scl.xUnits == 0
     if( isZero & fit$likelihood == "Gamma" ){
       x.scl <- "max"
@@ -158,10 +158,10 @@ gxEstim <- function( fit ){
     }
     # x.scl came in as "max", we must return one with units attached. 
     # maximize.g returns a unitless x.scl
-    x.scl <- units::set_units(x.scl, fit$outputUnits, mode = "standard")
+    x.scl <- setUnits(x.scl, fit$outputUnits)
     
   } else {
-    x.scl <- units::set_units(NA, fit$outputUnits, mode = "standard")
+    x.scl <- setUnits(NA, fit$outputUnits)
     warning("Invalid character string for x.scl specified in gxEstim. x.scl set to missing.")
   }
   

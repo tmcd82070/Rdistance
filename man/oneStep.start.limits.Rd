@@ -40,14 +40,14 @@ for the oneStep distance function.
 library(Rdistance)
 whi <- 50
 x <- c( runif(100, min=0, max=10), runif(20, min=10, max=whi))
-x <- units::set_units(x, "m")
+x <- setUnits(x, "m")
 detectDf <- data.frame(transect = 1, dist = x)
-siteDf <- data.frame(transect = 1, length = units::set_units(10,"m"))
+siteDf <- data.frame(transect = 1, length = setUnits(10,"m"))
 distDf <- RdistDf(siteDf, detectDf)
 ml <- parseModel(distDf
             , formula = dist ~ 1
             , w.lo = 0
-            , w.hi = units::set_units(whi, "m")
+            , w.hi = setUnits(whi, "m")
             )
             
 

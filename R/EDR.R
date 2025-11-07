@@ -61,9 +61,9 @@ EDR <- function(object, newdata = NULL){
     edr <- integrateNumeric(object, newdata = newdata)
   }
 
-  edr <- units::set_units(edr, NULL)
+  edr <- dropUnits(edr)
   edr <- sqrt( 2 * edr )  # cannot sqrt units (unless like m^2 are assigned)
-  edr <- units::set_units(edr, object$outputUnits, mode = "standard") # add back units
+  edr <- setUnits(edr, object$outputUnits) # add back units
 
   
   edr

@@ -31,18 +31,18 @@
 #' p <- 0.85 # true proportion <T
 #' n <- 200  # num simulated points
 #' x <- c( runif(n*p, min=0, max=T), runif(n*(1-p), min=T, max=whi))
-#' x <- units::set_units(x, "m")
+#' x <- setUnits(x, "m")
 #' tranID <- sample(rep(1:10, each=n/10), replace=FALSE)
 #' detectDf <- data.frame(transect = tranID, dist = x)
 #' siteDf <- data.frame(transect = 1:10
-#'                , length = rep(units::set_units(10,"m"), 10))
+#'                , length = rep(setUnits(10,"m"), 10))
 #' distDf <- RdistDf(siteDf, detectDf)
 #' 
 #' # Estimation
 #' fit <- dfuncEstim(distDf
 #'                  , formula = dist ~ 1
 #'                  , likelihood = "oneStep"
-#'                  , w.hi = units::set_units(whi, "m")
+#'                  , w.hi = setUnits(whi, "m")
 #'                  )
 #' table(integrateOneStepLines(fit))
 #' table(ESW(fit))
@@ -77,7 +77,7 @@ integrateOneStepLines <- function(object
     )
   } 
   
-  Theta <- units::set_units(object[,1], Units, mode = "standard")
+  Theta <- setUnits(object[,1], Units)
   p <- object[,2]
 
   outArea <- Theta / p

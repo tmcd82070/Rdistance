@@ -91,7 +91,7 @@ table(ESW(fit))
 table(integrateHazrateLines(fit))
 
 # Check: Integral of 1 - exp(-(x/s)^(-k)) from 0 to w.hi-w.lo
-w <- units::set_units(fit$w.hi - fit$w.lo, NULL)
+w <- dropUnits(fit$w.hi - fit$w.lo)
 params <- predict(fit)
 sigma <- params[,1]
 minusk <- -params[,2]

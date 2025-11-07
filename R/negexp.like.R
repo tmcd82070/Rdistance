@@ -44,7 +44,7 @@ negexp.like <- function(a
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   sigma <- exp(s)  # link function here
 
-  dist <- units::set_units(dist, NULL)
+  dist <- dropUnits(dist)
 
   key = -sigma * dist  # (nXk) * (nXk)
   key <- exp(key)

@@ -89,7 +89,7 @@ summary.dfunc <- function( object, criterion="AICc", ... ){
   # Effective distance line ----
   effDist <- effectiveDistance(object)
   pDetect <- effDist / (object$w.hi - object$w.lo) 
-  pDetect <- units::set_units(pDetect, NULL)  # units of pDetect should always be [1]
+  pDetect <- dropUnits(pDetect)  # units of pDetect should always be [1]
   interceptOnly <- intercept.only(object) # in Rdistance, not exported
 
   if( is.points(object) ){

@@ -25,8 +25,8 @@ Optim <- function(ml, strt.lims){
   fit <- stats::optim(
       par = strt.lims$start
     , fn = nLL
-    , lower = units::set_units(strt.lims$low, NULL) # safe
-    , upper = units::set_units(strt.lims$high, NULL)
+    , lower = dropUnits(strt.lims$low) # safe
+    , upper = dropUnits(strt.lims$high)
     , hessian = TRUE
     , control = contRl
     , method = c("L-BFGS-B")

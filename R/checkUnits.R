@@ -34,9 +34,8 @@ checkUnits <- function(ml){
   if ( !is.null(ml$outputUnits) ){
     ml$data <- ml$data |> 
       dplyr::mutate(dplyr::across(.cols = ml$respName
-                                , .fns = ~ units::set_units(.x, ml$outputUnits, mode = "standard")))
-      # dplyr::mutate( !!ml$respName := units::set_units(!!ml$respName, ml$outputUnits, mode = "standard"))
-    ml$outputUnits <- units(units::set_units(1, ml$outputUnits, mode = "standard"))
+                                , .fns = ~ setUnits(.x, ml$outputUnits)))
+    ml$outputUnits <- units(setUnits(1, ml$outputUnits))
   } else {
     ml$outputUnits <- units(dist)
   }
@@ -45,55 +44,52 @@ checkUnits <- function(ml){
   if ( !inherits(ml$w.lo, "units") ){
       if ( is.null(ml$w.lo) || (ml$w.lo[1] != 0) ){
           stop(paste("Measurement units required on minimum distance (w.lo).",
-              "Assign units by attaching 'units' package then:",
-              "units(w.lo) <- '<units>' or",
-              paste0("units::set_units(", 
+              "Assign units with statement like",
+              paste0("setUnits(", 
                      ifelse(is.function(ml$w.lo), "<value>", ml$w.lo),
-                     ", <units>) in function call."),
-              "See units::valid_udunits() for valid symbolic units."))
+              ", <units>)."),
+              "See 'help(unitHelpers)'."))
       }
       # if we are here, w.lo is 0, it has no units, and we require units
-      ml$w.lo <- units::set_units(ml$w.lo, ml$outputUnits, mode = "standard") # assign units to 0
+      ml$w.lo <- setUnits(ml$w.lo, ml$outputUnits) # assign units to 0
   } 
   # if we are here, w.lo has units and we require units, convert to the output units
   # Technically, I don't think we need to do this.  As long as w.lo has units, we are good.
   # We do this here so that we don't do it later when we print units during output.
-  ml$w.lo <- units::set_units(ml$w.lo, ml$outputUnits, mode = "standard")
+  ml$w.lo <- setUnits(ml$w.lo, ml$outputUnits)
 
   # Units on w.hi ----
   if (is.null(ml$w.hi)){
     ml$w.hi <- max(dist, na.rm = TRUE) # units flow through max() automatically
   } else if ( !inherits(ml$w.hi, "units") ){
-      stop(paste("Measurement units required on maximum distance (w.hi).",
-          "Assign units by attaching 'units' package then:",
-          "units(w.hi) <- '<units>' or",
-          paste0("units::set_units(", 
-                 ifelse(is.function(ml$w.hi), "<value>", ml$w.hi),
-                 ", <units>) in function call."),
-          "See units::valid_udunits() for valid symbolic units."))
+    stop(paste("Measurement units required on maximum distance (w.hi).",
+               "Assign units with statement like",
+               paste0("setUnits(", 
+                      ifelse(is.function(ml$w.hi), "<value>", ml$w.hi),
+                      ", <units>)."),
+               "See 'help(unitHelpers)'."))
   } 
   # if we are here, w.hi has units and we require them, convert to output units
   # Again, technically I don't think we need to do this.  Happens automatically in computations
-  ml$w.hi <- units::set_units(ml$w.hi, ml$outputUnits, mode = "standard")
+  ml$w.hi <- setUnits(ml$w.hi, ml$outputUnits)
 
   # Units on x.scl ---- 
   if( !inherits(ml$x.scl, "units") ){
     if( (ml$x.scl[1] != 0) && (ml$x.scl[1] != "max")){
       stop(paste("Measurement units for x.scl are required.",
-                 "Assign units using either:\n", 
-                 "units::units(x.scl) <- '<units>' or", 
-                 paste0("units::set_units(", 
+                 "Assign units with statement like",
+                 paste0("setUnits(", 
                         ifelse(is.function(ml$x.scl), "<value>", ml$x.scl),
-                        ", <units>) in function call\n"), 
-                 "See units::valid_udunits() for valid symbolic units."))
+                        ", <units>)."),
+                 "See 'help(unitHelpers)'."))
     }
     # if we are here, x.scl is either 0 (w/o units) or "max"
     if(!is.character(ml$x.scl)){
-      ml$x.scl <- units::set_units(ml$x.scl, ml$outputUnits, mode = "standard")
+      ml$x.scl <- setUnits(ml$x.scl, ml$outputUnits)
     }
   } else {
     # if we are here, x.scl has units, is not "max", so we convert to the output units
-    ml$x.scl <- units::set_units(ml$x.scl, ml$outputUnits, mode = "standard")
+    ml$x.scl <- setUnits(ml$x.scl, ml$outputUnits)
   }
 
   ml

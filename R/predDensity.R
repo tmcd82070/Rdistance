@@ -145,10 +145,10 @@ predDensity <- function(object
 
   # Internal function to remove units from unitless columns ----  
   drop1Units <- function(x){
-    unitless <- units::set_units(1,"1")
+    unitless <- setUnits(1,"1")
     if(inherits(x, "units")){
       if( units(x) == units(unitless) ){
-        x <- units::set_units(x, NULL)
+        x <- dropUnits(x)
       }
     }
     x

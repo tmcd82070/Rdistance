@@ -25,7 +25,7 @@
 #' @examples
 #' 
 #' # Fake distance function object w/ minimum inputs for integration
-#' d <- units::set_units(rep(1,4),"m") # Only units needed, not values
+#' d <- rep(1,4) %#% "m" # Only units needed, not values
 #' obs <- factor(rep(c("obs1", "obs2"), 2))
 #' beta <- c(-5, -0.5)
 #' w.hi <- 125
@@ -34,8 +34,8 @@
 #'     mf = model.frame(d ~ obs)
 #'   , par = beta 
 #'   , likelihood = "negexp"
-#'   , w.lo = units::set_units(w.lo, "m")
-#'   , w.hi = units::set_units(w.hi, "m")
+#'   , w.lo = w.lo %#% "m"
+#'   , w.hi = w.hi %#% "m"
 #' )
 #' class(ml) <- "dfunc"
 #' integrateNegexpPoints(ml)
@@ -66,14 +66,12 @@ integrateNegexpPoints <- function(object
   } 
   
   # Remove units b/c cannot exp units object.
-  w <- units::set_units(w.hi - w.lo, NULL)
+  w <- dropUnits(w.hi - w.lo)
   aw <- object * w
 
   outArea <- (1 - exp(-aw) * (aw + 1)) / (object * object)
   
-  outArea <- units::set_units(outArea
-                              , Units
-                              , mode = "standard")
+  outArea <- setUnits(outArea, Units)
   
   outArea 
   

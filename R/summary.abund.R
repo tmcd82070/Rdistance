@@ -36,7 +36,7 @@
 #' 
 #' # Estimate abundance given the detection function
 #' fit <- abundEstim(dfunc
-#'                 , area = units::set_units(4105, "km^2")
+#'                 , area = setUnits(4105, "km^2")
 #'                 , ci=NULL)
 #' summary(fit) # No confidence intervals
 #'                 
@@ -44,7 +44,7 @@
 #' # With bootstrap confidence intervals 
 #' # Requires ~3 min to complete
 #' fit <- abundEstim(dfunc
-#'                 , area = units::set_units(4105, "km^2")
+#'                 , area = setUnits(4105, "km^2")
 #'                 , ci=0.95)
 #' 
 #' summary(fit)

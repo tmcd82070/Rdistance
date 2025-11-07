@@ -124,13 +124,13 @@
 #' set.seed(87654)
 #' x <- rnorm(1000, mean=0, sd=20)
 #' x <- x[x >= 0]
-#' x <- units::set_units(x, "ft")
+#' x <- setUnits(x, "ft")
 #' Df <- data.frame(transectID = "A"
 #'                , distance = x
 #'                 ) |> 
 #'   dplyr::nest_by( transectID
 #'                , .key = "detections") |> 
-#'   dplyr::mutate(length = units::set_units(1,"mi"))
+#'   dplyr::mutate(length = setUnits(1,"mi"))
 #' attr(Df, "detectionColumn") <- "detections"
 #' attr(Df, "obsType") <- "single"
 #' attr(Df, "transType") <- "line"
@@ -243,21 +243,18 @@ plot.dfunc.para <- function( x,
 
   # Compute scaling factors ----
   if( Rdistance::is.points(x) ){
-    y <- y * units::set_units(x.seq - x$w.lo, NULL)
-    y <- t( t(y) / (colSums(y, na.rm = TRUE) * units::set_units(x.seq[2] - x.seq[1], NULL))) # now y integrates to 1.0
+    y <- y * dropUnits(x.seq - x$w.lo)
+    y <- t( t(y) / (colSums(y, na.rm = TRUE) * dropUnits(x.seq[2] - x.seq[1]))) # now y integrates to 1.0
     # don't need to modify ybarhgts because cnts$density integrates to 1.0 already
     ybarhgts <- cnts$density
     y.finite <- y[ y < Inf ]
-     # scaler <- (units::set_units(scaler, NULL) ^ 2) / 2 # = integral of y = sum(y) * (x.seq[2] - x.seq[1])
-     # scaler <- units::drop_units(x.seq[2]-x.seq[1]) * colSums(y[-nrow(y),,drop = FALSE]+y[-1,,drop = FALSE]) / 2
-     # ybarhgts <- ybarhgts * scaler
     y.lims <- c(0, max( ybarhgts, y.finite, na.rm=TRUE ))
   } else {
     scaler <- Rdistance::effectiveDistance(object = x
                                            , newdata = newdata)
     # Note: scaler is correct even when g.x.scl != 1. Hence, no need to apply 
     # another scaler. i.e., this works when g.x.scl < 1
-    ybarhgts <-  cnts$density * units::set_units(mean(scaler), NULL) # now ybarhgts integrates to ESW 
+    ybarhgts <-  cnts$density * dropUnits(mean(scaler)) # now ybarhgts integrates to ESW 
     y.finite <- y[ y < Inf ]
     y.lims <- c(0, max( x$g.x.scl, ybarhgts, y.finite, na.rm=TRUE ))
   }
@@ -308,9 +305,9 @@ plot.dfunc.para <- function( x,
       }
     }
     bar.mids <- graphics::barplot( ybarhgts, 
-                         width = units::set_units(xscl, NULL), 
+                         width = dropUnits(xscl), 
                          ylim = y.lims, 
-                         xlim = units::set_units(x.limits, NULL),
+                         xlim = dropUnits(x.limits),
                          space = 0, 
                          density = density,
                          angle = angle,

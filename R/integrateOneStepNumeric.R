@@ -60,7 +60,7 @@ integrateOneStepNumeric <- function(object
     # If object has expansions, their coefficients come back from predict
   } 
   
-  Theta <- units::set_units(object[,1], Units, mode="standard") # link scale
+  Theta <- setUnits(object[,1], Units) # link scale
   p <- object[1,2] # p is always constant, this saves some space
   if( expansions > 0 ){
     coefLocs <- (ncol(object)-(expansions-1)):(ncol(object))
@@ -73,18 +73,16 @@ integrateOneStepNumeric <- function(object
   # If there are covariates, Theta is potentially different on every row
   XIntOnly <- matrix(1, nrow = 2*nInts, ncol = 1) 
   outArea <- rep(NA, length(Theta))
-  zero <- units::set_units(0, Units, mode = "standard")
+  zero <- setUnits(0, Units)
   
   uniqueTheta <- unique(Theta)
-  thetaFuzz <- units::set_units(getOption("Rdistance_fuzz")
-                              , Units
-                              , mode = "standard")
+  thetaFuzz <- setUnits(getOption("Rdistance_fuzz"), Units)
 
   for(i in 1:length(uniqueTheta)){
     theta <- uniqueTheta[i]
-    thetaNoUnits <- units::set_units( theta, NULL ) 
+    thetaNoUnits <- dropUnits( theta) 
     expTheta <- exp( thetaNoUnits ) 
-    expTheta <- units::set_units(expTheta, Units, mode="standard") # with units
+    expTheta <- setUnits(expTheta, Units) # with units
     posTheta <- Theta == theta # use later
     
     # Key: insert theta and theta+ into distances, use unequal intervals

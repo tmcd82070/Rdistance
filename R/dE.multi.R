@@ -13,11 +13,11 @@
 dE.multi <- function( data
                          , formula
                          , likelihood = "halfnorm"
-                         , w.lo = units::set_units(0,"m")
+                         , w.lo = setUnits(0,"m")
                          , w.hi = NULL
                          , expansions = 0
                          , series = "cosine"
-                         , x.scl = units::set_units(0,"m")
+                         , x.scl = setUnits(0,"m")
                          , g.x.scl = 1
                          , warn = TRUE
                          , outputUnits = NULL){

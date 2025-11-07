@@ -27,7 +27,7 @@
 #' @examples
 #' 
 #' # Fake distance function object w/ minimum inputs for integration
-#' d <- units::set_units(rep(1,4),"m") # Only units needed, not values
+#' d <- rep(1,4) %m%. # Only units needed, not values
 #' obs <- factor(rep(c("obs1", "obs2"), 2))
 #' beta <- c(3.5, -0.5)
 #' w.hi <- 125
@@ -36,8 +36,8 @@
 #'     mf = model.frame(d ~ obs)
 #'   , par = beta 
 #'   , likelihood = "halfnorm"
-#'   , w.lo = units::set_units(w.lo, "m")
-#'   , w.hi = units::set_units(w.hi, "m")
+#'   , w.lo = w.lo %#% "m"
+#'   , w.hi = w.hi %#% "m"
 #' )
 #' class(ml) <- "dfunc"
 #' integrateHalfnormLines(ml)
@@ -72,16 +72,14 @@ integrateHalfnormLines <- function(object
   # It is safe to drop units b/c we converted everything 
   # to same units in parseModel.
   
-  w.lo <- units::set_units(w.lo, NULL)
-  w.hi <- units::set_units(w.hi, NULL)
+  w.lo <- dropUnits(w.lo)
+  w.hi <- dropUnits(w.hi)
   
   outArea <- (stats::pnorm(q = w.hi
                   , mean = w.lo
                   , sd = object) - 0.5) * sqrt(2*pi)*object
   
-  outArea <- units::set_units(outArea
-                              , Units
-                              , mode = "standard")
+  outArea <- setUnits(outArea, Units)
   
   outArea 
   
