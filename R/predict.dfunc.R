@@ -171,7 +171,7 @@
 #' p <- predict(dfuncObs, type = "dfunc") 
 #' all(dim(p) == c(nd, n))
 #' 
-#' d <- units::set_units(c(0, 20, 40), "ft")
+#' d <- setUnits(c(0, 20, 40), "ft")
 #' p <- predict(dfuncObs, distances = d, type = "dfunc") 
 #' all(dim(p) == c(3, n))
 #' 
@@ -197,7 +197,7 @@
 #' 
 #' predict(sparrowDfuncObserver, type = "dfunc") # nd X n
 #' predict(sparrowDfuncObserver, newdata = Observers, type = "dfunc") # nd X 5
-#' d <- units::set_units(c(0, 150, 400), "ft")
+#' d <- setUnits(c(0, 150, 400), "ft")
 #' predict(sparrowDfuncObserver
 #'   , newdata = Observers
 #'   , distances = d

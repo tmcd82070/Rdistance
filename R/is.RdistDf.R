@@ -191,7 +191,7 @@ is.RdistDf <- function(df, verbose = FALSE){
             dfName
             , "$"
             , effCol
-            , " <- units::set_units( "
+            , " <- setUnits( "
             , dfName
             , "$"
             , effCol

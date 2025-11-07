@@ -76,13 +76,15 @@
 #' units.
 #' 
 #' Assign units with statement like \code{units(detectionDf$dist) <- "m"}
-#' or \code{units::set_units(w.hi, "km")}.  Measurement units of 
+#' or \code{setUnits(w.hi, "km")} or \code{w.hi <- 150 \%#\% "m"} or 
+#' \code{w.hi <- 150 \%m\%.}.  
+#' Measurement units of 
 #' the various physical quantities need not 
 #' be equal because appropriate conversions occur internally.
 #' An error is thrown if differing units are not compatible.  
 #' For example, "m" (meters) cannot be converted into "ha" (hectares),
 #' but "acres" can be converted into "ha".
-#' \code{Rdistance} recognizes units listed in \code{units::valid_udunits()}. 
+#' \code{Rdistance} recognizes units listed in \code{units::}\code{\link[units]{valid_udunits}}. 
 #' 
 #'   \item \code{Rdistance_maxBSFailPropForWarning}: The proportion of bootstrap 
 #' iterations that can fail without a warning. If the proportion 

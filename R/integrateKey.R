@@ -27,24 +27,24 @@ integrateKey <- function(ml, key, likExpan, f0){
   intCoefs <- getOption("Rdistance_intCoefs")    
   
   # Make sure 0 is included in domain of key. We know g(0) and f(0)
-  dObs <- c( units::set_units(0,"m")
+  dObs <- c( setUnits(0,"m")
            , distances(ml) - ml$w.lo
            )
-  dObs <- units::set_units(dObs, NULL)
+  dObs <- dropUnits(dObs)
   
   if( grepl("FALSE", likExpan) ){
     # line survey g(0) = 1; f(0) = ESW
-    keyUni <- c(units::set_units(f0, NULL) , key)
+    keyUni <- c(dropUnits(f0) , key)
   } else {
     # Point survey g(0) = f(0) = 0
-    keyUni <- c( 0, units::set_units(key, NULL) )
+    keyUni <- c( 0, dropUnits(key) )
   }
   
   dObsUni <- dObs[!duplicated(dObs)]
   keyUni <- keyUni[!duplicated(dObs)]
   
   seqx = seq(ml$w.lo, ml$w.hi, length=nInts) 
-  d <- units::set_units(seqx - ml$w.lo, NULL) 
+  d <- dropUnits(seqx - ml$w.lo) 
   dx <- seqx[2] - seqx[1]  
   
   # for f(w.hi), use f(x) at largest dObs (rule = 2) 

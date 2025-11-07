@@ -8,7 +8,7 @@ autoDistSamp(
   data,
   formula,
   likelihoods = c("halfnorm", "hazrate", "negexp"),
-  w.lo = units::set_units(0, "m"),
+  w.lo = setUnits(0, "m"),
   w.hi = NULL,
   expansions = 0:3,
   series = c("cosine"),
@@ -55,20 +55,16 @@ See 'likelihood' parameter of \code{\link{dfuncEstim}}.}
 
 \item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
 This is the minimum possible off-transect distance. Default is 0.  If 
-\code{w.lo} is greater than 0, it must be assigned measurement units
-using \code{units(w.lo) <- "<units>"} or 
-\code{w.lo <- units::set_units(w.lo, "<units>")}. 
-See examples in the help for \code{set_units}.}
+\code{w.lo} is greater than 0, it must have measurement units. 
+See \code{help(unitHelpers)} for assistance assigning units.}
 
 \item{w.hi}{Upper or right-truncation limit of the distances 
 in \code{dist}. This is the maximum off-transect distance that 
 could be observed. If unspecified (i.e., NULL), 
 right-truncation is set to the maximum of the observed 
-distances.  If \code{w.hi} is specified, it must have associated 
-measurement units.  Assign measurement units
-using \code{units(w.hi) <- "<units>"} or 
-\code{w.hi <- units::set_units(w.hi, "<units>")}. 
-See examples in the help for \code{set_units}.}
+distances.  If \code{w.hi} is specified, it must have  
+measurement units.  
+See \code{help(unitHelpers)} for assistance assigning units.}
 
 \item{expansions}{A scalar specifying the number of terms 
 in \code{series} to compute. Depending on the series, 
@@ -87,9 +83,8 @@ present are 'simple', 'hermite', and 'cosine'.}
 detection function will be scaled.  \code{g.x.scl} can be a distance
 or the string "max".  
 When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
-units assigned using either \code{library(units);units(x.scl) <- '<units>'}
-or \code{x.scl <- units::set_units(x.scl, <units>)}. See
-\code{units::valid_udunits()} for valid symbolic units.}
+units assigned. 
+See \code{help(unitHelpers)} for assistance assigning units.}
 
 \item{g.x.scl}{Height of the distance function at coordinate \code{x}. 
 The distance function 
@@ -233,14 +228,14 @@ autoDistSamp(data = sparrowDf
            , expansions = 0
            , plot = FALSE
            , ci = NULL
-           , area = units::set_units(1, "hectare")
+           , area = 1 \%ha\%.
 )
 
 \dontrun{
 autoDistSamp(data = sparrowDf
     , formula = dist ~ 1 + groupsize(groupsize)
     , ci = 0.95
-    , area = units::set_units(1, "hectare")
+    , area = 1 \%ha\%.
 )     
 }
 

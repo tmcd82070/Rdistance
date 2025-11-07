@@ -25,7 +25,7 @@
 #' summary(thrasherDf)
 #' summary(thrasherDf
 #'         , formula = dist ~ groupsize(groupsize)
-#'         , w.hi = units::set_units(100,"m")
+#'         , w.hi = setUnits(100,"m")
 #'         )
 #' 
 #' @export

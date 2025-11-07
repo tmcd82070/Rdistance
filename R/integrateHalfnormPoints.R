@@ -23,7 +23,7 @@
 #' @examples
 #' 
 #' # Fake distance function object w/ minimum inputs for integration
-#' d <- units::set_units(rep(1,4),"m") # Only units needed, not values
+#' d <- rep(1,4) %m%. # Only units needed, not values
 #' obs <- factor(rep(c("obs1", "obs2"), 2))
 #' beta <- c(3.5, -0.5)
 #' w.hi <- 125
@@ -32,8 +32,8 @@
 #'     mf = model.frame(d ~ obs)
 #'   , par = beta 
 #'   , likelihood = "halfnorm"
-#'   , w.lo = units::set_units(w.lo, "m")
-#'   , w.hi = units::set_units(w.hi, "m")
+#'   , w.lo = w.lo %#% "m"
+#'   , w.hi = w.hi %#% "m"
 #' )
 #' class(ml) <- "dfunc"
 #' integrateHalfnormPoints(ml)
@@ -67,13 +67,11 @@ integrateHalfnormPoints <- function(object
   } 
   
   w <- w.hi - w.lo
-  object <- units::set_units(object
-                              , Units
-                              , mode = "standard")
+  object <- setUnits(object, Units)
   
   # exp() can't handle units, even if they are [1], gotta remove em
   s.squared <- object^2 # want units on this one
-  wsRatio <- units::set_units(-w^2 / (2*s.squared), NULL) # remove [1] units
+  wsRatio <- dropUnits(-w^2 / (2*s.squared)) # remove [1] units
   
   outArea <- s.squared * (1 - exp( wsRatio ))
   

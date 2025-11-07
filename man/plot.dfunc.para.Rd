@@ -154,13 +154,13 @@ Plot method for parametric line and point transect distance functions.
 set.seed(87654)
 x <- rnorm(1000, mean=0, sd=20)
 x <- x[x >= 0]
-x <- units::set_units(x, "ft")
+x <- setUnits(x, "ft")
 Df <- data.frame(transectID = "A"
                , distance = x
                 ) |> 
   dplyr::nest_by( transectID
                , .key = "detections") |> 
-  dplyr::mutate(length = units::set_units(1,"mi"))
+  dplyr::mutate(length = setUnits(1,"mi"))
 attr(Df, "detectionColumn") <- "detections"
 attr(Df, "obsType") <- "single"
 attr(Df, "transType") <- "line"

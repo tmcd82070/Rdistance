@@ -34,13 +34,13 @@
 #' set.seed(87654)
 #' x <- rnorm(1000, mean=0, sd=20)
 #' x <- x[x >= 0]
-#' x <- units::set_units(x, "mi")
+#' x <- setUnits(x, "mi")
 #' Df <- data.frame(transectID = "A"
 #'                , distance = x
 #'                 ) |> 
 #'   dplyr::nest_by( transectID
 #'                , .key = "detections") |> 
-#'   dplyr::mutate(length = units::set_units(100,"km"))              
+#'   dplyr::mutate(length = setUnits(100,"km"))              
 #' attr(Df, "detectionColumn") <- "detections"
 #' attr(Df, "obsType") <- "single"
 #' attr(Df, "transType") <- "line"
@@ -88,13 +88,13 @@ lines.dfunc <- function(x
   # dfuncs are in columns.
   
   if( is.points(x) ){
-    y <- y * units::set_units(x.seq - x$w.lo, NULL) # integrate to > 1
+    y <- y * dropUnits(x.seq - x$w.lo) # integrate to > 1
     if( is.null(prob) || (prob) ){
-      y <- t( t(y) / (colSums(y, na.rm = TRUE) * units::set_units(x.seq[2] - x.seq[1], NULL))) # now y integrates to 1.0
+      y <- t( t(y) / (colSums(y, na.rm = TRUE) * dropUnits(x.seq[2] - x.seq[1]))) # now y integrates to 1.0
     }
   } else {
     if( !is.null(prob) && prob ){
-      y <- t( t(y) / (colSums(y, na.rm = TRUE) * units::set_units(x.seq[2] - x.seq[1], NULL))) # now y integrates to 1.0
+      y <- t( t(y) / (colSums(y, na.rm = TRUE) * dropUnits(x.seq[2] - x.seq[1]))) # now y integrates to 1.0
     }
   }
   

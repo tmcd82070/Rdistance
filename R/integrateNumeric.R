@@ -107,7 +107,7 @@ integrateNumeric <- function(object
     intCoefs <- simpsonCoefs( nInts ) # oddity checked
     options("Rdistance_intCoefs" = intCoefs )
   }
-  zero <- units::set_units(0, Units, mode="standard")
+  zero <- setUnits(0, Units)
 
   d <- seq(zero, w.hi - w.lo, length=nInts) 
   dx <- d[2] - d[1]  # or (w.hi - w.lo) / (nInts-1); could do diff(dx) if unequal intervals

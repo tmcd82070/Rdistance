@@ -201,18 +201,18 @@
 #' dfunc <- sparrowDf |> 
 #'   dfuncEstim(formula=dist ~ groupsize(groupsize)
 #'            , likelihood="halfnorm"
-#'            , w.hi=units::set_units(150, "m")
+#'            , w.hi=150 %m%.
 #'   )
 #' 
 #' # Estimate abundance - Convenient for programming 
 #' abundDf <- estimateN(dfunc
-#'                    , area = units::set_units(4105, "km^2")
+#'                    , area = 4105 %km^2%.
 #'            )
 #' 
 #' # Same - Nicer output 
 #' # Set ci=0.95 (or another value) to estimate bootstrap CI's 
 #' fit <- abundEstim(dfunc
-#'                 , area = units::set_units(4105, "km^2")
+#'                 , area = 4105 %km^2%.
 #'                 , ci = NULL
 #'                 )
 #'          
@@ -240,7 +240,7 @@ abundEstim <- function(object
   # ---- Set Area ----
   if( is.null(area) ){
     # doing this here saves a tiny sliver of time in estimateN
-    area <- units::set_units(1, object$outputUnits, mode = "standard")^2
+    area <- setUnits(1, object$outputUnits)^2
   }
   
   # ---- Construct Original estimates frame ----

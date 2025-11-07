@@ -66,8 +66,8 @@
 #' @examples
 #' a1 <- c(log(40), 0.5, -.5)
 #' a2 <- c(log(40), 0.25, -.5)
-#' dists <- units::set_units(seq(0, 100, length = 100), "m")
-#' w = units::set_units(100, "m")
+#' dists <- seq(0, 100, length = 100) %m%.
+#' w = 100 %m%.
 #' 
 #' expTerms1 <- expansionTerms(a1, dists, "cosine", 2, w)
 #' expTerms2 <- expansionTerms(a2, dists, "cosine", 2, w)
@@ -81,7 +81,7 @@
 #' matlines(dists, expTerms, lwd=2, col=c("red", "blue"), lty=1)
 #' 
 #' # Showing key and expansions
-#' key <- halfnorm.like(log(40), dists, 1)$L.unscaled
+#' key <- halfnorm.like(log(40), dists, matrix(1,length(dists),1))$L.unscaled
 #' plot(dists, key, type = "l", col = "blue", ylim=c(0,1.5))
 #' lines(dists, key * expTerms1, col = "red")
 #' lines(dists, key * expTerms2, col = "purple")
@@ -98,7 +98,7 @@ expansionTerms <- function(a, d, series, nexp, w){
     # Note:
     #  nrow(a) == length(w) for all likes 
     
-    dscl <- units::set_units(outer(d, w, "/"), NULL) # d X n
+    dscl <- dropUnits(outer(d, w, "/")) # d X n
     
     indOutside <- dscl > 1  # save this for later
 

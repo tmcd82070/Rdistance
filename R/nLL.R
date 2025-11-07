@@ -103,7 +103,7 @@ nLL <- function(a
     if(!(ml$likelihood %in% differentiableLikelihoods())){
       # Expansion domain depends on parameters.
       # e.g., Apply expansion between 0 and theta for oneStep
-      W <- units::set_units(exp(parms[,1]), units(d), mode="standard")
+      W <- setUnits(exp(parms[,1]), units(d))
       W <- W - ml$w.lo
     } else { 
       # Most likelihoods: expansions constant across params
@@ -280,7 +280,7 @@ nLL <- function(a
 
   # Note: Key or d*Key should integrate to 1.0 every iteration
   # Note 2: if POINTS, key has units, remove them b/c nlminb can't handle em.
-  key <- units::set_units(key, NULL)
+  key <- dropUnits(key)
   
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 

@@ -74,7 +74,7 @@
 #' 
 #' # Check: 
 #' Theta <- exp(fit$par[1])
-#' Theta <- units::set_units(Theta, "m")
+#' Theta <- setUnits(Theta, "m")
 #' p <- fit$par[2]
 #' w.hi <- fit$w.hi
 #' w.lo <- fit$w.lo
@@ -109,7 +109,7 @@ integrateOneStepPoints <- function(object
     )
   } 
   
-  Theta <- units::set_units(object[,1], Units, mode = "standard")
+  Theta <- setUnits(object[,1], Units)
   p <- object[,2]
   w <- w.hi - w.lo # must have units, or calculation fails below.
 

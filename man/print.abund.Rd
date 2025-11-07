@@ -30,7 +30,7 @@ dfunc <- sparrowDf |> dfuncEstim(formula=dist~groupsize(groupsize))
 
 # Estimate abundance given a detection function
 fit <- abundEstim(object = dfunc
-                , area = units::set_units(4105, "km^2")
+                , area = setUnits(4105, "km^2")
                 , ci = NULL)
 print(fit)
 summary(fit)
@@ -39,7 +39,7 @@ summary(fit)
 # Bootstrap confidence intervals (500 iterations)
 # Requires ~4 min
 fit <- abundEstim(object = dfunc
-                , area = units::set_units(4105, "km^2")
+                , area = setUnits(4105, "km^2")
                 , ci = 0.95
                 , plot.bs = TRUE
                 , showProgress = TRUE)

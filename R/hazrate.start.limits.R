@@ -30,10 +30,10 @@ hazrate.start.limits <- function (ml){
   
   # Only time dist will not have units is when user overrides requirement
   # Nonetheless, need to remove units b/c likelihood is unitless
-  dMin <- units::set_units(dMin, NULL)
-  dMax <- units::set_units(dMax, NULL)
-  w <- units::set_units(w, NULL)
-  medDist <- units::set_units(medDist, NULL)
+  dMin <- dropUnits(dMin)
+  dMax <- dropUnits(dMax)
+  w <- dropUnits(w)
+  medDist <- dropUnits(medDist)
   
   start <- c(log(0.8 * medDist)   # Sigma 
              , rep(zero, ncovars-1)    # any covars

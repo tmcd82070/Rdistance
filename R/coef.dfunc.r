@@ -24,7 +24,7 @@
 #' \dontrun{
 #' data(sparrowDf)
 #' dfunc <- sparrowDf |> dfuncEstim(dist~bare + observer,
-#'                       w.hi=units::set_units(150, "m"))
+#'                       w.hi = 150 %m%.)
 #' coef(dfunc)
 #' }
 #'  

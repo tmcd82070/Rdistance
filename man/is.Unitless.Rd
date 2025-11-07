@@ -28,7 +28,7 @@ Sometimes units like '[m/m]' mess things up, so it is
 better to remove them before calculations.
 }
 \examples{
-a <- units::set_units(2, "m")
+a <- setUnits(2, "m")
 b <- a / a
 is.Unitless(a)
 is.Unitless(b)

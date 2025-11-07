@@ -24,13 +24,17 @@
 #' x %#% NULL    # Drop units
 #' dropUnits(x)  # Same
 #' 
-#' # %#%'s precedence is same as "^"; above "+" and "*"
+#' # %#%'s precedence is below "^" but above "+" and "*"
 #' # The following fails: 
 #' # 2 %#% "m" / (2 %#% "ha") %#% "in/acre"
 #' # The following succeeds:
 #' (2 %#% "m" / (2 %#% "ha")) %#% "in/acre"
+#' 1 %m%. ^ 2      # [m]
+#' (1 %m%.) ^ 2    # [m^2]
 #' 
 #' @export
+#' 
+#' @aliases unitHelpers
 #' 
 #' @rdname unitHelpers
 #' 

@@ -136,9 +136,9 @@ halfnorm.like <- function(a
 
   # print(dim(sigma))
   
-  # Dropping units of dist is save b/c checked already
+  # Dropping units of dist is safe b/c checked already
   # 'key' is unit-less
-  dist <- units::set_units(dist, NULL)
+  dist <- dropUnits(dist)
   # dist <- matrix(dist
   #           , nrow = length(dist)
   #           , ncol = ncol(sigma)

@@ -25,7 +25,7 @@ negexp.start.limits <- function (ml){
   # there should not be any distances outside (w.lo,w.hi)
   d <- dist - ml$w.lo
   medDist <- stats::median(d)
-  medDist <- units::set_units(medDist, NULL)
+  medDist <- dropUnits(medDist)
   
   if(is.null(medDist) || 
      is.na(medDist) || 
@@ -33,7 +33,7 @@ negexp.start.limits <- function (ml){
      (medDist <= zero)){
     w <- ml$w.hi - ml$w.lo
     medDist <- ml$w.lo + w / 2
-    medDist <- units::set_units(medDist, NULL)
+    medDist <- dropUnits(medDist)
   } 
   
   startIntercept <- -log(medDist) # = log(1/medDist)

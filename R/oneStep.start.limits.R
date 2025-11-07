@@ -15,14 +15,14 @@
 #' library(Rdistance)
 #' whi <- 50
 #' x <- c( runif(100, min=0, max=10), runif(20, min=10, max=whi))
-#' x <- units::set_units(x, "m")
+#' x <- setUnits(x, "m")
 #' detectDf <- data.frame(transect = 1, dist = x)
-#' siteDf <- data.frame(transect = 1, length = units::set_units(10,"m"))
+#' siteDf <- data.frame(transect = 1, length = setUnits(10,"m"))
 #' distDf <- RdistDf(siteDf, detectDf)
 #' ml <- parseModel(distDf
 #'             , formula = dist ~ 1
 #'             , w.lo = 0
-#'             , w.hi = units::set_units(whi, "m")
+#'             , w.hi = setUnits(whi, "m")
 #'             )
 #'             
 #'
@@ -58,11 +58,11 @@ oneStep.start.limits <- function (ml){
 
   # Only time dist2 will not have units is when user overides requirement
   # Regardless, convert w.lo and w.hi, then drop units
-  w.lo <- units::set_units(w.lo, units(dist), mode = "standard")
-  w.hi <- units::set_units(w.hi, units(dist), mode = "standard")
-  x    <- units::set_units(dist, NULL)
-  w.lo <- units::set_units(w.lo, NULL)
-  w.hi <- units::set_units(w.hi, NULL)
+  w.lo <- setUnits(w.lo, units(dist))
+  w.hi <- setUnits(w.hi, units(dist))
+  x    <- dropUnits(dist)
+  w.lo <- dropUnits(w.lo)
+  w.hi <- dropUnits(w.hi)
   
   # scale so 0 <= xx <= 1
   x <- x - w.lo
