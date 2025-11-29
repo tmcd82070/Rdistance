@@ -61,11 +61,8 @@ setUnits(x, u)
 assign to \code{x}, e.g., "m", "km", "m^2".  Valid units are  
 listed in columns "(symbol|name)" of \code{\link[units]{valid_udunits}}.}
 
-\item{.}{Placeholder for the fixed unit assignment operators. Technically, 
-this is the second argument to the user-defined 
-infix operator \%<units>\%. This argument must be present, but is ignored 
-(see Details and Examples). Used to trick \%<units>\% into behaving 
-somewhat like a unary operator.}
+\item{.}{Placeholder for the fixed unit assignment operators. Ignored.
+See Details.}
 }
 \value{
 For \%#\% and \code{setUnits}, argument \code{x} with 
@@ -82,15 +79,16 @@ Helper functions for assigning physical measurement units in Rdistance.
 All are convenience wrappers for \code{units::}\code{\link[units]{set_units}}.
 }
 \details{
-Ideally, the fixed unit assignment operators  (i.e., \%<units>\%) 
-would behave like true unary operators. R does not allow 
-user defined unary operators, and technically these functions 
-are instances of R's user-defined infix 
-operator. As such, something must follow the second \%. Their syntax must be 
-\code{x \%<units>\% <something>} rather than simply \code{x \%<units>\%}.
-Whatever comes after the second \% (technically, the second argument to 
-the infix operator) 
-does not matter and '.' is suggested. See Examples.
+The fixed unit assignment operators are designed to behave somewhat like 
+unary operators (i.e., 1 argument);
+but, R does not allow 
+user defined unary operators. 
+Technically, the fixed unit assignment operators are instances of
+R's user-defined infix 
+operator, and as such they require two arguments. 
+Their syntax must be 
+\code{x \%<units>\% <something>}; but, the second argument is ignored
+and '.' is suggested. See Examples.
 }
 \examples{
 

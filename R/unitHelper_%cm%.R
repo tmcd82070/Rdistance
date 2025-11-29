@@ -2,6 +2,6 @@
 #'
 #' @usage x \%cm\% .
 #' 
-`%cm%` <- function(x, .){
+`%cm%` <- function(x, . = NULL){
   units::set_units(x, "cm")
 }
