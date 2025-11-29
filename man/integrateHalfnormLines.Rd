@@ -36,7 +36,7 @@ Ignored if \code{object}
 is a fitted distance function. 
 Must have physical measurement units.}
 
-\item{w.hi}{Maximum sighting distance or right-trunction value
+\item{w.hi}{Maximum sighting distance or right-truncation value
 if \code{object} is a matrix.
 Ignored if \code{object} 
 is a fitted distance function.
@@ -68,7 +68,7 @@ Integral(e^{-x^2/(2s^2)}) = sqrt(2*pi)*s*(Pnorm(w) - 0.5),}
 where \eqn{w = w.hi - w.lo}, \eqn{\sigma_i}{s} is the estimated half-normal distance 
 function parameter for the 
 i-th observed distance, and \eqn{\Phi}{Pnorm} is the standard normal 
-cummulative probability function. 
+cumulative probability function. 
 Rdistance uses R's base 
 function \code{pnorm()}, which for all intents and purposes is exact.
 }

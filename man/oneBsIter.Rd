@@ -32,13 +32,13 @@ for subsetting the rows of \code{data}. The actual indices are
 in column \code{rowIndex}.}
 
 \item{key}{A data frame containing the current id of the 
-BS iteration.  This is included for compatability with 
+BS iteration.  This is included for compatibility with 
 \code{dplyr::group_modify}, but it is not used internally.
 The original non-resampled data have \code{key == "Original"}.}
 
 \item{data}{An Rdistance nested data frame containing 
 the data to bootstrap resample.  Rows of this data frame, 
-equating to transects, are sampled using the indicies in 
+equating to transects, are sampled using the indices in 
 \code{indexDf$rowIndex}.}
 
 \item{formula}{A standard formula object.  For example, \code{dist ~ 1}, 

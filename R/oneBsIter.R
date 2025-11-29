@@ -9,13 +9,13 @@
 #' in column \code{rowIndex}.
 #' 
 #' @param key A data frame containing the current id of the 
-#' BS iteration.  This is included for compatability with 
+#' BS iteration.  This is included for compatibility with 
 #' \code{dplyr::group_modify}, but it is not used internally.
 #' The original non-resampled data have \code{key == "Original"}.
 #' 
 #' @param data An Rdistance nested data frame containing 
 #' the data to bootstrap resample.  Rows of this data frame, 
-#' equating to transects, are sampled using the indicies in 
+#' equating to transects, are sampled using the indices in 
 #' \code{indexDf$rowIndex}. 
 #' 
 #' @param pb A progress bar created with \code{progress::progress_bar$new()}.

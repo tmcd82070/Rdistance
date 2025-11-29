@@ -39,7 +39,7 @@ Ignored if \code{object}
 is a fitted distance function. 
 Must have physical measurement units.}
 
-\item{w.hi}{Maximum sighting distance or right-trunction value
+\item{w.hi}{Maximum sighting distance or right-truncation value
 if \code{object} is a matrix.
 Ignored if \code{object} 
 is a fitted distance function.

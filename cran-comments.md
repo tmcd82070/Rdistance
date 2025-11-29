@@ -19,7 +19,7 @@ R CMD check --as-cran results
 No ERRORs or WARNINGs. 
 
 local environment:
-Windows 11 Pro, R version 4.4.3 (2025-02-28) -- "Trophy Case"
+Windows 11 Pro, R version 4.5.2
 
 # Rhub Checks (via Github actions)
 
