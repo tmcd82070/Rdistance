@@ -2,6 +2,6 @@
 #'
 #' @usage x \%inches\% .
 #'
-`%inches%` <- function(x, .){
+`%inches%` <- function(x, . = NULL){
   units::set_units(x, "in")
 }

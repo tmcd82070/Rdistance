@@ -27,7 +27,7 @@
 #' is a fitted distance function. 
 #' Must have physical measurement units. 
 #' 
-#' @param w.hi Maximum sighting distance or right-trunction value
+#' @param w.hi Maximum sighting distance or right-truncation value
 #' if \code{object} is a matrix.
 #' Ignored if \code{object} 
 #' is a fitted distance function.

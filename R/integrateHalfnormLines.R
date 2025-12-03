@@ -17,7 +17,7 @@
 #' where \eqn{w = w.hi - w.lo}, \eqn{\sigma_i}{s} is the estimated half-normal distance 
 #' function parameter for the 
 #' i-th observed distance, and \eqn{\Phi}{Pnorm} is the standard normal 
-#' cummulative probability function. 
+#' cumulative probability function. 
 #' Rdistance uses R's base 
 #' function \code{pnorm()}, which for all intents and purposes is exact.
 #' 

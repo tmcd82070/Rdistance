@@ -1,14 +1,38 @@
-Changes in version 4.1.0 (2025-08-21)
+Changes in version 4.1.0 (2025-11-29)
 ==============
-Version 4.1.0 added the 'oneStep' distance function and associated methods.
 
-*   Added `oneStep.like`, a mixture of non-overlapping uniform densities, 
-as a distance function.  Included associated print, plot, summary, and 
-expansion methods. 
-*   Implemented reporting of bootstrap coefficient standard errors, after 
-bootstrap resampling is complete.  Prior to bootstrapping, asymptotic se's 
-are reported when known. 
-*   Substantial documentation updates and clarifications.
+*   **Functionality change**: Added `oneStep.like`, a mixture of non-overlapping
+uniform densities, as a distance function.  Included associated print, 
+plot, summary, and expansion methods. This required inclusion of a new non-gradient
+based optimizer. 
+*   **Functionality change**: Implemented reporting of bootstrap coefficient 
+standard errors, after bootstrap resampling is complete.  Prior to 
+bootstrapping, asymptotic se's are reported when known. 
+*   **Functionality change**: Included unit assignment helpers. Units can 
+now be assigned with the `%#%` operator (e.g., 3 %#% "m"), which makes unit
+assignment easier than in prior versions (which used `units::set_units`). 
+Fixed unit assignment operators are included for all popular linear and 
+squared units (e.g., 3 %m%. assigns meters to 3). See `help(unitHelpers)`.
+*   **Functionality change**: Included b-spline expansion factors for distance 
+functions. Expansion factors are now `cosine`, `hermite`, `simple`, 
+and `bspline`.
+*   **Functionality change**: Added verbocity option. This prints intermediate 
+parameter estimates and likelihoods during maximization. 
+Set `options(Rdistance_verbocity = 1)`
+or higher to see progressively more detailed intermediate output. 
+*   **Update**: Likelihood computation time was significantly 
+decreased relative to the prior version, greatly increasing speed of 
+maximizations. Now, all likelihoods for both lines and points that do not 
+contain expansions use exact integration, which is much quicker than 
+numerical integration.  Numeric integration is used only when expansion 
+terms are included. 
+*   **Update**: Substantial documentation updates and clarifications.
+*   **Bug Fixes**: 
+  .   Fixed bug in `plot.dfunc.para` when `w.lo` > 0
+  .   Fixed bug in point transect methods resulting in incorrect 
+  likelihood scalings
+  .   Fixed expansions `hermite` and `simple` that was causing 
+  non-convergence issues
 
 Changes in version 4.0.5 (2025-04-10)
 ==============

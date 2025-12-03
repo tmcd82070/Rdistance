@@ -113,7 +113,7 @@ install.packages("Rdistance")
 ```
 
 2.  ***Development version***: `Rdistance` is under active development,
-    and the ‘development’ version often contains patches between
+    and the development version often contains patches between
     official releases. Inspect commit messages for commits following the
     most recent release for a description of the patches. Install the
     development version from

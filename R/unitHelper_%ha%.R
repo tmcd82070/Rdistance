@@ -2,6 +2,6 @@
 #'
 #' @usage x \%ha\% .
 #'
-`%ha%` <- function(x, y = NULL){
+`%ha%` <- function(x, . = NULL){
   units::set_units(x, "ha")
 }

@@ -2,6 +2,6 @@
 #'
 #' @usage x \%acre\% .
 #'
-`%acre%` <- function(x, y = NULL){
+`%acre%` <- function(x, . = NULL){
   units::set_units(x, "acre")
 }

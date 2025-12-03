@@ -7,7 +7,7 @@
 #' estimated from the second derivative of the likelihood 
 #' (i.e., the hessian).  If the likelihood is not 
 #' differentiable, the variance-covariance matrix is 
-#' a matrix of 0's that are intepreted as "pending" (i.e., 
+#' a matrix of 0's that are interpreted as "pending" (i.e., 
 #' pending bootstrapping). 
 #' 
 #' @inheritParams startLimits
