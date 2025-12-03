@@ -109,7 +109,7 @@ Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/tmcd82070/Rdistance/wiki}
+  \item \url{https://mcdonalddata.science/Rdistance.html}
   \item Report bugs at \url{https://github.com/tmcd82070/Rdistance/issues}
 }
 

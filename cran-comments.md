@@ -1,16 +1,18 @@
 # Submission comments
 
-This submission (v4.1.0) implements a new method relative to v4.0.5
+This submission (v4.1.1) corrects an unquoted word (Rdistance) in the 
+Description field of the DESCRIPTION file. I took the chance to edit my 
+Description field and eliminated the offending word.
 
-Details on the specific changes are in **NEWS**. 
+Details on the changes between major releases are in **NEWS**. 
 
 # Current submission
 
-* 4.1.0
+* 4.1.1
 
 # Prior submission
 
-* 4.0.5   
+* 4.1.0   
 
 # Local Check
 
