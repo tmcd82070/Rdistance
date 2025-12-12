@@ -45,7 +45,7 @@ tabl <- "
 |  present        |   present   |   present     | dfunc; abundance | usual observation         |
 |  MISSING        |   present   |   present     | abundance        |                           |
 |  present        |   MISSING   |   present     | dfunc; abundance |for abundance, length only |
-|  present        |   present   |   MISSING     | dfunc            |                           |
+|  present        |   present   |   MISSING     | dfunc; abundance |  sum groupsizes |
 |  MISSING        |   MISSING   |   present     | abundance        |   so-called zero transect |
 |  present        |   MISSING   |   MISSING     | dfunc            |                           |
 |  MISSING        |   present   |   MISSING     | nothing          | *ignored*                 |
