@@ -81,14 +81,13 @@ estimateN <- function(object
   
     # phat should be unit-less; check just to be sure, if so drop "1" units
     # Odd: sometimes phat has units "1", sometimes "m/m". Either way, remove,
-    # but don't use units::drop_units which only works if phat has units to drop.
-    # Assigning NULL units always works
     phat <- dropUnits(phat)
     nhat <- groupSz / phat # inflated counts one per detection
     
     # ---- Compute density ----
+    # na.rm CRITICAL here; missing groupsizes on missing transects
     if(Rdistance::is.points(object)){
-      dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * pi * w^2 * totSurveyedUnits) # na.rm CRITICAL here; missing groupsizes on missing transects
+      dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * pi * w^2 * totSurveyedUnits) 
     } else {
       dens <- sum(nhat, na.rm = TRUE) / (propUnitSurveyed * 2 * w * totSurveyedUnits)
     }

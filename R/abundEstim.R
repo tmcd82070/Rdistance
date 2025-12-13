@@ -49,6 +49,17 @@
 #'   progress bar if running this within another function. Otherwise, 
 #'   it is handy to see progress of the bootstrap iterations.
 #'   
+#' @param parallel A logical or positive integer that is ignored unless 
+#'   confidence intervals are requested (i.e., \code{ci} is not NULL).
+#'   If TRUE, bootstrap confidence interval iterations are 
+#'   run in parallel using the maximum number of available cores minus 1. 
+#'   If FALSE, bootstrap iterations are performed in series, and progress 
+#'   will be shown if \code{showProgress == TRUE}. 
+#'   If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap 
+#'   iterations are perform in parallel on that many cores. Parameters 
+#'   \code{showProgress} and \code{plot.bs} are ignored when parallel execution
+#'   is requested because the parallel session is non-interactive. The maximum 
+#'   number of cores is reported by \code{parallel::detectCores()}.
 #'   
 #' @details The abundance estimate for line-transect surveys (if no covariates
 #'    are included in the detection function and both sides of the transect 
@@ -224,6 +235,7 @@ abundEstim <- function(object
                      , R = 500
                      , plot.bs = FALSE
                      , showProgress = TRUE
+                     , parallel = TRUE
                      ){
 
 
@@ -231,8 +243,12 @@ abundEstim <- function(object
   
   bootstrapping <- !is.null(ci) && !is.na(ci)
   
+  # Initial setup for parallel session ----
+  parallelRequest <- getNCores( parallel )
+  parallel <- parallelRequest$parallel  # T or F
+  
   # Initial setup for plotting ----
-  if (bootstrapping && plot.bs) {
+  if (!parallel && bootstrapping && plot.bs) {
     graphics::par( xpd=TRUE )
     plotObj <- plot(object)
   }
@@ -250,12 +266,9 @@ abundEstim <- function(object
                     )
   ests$id <- "Original"
   
-  # ---- Prelims constants for bootstrapping ----
-  nDataRows <- nrow(object$data)
-  # bsData <- data.frame(id = "Original",
-  #                      rowIndex = 1:nDataRows)
+  # ---- Prelims: constants for bootstrapping ----
 
-  pb <- list(tick = function(){}) # NULL tick function for not bootstrapping
+  # pb <- list(tick = function(){}) # NULL tick function for not bootstrapping
 
   # ---- Add bootstrap indices if called for ----
   # This is essentially what rsample::bootstraps does, but rsample stores the 
@@ -264,55 +277,37 @@ abundEstim <- function(object
   if ( bootstrapping ) {
     
     nDigits <- ceiling(log10(R + 0.1))
-    id <- rep(1:R, each = nDataRows)
+    id <- 1:R
     bsData <-  data.frame(
-                id = paste0("Bootstrap_",
-                            formatC(id
-                                    , format = "f"
-                                    , digits = 0
-                                    , width = nDigits
-                                    , flag = "0"))
-              , rowIndex = sample( 1:nDataRows
-                           , size = R*nDataRows
-                           , replace = TRUE
-                          ))
+      id = paste0("Bootstrap_",
+                  formatC(id
+                          , format = "f"
+                          , digits = 0
+                          , width = nDigits
+                          , flag = "0"))
+      , ID = id # so group_modify works, f(x=ID, y=id)
+      ) |> 
+      dplyr::group_by(id) 
 
-    # set up progress bar if called for, only if bootstrapping
-    if(showProgress){
-      pb <- progress::progress_bar$new(
-          format = paste0(R, " Bootstraps: [:bar] Run Time: :elapsedfull")
-        , total = R+1
-        , show_after = 1
-        , clear = FALSE
-      )
-    }
-
-    # --- Apply estimation to each ID group ----
-    B <- bsData |> 
-      dplyr::group_by(id) |> 
-      dplyr::group_modify(.f = oneBsIter # oneBsIter is in Rdistance, not exported
-                        , data = object$data
-                        , formula = object$formula  
-                        , likelihood = object$likelihood 
-                        , w.lo = object$w.lo
-                        , w.hi = object$w.hi
-                        , expansions = object$expansions
-                        , series = object$series
-                        , x.scl = object$x.scl 
-                        , g.x.scl = object$g.x.scl
-                        , outputUnits = object$outputUnits
-                        , warn = FALSE
-                        , asymptoticSE = FALSE
-                        , area = area
-                        , propUnitSurveyed = propUnitSurveyed
-                        , pb = pb
-                        , plot.bs = plot.bs
-                        , plotCovValues = plotObj$predCovValues
-      )
+    if( parallel ){
+      cl <- multidplyr::new_cluster(parallelRequest$cores)  
+      bsData <- bsData |> 
+        multidplyr::partition(cl)
+      
+      cat(paste0("Going parallel now using "
+                 , colorize(parallelRequest$cores)
+                 , " cores...\n"))
+    } 
     
-    if(showProgress){
-      pb$terminate()
-    }
+    B <- bootstrap(bsData = bsData
+                  , object = object
+                  , area = area
+                  , propUnitSurveyed = propUnitSurveyed
+                  , R = R
+                  , plot.bs = plot.bs
+                  , plotCovValues = plotObj$predCovValues
+                  , showProgress = showProgress
+                ) 
     
     # Replace varcovar with bootstrap varcovar
     bsCoefs <- B |> 
