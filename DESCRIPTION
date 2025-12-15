@@ -1,8 +1,8 @@
 Package: Rdistance
 Type: Package
 Title: Density and Abundance from Distance-Sampling Surveys
-Version: 4.1.1
-Date: 2025-12-03
+Version: 4.1.2
+Date: 2025-12-15
 Maintainer: Trent McDonald <trent@mcdonalddatasciences.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdonalddatasciences.com"), 
   person("Jason", "Carlisle", role="aut", email="jason.carlisle@wyo.gov"), 
