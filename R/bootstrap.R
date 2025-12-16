@@ -1,68 +1,99 @@
 #' @title Perform non-parallel bootstrap iterations 
-bootstrap <- function(bsData
-                            , object
-                            , area 
-                            , propUnitSurveyed 
-                            , R 
-                            , plot.bs 
-                            , plotCovValues
-                            , showProgress 
-                            ){
+bootstrap <- function(
+                      object
+                    , area 
+                    , propUnitSurveyed 
+                    , R 
+                    , plot.bs 
+                    , plotCovValues
+                    , showProgress 
+                    , parallel
+                    , cores
+                    ){
   
-  # nDataRows <- nrow(object$data)
-  # nDigits <- ceiling(log10(R + 0.1))
-  # id <- rep(1:R, each = nDataRows)
-  # bsData <-  data.frame(
-  #   id = paste0("Bootstrap_",
-  #               formatC(id
-  #                       , format = "f"
-  #                       , digits = 0
-  #                       , width = nDigits
-  #                       , flag = "0"))
-  #   , rowIndex = sample( 1:nDataRows
-  #                        , size = R*nDataRows
-  #                        , replace = TRUE
-  #   ))
+  nDigits <- ceiling(log10(R + 0.1))
+  id <- 1:R
+  bsData <-  data.frame(
+    id = paste0("Bootstrap_",
+                formatC(id
+                        , format = "f"
+                        , digits = 0
+                        , width = nDigits
+                        , flag = "0"))
+  ) |> 
+    dplyr::group_by(id) 
   
   # set up progress bar if called for
   if(showProgress){
     pb <- progress::progress_bar$new(
       format = paste0(R, " Bootstraps: [:bar] Run Time: :elapsedfull")
-      , total = R+1
-      , show_after = 1
+      , total = R
       , clear = FALSE
     )
+  } else {
+    pb <- list(tick = function(){})
   }
+
+  # Create cluster if called for
+  if( parallel ){
+    cat(paste0("Creating CPU cluster with "
+               , colorize(cores)
+               , " cores..."))
+    
+    cl <- multidplyr::new_cluster(cores)  
+    bsData <- bsData |> 
+      multidplyr::partition(cl)
+    
+    cat("done.\n")
+    
+    cat("Copying data to cores...")
+    multidplyr::cluster_library(cl, "Rdistance")
+    multidplyr::cluster_copy(cl, "object")
+    multidplyr::cluster_copy(cl, "area")
+    multidplyr::cluster_copy(cl, "propUnitSurveyed")
+    multidplyr::cluster_copy(cl, "pb") # known NULL b/c showprogress known F
+    multidplyr::cluster_copy(cl, "plot.bs")  # known F
+    cat("done.\n")
+    
+    cat(paste0(R, " bootstrap iterations initiated. Standby..."))
+    strtTime <- Sys.time()
+  } 
   
   # --- Apply estimation to each ID group ----
   B <- bsData |> 
-    dplyr::group_modify(.f = oneBsIter 
-                        , object = object
-                        # , data = object$data
-                        # , formula = object$formula  
-                        # , likelihood = object$likelihood 
-                        # , w.lo = object$w.lo
-                        # , w.hi = object$w.hi
-                        # , expansions = object$expansions
-                        # , series = object$series
-                        # , x.scl = object$x.scl 
-                        # , g.x.scl = object$g.x.scl
-                        # , outputUnits = object$outputUnits
-                        , warn = FALSE
-                        , asymptoticSE = FALSE
-                        , area = area
-                        , propUnitSurveyed = propUnitSurveyed
-                        , pb = pb
-                        , plot.bs = plot.bs
-                        , plotCovValues = plotCovValues
+    dplyr::summarise(
+      oneBsIter(  object = object
+                , area = area
+                , propUnitSurveyed = propUnitSurveyed
+                , pb = pb
+                , plot.bs = plot.bs
+                , plotCovValues = plotCovValues
+                , warn = FALSE
+                , asymptoticSE = FALSE
+      )
     )
   
-  # dplyr::collect() works in both parallel and non-parallel
-  B <- B |> 
-    dplyr::collect()
+  if( parallel ){
+    B <- B |> 
+      dplyr::collect()
+    
+    runTime <- as.numeric(difftime(Sys.time(), strtTime, units = "s"))
+    runTimeUnits <- "sec"
+    if(runTime > 60){
+      runTime <- runTime / 60
+      runTimeUnits <- "min"
+    }
+    if(runTime > 60){
+      runTime <- runTime / 60
+      runTimeUnits <- "hrs"
+    }
+    cat(paste0("Run Time: ", round(runTime,3), " ", runTimeUnits, "\n"))
+  }
   
   if(showProgress){
     pb$terminate()
   }
+  
+  B
   
 }

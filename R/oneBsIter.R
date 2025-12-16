@@ -35,19 +35,7 @@
 #' one iteration of the bootstrap. 
 #' 
 #' 
-oneBsIter <- function(idDf
-                      , key
-                      , object
-                      # , data
-                      # , formula
-                      # , likelihood
-                      # , w.lo
-                      # , w.hi
-                      # , expansions
-                      # , series
-                      # , x.scl
-                      # , g.x.scl
-                      # , outputUnits
+oneBsIter <- function(  object
                       , area 
                       , propUnitSurveyed
                       , pb
@@ -59,14 +47,15 @@ oneBsIter <- function(idDf
   
   # Stratified bootstrap: same rows from each strata, strata = is.na(effort)
   effCol <- attr(object$data, "effortColumn")
-  object$data$.missingTransect <- is.na(object$data[[effCol]]) 
-  bsdf <- object$data |>
-    dplyr::group_by(.missingTransect) |> 
-    dplyr::slice_sample(prop = 1
-                      , replace = TRUE) |> 
-    dplyr::ungroup()
-
-
+  missingTransect <- is.na(object$data[[effCol]]) 
+  n <- length(missingTransect)
+  noTranInd    <- sample( (1:n)[missingTransect], replace = T )
+  withTranInd  <- sample( (1:n)[!missingTransect], replace = T )
+  bsdf <- rbind( object$data[noTranInd, ]
+               , object$data[withTranInd, ] ) # don't use dplyr::bind_rows
+  
+  # bsdf must be is.RdistDf(bsdf) = TRUE, it is
+  
   # Fit dfunc to bs data
   dfunc.bs <- dfuncEstim(data = bsdf,
                          formula = object$formula,  

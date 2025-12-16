@@ -247,10 +247,17 @@ abundEstim <- function(object
   parallelRequest <- getNCores( parallel )
   parallel <- parallelRequest$parallel  # T or F
   
+  if( parallel ){
+    plot.bs <- FALSE
+    showProgress <- FALSE
+  }
+  
   # Initial setup for plotting ----
-  if (!parallel && bootstrapping && plot.bs) {
+  if (bootstrapping && plot.bs) {
     graphics::par( xpd=TRUE )
     plotObj <- plot(object)
+  } else {
+    plotObj <- NULL
   }
   
   # ---- Set Area ----
@@ -276,37 +283,16 @@ abundEstim <- function(object
   # (R*nrow(x$data)+1) X 2 data frame must be constructable in memory.
   if ( bootstrapping ) {
     
-    nDigits <- ceiling(log10(R + 0.1))
-    id <- 1:R
-    bsData <-  data.frame(
-      id = paste0("Bootstrap_",
-                  formatC(id
-                          , format = "f"
-                          , digits = 0
-                          , width = nDigits
-                          , flag = "0"))
-      , ID = id # so group_modify works, f(x=ID, y=id)
-      ) |> 
-      dplyr::group_by(id) 
-
-    if( parallel ){
-      cl <- multidplyr::new_cluster(parallelRequest$cores)  
-      bsData <- bsData |> 
-        multidplyr::partition(cl)
-      
-      cat(paste0("Going parallel now using "
-                 , colorize(parallelRequest$cores)
-                 , " cores...\n"))
-    } 
-    
-    B <- bootstrap(bsData = bsData
-                  , object = object
+    B <- bootstrap(
+                    object = object
                   , area = area
                   , propUnitSurveyed = propUnitSurveyed
                   , R = R
                   , plot.bs = plot.bs
                   , plotCovValues = plotObj$predCovValues
                   , showProgress = showProgress
+                  , parallel = parallel
+                  , cores = parallelRequest$cores
                 ) 
     
     # Replace varcovar with bootstrap varcovar
@@ -314,6 +300,7 @@ abundEstim <- function(object
       dplyr::ungroup() |> 
       dplyr::select(dplyr::all_of(names(stats::coef(object))))
     object$varcovar <- stats::var(bsCoefs)
+    object$asymptoticSE <- FALSE
     
 
   } else {
