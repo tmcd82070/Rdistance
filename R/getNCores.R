@@ -17,16 +17,32 @@
 #' 
 
 getNCores <- function(parallel){
+  maxCores <- parallel::detectCores()
   if( is.logical(parallel) ){
     if( parallel ){
-      cores2Use <- parallel::detectCores() - 1
+      cores2Use <- maxCores - 1
     } else {
       cores2Use <- 1
     }
   } else {
-    parallel <- max(as.integer(parallel), 0)
+    if( parallel < 1 ){
+      warning(paste0("Number of requested cores must be >= 1. Found "
+                    , parallel
+                    , ". Running on 1 core.")
+              , immediate. = TRUE)
+    } else if( parallel > maxCores ){
+      warning(paste0("Number of requested cores must be <= "
+                    , maxCores
+                    , ". Found "
+                     , parallel
+                     , ". Running on "
+                     , maxCores
+                     ," cores.")
+              , immediate. = TRUE)
+      
+    }
     if( parallel >= 2 ){
-      cores2Use <- min(parallel, parallel::detectCores())
+      cores2Use <- min(as.integer(parallel), maxCores)
       parallel <- TRUE
     } else {
       cores2Use <- 1

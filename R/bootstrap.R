@@ -26,7 +26,7 @@ bootstrap <- function(
   # set up progress bar if called for
   if(showProgress){
     pb <- progress::progress_bar$new(
-      format = paste0(R, " Bootstraps: [:bar] Run Time: :elapsedfull")
+      format = paste0(R, " Bootstraps: [:bar] ETA: :eta")
       , total = R
       , clear = FALSE
     )
@@ -34,6 +34,9 @@ bootstrap <- function(
     pb <- list(tick = function(){})
   }
 
+  # start a timer
+  strtTime <- Sys.time()  
+  
   # Create cluster if called for
   if( parallel ){
     cat(paste0("Creating CPU cluster with "
@@ -76,19 +79,21 @@ bootstrap <- function(
   if( parallel ){
     B <- B |> 
       dplyr::collect()
-    
-    runTime <- as.numeric(difftime(Sys.time(), strtTime, units = "s"))
-    runTimeUnits <- "sec"
-    if(runTime > 60){
-      runTime <- runTime / 60
-      runTimeUnits <- "min"
-    }
-    if(runTime > 60){
-      runTime <- runTime / 60
-      runTimeUnits <- "hrs"
-    }
-    cat(paste0("Run Time: ", round(runTime,3), " ", runTimeUnits, "\n"))
   }
+
+  # compute run time    
+  runTime <- as.numeric(difftime(Sys.time(), strtTime, units = "s"))
+  runTimeUnits <- "sec"
+  if(runTime > 60){
+    runTime <- runTime / 60
+    runTimeUnits <- "min"
+  }
+  if(runTime > 60){
+    runTime <- runTime / 60
+    runTimeUnits <- "hrs"
+  }
+  cat(paste0("Run Time: ", round(runTime,3), " ", runTimeUnits, "\n"))
+
   
   if(showProgress){
     pb$terminate()

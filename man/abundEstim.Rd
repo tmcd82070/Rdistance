@@ -11,7 +11,8 @@ abundEstim(
   ci = 0.95,
   R = 500,
   plot.bs = FALSE,
-  showProgress = TRUE
+  showProgress = TRUE,
+  parallel = TRUE
 )
 }
 \arguments{
@@ -57,6 +58,18 @@ progress bar during bootstrapping. Default is \code{TRUE}.
 It is handy to shut off the 
 progress bar if running this within another function. Otherwise, 
 it is handy to see progress of the bootstrap iterations.}
+
+\item{parallel}{A logical or positive integer, ignored unless 
+confidence intervals are requested (i.e., \code{!is.null(ci)}).
+If TRUE, bootstrap confidence interval iterations are 
+run in parallel using the maximum number of available cores minus 1. 
+The maximum number of cores is reported by \code{parallel::detectCores()}.
+If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap 
+iterations are performed in parallel on that many cores. 
+If FALSE, bootstrap iterations are performed in series, and progress 
+will be shown if \code{showProgress == TRUE}. Parameters 
+\code{showProgress} and \code{plot.bs} are ignored when operating
+in parallel.}
 }
 \value{
 An Rdistance 'abundance estimate' object, which is a list of
