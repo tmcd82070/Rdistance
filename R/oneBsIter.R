@@ -35,39 +35,38 @@
 #' one iteration of the bootstrap. 
 #' 
 #' 
-oneBsIter <- function(indexDf
-                      , key
-                      , data
-                      , formula
-                      , likelihood
-                      , w.lo
-                      , w.hi
-                      , expansions
-                      , series
-                      , x.scl
-                      , g.x.scl
-                      , outputUnits
-                      , warn
+oneBsIter <- function(  object
                       , area 
                       , propUnitSurveyed
                       , pb
                       , plot.bs
                       , plotCovValues
+                      , warn = FALSE
                       , asymptoticSE = FALSE
 ){
   
-  bsdf <- data[indexDf$rowIndex,]
+  # Stratified bootstrap: same rows from each strata, strata = is.na(effort)
+  effCol <- attr(object$data, "effortColumn")
+  missingTransect <- is.na(object$data[[effCol]]) 
+  n <- length(missingTransect)
+  noTranInd    <- sample( (1:n)[missingTransect], replace = T )
+  withTranInd  <- sample( (1:n)[!missingTransect], replace = T )
+  bsdf <- rbind( object$data[noTranInd, ]
+               , object$data[withTranInd, ] ) # don't use dplyr::bind_rows
   
+  # bsdf must be is.RdistDf(bsdf) = TRUE, it is
+  
+  # Fit dfunc to bs data
   dfunc.bs <- dfuncEstim(data = bsdf,
-                         formula = formula,  
-                         likelihood = likelihood, 
-                         w.lo = w.lo,
-                         w.hi = w.hi,
-                         expansions = expansions, 
-                         series = series,
-                         x.scl = x.scl, 
-                         g.x.scl = g.x.scl,
-                         outputUnits = outputUnits,
+                         formula = object$formula,  
+                         likelihood = object$likelihood, 
+                         w.lo = object$w.lo,
+                         w.hi = object$w.hi,
+                         expansions = object$expansions, 
+                         series = object$series,
+                         x.scl = object$x.scl, 
+                         g.x.scl = object$g.x.scl,
+                         outputUnits = object$outputUnits,
                          warn = warn, 
                          asymptoticSE = asymptoticSE)
 
