@@ -229,24 +229,40 @@ parseModel <- function(data
     ml$x.scl <- ml$x.scl[1]
   }
   
+  # Check x.scl for Gamma, and x.scl >= w.lo ----
   if ( !is.character(ml$x.scl) ){
-    isZero <- dropUnits(ml$x.scl) == 0
-    if ( isZero & ml$likelihood == "Gamma" ){
-        ml$x.scl <- "max"
-        warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
-    }
 
-    # Check that x.scl >= w.lo ----
-    if ( ml$x.scl < ml$w.lo ){
-      ml$x.scl <- ml$w.lo
-      warning(paste0("x.scl must be >= w.lo. x.scl set to "
-                   , format(ml$x.scl)
-                   , " i.e., g("
-                   , format(ml$x.scl)
-                   , ") = "
-                   , format(ml$g.x.scl)
-                   , " in the model."
-                  ))
+    if( ml$likelihood == "Gamma" ){
+      isZero <- dropUnits(ml$x.scl) == 0  # the default for x.scl
+      if ( !isZero ){
+          # some non-default x.scl
+          warning("Cannot specify g(0) for Gamma likelihood.  x.scl set to 'max'.")
+      }
+      ml$x.scl <- "max"
+      
+    } else {
+      
+      if ( ml$x.scl < ml$w.lo ){
+        ml$x.scl <- ml$w.lo
+        warning(paste0("x.scl must be >= w.lo. x.scl set to "
+                     , format(ml$x.scl)
+                     , " i.e., g("
+                     , format(ml$x.scl)
+                     , ") = "
+                     , format(ml$g.x.scl)
+                    ))
+      }
+      if ( ml$x.scl > ml$w.hi ){
+        ml$x.scl <- ml$w.hi
+        warning(paste0("x.scl must be <= w.hi. x.scl set to "
+                       , format(ml$x.scl)
+                       , " i.e., g("
+                       , format(ml$x.scl)
+                       , ") = "
+                       , format(ml$g.x.scl)
+        ))
+      }
+      
     }
   } else if( ml$x.scl != "max"){
     stop(paste0("x.scl must either be a number (with units) or string 'max'. Found "

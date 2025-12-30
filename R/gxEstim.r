@@ -114,57 +114,20 @@ gxEstim <- function( fit ){
   
   x.scl <- fit$x.scl
   
-  # overide x.scl for Gamma likelihood
-  if( !is.character(x.scl) ){
-    x.scl.xUnits <- dropUnits(x.scl)
-    isZero <- x.scl.xUnits == 0
-    if( isZero & fit$likelihood == "Gamma" ){
-      x.scl <- "max"
-      # warning("Cannot specify g(0) for Gamma likelihood.  x.scl changed to 'max'.")
-    }
-  }
-  
-  if( !is.character(x.scl) ){
-    # x is specified, first make sure w.low < x < w.high, then compute g(x)
-    if( x.scl < fit$w.lo ){
-          x.scl <- fit$w.lo
-          warning(paste("x.scl is less than specified lower limit (w.lo). x.scl has been reset to", fit$w.lo))
-      } else if( fit$w.hi < x.scl ) {
-          x.scl <- fit$x.hi
-          warning(paste("x.scl is greater than specified upper limit (w.hi). x.scl has been reset to", fit$w.hi))
+  if( is.character(x.scl) ){
+    if( x.scl == "max" ){
+      if( fit$likelihood %in% c("halfnorm", "negexp", "hazrate", "triangle", "huber") & 
+                 fit$expansions == 0 ){
+        # All these are monotonically negative
+        x.scl <- fit$w.lo 
       } 
-  } else if( x.scl == "max" ){
-    #   the x that maximizes g() must be estimated
-    if( fit$likelihood == "Gamma" & (fit$expansions == 0) ){
-      r <- fit$par[1]
-      lam <- fit$par[2]
-      b <- (1/gamma(r)) * (((r - 1)/exp(1))^(r - 1))
-      x.scl <- lam * b * (r - 1)   # the Mode = the x that maximizes g() when g is Gamma
-    } else if( fit$likelihood == "smu"){
-      x.scl <- fit$fit$x[which.max(fit$fit$y)]
-    } else if( fit$likelihood %in% c("logistic", "halfnorm", "negexp", "hazrate", "triangle", "huber") & 
-               fit$expansions == 0 ){
-      # All these are monotonically negative
-      x.scl <- fit$w.lo 
     } else {
-      # if we are here, we have an unknown likelihood.
-      # WHAT ABOUT GAMMA WITH EXPANSIONS?
-      # user-defined likelihood, and we don't know 
-      # where it's maximum is. Hence, we compute the maximum numerically. 
-      # It is on the user to make sure their likelihood is well behaved and 
-      # gives a nice maximum.
-      # x.scl <- maximize.g( fit )
-      stop("unknown likelihood")  # should never happen
+        # x.scl != "max"
+        x.scl <- setUnits(NA, fit$outputUnits)
+        warning("Invalid character string for x.scl specified in gxEstim. x.scl set to missing.")
     }
-    # x.scl came in as "max", we must return one with units attached. 
-    # maximize.g returns a unitless x.scl
-    x.scl <- setUnits(x.scl, fit$outputUnits)
-    
-  } else {
-    x.scl <- setUnits(NA, fit$outputUnits)
-    warning("Invalid character string for x.scl specified in gxEstim. x.scl set to missing.")
-  }
-  
+  } 
+
   #   --------------------------------------------------------------------------------------
   #   Now compute g(x)
   

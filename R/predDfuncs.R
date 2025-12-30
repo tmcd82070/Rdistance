@@ -108,7 +108,14 @@ predDfuncs <- function(object
   # SCALE distance functions ----
   
   if( object$likelihood == "Gamma" & !isSmooth ){
-    # Gamma case. Only x.scl allowed is 'max'. 
+    # Gamma case. Only x.scl allowed is 'max'.
+    
+    
+    x0 <- GammaModes( params )
+    
+    cat("in predDfuncs: first 5 rows of params\n ")
+    print(cbind(params[1:5,], x0[1:5]))
+    
     # If there are covariates, we need different x.scl for 
     # every distance function.  
     #
@@ -118,18 +125,18 @@ predDfuncs <- function(object
     # Must call maximize.g which uses optim to find maximum.
     #
     # THE GAMMA CASE NEEDS CHECKED, MAYBE PUT THIS IN ANOTHER ROUTINE.
-    maximize.g.reparam <- function( covRow, fit ){
-      # On entry from apply(), covRow is a dimensionless vector. It must be a
-      # matrix when we call the likelihood.
-      covRow <- matrix(covRow, nrow = 1)
-      maximize.g(fit, covars = covRow)
-    }
-    
-    x0 <- apply(X = XIntOnly
-                , MARGIN = 1
-                , FUN = maximize.g.reparam
-                , fit = object
-    )
+    # maximize.g.reparam <- function( covRow, fit ){
+    #   # On entry from apply(), covRow is a dimensionless vector. It must be a
+    #   # matrix when we call the likelihood.
+    #   covRow <- matrix(covRow, nrow = 1)
+    #   maximize.g(fit, covars = covRow)
+    # }
+    # 
+    # x0 <- apply(X = XIntOnly
+    #             , MARGIN = 1
+    #             , FUN = maximize.g.reparam
+    #             , fit = object
+    # )
     # x0 is a distance, needs units
     x0 <- setUnits(x0, object$outputUnits)
     
@@ -151,8 +158,8 @@ predDfuncs <- function(object
   
   if( !isSmooth ){
     
-    # Likelihood functions return g(x). This is what we want, 
-    # except that if there are expansions, g(0) != 1
+    # Likelihood functions return g(x). This is what we want; 
+    # except, if there are expansions, g(0) != 1
 
     d <- x0 - object$w.lo
     XIntOnly <- matrix(1, nrow = length(d), ncol = 1)
@@ -163,7 +170,13 @@ predDfuncs <- function(object
                   , covars = XIntOnly
                   , w.hi = object$w.hi
                   )    
+    
     f.at.x0 <- f.at.x0$L.unscaled  # (1Xk)
+    
+    if( length(d) > 1 ){
+      # Gamma case: b/c max could be a different x values for every obs
+      f.at.x0 <- diag(f.at.x0)
+    }
     
     if(object$expansions > 0){
       exp.terms <- Rdistance::expansionTerms(a = params
@@ -188,10 +201,11 @@ predDfuncs <- function(object
   
   # ncol(f.at.x0) must equal ncol(y), or error here
   f.at.x0 <- matrix(f.at.x0, nrow(y), length(f.at.x0), byrow = TRUE)
+  
   y <- object$g.x.scl * (y / f.at.x0)
-  # the above works only if x$g.x.scl is a scalar; 
-  # otherwise, we'd need to
-  # evaluate f(x0) for every x0, then multiply.
+
+  cat("in predDfunc:\n")
+  print(data.frame(dists = distances, y = y[,1], f.at.x0 = f.at.x0[,1]))
   
   # Did you know that 'scaler' is ESW?  At least for lines. 
   # Makes sense. 1/f(0) = ESW in 

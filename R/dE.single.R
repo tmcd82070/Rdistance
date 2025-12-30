@@ -380,7 +380,7 @@ dE.single <- function( data
   fit <- mlEstimates( ml = modelList
                     , strt.lims = strt.lims
                     )
-  
+
   # Put original optimizer back in options if needed ----
   if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
     options(origOp)
@@ -397,11 +397,7 @@ dE.single <- function( data
     gx <- gxEstim(ans)
     ans$x.scl <- gx$x.scl
     ans$g.x.scl <- gx$g.x.scl
-  } else {
-    # Special case of Gamma
-    ans$x.scl <- x.scl
-    ans$g.x.scl <- g.x.scl
-  }
+  } 
 
   # ---- Check parameter boundaries ----
   fuzz <- getOption("Rdistance_fuzz")

@@ -15,6 +15,6 @@
 
 differentiableLikelihoods<-function(){
   
-  c("halfnorm", "hazrate", "negexp")
+  c("halfnorm", "hazrate", "negexp", "Gamma")
   
 }

@@ -32,6 +32,7 @@
                                   , "negexp"
                                   , "hazrate"
                                   , "oneStep"
+                                  , "Gamma"
                                     )
   )
   toset <- !(names(op.Rdist) %in% names(op))
