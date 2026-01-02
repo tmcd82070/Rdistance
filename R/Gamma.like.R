@@ -10,17 +10,23 @@
 #' 
 #' The Rdistance implementation of a gamma distance function follows 
 #' Becker and Quang (2009). Rdistance's gamma distance function is 
-#' \deqn{f(d|\alpha, \sigma) = \frac{1}{\sigma^\alpha \Gamma(\alpha)}d^{\alpha - 1}e^{-d/\sigma}}{
-#' f(d|a,s) = (s^a Gamma(a))^{-1} d^{a-1} exp(-d/s)
+#' \deqn{f(d|\alpha, \sigma) = \frac{1}{\sigma^\alpha \Gamma(\alpha)}d^{\alpha - 1}e^{-d/\sigma},}{
+#' f(d|a,s) = (s^a Gamma(a))^{-1} d^{a-1} exp(-d/s),
 #' }
-#' where the scale parameter \eqn{\sigma = k [exp(x'\beta)]}{s = k*exp(x'b)},
-#' \deqn{k = \frac{1}{\Gamma(\alpha)}  \left(\frac{a - 1}{e^1} \right)^{a - 1}}{
-#' k = (1/Gamma(a)) * (((a - 1)/exp(1))^(a - 1)),}  
-#' \eqn{x} is a vector of covariate values associated with distance \eqn{d} 
-#' (i.e., a row of \code{covars}), and \eqn{\beta}{b} is a vector of the 
+#' where \eqn{\alpha}{a} is the \bold{shape} parameter and \eqn{\sigma}{s} is 
+#' the \bold{scale} parameter.  The \bold{scale} parameter is a function of 
+#' sighting covariates, i.e., 
+#' \deqn{\sigma = k [exp(x'\beta)],}{s = k*exp(x'b),}
+#' where \eqn{x} is a vector of covariate values associated with distance \eqn{d} 
+#' (i.e., a row of \code{covars}), \eqn{\beta}{b} is a vector of the 
 #' first \eqn{q} (=\code{ncol(covars)}) values of the first argument 
-#' of the function (\code{a}). The shape parameter \eqn{\alpha}{a} is the 
-#' \eqn{q+1}-st value in the function's first argument. 
+#' of the function (\code{a}), and 
+#' \eqn{k} is a function of the shape parameter, 
+#' \deqn{k = \frac{1}{\Gamma(\alpha)}  \left(\frac{a - 1}{e^1} \right)^{a - 1}.}{
+#' k = (1/Gamma(a)) * (((a - 1)/exp(1))^(a - 1)).}  
+#' The shape parameter \eqn{\alpha}{a} is the 
+#' \eqn{q+1}-st value in the function's first argument and is constrained to 
+#' be strictly greater than 1.0.
 #'  
 #'  
 #' Rdistance uses R's \code{dgamma} function to evaluate 
@@ -82,10 +88,10 @@ Gamma.like <- function(a
   key <- stats::dgamma( dist, shape=dgamPars$shp, scale=dgamPars$scl )
   
   # Scale like to have max 1
-  m <- (dgamPars$shp - 1)*dgamPars$scl
-  keyAtM <- stats::dgamma( m, shape=dgamPars$shp, scale=dgamPars$scl )
-  
-  key <- key / keyAtM
+  # m <- (dgamPars$shp - 1)*dgamPars$scl
+  # keyAtM <- stats::dgamma( m, shape=dgamPars$shp, scale=dgamPars$scl )
+  # 
+  # key <- key / keyAtM
   
   # Note: Mode of Gamma distribution is (dgamPars$shp - 1)*dgamPars$scl,
   # or scl * b * (shp - 1) where b = (1/gamma(shp)) * (((shp - 1)/exp(1))^(shp - 1)) 

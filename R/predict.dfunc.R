@@ -300,14 +300,8 @@ predict.dfunc <- function(object
          , {  # the default = parameters
              parms <- cbind(exp(paramsLink[,1]), # All link functions are exp...thus far
                             extraParams )
-             varyingParmName <- likeParamNames(object$likelihood)[1]
-             if( q < p ){
-               extraParmNames <- names(stats::coef(object))[(q+1):p]
-             } else {
-               extraParmNames <- NULL
-             }
-             dimnames(parms) <- list(rownames(newdata)
-                                   , c(varyingParmName, extraParmNames))
+             varyingParmName <- likeParamNames(object$likelihood)
+             dimnames(parms) <- list(rownames(newdata), varyingParmName)
              parms
            }
     )

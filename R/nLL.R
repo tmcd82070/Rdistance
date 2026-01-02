@@ -140,11 +140,6 @@ nLL <- function(a
   # The following IF cases were implemented to speed calculations 
   # dramatically when we know the integrals (i.e., avoid numerical 
   # integration when we can). 
-  # I evaluate integrals here, and do not call separate functions 
-  # like integrateHalfnorm or integrateNegexp, because those functions 
-  # do more.  They have a newdata= parameter and they return units on 
-  # the answer.  It is faster to do these here, BUT, this means that you 
-  # are evaluating integrals both here and in other routines (i.e., ESW)
   likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", is.points(ml))
   if( likExpan == "halfnorm_0_FALSE" ){
     # CASE: Halfnormal, 0 expansions, Lines ----
@@ -245,6 +240,16 @@ nLL <- function(a
                                      , series = ml$series
                                      , isPoints = is.points(ml))
     
+  } else if( likExpan == "Gamma_0_FALSE"){
+    # CASE: Gamma, 0 expansions, lines ----
+    intType = "Exact"
+    
+    parms[,1] <- exp(parms[,1])
+    outArea <- integrateGammaLines(parms
+                                  , w.lo = ml$w.lo
+                                  , w.hi = ml$w.hi
+                                  , Units=ml$outputUnits)
+    
  } else {
     # CASE: All other cases = Numeric integration by Simpson's Rule ----
     # do NOT exp parameters
@@ -281,6 +286,15 @@ nLL <- function(a
   # Note: Key or d*Key should integrate to 1.0 every iteration
   # Note 2: if POINTS, key has units, remove them b/c nlminb can't handle em.
   key <- dropUnits(key)
+
+  #   RULE: Any impossible observations (i.e., key exactly 0) get 
+  #   replaced by fuzz so that log(L) does not return -Inf. "exactly 0" is 
+  #   less than fuzz. Worst fitting objects now contribute -log(fuzz) ~ 31.5 to LL
+  fuzz <- getOption("Rdistance_fuzz")
+  if( any(ind <- key < fuzz) ){
+    key[ ind ] <- fuzz # replace them
+    # key <- key[ !ind ]   # drop them
+  }
   
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
@@ -290,12 +304,14 @@ nLL <- function(a
   #   Must program the likelihoods to trap these values and return the appropriate .Machine constants
   #
   #   RULE 2 FOR NLL: It is possible for all rows of returned L to be non-Inf and non-NaN, 
-  #   but there be enough of them that the sum overflows to Inf. I.e., values in L are 
-  #   hyper-close to 0 and log(L) is close to -Inf, then sum overflows.  Trap this here.
+  #   but there be enough of them that the sum overflows to Inf. This is unlikely because 
+  #   we replace any LL < fuzz with fuzz (above) and log(fuzz) ~ -32. But, nonetheless
+  #   trap infinite likelihoods here.
   #
   if( is.infinite(nLL) ){
     nLL <- getOption("Rdistance_posInf") # positive b/c already flipped over by -1
   }
+  
 
   # Diagnostics 
   if( verbosity >= 1 ){

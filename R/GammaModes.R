@@ -9,6 +9,7 @@
 #' 
 #' @return A vector of the location of the gamma modes. 
 #' 
+#' @export
 GammaModes <- function( params ){
   
   scl = exp(params[,1])

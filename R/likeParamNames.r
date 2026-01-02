@@ -28,11 +28,11 @@ likeParamNames <- function(like.form){
   
   switch(like.form,
          halfnorm = c("Sigma"),
-         hazrate = c("Sigma", "Beta"),
+         hazrate = c("Sigma", "k"),
          uniform = c("Threshold", "Knee"), 
-         negexp = c("Beta"),
+         negexp = c("Alpha"),
          oneStep = c("Theta", "p"),
-         Gamma = c("Shape", "Scale"),
+         Gamma = c("Scale", "Shape"),
          {    
            #   Assume this is a user-defined likelihood
            fn <- match.fun( paste(like.form, ".start.limits", sep="") )

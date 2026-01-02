@@ -23,8 +23,11 @@
 #' 
 integrateKey <- function(ml, key, likExpan, f0){
   
-  nInts <- getOption("Rdistance_intEvalPts") 
-  intCoefs <- getOption("Rdistance_intCoefs")    
+  # nInts <- getOption("Rdistance_intEvalPts") 
+  # intCoefs <- getOption("Rdistance_intCoefs")    
+
+  nInts <- 501
+  intCoefs <- simpsonCoefs(nInts)
   
   # Make sure 0 is included in domain of key. We know g(0) and f(0)
   dObs <- c( setUnits(0,"m")
@@ -32,17 +35,22 @@ integrateKey <- function(ml, key, likExpan, f0){
            )
   dObs <- dropUnits(dObs)
   
-  if( grepl("FALSE", likExpan) ){
+  if( grepl("FALSE", likExpan) && !grepl("Gamma", likExpan) ){
     # line survey g(0) = 1; f(0) = ESW
     keyUni <- c(dropUnits(f0) , key)
   } else {
-    # Point survey g(0) = f(0) = 0
+    # Point survey, and Gamma, g(0) = f(0) = 0
     keyUni <- c( 0, dropUnits(key) )
   }
   
   dObsUni <- dObs[!duplicated(dObs)]
   keyUni <- keyUni[!duplicated(dObs)]
   
+  ord <- order(dObsUni)
+  dObsUni <- dObsUni[ord]
+  keyUni <- keyUni[ord]
+  
+  # Simpson integral -----
   seqx = seq(ml$w.lo, ml$w.hi, length=nInts) 
   d <- dropUnits(seqx - ml$w.lo) 
   dx <- seqx[2] - seqx[1]  
@@ -51,12 +59,32 @@ integrateKey <- function(ml, key, likExpan, f0){
   fy <- stats::approx(dObsUni, keyUni, xout = d, rule = c(1,2) )$y
   keyIntegral <- sum(fy*intCoefs)*dx/3 
 
-  cat(paste0("  Integral of key ("
+  # R integrate ----
+  F <- function(x, d, fd){
+    approx(d, fd, xout = x)$y
+  }
+  keyIntegralR <- integrate(f = F 
+                          , lower = ml$w.lo
+                          , upper = ml$w.hi
+                          , d = dObsUni
+                          , fd = keyUni)
+  
+  # Plot ----
+  plot(dObsUni, keyUni, pch = 15)
+  points(d, fy, pch = 16, cex = .5, col="red")
+  
+  cat(paste0("    Simpson integral of key ("
             , colorize(nInts)
             , " points) : "
             , colorize(keyIntegral)
             , " (should be ~1)\n"
             ))
-
+  cat(paste0("    R quadrature integral of key "
+             , colorize(keyIntegralR$value)
+             , " (+-"
+             , colorize(formatC(keyIntegralR$abs.err, format="f", digits = 7))
+             , ") (should be ~1)\n"
+  ))
+  
   invisible(1)
 }

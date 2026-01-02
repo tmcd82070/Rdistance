@@ -67,6 +67,11 @@ predDfuncs <- function(object
            , w.hi = object$w.hi
     )
     y <- y$L.unscaled # (nXk) = (length(d) X nrow(params))
+    
+    if( !is.matrix(y) ){
+      y <- matrix(y, ncol = 1)
+    }
+    cat(paste("Is y a matrix?:", is.matrix(y), "\n"))
 
     if(object$expansions > 0){
       if(!(object$likelihood %in% differentiableLikelihoods())){
@@ -110,11 +115,7 @@ predDfuncs <- function(object
   if( object$likelihood == "Gamma" & !isSmooth ){
     # Gamma case. Only x.scl allowed is 'max'.
     
-    
     x0 <- GammaModes( params )
-    
-    cat("in predDfuncs: first 5 rows of params\n ")
-    print(cbind(params[1:5,], x0[1:5]))
     
     # If there are covariates, we need different x.scl for 
     # every distance function.  
@@ -200,12 +201,16 @@ predDfuncs <- function(object
   }
   
   # ncol(f.at.x0) must equal ncol(y), or error here
+  
+  print(dim(y))
+  print(length(f.at.x0))
+  
   f.at.x0 <- matrix(f.at.x0, nrow(y), length(f.at.x0), byrow = TRUE)
   
   y <- object$g.x.scl * (y / f.at.x0)
 
-  cat("in predDfunc:\n")
-  print(data.frame(dists = distances, y = y[,1], f.at.x0 = f.at.x0[,1]))
+  # cat("in predDfunc:\n")
+  # print(data.frame(dists = distances, y = y[,1], f.at.x0 = f.at.x0[,1]))
   
   # Did you know that 'scaler' is ESW?  At least for lines. 
   # Makes sense. 1/f(0) = ESW in 

@@ -1,0 +1,83 @@
+#' @title Integrate Gamma line surveys
+#' 
+#' @description
+#' Compute integral of the Gamma distance function for 
+#' line-transect surveys.
+#' 
+#' @inheritParams integrateOneStepPoints
+#' 
+#' @inheritSection integrateOneStepPoints Note
+#'  
+#' @inherit integrateOneStepPoints return
+#' 
+#' @details 
+#' Returned integrals are
+#' \deqn{\int_0^{w} \frac{x^{\alpha - 1} e^{-x/\sigma_i}}{\sigma_i^\alpha \Gamma(\alpha)} dx,}{
+#' Integral(x^(a - 1) exp(-x/s_i)(s_i^a Gamma(a))^(-1),}
+#' where \eqn{w = w.hi - w.lo}, \eqn{\sigma_i}{s_i} is the i-th estimated scale 
+#' parameter for the Gamma distance function. 
+#' Rdistance computes the integral using R's base function 
+#' \code{pgamma()}, which for all intents and purposes is exact.
+#' 
+#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
+#' \code{\link{integrateOneStepLines}} 
+#' 
+#' @examples
+#' 
+#' # Fake distance function object w/ minimum inputs for integration
+#' d <- rep(1,4) %m%. # Only units needed, not values
+#' obs <- factor(rep(c("obs1", "obs2"), 2))
+#' beta <- c(4.0, -0.5, 1.5) # {'Intercept', b_1, shape}
+#' w.hi <- 125
+#' w.lo <- 20
+#' ml <- list(
+#'     mf = model.frame(d ~ obs)
+#'   , par = beta 
+#'   , likelihood = "Gamma"
+#'   , w.lo = w.lo %#% "m"
+#'   , w.hi = w.hi %#% "m"
+#' )
+#' class(ml) <- "dfunc"
+#' integrateGammaLines(ml)
+#' 
+#' # Check: Integral of Gamma density from 0 to w.hi-w.lo
+#' b <- exp(c(beta[1], beta[1] + beta[2]))
+#' B <- Rdistance::GammaReparam(shp = beta[3], scl = b)
+#' intgral <- pgamma(q = w.hi - w.lo, shape = B$shp, scale = B$scl) 
+#' intgral
+#' 
+#' 
+#' @export
+#' 
+integrateGammaLines <- function(object
+                              , newdata = NULL
+                              , w.lo = NULL
+                              , w.hi = NULL
+                              , Units = NULL
+                                ){
+
+  if( inherits(object, "dfunc") ){
+    Units <- object$outputUnits
+    w.lo <- object$w.lo
+    w.hi <- object$w.hi
+    object <- stats::predict(object = object
+                             , newdata = newdata
+                             , type = "parameters"
+    )
+  } 
+  
+  w <- dropUnits(w.hi) - dropUnits(w.lo)
+  
+  dgamPars <- GammaReparam(scl = object[,1]
+                           , shp = object[,2])
+  
+  outArea <-  stats::pgamma(q = w
+                          , shape = dgamPars$shp
+                          , scale = dgamPars$scl
+                            )
+
+  outArea <- setUnits(outArea, Units)
+  
+  outArea 
+  
+}

@@ -5,7 +5,7 @@
 #' @inheritParams halfnorm.like 
 #' 
 #' @details The negative exponential likelihood is 
-#' \deqn{f(x|a) = \exp(-ax)}{f(x|a) = exp( -a*x )} where \eqn{a} is the 
+#' \deqn{f(x|\alpha) = \exp(-\alpha x)}{f(x|a) = exp( -a*x )} where \eqn{\alpha}{a} is the 
 #' slope parameter. 
 #' 
 #' @inherit halfnorm.like return seealso
