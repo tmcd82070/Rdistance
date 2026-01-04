@@ -21,13 +21,13 @@
 #' 
 #' @return Nothing.  Prints information on integrals to the screen.
 #' 
-integrateKey <- function(ml, key, likExpan, f0){
+integrateKey <- function(ml, key, likExpan, f0, plot = FALSE){
   
-  # nInts <- getOption("Rdistance_intEvalPts") 
-  # intCoefs <- getOption("Rdistance_intCoefs")    
+  nInts <- getOption("Rdistance_intEvalPts")
+  intCoefs <- getOption("Rdistance_intCoefs")
 
-  nInts <- 501
-  intCoefs <- simpsonCoefs(nInts)
+  # nInts <- 501
+  # intCoefs <- simpsonCoefs(nInts)
   
   # Make sure 0 is included in domain of key. We know g(0) and f(0)
   dObs <- c( setUnits(0,"m")
@@ -51,17 +51,17 @@ integrateKey <- function(ml, key, likExpan, f0){
   keyUni <- keyUni[ord]
   
   # Simpson integral -----
-  seqx = seq(ml$w.lo, ml$w.hi, length=nInts) 
-  d <- dropUnits(seqx - ml$w.lo) 
-  dx <- seqx[2] - seqx[1]  
+  # seqx = seq(ml$w.lo, ml$w.hi, length=nInts) 
+  # d <- dropUnits(seqx - ml$w.lo) 
+  # dx <- seqx[2] - seqx[1]  
   
   # for f(w.hi), use f(x) at largest dObs (rule = 2) 
-  fy <- stats::approx(dObsUni, keyUni, xout = d, rule = c(1,2) )$y
-  keyIntegral <- sum(fy*intCoefs)*dx/3 
+  # fy <- stats::approx(dObsUni, keyUni, xout = d, rule = c(1,2) )$y
+  # keyIntegral <- sum(fy*intCoefs)*dx/3 
 
   # R integrate ----
   F <- function(x, d, fd){
-    approx(d, fd, xout = x)$y
+    approx(d, fd, xout = x, rule = c(1,2))$y
   }
   keyIntegralR <- integrate(f = F 
                           , lower = ml$w.lo
@@ -70,20 +70,31 @@ integrateKey <- function(ml, key, likExpan, f0){
                           , fd = keyUni)
   
   # Plot ----
-  plot(dObsUni, keyUni, pch = 15)
-  points(d, fy, pch = 16, cex = .5, col="red")
+  if( plot ){
+    graphics::plot(dObsUni, keyUni, pch = 15,
+                   xlab = "Distance",
+                   ylab = "Likelihood"
+                   )
+    d <- dropUnits(seqx - ml$w.lo)
+    fy <- stats::approx(dObsUni, keyUni, xout = d, rule = c(1,2) )$y
+    points(d, fy, pch = 16, cex = .5, col="red")
+    legend("topright"
+          , legend = c("Observation", paste(nInts, "Lin. Approx Pts."))
+          , pch = c(15,16)
+          , col = c("black", "red"))
+  }
   
-  cat(paste0("    Simpson integral of key ("
-            , colorize(nInts)
-            , " points) : "
-            , colorize(keyIntegral)
-            , " (should be ~1)\n"
-            ))
-  cat(paste0("    R quadrature integral of key "
+  # cat(paste0("    Simpson integral of key ("
+  #           , colorize(nInts)
+  #           , " points) : "
+  #           , colorize(keyIntegral)
+  #           , " (should be ~1)\n"
+  #           ))
+  cat(paste0("    base::integrate key "
              , colorize(keyIntegralR$value)
              , " (+-"
              , colorize(formatC(keyIntegralR$abs.err, format="f", digits = 7))
-             , ") (should be ~1)\n"
+             , ") (should be 1+-0.001)\n"
   ))
   
   invisible(1)

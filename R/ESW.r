@@ -45,7 +45,10 @@ ESW <- function( object, newdata = NULL ){
     stop("ESW is for line transects only.  See EDR for the point-transect equivalent.")
   } 
 
-  likExpan <- paste0(object$likelihood, "_", object$expansions)
+  likExpan <- paste0(object$likelihood
+                     , "_"
+                     , object$expansions
+                     )
 
   if( likExpan == "halfnorm_0" ){
     esw <- integrateHalfnormLines(object, newdata = newdata)
@@ -61,6 +64,9 @@ ESW <- function( object, newdata = NULL ){
     
   } else if( grepl("oneStep", likExpan) ){
     esw <- integrateOneStepNumeric(object, newdata = newdata)
+
+  } else if( grepl("Gamma_0", likExpan) ){
+    esw <- integrateGammaLines(object, newdata = newdata)
     
   } else {
     esw <- integrateNumeric(object, newdata = newdata)

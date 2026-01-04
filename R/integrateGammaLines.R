@@ -75,7 +75,12 @@ integrateGammaLines <- function(object
                           , shape = dgamPars$shp
                           , scale = dgamPars$scl
                             )
-
+  
+  # Raw gamma is scaled to max = 1
+  m <- (dgamPars$shp - 1)*dgamPars$scl # median
+  f.at.m <- stats::dgamma( m, shape=dgamPars$shp, scale=dgamPars$scl )
+  outArea <- outArea / f.at.m
+  
   outArea <- setUnits(outArea, Units)
   
   outArea 

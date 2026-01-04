@@ -137,165 +137,36 @@ nLL <- function(a
     key <- d * key  # element-wise
   }
   
-  # The following IF cases were implemented to speed calculations 
-  # dramatically when we know the integrals (i.e., avoid numerical 
-  # integration when we can). 
-  likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", is.points(ml))
-  if( likExpan == "halfnorm_0_FALSE" ){
-    # CASE: Halfnormal, 0 expansions, Lines ----
-    intType <- "Exact"
-    
-    parms <- exp(parms)
-    outArea <- integrateHalfnormLines(parms
-                                    , w.lo = ml$w.lo
-                                    , w.hi = ml$w.hi
-                                    , Units = ml$outputUnits
-                                      )
-
-  } else if( likExpan == "halfnorm_0_TRUE" ){
-    # CASE: Halfnormal, 0 expansions, Points ----
-    intType = "Exact"
-    
-    parms <- exp(parms)
-    outArea <- integrateHalfnormPoints(parms
-                                      , w.lo = ml$w.lo
-                                      , w.hi = ml$w.hi
-                                      , Units = ml$outputUnits
-    )
-    
-  } else if( likExpan == "negexp_0_FALSE" ){
-    # CASE: Negative exponential, 0 expansions, Lines ----
-    intType = "Exact"
-    
-    parms <- exp(parms)
-    outArea <- integrateNegexpLines(parms
-                                  , w.lo = ml$w.lo
-                                  , w.hi = ml$w.hi
-                                  , Units = ml$outputUnits
-    )
-    
-  } else if( likExpan == "negexp_0_TRUE" ){
-    # CASE: Negative exponential, 0 expansions, Points ----
-    intType = "Exact"
-    
-    parms <- exp(parms)
-    outArea <- integrateNegexpPoints(parms
-                                    , w.lo = ml$w.lo
-                                    , w.hi = ml$w.hi
-                                    , Units = ml$outputUnits
-    )
-    
-  } else if( likExpan == "hazrate_0_FALSE" ){
-    # CASE: Hazrate, 0 expansions, Lines ----
-    intType = "Exact"
-
-    parms[,1] <- exp(parms[,1])
-    outArea <- integrateHazrateLines(parms
-                                      , w.lo = ml$w.lo
-                                      , w.hi = ml$w.hi
-                                      , Units = ml$outputUnits
-    )
-    
-  } else if( likExpan == "oneStep_0_FALSE" ){
-    # CASE: One step, 0 expansions, lines ----
-    # Answer is:Theta <- exp(parms[,1]);p <- parms[,2];outArea <- Theta / p
-    intType = "Exact"
-    
-    parms[,1] <- exp(parms[,1]) # invlink(Theta)
-    outArea <- integrateOneStepLines(parms, Units = ml$outputUnits)
-    
-  } else if( likExpan == "oneStep_0_TRUE"){
-    # CASE: One step, 0 expansions, points ----
-    intType = "Exact"
-    
-    parms[,1] <- exp(parms[,1])
-    outArea <- integrateOneStepPoints(parms
-                                    , w.lo = ml$w.lo
-                                    , w.hi = ml$w.hi
-                                    , Units=ml$outputUnits)
-    
-  } else if( grepl("oneStep", likExpan )){
-    # CASE: oneStep (point or line) with expansions ----
-    # Numeric integration by Trapazoid Rule
-    # Must integrate from 0 to Theta, then Theta+ to w.hi
-    # We know ml$expansions > 0 in this case
-    # For expansion calculation we need expansion coefficients in 'parms'
-    # Do NOT exp() parameter b/c raw likelihood is called inside integrateOneStepNumeric
-    # and the likelihood applies the link function
-    intType = "Trapazoid"
-    
-    coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
-    parms <- cbind(parms
-                   , matrix(a[coefLocs]
-                            , nrow = nrow(parms)
-                            , ncol=ml$expansions
-                            , byrow = TRUE
-                   ))  # n X ([#canonical] + nexp)
-
-    outArea <- integrateOneStepNumeric(parms
-                                     , w.lo = ml$w.lo
-                                     , w.hi = ml$w.hi
-                                     , Units = ml$outputUnits
-                                     , expansions = ml$expansions
-                                     , series = ml$series
-                                     , isPoints = is.points(ml))
-    
-  } else if( likExpan == "Gamma_0_FALSE"){
-    # CASE: Gamma, 0 expansions, lines ----
-    intType = "Exact"
-    
-    parms[,1] <- exp(parms[,1])
-    outArea <- integrateGammaLines(parms
-                                  , w.lo = ml$w.lo
-                                  , w.hi = ml$w.hi
-                                  , Units=ml$outputUnits)
-    
- } else {
-    # CASE: All other cases = Numeric integration by Simpson's Rule ----
-    # do NOT exp parameters
-    intType = "Simpson"
-    
-    if( ml$expansions > 0 ){
-      coefLocs <- (length(a)-(ml$expansions-1)):(length(a))
-      parms <- cbind(parms
-                     , matrix(a[coefLocs]
-                              , nrow = nrow(parms)
-                              , ncol=ml$expansions
-                              , byrow = TRUE
-                     ))  
-    }
-
-    outArea <- integrateNumeric(parms
-                              , w.lo = ml$w.lo
-                              , w.hi = ml$w.hi
-                              , Units = ml$outputUnits
-                              , expansions = ml$expansions
-                              , series = ml$series
-                              , isPoints = is.points(ml)
-                              , likelihood = ml$likelihood
-                              )
-   
-  }
-
+  # Integrate under the distance function so can scale to density ----
+  # This yields area under g(x), which is ESW, and is used to get f(x) = g(x)/ESW
+  parms[,1] <- exp(parms[,1])
+  outArea <- integrateDfuncs( parms, ml )
+  
   if( verbosity >= 3 ){
     cat(paste(" ", intType, colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
   }
   
+  # Scale g(x) into f(x) ----
   key <- key / outArea
 
   # Note: Key or d*Key should integrate to 1.0 every iteration
   # Note 2: if POINTS, key has units, remove them b/c nlminb can't handle em.
   key <- dropUnits(key)
 
+  # Check for really bad values ----
   #   RULE: Any impossible observations (i.e., key exactly 0) get 
   #   replaced by fuzz so that log(L) does not return -Inf. "exactly 0" is 
   #   less than fuzz. Worst fitting objects now contribute -log(fuzz) ~ 31.5 to LL
+  
   fuzz <- getOption("Rdistance_fuzz")
-  if( any(ind <- key < fuzz) ){
+
+  ind <- is.na(key) | (key < fuzz)
+  if( any(ind) ){
     key[ ind ] <- fuzz # replace them
     # key <- key[ !ind ]   # drop them
   }
   
+  # Compute neg log likelihood ----
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
 
   # Rules: 
@@ -309,19 +180,21 @@ nLL <- function(a
   #   trap infinite likelihoods here.
   #
   if( is.infinite(nLL) ){
-    nLL <- getOption("Rdistance_posInf") # positive b/c already flipped over by -1
+    nLL <- getOption("Rdistance_posInf") # positive b/c already flipped over by -1: Should not happen
   }
   
-
-  # Diagnostics 
+  # Diagnostics ----
   if( verbosity >= 1 ){
     cat(paste0("  Coeffs: ", colorize(paste(a, collapse = ", "))))
     cat(paste(" -log(likelihood) =", colorize(nLL), "\n"))
   }
-  if( (verbosity >= 2)  &&
-      (length(unique(outArea)) <= 1) # check only works w/o covars
-  ){
-    integrateKey(ml, key, likExpan, f0 = 1 / unique(outArea) )
+  if( length(unique(outArea)) <= 1 ){
+    # check of integral only works w/o covars
+    if( verbosity >= 3 ){
+      integrateKey(ml, key, likExpan, f0 = 1 / unique(outArea), plot=TRUE )
+    } else if( verbosity >= 2) {
+      integrateKey(ml, key, likExpan, f0 = 1 / unique(outArea), plot=FALSE )
+    }
   }
   
   nLL

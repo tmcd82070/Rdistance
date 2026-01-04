@@ -123,7 +123,6 @@ halfnorm.like <- function(a
             "Found array with", length(dim(dist)), "dimensions."))
   }
   
-  # cat(crayon::red("In Halfnorm.like...\n"))
   q <- nCovars(covars)
   if(is.matrix(a)){
     # cat(crayon::red("A is matrix\n"))
@@ -134,24 +133,18 @@ halfnorm.like <- function(a
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   sigma <- exp(s)  # link function here
 
-  # print(dim(sigma))
-  
-  # Dropping units of dist is safe b/c checked already
-  # 'key' is unit-less
   dist <- dropUnits(dist)
-  # dist <- matrix(dist
-  #           , nrow = length(dist)
-  #           , ncol = ncol(sigma)
-  #           ) 
-  # or, alternative dist <- matrix(dist,ncol=1) %*% matrix(1,1,length(dist))
-  # cat("length(dist) = \n")
-  # print(length(dist))
-  # print(dist[1:5])
   key <- drop(-(dist*dist))  # n-vector; use drop() in case dist is matrix
   key <- key / (2*sigma*sigma)  # (n vector) / nXk 
   key <- exp(key)  # exp of density function here, not link.
+  
+  # Rules for likelihoods:
+  #  1. 'key' must be a matrix (not vector), dim(key) should = (length(dist), nrow(a))
+  #  2. 'key' must be unscaled. It should not sum to 1. Max should be 1. 
+  #     i.e., this is g(x) [not f(x)], or else ESW calculations are wrong.
+  #  3. 'key' cannot have units.
 
-  return( list(L.unscaled = key, 
+  return( list(L.unscaled = key, # MUST be a MATRIX (not vector)
                params = s))  # return params on log scale
     
   

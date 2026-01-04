@@ -81,17 +81,25 @@ Gamma.like <- function(a
   }
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   scl <- exp(s)  # link function here
-  
-  dist <- dropUnits(dist)
 
+  # An oddity:  dgamma preserved units if scl is 1D vector; but, 
+  #  strips units if scl has >= 2 cols. 
+  
   dgamPars <- GammaReparam(shp, scl)
   key <- stats::dgamma( dist, shape=dgamPars$shp, scale=dgamPars$scl )
   
+  # stats::dgamma returns a matrix if dgamPars$scl is a matrix with ncol(key) > 1
+  # stats::dgamma returns vector if $scl is vector or matrix with ncol(key) == 1
+  # fix this to return matrix always
+  if( ncol(scl) == 1 ){
+    key <- matrix(key, ncol = 1)  # drops units too
+  }
+  
   # Scale like to have max 1
-  # m <- (dgamPars$shp - 1)*dgamPars$scl
-  # keyAtM <- stats::dgamma( m, shape=dgamPars$shp, scale=dgamPars$scl )
-  # 
-  # key <- key / keyAtM
+  m <- (dgamPars$shp - 1)*dgamPars$scl
+  keyAtM <- stats::dgamma( m, shape=dgamPars$shp, scale=dgamPars$scl )
+
+  key <- key / keyAtM
   
   # Note: Mode of Gamma distribution is (dgamPars$shp - 1)*dgamPars$scl,
   # or scl * b * (shp - 1) where b = (1/gamma(shp)) * (((shp - 1)/exp(1))^(shp - 1)) 
