@@ -72,7 +72,8 @@
 #'    
 #'  \item \bold{params}: A \emph{n}X\emph{k}X\emph{b} array 
 #'  of the 
-#'  likelihood's (canonical) parameters. First page contains 
+#'  likelihood's (canonical) parameters in link space (i.e., on 
+#'  log scale). First page contains 
 #'  parameter values related to covariates (i.e., 
 #'  \emph{s = exp(x'a)}),
 #'  while subsequent pages contain other parameters. 
