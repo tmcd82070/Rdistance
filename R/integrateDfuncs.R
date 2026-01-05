@@ -123,13 +123,13 @@ integrateDfuncs <- function( object
     # and the likelihood applies the link function
     intType = "Trapazoid"
     
-    coefLocs <- (length(ml$par)-(ml$expansions-1)):(length(ml$par))
-    object <- cbind(object
-                   , matrix(ml$par[coefLocs]
-                            , nrow = nrow(object)
-                            , ncol=ml$expansions
-                            , byrow = TRUE
-                   ))  # n X ([#canonical] + nexp)
+    # coefLocs <- (length(ml$par)-(ml$expansions-1)):(length(ml$par))
+    # object <- cbind(object
+    #                , matrix(ml$par[coefLocs]
+    #                         , nrow = nrow(object)
+    #                         , ncol=ml$expansions
+    #                         , byrow = TRUE
+    #                ))  # n X ([#canonical] + nexp)
     object[,1] <- log(object[,1]) 
     
     outArea <- integrateOneStepNumeric(object
@@ -149,20 +149,31 @@ integrateDfuncs <- function( object
                                    , w.hi = ml$w.hi
                                    , Units=ml$outputUnits)
     
+  # Trent could not figure out the integral of gamma points, when he does,
+  # he should implement it in integrateGammaPoints and uncomment this code:
+  # } else if( likExpan == "Gamma_0_point"){
+  #   # CASE: Gamma, 0 expansions, lines ----
+  #   intType = "Exact"
+  # 
+  #   outArea <- integrateGammaPoints(object
+  #                                  , w.lo = ml$w.lo
+  #                                  , w.hi = ml$w.hi
+  #                                  , Units=ml$outputUnits)
+    
   } else {
     # CASE: All other cases = Numeric integration by Simpson's Rule ----
     # do NOT exp parameters
     intType = "Simpson"
     
-    if( ml$expansions > 0 ){
-      coefLocs <- (length(ml$par)-(ml$expansions-1)):(length(ml$par))
-      object <- cbind(object
-                     , matrix(ml$par[coefLocs]
-                              , nrow = nrow(object)
-                              , ncol=ml$expansions
-                              , byrow = TRUE
-                     ))  
-    }
+    # if( ml$expansions > 0 ){
+    #   coefLocs <- (length(ml$par)-(ml$expansions-1)):(length(ml$par))
+    #   object <- cbind(object
+    #                  , matrix(ml$par[coefLocs]
+    #                           , nrow = nrow(object)
+    #                           , ncol=ml$expansions
+    #                           , byrow = TRUE
+    #                  ))  
+    # }
     object[,1] <- log(object[,1]) 
     
     outArea <- integrateNumeric(object

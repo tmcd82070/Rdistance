@@ -139,11 +139,27 @@ nLL <- function(a
   
   # Integrate under the distance function so can scale to density ----
   # This yields area under g(x), which is ESW, and is used to get f(x) = g(x)/ESW
-  parms[,1] <- exp(parms[,1])
+  parms[,1] <- exp(parms[,1]) # variable param
+  if( ml$expansions > 0 ){
+    # append expansion coefs to parms; needed during integration
+    coefLocs <- length(a) - (ml$expansions:1) + 1 
+    parms <- cbind(parms
+                    , matrix( a[coefLocs]
+                             , nrow = nrow(parms)
+                             , ncol = ml$expansions
+                             , byrow = TRUE
+                    ))  # n X ([#canonical] + nexp)
+  }
+  
   outArea <- integrateDfuncs( parms, ml )
   
   if( verbosity >= 3 ){
-    cat(paste(" ", intType, colorize(likExpan), "integral =", colorize(unique(outArea)), "\n"))
+    cat(paste(" "
+              , attr(outArea, "integralType")
+              , colorize(likExpan)
+              , "integral ="
+              , colorize(unique(outArea))
+              , "\n"))
   }
   
   # Scale g(x) into f(x) ----

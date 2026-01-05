@@ -75,6 +75,7 @@ integrateKey <- function(ml, key, likExpan, f0, plot = FALSE){
                    xlab = "Distance",
                    ylab = "Likelihood"
                    )
+    seqx = seq(ml$w.lo, ml$w.hi, length=nInts) 
     d <- dropUnits(seqx - ml$w.lo)
     fy <- stats::approx(dObsUni, keyUni, xout = d, rule = c(1,2) )$y
     points(d, fy, pch = 16, cex = .5, col="red")

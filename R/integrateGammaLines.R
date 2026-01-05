@@ -11,13 +11,15 @@
 #' @inherit integrateOneStepPoints return
 #' 
 #' @details 
-#' Returned integrals are
-#' \deqn{\int_0^{w} \frac{x^{\alpha - 1} e^{-x/\sigma_i}}{\sigma_i^\alpha \Gamma(\alpha)} dx,}{
-#' Integral(x^(a - 1) exp(-x/s_i)(s_i^a Gamma(a))^(-1),}
+#' #' Returned integrals are
+#' \deqn{\int_0^{w} \left(\frac{x}{m}\right)^{\alpha -1}  e^{-(x - m)/\sigma_i}dx,}{
+#' Integral( (x/m)^(a-1) exp(-(x-m)/s_i) ),}
 #' where \eqn{w = w.hi - w.lo}, \eqn{\sigma_i}{s_i} is the i-th estimated scale 
-#' parameter for the Gamma distance function. 
+#' parameter for the Gamma distance function, and \eqn{m} is the mode of Gamma
+#' (i.e., \eqn{(\alpha - 1)\sigma_i}{(a-1)s_i}. 
 #' Rdistance computes the integral using R's base function 
-#' \code{pgamma()}, which for all intents and purposes is exact.
+#' \code{pgamma()}, which for all intents and purposes is exact. 
+#' See also \code{\link{Gamma.like}}.
 #' 
 #' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
 #' \code{\link{integrateOneStepLines}} 
@@ -71,13 +73,20 @@ integrateGammaLines <- function(object
   dgamPars <- GammaReparam(scl = object[,1]
                            , shp = object[,2])
   
+  # Note: we use pgamma and dgamma to avoid taking gamma(<big number>)
+  # which is Inf. If gamma(dgamPars$shp) is < Inf, the integral is:
+  # pgamma(w, shp, scale = scl) * 
+  #       scl^shp * gamma(shp) / 
+  #       ((shp - 1)*scl)^(shp - 1) * exp(1 - shp)
+  
   outArea <-  stats::pgamma(q = w
                           , shape = dgamPars$shp
                           , scale = dgamPars$scl
-                            )
+                            ) 
+              
   
   # Raw gamma is scaled to max = 1
-  m <- (dgamPars$shp - 1)*dgamPars$scl # median
+  m <- (dgamPars$shp - 1)*dgamPars$scl # mode
   f.at.m <- stats::dgamma( m, shape=dgamPars$shp, scale=dgamPars$scl )
   outArea <- outArea / f.at.m
   
