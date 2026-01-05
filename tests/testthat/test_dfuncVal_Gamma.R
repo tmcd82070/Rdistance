@@ -5,7 +5,7 @@ w.lo  <- 0
 w.20  <- units::set_units(65.6168, "ft")
 w.hi  <- units::set_units(150, "m")
 sArea <- units::set_units(4105, "km^2")
-lhood <- "oneStep"
+lhood <- "Gamma"
 xScl  <- units::set_units(0, "m")
 gXscl <- 0.75
 
@@ -45,7 +45,7 @@ testthat::test_that(paste0(lhood, "-NoCovar"),{
 # Continuous covariate ----
 testthat::test_that(paste0(lhood, "-ContinuousCovar"), {
 
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ height + groupsize(groupsize)
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
                                  , likelihood = lhood
                                  , w.lo = w.lo
                                  , w.hi = w.hi
@@ -138,7 +138,7 @@ testthat::test_that( paste0(lhood, "-NoCovarCosExpansions"),{
                                  , expansions = 2
                                  , outputUnits = "m"
                                  , series = "cosine"
-  ) |> 
+                                 ) |> 
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -153,7 +153,7 @@ testthat::test_that( paste0(lhood, "-NoCovarSinExpansions"),{
                                  , expansions = 2
                                  , outputUnits = "m"
                                  , series = "sine"
-  ) |> 
+  ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -168,7 +168,7 @@ testthat::test_that( paste0(lhood, "-NoCovarHermExpansions"),{
                                  , expansions = 2
                                  , outputUnits = "m"
                                  , series = "hermite"
-  ) |> 
+  ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -183,7 +183,7 @@ testthat::test_that( paste0(lhood, "-NoCovarSimpExpansions"),{
                                  , expansions = 2
                                  , outputUnits = "m"
                                  , series = "simple"
-  ) |> 
+  ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -195,10 +195,10 @@ testthat::test_that( paste0(lhood, "-NoCovarSimpExpansions"),{
 testthat::test_that( paste0(lhood, "-NoCovarBSplineExpansions"),{
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
                                  , likelihood = lhood
-                                 , expansions = 2
+                                 , expansions = 1
                                  , outputUnits = "m"
                                  , series = "bspline"
-  ) |> 
+  ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -210,21 +210,21 @@ testthat::test_that( paste0(lhood, "-NoCovarBSplineExpansions"),{
 # Continuous covariate, expansions ----
 
 testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ height + groupsize(groupsize)
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
                                  , likelihood = lhood
                                  , expansions = 2
                                  , outputUnits = "m"
-                                 ) |> 
+                                 ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
-  
+
   # Simple Plot ----
-  test_that("oneStep plot", {
-    expect_snapshot_plot("dfuncVal_oneStep", plot(fit))
+  test_that("Halfnorm plot", {
+    expect_snapshot_plot("dfuncVal_halfNorm", plot(fit))
   })
-  
+
 }
 )
 
@@ -234,13 +234,13 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
 # Scaling ----
 
 testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
-  fit <- sparrowDf |> dfuncEstim(formula = dist ~ height + groupsize(groupsize)
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
                                  , likelihood = lhood
                                  , expansions = 2
                                  , outputUnits = "m"
                                  , x.scl = xScl
                                  , g.x.scl = gXscl
-                                 ) |> 
+                                 ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -253,9 +253,9 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
 
 set.seed(4784523)
 testthat::test_that( paste0(lhood, "-Bootstraps"),{
-  fit <- sparrowDf |> 
+  fit <- sparrowDf |>
     dfuncEstim(formula = dist ~ groupsize(groupsize)
-               , likelihood = lhood) |> 
+               , likelihood = lhood) |>
     abundEstim( area = sArea
                 , ci = .95
                 , R = 20)

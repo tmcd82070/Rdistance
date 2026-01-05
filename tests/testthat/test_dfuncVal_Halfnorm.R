@@ -191,6 +191,20 @@ testthat::test_that( paste0(lhood, "-NoCovarSimpExpansions"),{
 }
 )
 
+# BSpline Expansions, no covar ----
+testthat::test_that( paste0(lhood, "-NoCovarBSplineExpansions"),{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , expansions = 2
+                                 , outputUnits = "m"
+                                 , series = "bspline"
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
+  testthat::expect_snapshot(summary(fit)
+                            , transform = scrub_environ)
+}
+)
 
 # Continuous covariate, expansions ----
 
@@ -237,14 +251,39 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
 # Bootstraps ----
 
 set.seed(4784523)
-testthat::test_that( paste0(lhood, "-Bootstraps"),{
-  fit <- sparrowDf |> 
-    dfuncEstim(formula = dist ~ groupsize(groupsize)
-               , likelihood = lhood) |> 
-    abundEstim( area = sArea
+
+fit <- sparrowDf |> 
+  dfuncEstim(formula = dist ~ groupsize(groupsize)
+             , likelihood = lhood) |> 
+  
+testthat::test_that( paste0(lhood, "-SerialBootstraps"),{
+  abun <- fit |> abundEstim( area = sArea
                 , ci = .95
-                , R = 20)
-  testthat::expect_snapshot(summary(fit)
+                , R = 20
+                , parallel = FALSE)
+  testthat::expect_snapshot(summary(abun)
                             , transform = scrub_environ)
+}
+)
+
+ciRegEx <- "95% CI: \\d+(\\.\\d+)? to \\d+(\\.\\d+)?"
+
+testthat::test_that( paste0(lhood, "-2CoreBootstraps"),{
+  abun <- fit |> abundEstim( area = sArea
+                , ci = .95
+                , R = 20
+                , parallel = 2)
+  testthat::expect_output(summary(abun)
+                        , regexp = ciRegEx)
+} 
+)
+
+testthat::test_that( paste0(lhood, "-FullCoreBootstraps"),{
+  abun <- fit |> abundEstim( area = sArea
+                , ci = .95
+                , R = 20
+                , parallel = TRUE)
+  testthat::expect_output(summary(abun)
+                        , regexp = ciRegEx)
 }
 )

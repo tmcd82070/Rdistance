@@ -191,6 +191,21 @@ testthat::test_that( paste0(lhood, "-NoCovarSimpExpansions"),{
 }
 )
 
+# BSpline Expansions, no covar ----
+testthat::test_that( paste0(lhood, "-NoCovarBSplineExpansions"),{
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , expansions = 2
+                                 , outputUnits = "m"
+                                 , series = "bspline"
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
+  testthat::expect_snapshot(summary(fit)
+                            , transform = scrub_environ)
+}
+)
+
 
 # Continuous covariate, expansions ----
 
