@@ -7,11 +7,11 @@
 getNCores(parallel)
 }
 \arguments{
-\item{parallel}{A logical or positive integer, ignored unless 
+\item{parallel}{A logical scalar, or a positive integer; ignored unless 
 confidence intervals are requested (i.e., \code{!is.null(ci)}).
-If TRUE, bootstrap confidence interval iterations are 
-run in parallel using the maximum number of available cores minus 1. 
-The maximum number of cores is reported by \code{parallel::detectCores()}.
+If TRUE, bootstrap iterations are 
+run in parallel using the maximum number of CPU cores minus 1. 
+The maximum number of CPU cores is reported by \code{parallel::detectCores()}.
 If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap 
 iterations are performed in parallel on that many cores. 
 If FALSE, bootstrap iterations are performed in series, and progress 

@@ -43,7 +43,7 @@ and uniform).}
 A list containing the following two components:
 \itemize{
   \item \bold{L.unscaled}: A matrix of size 
-   \emph{n}X\emph{k}X\emph{b} 
+   \emph{n}X\emph{k} 
    containing likelihood values evaluated at 
    distances in \code{dist}.
    Each row is associated with 
@@ -55,12 +55,13 @@ A list containing the following two components:
    
  \item \bold{params}: A \emph{n}X\emph{k}X\emph{b} array 
  of the 
- likelihood's (canonical) parameters. First page contains 
+ likelihood's (canonical) parameters in link space (i.e., on 
+ log scale). First page contains 
  parameter values related to covariates (i.e., 
  \emph{s = exp(x'a)}),
  while subsequent pages contain other parameters. 
  \emph{b} = 1 for halfnorm, negexp; \emph{b} = 2 for 
- hazrate and others.
+ hazrate, oneStep, Gamma, and others.
  Rows correspond to distances in \code{dist}. Columns 
  correspond to rows from argument \code{a}. 
 }

@@ -16,12 +16,15 @@ integrateNegexpLines(
 \item{object}{Either an Rdistance fitted distance function
 (an object that inherits from class "dfunc"; usually produced 
 by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
-distance function parameters (e.g., \code{matrix(fit$par,1)}). 
+distance function parameters (e.g., \code{matrix(exp(fit$par),1)}). 
 If a matrix, each row corresponds to a 
-distance function and each column is a parameter. If 
-\code{object} is a matrix, it should not have measurement units. 
-Only quantities derived from function parameters (e.g., ESW) have units. 
-Rdistance function parameters themselves never have units.}
+distance function and each column is a parameter. The first column is 
+the parameter related to sighting covariates and must be transformed 
+to the "real" space (i.e., inverse link, which is \eqn{exp()}, must 
+be applied outside this routine).  If \code{object} is a matrix, 
+it should not have measurement units because
+only derived quantities (e.g., ESW) have units; Rdistance function 
+parameters themselves never have units.}
 
 \item{newdata}{A data frame containing new values for 
 the distance function covariates. If NULL and 
@@ -48,7 +51,8 @@ of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
 is a fitted distance function.}
 }
 \value{
-A vector of areas under distance functions. 
+A vector of areas under the distance functions represented in 
+\code{object}. 
 If \code{object} is a distance function and 
 \code{newdata} is specified, the returned vector's length is 
 \code{nrow(newdata)}.  If \code{object} is a distance function and 
@@ -72,9 +76,7 @@ i-th observed distance.
 \section{Note}{
 
 Users will not normally call this function. It is called 
-internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
-Users normally 
-call \code{\link{effectiveDistance}} to compute integrals.
+internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}.
 }
 
 \examples{

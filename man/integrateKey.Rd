@@ -4,7 +4,7 @@
 \alias{integrateKey}
 \title{Compute and print distance function integration}
 \usage{
-integrateKey(ml, key, likExpan, f0)
+integrateKey(ml, key, likExpan, f0, plot = FALSE)
 }
 \arguments{
 \item{ml}{The fitted object or model list}

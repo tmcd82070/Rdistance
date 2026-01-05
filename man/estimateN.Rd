@@ -92,10 +92,9 @@ The abundance estimate for line-transect surveys (if no covariates
    and \emph{ESR} is effective search radius 
    computed from the estimated distance function (i.e., \code{ESR(dfunc)}).
 
- Setting \code{plot.bs=FALSE} and \code{showProgress=FALSE} 
-    suppresses all intermediate output.  
-    
- Estimation of site-specific density (e.g., on every transect) is accomplished by 
+ This routine, \code{abundEstim}, estimates abundance on the 
+ entire study area.  Site-specific density estimates 
+ are computed by 
  \code{predict(x, type = "density")}, which returns a 
  tibble containing density and abundance on the area surveyed by every
  transect.

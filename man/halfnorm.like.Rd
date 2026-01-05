@@ -43,7 +43,7 @@ and uniform).}
 A list containing the following two components:
 \itemize{
   \item \bold{L.unscaled}: A matrix of size 
-   \emph{n}X\emph{k}X\emph{b} 
+   \emph{n}X\emph{k} 
    containing likelihood values evaluated at 
    distances in \code{dist}.
    Each row is associated with 
@@ -55,12 +55,13 @@ A list containing the following two components:
    
  \item \bold{params}: A \emph{n}X\emph{k}X\emph{b} array 
  of the 
- likelihood's (canonical) parameters. First page contains 
+ likelihood's (canonical) parameters in link space (i.e., on 
+ log scale). First page contains 
  parameter values related to covariates (i.e., 
  \emph{s = exp(x'a)}),
  while subsequent pages contain other parameters. 
  \emph{b} = 1 for halfnorm, negexp; \emph{b} = 2 for 
- hazrate and others.
+ hazrate, oneStep, Gamma, and others.
  Rows correspond to distances in \code{dist}. Columns 
  correspond to rows from argument \code{a}. 
 }
@@ -72,8 +73,8 @@ and expansion terms
 }
 \details{
 The half-normal distance function is 
-\deqn{f(d|s) = \exp(-d^2 / (2*s^2))}{f(d|s) = exp(-d^2 / (2*s^2))}
-where \eqn{s = exp(x'a)}, \eqn{x} is a vector of 
+\deqn{f(d|\sigma) = \exp(-\frac{d^2}{2\sigma^2})}{f(d|s) = exp(-d^2 / (2*s^2))}
+where \eqn{\sigma = exp(x'a)}{s = exp(x'a)}, \eqn{x} is a vector of 
 covariate values associated with distance \eqn{d} 
 (i.e., a row of \code{covars}), and 
 \eqn{a} is a vector of the first $q$ (=\code{ncol(covars)}) 
@@ -86,10 +87,10 @@ the "2" in the denominator of the exponent.
 quantiles of the half normal agree with 
 the standard normal. This means that half-normal 
 coefficients in 
-Rdistance (i.e., \emph{s = exp(x'a)}) can be 
+Rdistance (i.e., \eqn{\sigma = exp(x'a)}{s = exp(x'a)}) can be 
 interpreted as normal standard errors.  
 Approximately 95\% of distances should 
-occur between 0 and 2\emph{s}.
+occur between 0 and 2\eqn{\sigma}{s}.
 }
 \examples{
  

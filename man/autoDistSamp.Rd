@@ -150,13 +150,14 @@ are not computed.}
 NULL.}
 
 \item{plot.bs}{A logical scalar indicating whether to plot individual
-bootstrap iterations.}
+bootstrap iterations.
+Ignored unless \code{parallel = FALSE}.}
 
 \item{showProgress}{A logical indicating whether to show a text-based
 progress bar during bootstrapping. Default is \code{TRUE}. 
 It is handy to shut off the 
-progress bar if running this within another function. Otherwise, 
-it is handy to see progress of the bootstrap iterations.}
+progress bar if running this within another function. 
+Ignored unless \code{parallel = FALSE}.}
 
 \item{plot}{Logical scalar specifying whether to plot models during model selection. 
 If \code{TRUE}, a histogram with fitted distance function is plotted for every model. 
