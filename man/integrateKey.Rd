@@ -4,20 +4,18 @@
 \alias{integrateKey}
 \title{Compute and print distance function integration}
 \usage{
-integrateKey(ml, key, likExpan, f0, plot = FALSE)
+integrateKey(ml, key, f0, plot = FALSE)
 }
 \arguments{
 \item{ml}{The fitted object or model list}
 
 \item{key}{The scaled distance function.}
 
-\item{likExpan}{A string specifying the current estimation case.
-Format of the string is <likelihood>_<num expansions>_<points?>. 
-E.g., "halfnorm_0_FALSE" specifies halfnormal, no expansions, and 
-line transect data.}
-
 \item{f0}{The value of f(0) when integrating line transects. 
 This should be the ESW for the case.}
+
+\item{plot}{Logical scalar.  If TRUE, plot a diagnostic consisting
+of the distance function and approximating points we use for quadrature.}
 }
 \value{
 Nothing.  Prints information on integrals to the screen.

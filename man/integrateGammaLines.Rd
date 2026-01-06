@@ -96,6 +96,7 @@ ml <- list(
   , likelihood = "Gamma"
   , w.lo = w.lo \%#\% "m"
   , w.hi = w.hi \%#\% "m"
+  , expansions = 0
 )
 class(ml) <- "dfunc"
 integrateGammaLines(ml)
@@ -103,7 +104,9 @@ integrateGammaLines(ml)
 # Check: Integral of Gamma density from 0 to w.hi-w.lo
 b <- exp(c(beta[1], beta[1] + beta[2]))
 B <- Rdistance::GammaReparam(shp = beta[3], scl = b)
-intgral <- pgamma(q = w.hi - w.lo, shape = B$shp, scale = B$scl) 
+m <- (B$shp - 1)*B$scl
+f.at.m <- dgamma(m, shape = B$shp, scale = B$scl)
+intgral <- pgamma(q = w.hi - w.lo, shape = B$shp, scale = B$scl) / f.at.m
 intgral
 
 

@@ -346,14 +346,14 @@ abundEstim <- function(object
 
     # rearrange columns    
     ans$estimates <- ans$estimates |> 
-      dplyr::select(id
+      dplyr::select("id"
                   , dplyr::all_of(names(stats::coef(object)))  
                   , dplyr::starts_with("density")
                   , dplyr::starts_with("abundance")
                   , dplyr::starts_with("avgEffDistance")
                   , dplyr::everything())
     B <- B |> 
-      dplyr::select(id
+      dplyr::select("id"
                   , dplyr::all_of(names(stats::coef(object)))  
                   , dplyr::starts_with("density")
                   , dplyr::starts_with("abundance")

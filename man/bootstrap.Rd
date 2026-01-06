@@ -2,7 +2,7 @@
 % Please edit documentation in R/bootstrap.R
 \name{bootstrap}
 \alias{bootstrap}
-\title{Perform non-parallel bootstrap iterations}
+\title{Perform bootstrap iterations}
 \usage{
 bootstrap(
   object,
@@ -16,6 +16,66 @@ bootstrap(
   cores
 )
 }
+\arguments{
+\item{object}{An Rdistance model frame or fitted distance function,
+normally produced by a call to \code{\link{dfuncEstim}}.}
+
+\item{area}{A scalar containing the total area of inference. Usually, this is 
+study area size.  If \code{area} is NULL (the default), 
+\code{area} will be set to 1 square unit of the output units and density estimates
+will be produced. 
+If \code{area} is not NULL, it must have measurement units 
+assigned by the \code{units} package. 
+The units on \code{area} must be convertible
+to squared output units. Units 
+on \code{area} must be two-dimensional. 
+For example, if output units are "foo", 
+units on area must be convertible to "foo^2" by the \code{units}
+package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
+others are acceptable.}
+
+\item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
+The proportion of the default sampling unit that 
+  was surveyed.  If both sides of line transects were observed, 
+  \code{propUnitSurveyed}
+  = 1.  If only a single side of line transects were observed, set 
+  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
+  the proportion of each circle that was observed. Length must either be
+  1 or the total number of transects in \code{x}.}
+
+\item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
+NULL.}
+
+\item{plot.bs}{A logical scalar indicating whether to plot individual
+bootstrap iterations.
+Ignored unless \code{parallel = FALSE}.}
+
+\item{plotCovValues}{Data frame containing values of covariates to plot.
+Ignored if \code{plot.bs} is FALSE.}
+
+\item{showProgress}{A logical indicating whether to show a text-based
+progress bar during bootstrapping. Default is \code{TRUE}. 
+It is handy to shut off the 
+progress bar if running this within another function. 
+Ignored unless \code{parallel = FALSE}.}
+
+\item{parallel}{Logical scalar. TRUE if we are running iterations 
+in parallel across CPU cores.  Number of cores specified in \code{cores}.}
+
+\item{cores}{Integer scalar.  The number of CPU cores to use during 
+parallel operations, if requested.  Ignored if \code{parallel == FALSE}.}
+}
+\value{
+A data frame containing density, abundance,  
+and other relevant statistics for every bootstrap iteration.
+Number of rows is \code{R}.  If the model from one iteration failed 
+for any reason (e.g., non-convergence), the entire row except the ID column
+is missing.
+}
 \description{
-Perform non-parallel bootstrap iterations
+Performs bootstrap resampling iterations, either in parallel across 
+CPU cores or in serial on a single core.
+}
+\seealso{
+\code{\link{abundEstim}}; \code{\link{oneBsIter}}
 }

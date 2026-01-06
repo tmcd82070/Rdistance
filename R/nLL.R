@@ -154,6 +154,7 @@ nLL <- function(a
   outArea <- integrateDfuncs( parms, ml )
   
   if( verbosity >= 3 ){
+    likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", transectType(ml))
     cat(paste(" "
               , attr(outArea, "integralType")
               , colorize(likExpan)
@@ -207,9 +208,9 @@ nLL <- function(a
   if( length(unique(outArea)) <= 1 ){
     # check of integral only works w/o covars
     if( verbosity >= 3 ){
-      integrateKey(ml, key, likExpan, f0 = 1 / unique(outArea), plot=TRUE )
+      integrateKey(ml, key, f0 = 1 / unique(outArea), plot=TRUE )
     } else if( verbosity >= 2) {
-      integrateKey(ml, key, likExpan, f0 = 1 / unique(outArea), plot=FALSE )
+      integrateKey(ml, key, f0 = 1 / unique(outArea), plot=FALSE )
     }
   }
   

@@ -38,6 +38,7 @@
 #'   , likelihood = "Gamma"
 #'   , w.lo = w.lo %#% "m"
 #'   , w.hi = w.hi %#% "m"
+#'   , expansions = 0
 #' )
 #' class(ml) <- "dfunc"
 #' integrateGammaLines(ml)
@@ -45,19 +46,21 @@
 #' # Check: Integral of Gamma density from 0 to w.hi-w.lo
 #' b <- exp(c(beta[1], beta[1] + beta[2]))
 #' B <- Rdistance::GammaReparam(shp = beta[3], scl = b)
-#' intgral <- pgamma(q = w.hi - w.lo, shape = B$shp, scale = B$scl) 
+#' m <- (B$shp - 1)*B$scl
+#' f.at.m <- dgamma(m, shape = B$shp, scale = B$scl)
+#' intgral <- pgamma(q = w.hi - w.lo, shape = B$shp, scale = B$scl) / f.at.m
 #' intgral
 #' 
 #' 
 #' @export
 #' 
 integrateGammaLines <- function(object
-                              , newdata = NULL
-                              , w.lo = NULL
-                              , w.hi = NULL
-                              , Units = NULL
-                                ){
-
+                                , newdata = NULL
+                                , w.lo = NULL
+                                , w.hi = NULL
+                                , Units = NULL
+){
+  
   if( inherits(object, "dfunc") ){
     Units <- object$outputUnits
     w.lo <- object$w.lo
@@ -80,10 +83,10 @@ integrateGammaLines <- function(object
   #       ((shp - 1)*scl)^(shp - 1) * exp(1 - shp)
   
   outArea <-  stats::pgamma(q = w
-                          , shape = dgamPars$shp
-                          , scale = dgamPars$scl
-                            ) 
-              
+                            , shape = dgamPars$shp
+                            , scale = dgamPars$scl
+  ) 
+  
   
   # Raw gamma is scaled to max = 1
   m <- (dgamPars$shp - 1)*dgamPars$scl # mode

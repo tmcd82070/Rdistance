@@ -7,11 +7,13 @@
 GammaModes(params)
 }
 \arguments{
-\item{parms}{A matrix of gamma distribution parameters. First column 
-is the scale parameter. Second column is the shape parameter.}
+\item{params}{A matrix of Gamma distribution parameters. First column 
+is the scale parameter, and is a fuction of covariates.
+Second column is the shape parameter.}
 }
 \value{
-A vector of the location of the gamma modes.
+A vector of the locations of the gamma modes associated 
+with each row in the \code{params} matrix.
 }
 \description{
 Compute mode (i.e., maximum) of Rdistance's version of the gamma 

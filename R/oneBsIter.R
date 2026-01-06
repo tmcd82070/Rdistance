@@ -1,30 +1,16 @@
-#' @title Computations for one bootstrap iteration
+#' @title Calculations for one bootstrap iteration
 #' 
 #' @description
-#' An internal (un-exported) function to perform density and 
-#' abundance calculations on one iteration of the bootstrap. 
+#' Performs density and abundance estimation for one bootstrap iteration. 
 #' 
-#' @param indexDf A data frame containing row indices to use 
-#' for subsetting the rows of \code{data}. The actual indices are 
-#' in column \code{rowIndex}.
-#' 
-#' @param key A data frame containing the current id of the 
-#' BS iteration.  This is included for compatibility with 
-#' \code{dplyr::group_modify}, but it is not used internally.
-#' The original non-resampled data have \code{key == "Original"}.
-#' 
-#' @param data An Rdistance nested data frame containing 
-#' the data to bootstrap resample.  Rows of this data frame, 
-#' equating to transects, are sampled using the indices in 
-#' \code{indexDf$rowIndex}. 
 #' 
 #' @param pb A progress bar created with \code{progress::progress_bar$new()}.
 #' 
 #' @param plot.bs Logical. Whether to plot bootstrap estimate of detection function.
 #' A plot must already exist because this uses \code{lines}.
 #' 
-#' @param plotCovValues Data frame containing values of covariates to plot, 
-#' if \code{plot.bs} is TRUE.
+#' @param plotCovValues Data frame containing values of covariates to plot.
+#' Ignored if \code{plot.bs} is FALSE.
 #' 
 #' @inheritParams dE.single
 #' 
@@ -34,7 +20,9 @@
 #' and other relevant statistics for 
 #' one iteration of the bootstrap. 
 #' 
+#' @seealso \code{\link{bootstrap}}; \code{\link{abundEstim}}
 #' 
+#' @export
 oneBsIter <- function(  object
                       , area 
                       , propUnitSurveyed

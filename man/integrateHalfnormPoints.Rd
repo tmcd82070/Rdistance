@@ -92,6 +92,7 @@ ml <- list(
   , likelihood = "halfnorm"
   , w.lo = w.lo \%#\% "m"
   , w.hi = w.hi \%#\% "m"
+  , expansions = 0
 )
 class(ml) <- "dfunc"
 integrateHalfnormPoints(ml)

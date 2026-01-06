@@ -4,10 +4,12 @@
 #' Compute mode (i.e., maximum) of Rdistance's version of the gamma 
 #' distribution. 
 #' 
-#' @param parms A matrix of gamma distribution parameters. First column 
-#' is the scale parameter. Second column is the shape parameter. 
+#' @param params A matrix of Gamma distribution parameters. First column 
+#' is the scale parameter, and is a fuction of covariates.
+#' Second column is the shape parameter. 
 #' 
-#' @return A vector of the location of the gamma modes. 
+#' @return A vector of the locations of the gamma modes associated 
+#' with each row in the \code{params} matrix. 
 #' 
 #' @export
 GammaModes <- function( params ){

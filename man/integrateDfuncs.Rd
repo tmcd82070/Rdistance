@@ -66,7 +66,6 @@ internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}.
 # Faking a model frame
 ml <- list( likelihood = "halfnorm"
           , expansions = 0
-          , "_", is.points(ml)
           , w.lo = 0 \%m\% .
           , w.hi = 100 \%m\% .
           , Units = "m"

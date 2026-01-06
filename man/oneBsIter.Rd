@@ -2,7 +2,7 @@
 % Please edit documentation in R/oneBsIter.R
 \name{oneBsIter}
 \alias{oneBsIter}
-\title{Computations for one bootstrap iteration}
+\title{Calculations for one bootstrap iteration}
 \usage{
 oneBsIter(
   object,
@@ -47,8 +47,8 @@ The proportion of the default sampling unit that
 \item{plot.bs}{Logical. Whether to plot bootstrap estimate of detection function.
 A plot must already exist because this uses \code{lines}.}
 
-\item{plotCovValues}{Data frame containing values of covariates to plot, 
-if \code{plot.bs} is TRUE.}
+\item{plotCovValues}{Data frame containing values of covariates to plot.
+Ignored if \code{plot.bs} is FALSE.}
 
 \item{warn}{A logical scalar specifying whether to issue 
 an R warning if the estimation did not converge or if one 
@@ -79,20 +79,6 @@ Asymptotic standard errors will not be estimated if
 bootstrap iterations will run faster because the numeric Hessian, 
 which is discarded during bootstrapping,
 will not be calculated every iteration.}
-
-\item{indexDf}{A data frame containing row indices to use 
-for subsetting the rows of \code{data}. The actual indices are 
-in column \code{rowIndex}.}
-
-\item{key}{A data frame containing the current id of the 
-BS iteration.  This is included for compatibility with 
-\code{dplyr::group_modify}, but it is not used internally.
-The original non-resampled data have \code{key == "Original"}.}
-
-\item{data}{An Rdistance nested data frame containing 
-the data to bootstrap resample.  Rows of this data frame, 
-equating to transects, are sampled using the indices in 
-\code{indexDf$rowIndex}.}
 }
 \value{
 A data frame containing density and abundance 
@@ -100,6 +86,8 @@ and other relevant statistics for
 one iteration of the bootstrap.
 }
 \description{
-An internal (un-exported) function to perform density and 
-abundance calculations on one iteration of the bootstrap.
+Performs density and abundance estimation for one bootstrap iteration.
+}
+\seealso{
+\code{\link{bootstrap}}; \code{\link{abundEstim}}
 }
