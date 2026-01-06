@@ -34,7 +34,7 @@
 #' distance. The right-hand cutoff or upper limit. 
 #' Ignored by some likelihoods (such as halfnorm, 
 #' negexp, and hazrate), but is a fixed parameter
-#' in other likelihoods (such as oneStep, heber, 
+#' in other likelihoods (such as oneStep 
 #' and uniform).
 #' 
 #' @details The half-normal distance function is 

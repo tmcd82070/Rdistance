@@ -1,18 +1,19 @@
 # Submission comments
 
-This submission (v4.1.1) corrects an unquoted word (Rdistance) in the 
-Description field of the DESCRIPTION file. I took the chance to edit my 
-Description field and eliminated the offending word.
+This submission (v4.3.0) contains increased functionality - two new 
+features.  I implemented parallel processing of my bootstrap resampling 
+routine.  I added a likelihood (Gamma) to the suite of available curves 
+that can be fitted. 
 
 Details on the changes between major releases are in **NEWS**. 
 
 # Current submission
 
-* 4.1.1
+* 4.3.0
 
 # Prior submission
 
-* 4.1.0   
+* 4.1.1   
 
 # Local Check
 
@@ -21,7 +22,7 @@ R CMD check --as-cran results
 No ERRORs or WARNINGs. 
 
 local environment:
-Windows 11 Pro, R version 4.5.2
+Windows 11 Pro, R version 4.5.1
 
 # Rhub Checks (via Github actions)
 

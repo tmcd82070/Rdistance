@@ -1,3 +1,23 @@
+Changes in version 4.3.0 (2026-01-06)
+==============
+
+*   **Functionality change**: Added parallel bootstrap processing for confidence
+interval estimation.  Bootstrap resampling to compute confidence intervals can 
+take considerable time and running in parallel, on multiple CPU cores, speeds 
+things up. Parallel processing is handled by `multidplyr`. Default is to run 
+bootstraps in parallel on _n_-1 CPU cores, where _n_ is the number of 
+cores available on the local machine . 
+No progress bar is produced during parallel processing. Disable parallel processing
+by setting `parallel = FALSE` in call to `abundEstim`.  Run on a specific number 
+of cores by setting `parallel` to that number (e.g., `parallel = 3` uses three 
+cores). 
+*   **Functionality change**: Added the Gamma likelihood back to the suite of 
+likelihoods available in Rdistance.  The Gamma was removed during the big 
+re-vamp of version 4.0.3. The Gamma likelihood works for both lines and points. 
+It works with both covariates and expansions.
+*   **Update**: Substantial documentation updates and clarifications.
+
+
 Changes in version 4.1.0 (2025-11-29)
 ==============
 
@@ -79,7 +99,7 @@ that build on one another, with core functions first (in
 from versions with numbers 4.0.*:
   + Logistic distance function form.
   + Smoothed distance functions.
-  + Beta distribution distance functions.
+  + Gamma distribution distance functions.
   + Double-observer methods. 
   + All vignettes.
 * `print`, `summary`, and `plot` methods have been improved.

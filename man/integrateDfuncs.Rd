@@ -52,7 +52,7 @@ integration is used.
 \details{
 Let K be the integral under distance function g(x) (i.e., the output
 from this routine). In distance analysis, the observation likelihood 
-being evaluated for mazimization 
+being evaluated for maximization 
 is the \emph{density}, f(x) = g(x)/K.  K is a key quantity in distance 
 analysis and is called the "effective sampling distance".
 }

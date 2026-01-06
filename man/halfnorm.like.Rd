@@ -36,7 +36,7 @@ associated with distances in argument \code{dist}.}
 distance. The right-hand cutoff or upper limit. 
 Ignored by some likelihoods (such as halfnorm, 
 negexp, and hazrate), but is a fixed parameter
-in other likelihoods (such as oneStep, heber, 
+in other likelihoods (such as oneStep 
 and uniform).}
 }
 \value{
