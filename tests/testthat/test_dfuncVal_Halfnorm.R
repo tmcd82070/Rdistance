@@ -254,7 +254,7 @@ set.seed(4784523)
 
 fit <- sparrowDf |> 
   dfuncEstim(formula = dist ~ groupsize(groupsize)
-             , likelihood = lhood) |> 
+             , likelihood = lhood) 
   
 testthat::test_that( paste0(lhood, "-SerialBootstraps"),{
   abun <- fit |> abundEstim( area = sArea
@@ -270,20 +270,20 @@ ciRegEx <- "95% CI: \\d+(\\.\\d+)? to \\d+(\\.\\d+)?"
 
 testthat::test_that( paste0(lhood, "-2CoreBootstraps"),{
   abun <- fit |> abundEstim( area = sArea
-                , ci = .95
-                , R = 20
-                , parallel = 2)
+                             , ci = .95
+                             , R = 20
+                             , parallel = 2)
   testthat::expect_output(summary(abun)
-                        , regexp = ciRegEx)
+                          , regexp = ciRegEx)
 } 
 )
 
 testthat::test_that( paste0(lhood, "-FullCoreBootstraps"),{
   abun <- fit |> abundEstim( area = sArea
-                , ci = .95
-                , R = 20
-                , parallel = TRUE)
+                             , ci = .95
+                             , R = 20
+                             , parallel = TRUE)
   testthat::expect_output(summary(abun)
-                        , regexp = ciRegEx)
+                          , regexp = ciRegEx)
 }
 )

@@ -203,13 +203,24 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
   
-  # Simple Plot ----
-  test_that("Negexp point plot", {
-    expect_snapshot_plot("pointVal_negexp", plot(fit))
-  })
+
+}
+)
+
+# Simple Plot ----
+testthat::test_that( paste0(lhood, "-Plot"),{
+  fit <- thrasherDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+                                  , likelihood = lhood
+  )
+  
+  expect_snapshot_plot("pointVal_negexp"
+                       , plot(fit
+                              , newdata=data.frame(bare = c(20, 30, 40))
+                       ))
   
 }
 )
+
 
 
 

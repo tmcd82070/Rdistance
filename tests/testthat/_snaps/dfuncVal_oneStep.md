@@ -220,8 +220,8 @@
                    Estimate   
       (Intercept)  4.395682961
       p            0.903832853
-      a1           0.156876892
-      a2           0.008454863
+      a1           0.156876899
+      a2           0.008454859
       
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of COSINE series 
@@ -279,27 +279,27 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "hermite")
       Coefficients:
-                   Estimate   
-      (Intercept)   4.54329478
-      p             0.96642590
-      a1           -0.20919770
-      a2            0.03788589
+                   Estimate  
+      (Intercept)   4.3956830
+      p             0.9425491
+      a1           -0.1847246
+      a2            0.0393903
       
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 48.44066 
-      Probability of detection: 0.2340128
+      Effective strip width (ESW): 47.56223 
+      Probability of detection: 0.2297692
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1666.775 
-      AICc: 3341.663
+      Log likelihood: -1673.346 
+      AICc: 3354.806
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 0.0001072332 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 440192.1
+      Density in sampled area: 0.0001092137 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 448322
 
 # oneStep-NoCovarSimpExpansions
 
@@ -313,14 +313,14 @@
                    Estimate  
       (Intercept)   4.3956830
       p             0.9218827
-      a1           -3.7663111
-      a2            3.3867734
+      a1           -3.7663119
+      a2            3.3867745
       
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 66.12432 
-      Probability of detection: 0.3194412
+      Effective strip width (ESW): 66.12116 
+      Probability of detection: 0.3194259
       Scaling: g(0 [m]) = 1
       Log likelihood: -1676.64 
       AICc: 3361.395
@@ -329,8 +329,39 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 7.855574e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 322471.3
+      Density in sampled area: 7.855949e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 322486.7
+
+# oneStep-NoCovarBSplineExpansions
+
+    Code
+      summary(fit)
+    Output
+      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+         groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
+         = "m", series = "bspline")
+      Coefficients:
+                   Estimate  
+      (Intercept)   4.5432948
+      p             0.9664259
+      a1           -1.5887966
+      a2           -0.2380323
+      
+      Message: Success; SE's pending bootstrap
+      Function: ONESTEP with 2 expansion(s) of BSPLINE series 
+      Strip: 0 [m] to 207 [m] 
+      Effective strip width (ESW): 48.43981 
+      Probability of detection: 0.2340088
+      Scaling: g(0 [m]) = 1
+      Log likelihood: -1666.775 
+      AICc: 3341.663
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.050562 
+         Group size range: 1 to 3 
+      Density in sampled area: 0.000107235 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 440199.8
 
 # oneStep-ContCovarExpansions
 
@@ -345,8 +376,8 @@
       (Intercept)  4.365643e+00
       height       2.220446e-16
       p            8.965383e-01
-      a1           1.496812e-01
-      a2           2.697779e-02
+      a1           1.496811e-01
+      a2           2.697784e-02
       
       Message: Success; SE's pending bootstrap
       Function: ONESTEP with 2 expansion(s) of COSINE series 
@@ -405,8 +436,8 @@
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
                    Estimate   SE          z         p(>|z|)      
-      (Intercept)  4.3956830  0.09239633  47.57422   0.000000e+00
-      p            0.8960674  0.02674663  33.50207  4.496644e-246
+      (Intercept)  4.3956830  0.07203784  61.01908   0.000000e+00
+      p            0.8960674  0.02741279  32.68794  2.317782e-234
       
       Message: Success; Bootstrap SE's
       Function: ONESTEP  
@@ -423,8 +454,8 @@
          Group size range: 1 to 3 
       
       Density in sampled area: 5.7393e-05 [1/m^2]
-                       95% CI: 4.63371e-05 [1/m^2] to 6.578654e-05 [1/m^2]
+                       95% CI: 4.557048e-05 [1/m^2] to 7.477846e-05 [1/m^2]
       
       Abundance in 4.105e+09 [m^2] study area: 235598.3
-                                       95% CI: 190213.8 to 270053.8
+                                       95% CI: 187066.8 to 306965.6
 

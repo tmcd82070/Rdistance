@@ -64,15 +64,15 @@
          expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1,
          outputUnits = "m")
       Coefficients:
-                   Estimate    SE           z          p(>|z|)     
-      (Intercept)  3.79488634  0.356236368  10.652720  1.693431e-26
-      bare         0.01309827  0.009144204   1.432412  1.520260e-01
+                   Estimate   SE           z          p(>|z|)     
+      (Intercept)  3.7948859  0.356233909  10.652792  1.692117e-26
+      bare         0.0130982  0.009144137   1.432415  1.520252e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 200 [m] 
-      Average effective detection radius (EDR): 103.8511 [m] (range 92.24027 [m] to 118.9106 [m]) 
-      Average probability of detection: 0.2705556 (range 0.2127067 to 0.3534932)
+      Average effective detection radius (EDR): 103.8508 [m] (range 92.24005 [m] to 118.9102 [m]) 
+      Average probability of detection: 0.270554 (range 0.2127057 to 0.3534909)
       Scaling: g(0 [m]) = 1
       Log likelihood: -936.7678 
       AICc: 1877.602
@@ -81,8 +81,8 @@
          Individuals seen: 188 in 185 groups 
        Average group size: 1.016216 
          Group size range: 1 to 2 
-      Density in sampled area: 4.667449e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 191598.8
+      Density in sampled area: 4.667476e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 191599.9
 
 # halfnorm-FactorCovar
 
@@ -212,15 +212,15 @@
          = "m", series = "cosine")
       Coefficients:
                    Estimate   SE          z            p(>|z|)  
-      (Intercept)   4.344444  0.04120517  105.4344370  0.0000000
-      a1           -2.849472  2.91854393   -0.9763336  0.3288992
-      a2           -4.712012  4.13360749   -1.1399272  0.2543166
+      (Intercept)   4.344444  0.04120517  105.4344376  0.0000000
+      a1           -2.849460  2.91853165   -0.9763334  0.3288993
+      a2           -4.711990  4.13358710   -1.1399276  0.2543165
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 252.8361 [m] 
-      Probability of detection: 0.9103037
+      Effective detection radius (EDR): 252.8356 [m] 
+      Probability of detection: 0.9103006
       Scaling: g(0 [m]) = 1
       Log likelihood: -994.6299 
       AICc: 1995.387
@@ -229,8 +229,8 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 8.132927e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 33385.67
+      Density in sampled area: 8.132955e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 33385.78
 
 # halfnorm-NoCovarSinExpansions
 
@@ -241,10 +241,10 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "sine")
       Coefficients:
-                   Estimate    SE         z            p(>|z|)    
-      (Intercept)  4.50317096  0.0903461  49.84355761  0.000000000
-      a1           1.01646536  0.3882265   2.61822779  0.008838778
-      a2           0.02267565  0.2697459   0.08406298  0.933006355
+                   Estimate    SE          z            p(>|z|)   
+      (Intercept)  4.50317091  0.09034609  49.84356319  0.00000000
+      a1           1.01646518  0.38822648   2.61822733  0.00883879
+      a2           0.02267556  0.26974578   0.08406271  0.93300657
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of SINE series 
@@ -259,7 +259,7 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 2.843832e-05 [1/m^2]
+      Density in sampled area: 2.843833e-05 [1/m^2]
       Abundance in 4.105e+09 [m^2] study area: 116739.3
 
 # halfnorm-NoCovarHermExpansions
@@ -272,15 +272,15 @@
          = "m", series = "hermite")
       Coefficients:
                    Estimate   SE           z           p(>|z|)  
-      (Intercept)   4.201229   0.06771118  62.0463185  0.0000000
-      a1            4.171719  13.08866695   0.3187276  0.7499331
-      a2           -1.571586   5.02261571  -0.3129019  0.7543552
+      (Intercept)   4.201230   0.06771103  62.0464614  0.0000000
+      a1            4.171703  13.08860851   0.3187278  0.7499329
+      a2           -1.571588   5.02263128  -0.3129014  0.7543556
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 313.3249 [m] 
-      Probability of detection: 1.397971 > 1
+      Effective detection radius (EDR): 313.3248 [m] 
+      Probability of detection: 1.39797 > 1
       Scaling: g(0 [m]) = 1 <- Check scaling
       Log likelihood: -1001.734 
       AICc: 2009.595
@@ -289,8 +289,8 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 5.295843e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 21739.44
+      Density in sampled area: 5.295847e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 21739.45
 
 # halfnorm-NoCovarSimpExpansions
 
@@ -302,15 +302,15 @@
          = "m", series = "simple")
       Coefficients:
                    Estimate   SE         z          p(>|z|)  
-      (Intercept)   4.377958  0.1054546  41.515114  0.0000000
-      a1           -3.343047  2.5523143  -1.309810  0.1902600
-      a2            4.282949  3.1515713   1.358988  0.1741503
+      (Intercept)   4.377958  0.1054546  41.515108  0.0000000
+      a1           -3.343046  2.5523161  -1.309809  0.1902605
+      a2            4.282950  3.1515738   1.358988  0.1741505
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 265 [m] 
       Effective detection radius (EDR): 107.9682 [m] 
-      Probability of detection: 0.165997
+      Probability of detection: 0.1659969
       Scaling: g(0 [m]) = 1
       Log likelihood: -1003.456 
       AICc: 2013.039
@@ -319,8 +319,8 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 4.459981e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 183082.2
+      Density in sampled area: 4.459982e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 183082.3
 
 # halfnorm-ContCovarExpansions
 
@@ -332,16 +332,16 @@
          = "m")
       Coefficients:
                    Estimate     SE           z           p(>|z|)     
-      (Intercept)   3.59388339  0.280581627  12.8086911  1.465863e-37
-      bare          0.01877442  0.007085499   2.6496960  8.056423e-03
-      a1           -3.33132879  3.348143913  -0.9949778  3.197471e-01
-      a2           -4.99847222  4.432220114  -1.1277581  2.594221e-01
+      (Intercept)   3.59388355  0.280581629  12.8086916  1.465853e-37
+      bare          0.01877441  0.007085499   2.6496956  8.056431e-03
+      a1           -3.33131448  3.348129607  -0.9949778  3.197471e-01
+      a2           -4.99844884  4.432197983  -1.1277585  2.594219e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 261.6523 [m] (range 216.4737 [m] to 323.074 [m]) 
-      Average probability of detection: 0.9836834 82 of 193 P(detect) > 1
+      Average effective detection radius (EDR): 261.6519 [m] (range 216.4733 [m] to 323.0734 [m]) 
+      Average probability of detection: 0.98368 82 of 193 P(detect) > 1
       Scaling: g(0 [m]) = 1 <- Check scaling
       Log likelihood: -990.9099 
       AICc: 1990.033
@@ -350,8 +350,8 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 7.789121e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 31974.34
+      Density in sampled area: 7.789147e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 31974.45
 
 ---
 
@@ -363,16 +363,16 @@
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
                    Estimate     SE           z           p(>|z|)     
-      (Intercept)   3.59388339  0.280581627  12.8086911  1.465863e-37
-      bare          0.01877442  0.007085499   2.6496960  8.056423e-03
-      a1           -3.33132879  3.348143913  -0.9949778  3.197471e-01
-      a2           -4.99847222  4.432220114  -1.1277581  2.594221e-01
+      (Intercept)   3.59388355  0.280581629  12.8086916  1.465853e-37
+      bare          0.01877441  0.007085499   2.6496956  8.056431e-03
+      a1           -3.33131448  3.348129607  -0.9949778  3.197471e-01
+      a2           -4.99844884  4.432197983  -1.1277585  2.594219e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 261.6523 [m] (range 216.4737 [m] to 323.074 [m]) 
-      Average probability of detection: 0.9836834 82 of 193 P(detect) > 1
+      Average effective detection radius (EDR): 261.6519 [m] (range 216.4733 [m] to 323.0734 [m]) 
+      Average probability of detection: 0.98368 82 of 193 P(detect) > 1
       Scaling: g(0 [m]) = 0.75 <- Check scaling
       Log likelihood: -990.9099 
       AICc: 1990.033
@@ -381,13 +381,13 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 7.789121e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 31974.34
+      Density in sampled area: 7.789147e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 31974.45
 
 # halfnorm-Bootstraps
 
     Code
-      summary(fit)
+      summary(abun)
     Output
       Call: dfuncEstim(data = thrasherDf, formula = dist ~
          groupsize(groupsize), likelihood = lhood)

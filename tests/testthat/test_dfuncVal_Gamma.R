@@ -35,16 +35,16 @@ testthat::test_that(paste0(lhood, "-NoCovar"),{
                                  , x.scl = 0
                                  , g.x.scl = 1
                                  , outputUnits = "m"
-                                 ) |> 
-  abundEstim( area = sArea
-              , ci = NULL)
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
   testthat::expect_snapshot(summary(fit)
-                          , transform = scrub_environ)
+                            , transform = scrub_environ)
 })
 
 # Continuous covariate ----
 testthat::test_that(paste0(lhood, "-ContinuousCovar"), {
-
+  
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
                                  , likelihood = lhood
                                  , w.lo = w.lo
@@ -54,29 +54,29 @@ testthat::test_that(paste0(lhood, "-ContinuousCovar"), {
                                  , x.scl = 0
                                  , g.x.scl = 1
                                  , outputUnits = "m"
-                                 ) |> 
-  abundEstim( area = sArea
-            , ci = NULL)
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
-  })
+})
 
 # Factor Covariate ----
 testthat::test_that( paste0(lhood, "-FactorCovar"),{
-    fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
-                                   , likelihood = lhood
-                                   , w.lo = w.lo
-                                   , w.hi = w.hi
-                                   , expansions = 0
-                                   , series = "cosine"
-                                   , x.scl = 0
-                                   , g.x.scl = 1
-                                   , outputUnits = "m"
-                                   ) |> 
+  fit <- sparrowDf |> dfuncEstim(formula = dist ~ observer + groupsize(groupsize)
+                                 , likelihood = lhood
+                                 , w.lo = w.lo
+                                 , w.hi = w.hi
+                                 , expansions = 0
+                                 , series = "cosine"
+                                 , x.scl = 0
+                                 , g.x.scl = 1
+                                 , outputUnits = "m"
+  ) |> 
     abundEstim( area = sArea
-              , ci = NULL)
-    testthat::expect_snapshot(summary(fit)
-                              , transform = scrub_environ)
+                , ci = NULL)
+  testthat::expect_snapshot(summary(fit)
+                            , transform = scrub_environ)
 })
 
 
@@ -91,12 +91,12 @@ testthat::test_that( paste0(lhood, "-NoCovarWloWhi"),{
                                  , x.scl = w.20
                                  , g.x.scl = 1
                                  , outputUnits = "m"
-                                 ) |> 
-  abundEstim( area = sArea
-            , ci = NULL)
+  ) |> 
+    abundEstim( area = sArea
+                , ci = NULL)
   testthat::expect_snapshot(summary(fit)
-                          , transform = scrub_environ)
-  }
+                            , transform = scrub_environ)
+}
 )
 
 # WLow, no covar ----
@@ -110,7 +110,7 @@ testthat::test_that( paste0(lhood, "-NoCovarWlo"),{
                                  , x.scl = w.20
                                  , g.x.scl = 1
                                  , outputUnits = "m"
-                                 ) |> 
+  ) |> 
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -123,7 +123,7 @@ testthat::test_that( paste0(lhood,  "-NoCovarsFt"),{
   fit <- sparrowDf |> dfuncEstim(formula = dist ~ 1 + groupsize(groupsize)
                                  , likelihood = lhood
                                  , outputUnits = "ft"
-                                 ) |> 
+  ) |> 
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -138,7 +138,7 @@ testthat::test_that( paste0(lhood, "-NoCovarCosExpansions"),{
                                  , expansions = 2
                                  , outputUnits = "m"
                                  , series = "cosine"
-                                 ) |> 
+  ) |> 
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
@@ -214,17 +214,17 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
                                  , likelihood = lhood
                                  , expansions = 2
                                  , outputUnits = "m"
-                                 ) |>
+  ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
-
+  
   # Simple Plot ----
   test_that("Halfnorm plot", {
     expect_snapshot_plot("dfuncVal_halfNorm", plot(fit))
   })
-
+  
 }
 )
 
@@ -240,7 +240,7 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
                                  , outputUnits = "m"
                                  , x.scl = xScl
                                  , g.x.scl = gXscl
-                                 ) |>
+  ) |>
     abundEstim( area = sArea
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)

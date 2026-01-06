@@ -5,7 +5,7 @@ w.lo  <- 0
 w.20  <- units::set_units(65.6168, "ft")
 w.hi  <- units::set_units(200, "m")
 sArea <- units::set_units(4105, "km^2")
-lhood <- "halfnorm"
+lhood <- "Gamma"
 xScl  <- units::set_units(0, "m")
 gXscl <- 0.75
 
@@ -203,10 +203,20 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
   
-  # Simple Plot ----
-  test_that("Halfnorm point plot", {
-    expect_snapshot_plot("pointVal_halfNorm", plot(fit))
-  })
+}
+)
+
+# Simple Plot ----
+testthat::test_that( paste0(lhood, "-Plot"),{
+  fit <- thrasherDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+                                  , likelihood = lhood
+  )
+  
+  expect_snapshot_plot("pointVal_Gamma"
+                       , plot(fit
+                          , newdata=data.frame(bare = c(20, 30, 40))
+                          , nbins = 40 
+                       ))
   
 }
 )
@@ -233,24 +243,25 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
 
 
 # Bootstraps ----
+# no snapshot testing of bootstraps, only that they execute
 
-set.seed(4784523)
+# set.seed(4784523)
+# testthat::test_that( paste0(lhood, "-Bootstraps"),{
+#   fit <- thrasherDf |> 
+#     dfuncEstim(formula = dist ~ groupsize(groupsize)
+#                , likelihood = lhood) |> 
+#     abundEstim( area = sArea
+#                 , ci = .95
+#                 , R = 20)
+#   testthat::expect_snapshot(summary(fit)
+#                             , transform = scrub_environ)
+# }
+# )
 
 fit <- thrasherDf |> 
   dfuncEstim(formula = dist ~ groupsize(groupsize)
              , likelihood = lhood) 
   
-testthat::test_that( paste0(lhood, "-Bootstraps"),{
-    abun <- fit |> 
-      abundEstim( area = sArea
-                  , ci = .95
-                  , R = 20
-                  , parallel = FALSE)
-    testthat::expect_snapshot(summary(abun)
-                              , transform = scrub_environ)
-  }
-  )
-
 ciRegEx <- "95% CI: \\d+(\\.\\d+)? to \\d+(\\.\\d+)?"
 
 testthat::test_that( paste0(lhood, "-2CoreBootstraps"),{

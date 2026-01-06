@@ -212,25 +212,25 @@
          = "m", series = "cosine")
       Coefficients:
                    Estimate    SE           z           p(>|z|)  
-      (Intercept)   -3.829967   0.08105553  -47.251155  0.0000000
-      a1           -17.701710  17.21481741   -1.028283  0.3038166
-      a2           -11.394941  11.25889741   -1.012083  0.3114983
+      (Intercept)   -3.829968   0.08105552  -47.251168  0.0000000
+      a1           -17.701639  17.21474109   -1.028284  0.3038164
+      a2           -11.394880  11.25883620   -1.012083  0.3114982
       
       Message: Success; Asymptotic SE's
       Function: NEGEXP with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 263.021 [m] 
-      Probability of detection: 0.9851198
+      Effective detection radius (EDR): 263.0207 [m] 
+      Probability of detection: 0.9851175
       Scaling: g(0 [m]) = 1
-      Log likelihood: -995.403 
+      Log likelihood: -995.4031 
       AICc: 1996.933
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 7.515263e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 30850.15
+      Density in sampled area: 7.51528e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 30850.22
 
 # negexp-NoCovarSinExpansions
 
@@ -241,10 +241,10 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "sine")
       Coefficients:
-                   Estimate    SE         z            p(>|z|)      
-      (Intercept)  -4.3935759  0.1614897  -27.2065324  5.436165e-163
-      a1            1.3703646  0.2544951    5.3846410   7.258938e-08
-      a2            0.1118905  0.2339868    0.4781914   6.325140e-01
+                   Estimate    SE         z           p(>|z|)      
+      (Intercept)  -4.3935759  0.1614894  -27.206588  5.427883e-163
+      a1            1.3703649  0.2544945    5.384654   7.258409e-08
+      a2            0.1118909  0.2339864    0.478194   6.325121e-01
       
       Message: Success; Asymptotic SE's
       Function: NEGEXP with 2 expansion(s) of SINE series 
@@ -260,7 +260,7 @@
        Average group size: 1.015544 
          Group size range: 1 to 2 
       Density in sampled area: 4.319458e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 177313.7
+      Abundance in 4.105e+09 [m^2] study area: 177313.8
 
 # negexp-NoCovarHermExpansions
 
@@ -272,18 +272,18 @@
          = "m", series = "hermite")
       Coefficients:
                    Estimate       SE   z    p(>|z|)
-      (Intercept)  -3.726375e+00  NaN  NaN  NaN    
-      a1            7.783306e+04  NaN  NaN  NaN    
-      a2           -1.389283e+05  NaN  NaN  NaN    
+      (Intercept)  -3.768615e+00  NaN  NaN  NaN    
+      a1            8.390403e+04  NaN  NaN  NaN    
+      a2           -3.676360e+05  NaN  NaN  NaN    
       
       Message: FAILURE (Exit code= 1, singular convergence (7))
       Function: NEGEXP with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 40212.88 [m] 
-      Probability of detection: 23027.06 > 1
+      Effective detection radius (EDR): 64458.34 [m] 
+      Probability of detection: 59165.22 > 1
       Scaling: g(0 [m]) = 1 <- Check scaling
-      Log likelihood: -1000.153 
-      AICc: 2006.433
+      Log likelihood: -1000.307 
+      AICc: 2006.742
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
@@ -302,15 +302,15 @@
          = "m", series = "simple")
       Coefficients:
                    Estimate   SE         z          p(>|z|)      
-      (Intercept)  -4.428894  0.1326998  -33.37528  3.131968e-244
+      (Intercept)  -4.428895  0.1326999  -33.37528  3.132056e-244
       a1           -4.009018         NA         NA             NA
       a2            3.201568         NA         NA             NA
       
       Message: VARIANCE FAILURE (singular variance-covariance matrix)
       Function: NEGEXP with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 91.22455 [m] 
-      Probability of detection: 0.1185036
+      Effective detection radius (EDR): 91.22457 [m] 
+      Probability of detection: 0.1185037
       Scaling: g(0 [m]) = 1
       Log likelihood: -1008.631 
       AICc: 2023.389
@@ -319,8 +319,8 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 6.247432e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 256457.1
+      Density in sampled area: 6.247429e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 256457
 
 # negexp-ContCovarExpansions
 
@@ -332,26 +332,26 @@
          = "m")
       Coefficients:
                    Estimate      SE           z          p(>|z|)     
-      (Intercept)   -2.65180746   0.50053098  -5.297989  1.170852e-07
-      bare          -0.02967613   0.01275898  -2.325901  2.002383e-02
-      a1           -19.67315720  19.21207009  -1.024000  3.058353e-01
-      a2           -11.75164419  11.69993270  -1.004420  3.151763e-01
+      (Intercept)   -2.65180902   0.50053083  -5.297993  1.170822e-07
+      bare          -0.02967609   0.01275898  -2.325899  2.002394e-02
+      a1           -19.67268543  19.21123318  -1.024020  3.058259e-01
+      a2           -11.75122395  11.69919424  -1.004447  3.151631e-01
       
       Message: Success; Asymptotic SE's
       Function: NEGEXP with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 272.2791 [m] (range 194.0534 [m] to 382.3268 [m]) 
-      Average probability of detection: 1.08303 97 of 193 P(detect) > 1
+      Average effective detection radius (EDR): 272.2755 [m] (range 194.051 [m] to 382.3216 [m]) 
+      Average probability of detection: 1.083001 97 of 193 P(detect) > 1
       Scaling: g(0 [m]) = 1 <- Check scaling
-      Log likelihood: -992.559 
+      Log likelihood: -992.5591 
       AICc: 1993.331
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 7.554483e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 31011.15
+      Density in sampled area: 7.554681e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 31011.97
 
 ---
 
@@ -363,26 +363,26 @@
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
                    Estimate      SE           z          p(>|z|)     
-      (Intercept)   -2.65180746   0.50053098  -5.297989  1.170852e-07
-      bare          -0.02967613   0.01275898  -2.325901  2.002383e-02
-      a1           -19.67315720  19.21207009  -1.024000  3.058353e-01
-      a2           -11.75164419  11.69993270  -1.004420  3.151763e-01
+      (Intercept)   -2.65180902   0.50053083  -5.297993  1.170822e-07
+      bare          -0.02967609   0.01275898  -2.325899  2.002394e-02
+      a1           -19.67268543  19.21123318  -1.024020  3.058259e-01
+      a2           -11.75122395  11.69919424  -1.004447  3.151631e-01
       
       Message: Success; Asymptotic SE's
       Function: NEGEXP with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 272.2791 [m] (range 194.0534 [m] to 382.3268 [m]) 
-      Average probability of detection: 1.08303 97 of 193 P(detect) > 1
+      Average effective detection radius (EDR): 272.2755 [m] (range 194.051 [m] to 382.3216 [m]) 
+      Average probability of detection: 1.083001 97 of 193 P(detect) > 1
       Scaling: g(0 [m]) = 0.75 <- Check scaling
-      Log likelihood: -992.559 
+      Log likelihood: -992.5591 
       AICc: 1993.331
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 7.554483e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 31011.15
+      Density in sampled area: 7.554681e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 31011.97
 
 # negexp-Bootstraps
 
@@ -392,8 +392,8 @@
       Call: dfuncEstim(data = thrasherDf, formula = dist ~
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
-                   Estimate   SE          z         p(>|z|)
-      (Intercept)  -3.977216  0.05083666  -78.2352  0      
+                   Estimate   SE          z          p(>|z|)
+      (Intercept)  -3.977216  0.05639685  -70.52196  0      
       
       Message: Success; Bootstrap SE's
       Function: NEGEXP  
@@ -410,8 +410,8 @@
          Group size range: 1 to 2 
       
       Density in sampled area: 9.523245e-05 [1/m^2]
-                       95% CI: 7.65715e-05 [1/m^2] to 0.0001120857 [1/m^2]
+                       95% CI: 7.196309e-05 [1/m^2] to 0.0001110873 [1/m^2]
       
       Abundance in 4.105e+09 [m^2] study area: 390929.2
-                                       95% CI: 314326 to 460111.8
+                                       95% CI: 295408.5 to 456013.3
 

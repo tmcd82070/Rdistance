@@ -6,9 +6,9 @@
       Call: dfuncEstim(data = thrasherDf, formula = dist ~
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
-                   Estimate  SE          z         p(>|z|)     
-      (Intercept)  4.540434  0.06265929  72.46226  0.000000e+00
-      k            4.199565  0.39721233  10.57259  3.992942e-26
+                   Estimate  SE          z         p(>|z|)    
+      (Intercept)  4.540434  0.06265929  72.46226  0.00000e+00
+      k            4.199564  0.39721227  10.57259  3.99292e-26
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
@@ -23,7 +23,7 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 3.694619e-05 [1/m^2]
+      Density in sampled area: 3.69462e-05 [1/m^2]
       Abundance in 4.105e+09 [m^2] study area: 151664.1
 
 # hazrate-NoCovar
@@ -37,8 +37,8 @@
          outputUnits = "m")
       Coefficients:
                    Estimate  SE          z          p(>|z|)     
-      (Intercept)  4.526813  0.06486727  69.785781  0.000000e+00
-      k            3.963643  0.47089290   8.417291  3.852887e-17
+      (Intercept)  4.526813  0.06486727  69.785782  0.000000e+00
+      k            3.963643  0.47089290   8.417291  3.852886e-17
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
@@ -67,15 +67,15 @@
          outputUnits = "m")
       Coefficients:
                    Estimate    SE           z          p(>|z|)     
-      (Intercept)  3.90756438  0.370783705  10.538663  5.730803e-26
-      bare         0.01605971  0.009417635   1.705280  8.814214e-02
-      k            4.06654774  0.484369793   8.395544  4.637434e-17
+      (Intercept)  3.90757224  0.370784260  10.538668  5.730472e-26
+      bare         0.01605944  0.009417653   1.705248  8.814814e-02
+      k            4.06653736  0.484368871   8.395538  4.637650e-17
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [m] to 200 [m] 
-      Average effective detection radius (EDR): 116.4438 [m] (range 101.2567 [m] to 136.9473 [m]) 
-      Average probability of detection: 0.3406241 (range 0.2563231 to 0.4688642)
+      Average effective detection radius (EDR): 116.4435 [m] (range 101.2568 [m] to 136.9467 [m]) 
+      Average probability of detection: 0.3406227 (range 0.2563233 to 0.4688599)
       Scaling: g(0 [m]) = 1
       Log likelihood: -931.5143 
       AICc: 1869.161
@@ -84,8 +84,8 @@
          Individuals seen: 188 in 185 groups 
        Average group size: 1.016216 
          Group size range: 1 to 2 
-      Density in sampled area: 3.727297e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 153005.5
+      Density in sampled area: 3.72731e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 153006.1
 
 # hazrate-FactorCovar
 
@@ -98,19 +98,19 @@
          outputUnits = "m")
       Coefficients:
                     Estimate     SE         z           p(>|z|)     
-      (Intercept)    5.05175691  0.1220400  41.3942751  0.000000e+00
-      observerobs2  -0.08950643  0.1299712  -0.6886639  4.910348e-01
-      observerobs3  -0.39227291  0.1590877  -2.4657647  1.367211e-02
-      observerobs4  -0.65858963  0.1242175  -5.3019086  1.145982e-07
-      observerobs5  -0.06682980  0.1449110  -0.4611782  6.446708e-01
-      observerobs6  -0.48600149  0.1368074  -3.5524504  3.816610e-04
-      k              7.29081879  1.6934871   4.3052107  1.668269e-05
+      (Intercept)    5.05175727  0.1220394  41.3944662  0.000000e+00
+      observerobs2  -0.08950765  0.1299719  -0.6886691  4.910316e-01
+      observerobs3  -0.39226960  0.1590886  -2.4657297  1.367345e-02
+      observerobs4  -0.65859100  0.1242182  -5.3018894  1.146103e-07
+      observerobs5  -0.06682267  0.1449120  -0.4611257  6.447084e-01
+      observerobs6  -0.48601441  0.1368076  -3.5525394  3.815318e-04
+      k              7.29076716  1.6934219   4.3053460  1.667249e-05
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 0 [m] to 200 [m] 
-      Average effective detection radius (EDR): 131.5897 [m] (range 90.66239 [m] to 168.3413 [m]) 
-      Average probability of detection: 0.4579863 (range 0.2054917 to 0.7084701)
+      Average effective detection radius (EDR): 131.5898 [m] (range 90.66239 [m] to 168.3414 [m]) 
+      Average probability of detection: 0.4579872 (range 0.2054917 to 0.7084709)
       Scaling: g(0 [m]) = 1
       Log likelihood: -909.6747 
       AICc: 1833.982
@@ -119,8 +119,8 @@
          Individuals seen: 188 in 185 groups 
        Average group size: 1.016216 
          Group size range: 1 to 2 
-      Density in sampled area: 3.482608e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 142961.1
+      Density in sampled area: 3.482612e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 142961.2
 
 # hazrate-NoCovarWloWhi
 
@@ -132,9 +132,9 @@
          expansions = 0, series = "cosine", x.scl = w.20, g.x.scl = 1,
          outputUnits = "m")
       Coefficients:
-                   Estimate  SE          z         p(>|z|)     
-      (Intercept)  4.085785  0.08872294  46.05105  0.000000e+00
-      k            3.174197  0.32400943   9.79662  1.164158e-22
+                   Estimate  SE          z          p(>|z|)     
+      (Intercept)  4.085785  0.08872293  46.051054  0.000000e+00
+      k            3.174197  0.32400942   9.796621  1.164154e-22
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
@@ -162,14 +162,14 @@
          0, series = "cosine", x.scl = w.20, g.x.scl = 1, outputUnits = "m")
       Coefficients:
                    Estimate  SE          z         p(>|z|)     
-      (Intercept)  4.117367  0.08146999  50.53845  0.000000e+00
-      k            3.421335  0.28021379  12.20973  2.758045e-34
+      (Intercept)  4.117368  0.08146998  50.53847  0.000000e+00
+      k            3.421336  0.28021407  12.20972  2.758283e-34
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
       Strip: 20 [m] to 265 [m] 
-      Effective detection radius (EDR): 85.45974 [m] 
-      Probability of detection: 0.1216721
+      Effective detection radius (EDR): 85.45977 [m] 
+      Probability of detection: 0.1216722
       Scaling: g(20 [m]) = 1
       Log likelihood: -981.628 
       AICc: 1967.32
@@ -178,8 +178,8 @@
          Individuals seen: 195 in 192 groups 
        Average group size: 1.015625 
          Group size range: 1 to 2 
-      Density in sampled area: 7.082398e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 290732.4
+      Density in sampled area: 7.082394e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 290732.3
 
 # hazrate-NoCovarsFt
 
@@ -191,7 +191,7 @@
       Coefficients:
                    Estimate  SE          z         p(>|z|)     
       (Intercept)  5.728533  0.06267096  91.40651  0.000000e+00
-      k            4.199565  0.39728670  10.57061  4.078138e-26
+      k            4.199565  0.39728670  10.57061  4.078142e-26
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE  
@@ -219,16 +219,16 @@
          = "m", series = "cosine")
       Coefficients:
                    Estimate   SE         z           p(>|z|)      
-      (Intercept)   4.326690  0.1131519  38.2378889  6.611586e-320
-      k             3.491205  0.3250279  10.7412475   6.515790e-27
-      a1           -8.216870  8.0996212  -1.0144758   3.103558e-01
-      a2           -3.766640  3.8275114  -0.9840964   3.250681e-01
+      (Intercept)   4.326691  0.1131519  38.2379137  6.605658e-320
+      k             3.491206  0.3250280  10.7412475   6.515789e-27
+      a1           -8.216837  8.0995863  -1.0144761   3.103556e-01
+      a2           -3.766622  3.8274936  -0.9840962   3.250682e-01
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 289.2672 [m] 
-      Probability of detection: 1.191534 > 1
+      Effective detection radius (EDR): 289.2667 [m] 
+      Probability of detection: 1.191531 > 1
       Scaling: g(0 [m]) = 1 <- Check scaling
       Log likelihood: -990.9346 
       AICc: 1990.082
@@ -237,8 +237,8 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 6.213361e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 25505.85
+      Density in sampled area: 6.21338e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 25505.93
 
 # hazrate-NoCovarSinExpansions
 
@@ -250,15 +250,15 @@
          = "m", series = "sine")
       Coefficients:
                    Estimate   SE          z           p(>|z|)     
-      (Intercept)  4.5975100  0.09410681  48.8541690  0.000000e+00
-      k            3.7588444  0.62775706   5.9877373  2.127804e-09
-      a1           0.6502634  0.54229310   1.1990996  2.304892e-01
-      a2           0.1981852  0.31683701   0.6255116  5.316353e-01
+      (Intercept)  4.5975100  0.09410682  48.8541627  0.000000e+00
+      k            3.7588446  0.62775698   5.9877384  2.127790e-09
+      a1           0.6502632  0.54229312   1.1990991  2.304894e-01
+      a2           0.1981850  0.31683705   0.6255109  5.316358e-01
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of SINE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 136.4301 [m] 
+      Effective detection radius (EDR): 136.43 [m] 
       Probability of detection: 0.2650503
       Scaling: g(0 [m]) = 1
       Log likelihood: -998.4344 
@@ -268,7 +268,7 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 2.793218e-05 [1/m^2]
+      Density in sampled area: 2.793219e-05 [1/m^2]
       Abundance in 4.105e+09 [m^2] study area: 114661.6
 
 # hazrate-NoCovarHermExpansions
@@ -281,19 +281,19 @@
          = "m", series = "hermite")
       Coefficients:
                    Estimate       SE   z    p(>|z|)
-      (Intercept)       4.341265  NaN  NaN  NaN    
-      k                 3.770231  NaN  NaN  NaN    
-      a1             5693.963672  NaN  NaN  NaN    
-      a2           -29383.112005  NaN  NaN  NaN    
+      (Intercept)       4.337168  NaN  NaN  NaN    
+      k                 3.670728  NaN  NaN  NaN    
+      a1             3502.168875  NaN  NaN  NaN    
+      a2           -69979.596242  NaN  NaN  NaN    
       
       Message: FAILURE (Exit code= 1, singular convergence (7))
       Function: HAZRATE with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 31136.37 [m] 
-      Probability of detection: 13805.25 > 1
+      Effective detection radius (EDR): 46911.86 [m] 
+      Probability of detection: 31338.17 > 1
       Scaling: g(0 [m]) = 1 <- Check scaling
-      Log likelihood: -992.1898 
-      AICc: 1992.592
+      Log likelihood: -993.2323 
+      AICc: 1994.677
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
@@ -312,16 +312,16 @@
          = "m", series = "simple")
       Coefficients:
                    Estimate    SE          z            p(>|z|)    
-      (Intercept)   4.5329137  0.06834056  66.32830429  0.000000000
-      k             3.7422318  1.22375458   3.05799209  0.002228255
-      a1           -1.1113297  5.36310673  -0.20721753  0.835839979
-      a2            0.4809642  5.08923811   0.09450614  0.924707105
+      (Intercept)   4.5329126  0.06833974  66.32908295  0.000000000
+      k             3.7423630  1.22387436   3.05779999  0.002229683
+      a1           -1.1108324  5.36415302  -0.20708439  0.835943949
+      a2            0.4805082  5.09018720   0.09439892  0.924792270
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 118.1196 [m] 
-      Probability of detection: 0.1986791
+      Effective detection radius (EDR): 118.1195 [m] 
+      Probability of detection: 0.1986789
       Scaling: g(0 [m]) = 1
       Log likelihood: -998.6731 
       AICc: 2005.559
@@ -330,8 +330,8 @@
          Individuals seen: 196 in 193 groups 
        Average group size: 1.015544 
          Group size range: 1 to 2 
-      Density in sampled area: 3.726327e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 152965.7
+      Density in sampled area: 3.726332e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 152965.9
 
 # hazrate-ContCovarExpansions
 
@@ -343,20 +343,20 @@
          = "m")
       Coefficients:
                    Estimate    SE   z    p(>|z|)
-      (Intercept)   4.2190366  NaN  NaN  NaN    
-      bare         -0.4934805  NaN  NaN  NaN    
-      k             1.5182022  NaN  NaN  NaN    
-      a1           -0.6417786  NaN  NaN  NaN    
-      a2           -0.6809343  NaN  NaN  NaN    
+      (Intercept)   4.2266057  NaN  NaN  NaN    
+      bare         -0.4492500  NaN  NaN  NaN    
+      k             1.3064577  NaN  NaN  NaN    
+      a1           -0.4326437  NaN  NaN  NaN    
+      a2           -0.4621804  NaN  NaN  NaN    
       
       Message: FAILURE (Exit code= 1, false convergence (8))
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 0.0003595251 [m] (range 3.950473e-06 [m] to 0.003531652 [m]) 
-      Average probability of detection: 6.740652e-12 (range 2.222319e-16 to 1.776086e-10)
+      Average effective detection radius (EDR): 0.005214684 [m] (range 6.002154e-05 [m] to 0.03710565 [m]) 
+      Average probability of detection: 1.05931e-09 (range 5.130061e-14 to 1.960597e-08)
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1057.323 
-      AICc: 2124.966
+      Log likelihood: -1059.096 
+      AICc: 2128.513
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
@@ -375,20 +375,20 @@
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
                    Estimate    SE   z    p(>|z|)
-      (Intercept)   4.2190366  NaN  NaN  NaN    
-      bare         -0.4934805  NaN  NaN  NaN    
-      k             1.5182022  NaN  NaN  NaN    
-      a1           -0.6417786  NaN  NaN  NaN    
-      a2           -0.6809343  NaN  NaN  NaN    
+      (Intercept)   4.2266057  NaN  NaN  NaN    
+      bare         -0.4492500  NaN  NaN  NaN    
+      k             1.3064577  NaN  NaN  NaN    
+      a1           -0.4326437  NaN  NaN  NaN    
+      a2           -0.4621804  NaN  NaN  NaN    
       
       Message: FAILURE (Exit code= 1, false convergence (8))
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 0.0003595251 [m] (range 3.950473e-06 [m] to 0.003531652 [m]) 
-      Average probability of detection: 6.740652e-12 (range 2.222319e-16 to 1.776086e-10)
+      Average effective detection radius (EDR): 0.005214684 [m] (range 6.002154e-05 [m] to 0.03710565 [m]) 
+      Average probability of detection: 1.05931e-09 (range 5.130061e-14 to 1.960597e-08)
       Scaling: g(0 [m]) = 0.75
-      Log likelihood: -1057.323 
-      AICc: 2124.966
+      Log likelihood: -1059.096 
+      AICc: 2128.513
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
@@ -405,9 +405,9 @@
       Call: dfuncEstim(data = thrasherDf, formula = dist ~
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
-                   Estimate  SE          z          p(>|z|)    
-      (Intercept)  4.540434  0.06397395  70.973169  0.00000e+00
-      k            4.199565  0.49498325   8.484256  2.17103e-17
+                   Estimate  SE          z          p(>|z|)     
+      (Intercept)  4.540434  0.05759518  78.833565  0.000000e+00
+      k            4.199564  0.48179821   8.716438  2.870904e-18
       
       Message: Success; Bootstrap SE's
       Function: HAZRATE  
@@ -423,9 +423,9 @@
        Average group size: 1.015544 
          Group size range: 1 to 2 
       
-      Density in sampled area: 3.694619e-05 [1/m^2]
-                       95% CI: 3.321246e-05 [1/m^2] to 4.140141e-05 [1/m^2]
+      Density in sampled area: 3.69462e-05 [1/m^2]
+                       95% CI: 3.13616e-05 [1/m^2] to 4.094837e-05 [1/m^2]
       
       Abundance in 4.105e+09 [m^2] study area: 151664.1
-                                       95% CI: 136337.1 to 169952.8
+                                       95% CI: 128739.4 to 168093.1
 

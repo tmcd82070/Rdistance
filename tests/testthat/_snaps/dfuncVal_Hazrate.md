@@ -218,16 +218,16 @@
          = "m", series = "cosine")
       Coefficients:
                    Estimate    SE         z            p(>|z|)      
-      (Intercept)  4.13074740  0.1939813  21.29456685  1.274793e-100
-      k            4.10850039  0.6069398   6.76920531   1.294917e-11
-      a1           0.03600197  0.5892702   0.06109586   9.512829e-01
-      a2           0.49596215  0.2060589   2.40689477   1.608880e-02
+      (Intercept)  4.13076512  0.1939813  21.29465263  1.272462e-100
+      k            4.10844273  0.6069396   6.76911277   1.295745e-11
+      a1           0.03608167  0.5892146   0.06123688   9.511706e-01
+      a2           0.49592249  0.2060398   2.40692556   1.608745e-02
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 53.91132 [m] 
-      Probability of detection: 0.2604412
+      Effective strip width (ESW): 53.9119 [m] 
+      Probability of detection: 0.2604439
       Scaling: g(0 [m]) = 1
       Log likelihood: -1658.738 
       AICc: 3325.589
@@ -236,8 +236,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.635164e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 395523.5
+      Density in sampled area: 9.635062e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 395519.3
 
 # hazrate-NoCovarSinExpansions
 
@@ -248,27 +248,27 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "sine")
       Coefficients:
-                   Estimate    SE         z          p(>|z|)     
-      (Intercept)  -1.5316527  0.9472262  -1.616987  1.058810e-01
-      k             0.5338098  0.0664294   8.035747  9.301056e-16
-      a1            2.6708045  0.4609032   5.794719  6.843563e-09
-      a2            1.1830604  0.5447523   2.171740  2.987526e-02
+                   Estimate   SE   z    p(>|z|)
+      (Intercept)  -4.174715  NaN  NaN  NaN    
+      k             0.500000  NaN  NaN  NaN    
+      a1            2.766947  NaN  NaN  NaN    
+      a2            1.298524  NaN  NaN  NaN    
       
-      Message: Success; Asymptotic SE's
+      Message: FAILURE (Exit code= 1, false convergence (8))
       Function: HAZRATE with 2 expansion(s) of SINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 14.8014 [m] 
-      Probability of detection: 0.07150434
+      Effective strip width (ESW): 4.982877 [m] 
+      Probability of detection: 0.02407187
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1646.852 
-      AICc: 3301.817
+      Log likelihood: -1634.856 
+      AICc: 3277.826
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 0.0003509428 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 1440620
+      Density in sampled area: NA
+      Abundance in 4105 [km^2] study area: NA
 
 # hazrate-NoCovarHermExpansions
 
@@ -279,20 +279,20 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "hermite")
       Coefficients:
-                   Estimate     SE   z    p(>|z|)
-      (Intercept)   5.30722410  NaN  NaN  NaN    
-      k             0.50000000  NaN  NaN  NaN    
-      a1           -0.23831400  NaN  NaN  NaN    
-      a2            0.09501933  NaN  NaN  NaN    
+                   Estimate    SE   z    p(>|z|)
+      (Intercept)   5.3377393  NaN  NaN  NaN    
+      k             0.5000000  NaN  NaN  NaN    
+      a1           -0.2382767  NaN  NaN  NaN    
+      a2            0.0950566  NaN  NaN  NaN    
       
       Message: FAILURE (Exit code= 1, false convergence (8))
       Function: HAZRATE with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 50.20573 [m] 
-      Probability of detection: 0.2425398
+      Effective strip width (ESW): 50.36668 [m] 
+      Probability of detection: 0.2433173
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1654.285 
-      AICc: 3316.684
+      Log likelihood: -1654.287 
+      AICc: 3316.689
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
@@ -310,27 +310,27 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "simple")
       Coefficients:
-                   Estimate   SE         z           p(>|z|)      
-      (Intercept)   3.632143  0.1635637   22.206283  2.986485e-109
-      k             1.531208  0.2547318    6.011061   1.843129e-09
-      a1           -7.062476  0.2143129  -32.954033  3.703471e-238
-      a2            6.770288  0.2463899   27.477942  3.221974e-166
+                   Estimate   SE         z          p(>|z|)      
+      (Intercept)   3.634635  0.1633021  22.257121  9.623225e-110
+      k             1.538186  0.2143462   7.176178   7.168701e-13
+      a1           -7.068105         NA         NA             NA
+      a2            6.792056         NA         NA             NA
       
-      Message: Success; Asymptotic SE's
+      Message: VARIANCE FAILURE (singular variance-covariance matrix)
       Function: HAZRATE with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 57.62591 [m] 
-      Probability of detection: 0.2783861
+      Effective strip width (ESW): 57.67787 [m] 
+      Probability of detection: 0.2786371
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1654.278 
-      AICc: 3316.67
+      Log likelihood: -1654.28 
+      AICc: 3316.674
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.014077e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 370027.9
+      Density in sampled area: 9.005957e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 369694.6
 
 # hazrate-NoCovarBSplineExpansions
 
@@ -341,20 +341,20 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "bspline")
       Coefficients:
-                   Estimate   SE   z    p(>|z|)
-      (Intercept)   5.305273  NaN  NaN  NaN    
-      k             0.500000  NaN  NaN  NaN    
-      a1           -1.236699  NaN  NaN  NaN    
-      a2           -0.953312  NaN  NaN  NaN    
+                   Estimate    SE   z    p(>|z|)
+      (Intercept)   5.3096769  NaN  NaN  NaN    
+      k             0.5000000  NaN  NaN  NaN    
+      a1           -1.2367909  NaN  NaN  NaN    
+      a2           -0.9531666  NaN  NaN  NaN    
       
       Message: FAILURE (Exit code= 1, false convergence (8))
       Function: HAZRATE with 2 expansion(s) of BSPLINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 50.197 [m] 
-      Probability of detection: 0.2424976
+      Effective strip width (ESW): 50.22221 [m] 
+      Probability of detection: 0.2426194
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1654.285 
-      AICc: 3316.684
+      Log likelihood: -1654.286 
+      AICc: 3316.687
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
@@ -372,18 +372,18 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m")
       Coefficients:
-                   Estimate     SE           z          p(>|z|)     
-      (Intercept)  3.726901877  0.203283173  18.333548  4.467848e-75
-      bare         0.008458977  0.002507473   3.373506  7.421737e-04
-      k            4.464618749  0.624885037   7.144704  9.018989e-13
-      a1           0.228023774  0.358885679   0.635366  5.251897e-01
-      a2           0.420252245  0.150636311   2.789847  5.273297e-03
+                   Estimate     SE           z           p(>|z|)     
+      (Intercept)  3.726878065  0.203278772  18.3338281  4.444923e-75
+      bare         0.008459065  0.002507488   3.3735213  7.421331e-04
+      k            4.464605891  0.624901244   7.1444983  9.032516e-13
+      a1           0.228002330  0.358852402   0.6353652  5.251903e-01
+      a2           0.420259123  0.150623990   2.7901208  5.268838e-03
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 54.79514 [m] (range 45.49435 [m] to 65.39776 [m]) 
-      Average probability of detection: 0.2647108 (range 0.2197795 to 0.3159312)
+      Average effective strip width (ESW): 54.79465 [m] (range 45.49381 [m] to 65.39737 [m]) 
+      Average probability of detection: 0.2647085 (range 0.2197769 to 0.3159293)
       Scaling: g(0 [m]) = 1
       Log likelihood: -1652.948 
       AICc: 3316.068
@@ -392,8 +392,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.586432e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 393523.1
+      Density in sampled area: 9.586521e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 393526.7
 
 # hazrate-ContCovarExpansionsScaling
 
@@ -404,18 +404,18 @@
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
-                   Estimate     SE           z          p(>|z|)     
-      (Intercept)  3.726901877  0.203283173  18.333548  4.467848e-75
-      bare         0.008458977  0.002507473   3.373506  7.421737e-04
-      k            4.464618749  0.624885037   7.144704  9.018989e-13
-      a1           0.228023774  0.358885679   0.635366  5.251897e-01
-      a2           0.420252245  0.150636311   2.789847  5.273297e-03
+                   Estimate     SE           z           p(>|z|)     
+      (Intercept)  3.726878065  0.203278772  18.3338281  4.444923e-75
+      bare         0.008459065  0.002507488   3.3735213  7.421331e-04
+      k            4.464605891  0.624901244   7.1444983  9.032516e-13
+      a1           0.228002330  0.358852402   0.6353652  5.251903e-01
+      a2           0.420259123  0.150623990   2.7901208  5.268838e-03
       
       Message: Success; Asymptotic SE's
       Function: HAZRATE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 54.79514 [m] (range 45.49435 [m] to 65.39776 [m]) 
-      Average probability of detection: 0.2647108 (range 0.2197795 to 0.3159312)
+      Average effective strip width (ESW): 54.79465 [m] (range 45.49381 [m] to 65.39737 [m]) 
+      Average probability of detection: 0.2647085 (range 0.2197769 to 0.3159293)
       Scaling: g(0 [m]) = 0.75
       Log likelihood: -1652.948 
       AICc: 3316.068
@@ -424,8 +424,8 @@
          Individuals seen: 374 in 356 groups 
        Average group size: 1.050562 
          Group size range: 1 to 3 
-      Density in sampled area: 9.586432e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 393523.1
+      Density in sampled area: 9.586521e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 393526.7
 
 # hazrate-Bootstraps
 
@@ -435,9 +435,9 @@
       Call: dfuncEstim(data = sparrowDf, formula = dist ~
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
-                   Estimate  SE         z         p(>|z|)      
-      (Intercept)  3.852295  0.1128324  34.14174  1.773514e-255
-      k            2.821360  0.2770262  10.18445   2.326694e-24
+                   Estimate  SE         z          p(>|z|)      
+      (Intercept)  3.852295  0.1466327  26.271739  4.035222e-152
+      k            2.821360  0.4286743   6.581594   4.654300e-11
       
       Message: Success; Bootstrap SE's
       Function: HAZRATE  
@@ -454,8 +454,8 @@
          Group size range: 1 to 3 
       
       Density in sampled area: 8.130746e-05 [1/m^2]
-                       95% CI: 6.559429e-05 [1/m^2] to 9.066089e-05 [1/m^2]
+                       95% CI: 6.710358e-05 [1/m^2] to 0.0001062469 [1/m^2]
       
       Abundance in 4.105e+09 [m^2] study area: 333767.1
-                                       95% CI: 269264.6 to 372163
+                                       95% CI: 275460.2 to 436143.5
 

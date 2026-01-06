@@ -202,11 +202,20 @@ testthat::test_that( paste0(lhood, "-ContCovarExpansions"),{
                 , ci = NULL)
   testthat::expect_snapshot(summary(fit)
                             , transform = scrub_environ)
+}
+)
+
+
+# Simple Plot ----
+testthat::test_that( paste0(lhood, "-Plot"),{
+  fit <- thrasherDf |> dfuncEstim(formula = dist ~ bare + groupsize(groupsize)
+                                  , likelihood = lhood
+  )
   
-  # Simple Plot ----
-  test_that("Hazrate point plot", {
-    expect_snapshot_plot("pointVal_hazrate", plot(fit))
-  })
+  expect_snapshot_plot("pointVal_hazrate"
+                       , plot(fit
+                              , newdata=data.frame(bare = c(20, 30, 40))
+                       ))
   
 }
 )
