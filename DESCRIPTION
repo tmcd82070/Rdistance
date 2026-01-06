@@ -2,7 +2,7 @@ Package: Rdistance
 Type: Package
 Title: Density and Abundance from Distance-Sampling Surveys
 Version: 4.3.0
-Date: 2025-12-21
+Date: 2026-01-06
 Maintainer: Trent McDonald <trent@mcdonalddatasciences.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdonalddatasciences.com"), 
   person("Jason", "Carlisle", role="aut", email="jason.carlisle@wyo.gov"), 
@@ -56,7 +56,8 @@ Imports: graphics,
          tibble, 
          tidyselect,
          dfoptim,
-         expint
+         expint,
+         multidplyr
 RoxygenNote: 7.3.3
 Encoding: UTF-8
 Config/testthat/edition: 3
