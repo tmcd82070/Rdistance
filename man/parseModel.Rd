@@ -12,7 +12,7 @@ parseModel(
   w.hi = NULL,
   expansions = 0,
   series = "cosine",
-  x.scl = 0,
+  x.scl = w.lo,
   g.x.scl = 1,
   outputUnits = NULL,
   asymptoticSE = TRUE
