@@ -72,6 +72,9 @@ ESW <- function( object, newdata = NULL ){
     esw <- integrateNumeric(object, newdata = newdata)
   }
   
+  # Scale ESW for g(0)
+  esw <- object$g.x.scl * esw
+  
   esw
   
 }
