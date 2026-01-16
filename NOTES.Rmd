@@ -56,3 +56,21 @@ cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
 ```
 
 Group size values never contribute to distance function estimation. Distance functions are estimated from distances only. 
+
+# Variance of Density
+
+Trent ran across the variance of density in a camera trap paper (Moeller et al 2018 "Three novel..."). The "IS" camera trap method is parallel to distance sampling. Variance in the Moeller paper says this, "Because fixed-area point counts are special
+cases of fixed-area transects, we estimated variance of the parameter $\hat{D}$ based on the formula for random line transects of
+unequal lengths (Thompson 2002, Fewster et al. 2009), following:"
+$$
+\widehat{Var}(\hat{D}) = \frac{M}{L^2(M-1)}\sum_{i=1}^M (Ja_i)^2 \left(\frac{n_i}{Ja_i} - \frac{n}{L}\right)^2
+$$
+where $Ja_i$ is the summed area of camera i across all occasions, $L = \sum_{i=1}^M Ja_i$, count $n_i$ is the count
+of animals over all occasions at camera i, and $n$ is the total count of animals over all cameras and occasions. We then estimated the variance of $\hat{N}$ using the delta method. 
+
+Look up Thompson 2002 and Fewster et al 2009 and see if these formula agree with what's in Distance. 
+
+Thompson, S. K. 2002. Sampling. Second edition. John Wiley & Sons Inc, New York, New York, USA.
+
+Fewster, R. M., S. T. Buckland, K. P. Burnham, D. L. Borchers, P. E. Jupp, J. L. Laake, and L. Thomas.
+2009. Estimating the encounter rate variance in distance sampling. Biometrics 65:225–236.
