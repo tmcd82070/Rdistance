@@ -1,19 +1,15 @@
 # Submission comments
 
-This submission (v4.3.0) contains increased functionality - two new 
-features.  I implemented parallel processing of my bootstrap resampling 
-routine.  I added a likelihood (Gamma) to the suite of available curves 
-that can be fitted. 
-
-Details on the changes between major releases are in **NEWS**. 
+This submission (v4.3.1) contains a critical bug fix. Prior versions 
+incorrectly reported ESW for scaling factors (`g.x.scl`) less than 1.0.
 
 # Current submission
 
-* 4.3.0
+* 4.3.1
 
 # Prior submission
 
-* 4.1.1   
+* 4.3.0   
 
 # Local Check
 
@@ -22,7 +18,7 @@ R CMD check --as-cran results
 No ERRORs or WARNINGs. 
 
 local environment:
-Windows 11 Pro, R version 4.5.1
+Windows 11 Pro, R version 4.5.2
 
 # Rhub Checks (via Github actions)
 

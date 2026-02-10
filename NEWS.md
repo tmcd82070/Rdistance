@@ -1,3 +1,14 @@
+Changes in version 4.3.1 (2026-02-10)
+==============
+
+*   Version v4.3.1 contains a critical bug fix. The prior version, 4.3.0, 
+incorrectly reported ESW when scaling factors (`g.x.scl`) were less than 1.0.
+Versions <=4.1.0 reported correct ESW, and ESW reported by 4.3.0 was correct
+when `g.x.scl` equaled 1.0 (the default).
+*   Default value for `w.lo` changed in `parseModel` to suppress warning re 
+`x.scl` < `w.lo`. 
+
+
 Changes in version 4.3.0 (2026-01-06)
 ==============
 
