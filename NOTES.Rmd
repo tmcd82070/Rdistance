@@ -66,11 +66,37 @@ $$
 \widehat{Var}(\hat{D}) = \frac{M}{L^2(M-1)}\sum_{i=1}^M (Ja_i)^2 \left(\frac{n_i}{Ja_i} - \frac{n}{L}\right)^2
 $$
 where $Ja_i$ is the summed area of camera i across all occasions, $L = \sum_{i=1}^M Ja_i$, count $n_i$ is the count
-of animals over all occasions at camera i, and $n$ is the total count of animals over all cameras and occasions. We then estimated the variance of $\hat{N}$ using the delta method. 
+of animals over all occasions at camera i, and $n$ is the total count of animals over all cameras and occasions. We then estimated the variance of $\hat{N}$ using the delta method. This assumes probability of detection of 1.0; otherwise, there is an additional component for estimating $\hat{P}$.  
 
-Look up Thompson 2002 and Fewster et al 2009 and see if these formula agree with what's in Distance. 
+### Fewster et al 
+
+Fewster et al (2009) state the following: "Overall, taking account both of estimator performance and
+simplicity, we recommend estimator R2 for random survey designs. For systematic designs, we recommend O2 when the
+design can accommodate overlapping strata in whole or part, and S2 otherwise. Estimator R2 is used for the within-stratum
+variances in S2 and O2 (equations (13) and (16))."
+
+Estimator R2 for random placement of transects is their Equation (3), 
+$$
+\widehat{var}(\frac{n}{L}) = \frac{k}{L^2(k-1)}\sum_{i=1}^k l_i^2 \left( \frac{n_i}{l_i} - \frac{n}{L}\right)^2
+$$
+where $k$ is number of transects, $l_i$ is length of transect $i$, $n_i$ is number of targets on transect $i$, $n = \sum_i n_i$ and $L=\sum_i l_i$.
+
+Fewster et al's (2009) estimator S2 for systematic transect placement is their equation 13, 
+$$
+\widehat{var}(\frac{n}{L}) = \frac{1}{L^2}\sum_{h=1}^H L_h^2 \widehat{var}_h(\frac{n_h}{L_h}).
+$$
+Here we assume the systematic placement of transects has been post-stratified into $H$ stratum, each with $k_h$ lines in them, $n_h$ encounters (sighted targets), and $L_h$ total line length. Within post-stratum variance estimate $\widehat{var}_h(\frac{n_h}{L_h})$ is their R3 estimator (above). 
+
+### References
 
 Thompson, S. K. 2002. Sampling. Second edition. John Wiley & Sons Inc, New York, New York, USA.
 
 Fewster, R. M., S. T. Buckland, K. P. Burnham, D. L. Borchers, P. E. Jupp, J. L. Laake, and L. Thomas.
 2009. Estimating the encounter rate variance in distance sampling. Biometrics 65:225–236.
+
+
+### Potential To-Do's
+
+*   You have read Fewster et al 2009. Dig into `Distance` and see whether these formula are implemented. Especially, see how `Distance` estimates the other component, $\widehat{var}(\frac{1}{\hat{P}})$, variance of detection probability. 
+*   It would be interesting to compare these estimators to the bootstrap estimators used in `Rdistance`.
+
