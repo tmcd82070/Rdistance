@@ -41,7 +41,7 @@ includeFigure("RdistanceTopBanner.PNG")
 
 ## Simplified Distance-Sampling in R
 
-**Rdistance** analyzes line- and point-transect distance-sampling data. If you are unfamiliar with distance-sampling, check out our primer, [Distance Sampling for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/Distance-Sampling-for-the-Average-Joe). If you are ready to take on an analysis, the best place to start is the **Examples** section (below).  The *Example* sections of help files `?RdistDf`, `?dfuncEstim`, and `?abundEstim` contain enough information to get you started and explain a few details of analysis in **Rdistance**. The **Rdistance** [wiki](https://github.com/tmcd82070/Rdistance/wiki) (always a work-in-progress) contains additional information on distance sampling and is the equivalent of vignettes. 
+**Rdistance** analyzes line- and point-transect distance-sampling data. If you are unfamiliar with distance-sampling, check out our primer, [Distance Sampling for the Average Joe](https://github.com/tmcd82070/Rdistance/wiki/Distance-Sampling-for-the-Average-Joe). If you are ready to take on an analysis, the best place to start is the Beginner tutorials [here](https://mcdonalddatasciences.com/Rdistance.html).  In addition, the *Example* sections of help files `?RdistDf`, `?dfuncEstim`, and `?abundEstim` contain enough information to get you started and explain a few details of analysis in **Rdistance**. 
 
 
 ```{r}
@@ -55,12 +55,18 @@ includeFigure("RdistanceSeparator.PNG")
   + half-normal (`halfnorm`) 
   + hazard rate (`hazrate`) 
   + negative exponential (`negexp`)
-* Expansion terms
+  + one step (`oneStep` - mixture of two uniforms)
+  + Gamma (`Gamma`)
+* Expansion terms:
+  + B spline
+  + cosine
+  + sine
+  + Hermite
 * Standard methods: `print`, `plot`, `predict`, `AIC`, etc.
 * Observation and transect-level distance function covariates
 * Standard R formula model specification (e.g., `distance ~ elevation + observer`)
 * Measurement unit control and automatic conversion
-* Automated bootstrap confidence intervals 
+* Automated bootstrap confidence intervals in parallel
 * Overall (study area) and site level abundance estimates
 * Help and wiki content taught at multiple workshops and reviewed by multiple authors
 

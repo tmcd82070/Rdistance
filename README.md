@@ -2,6 +2,7 @@
 <img src="README_files/RdistanceTopBanner.PNG" width="100%" />
 
 <!-- badges: start -->
+
 <center>
 
 [![CRAN
@@ -21,7 +22,9 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 ![](https://img.shields.io/github/release-date/tmcd82070/Rdistance?color=c95443)
 
 </center>
+
 <!-- [![Travis-CI Build Status](https://travis-ci.org/tmcd82070/Rdistance.svg?branch=master)](https://travis-ci.org/tmcd82070/Rdistance) -->
+
 <!-- badges: end -->
 
 ## Simplified Distance-Sampling in R
@@ -31,13 +34,11 @@ If you are unfamiliar with distance-sampling, check out our primer,
 [Distance Sampling for the Average
 Joe](https://github.com/tmcd82070/Rdistance/wiki/Distance-Sampling-for-the-Average-Joe).
 If you are ready to take on an analysis, the best place to start is the
-**Examples** section (below). The *Example* sections of help files
-`?RdistDf`, `?dfuncEstim`, and `?abundEstim` contain enough information
-to get you started and explain a few details of analysis in
-**Rdistance**. The **Rdistance**
-[wiki](https://github.com/tmcd82070/Rdistance/wiki) (always a
-work-in-progress) contains additional information on distance sampling
-and is the equivalent of vignettes.
+Beginner tutorials
+[here](https://mcdonalddatasciences.com/Rdistance.html). In addition,
+the *Example* sections of help files `?RdistDf`, `?dfuncEstim`, and
+`?abundEstim` contain enough information to get you started and explain
+a few details of analysis in **Rdistance**.
 
 <img src="README_files/RdistanceSeparator.PNG" width="100%" />
 
@@ -48,13 +49,19 @@ and is the equivalent of vignettes.
   - half-normal (`halfnorm`)
   - hazard rate (`hazrate`)
   - negative exponential (`negexp`)
-- Expansion terms
+  - one step (`oneStep` - mixture of two uniforms)
+  - Gamma (`Gamma`)
+- Expansion terms:
+  - B spline
+  - cosine
+  - sine
+  - Hermite
 - Standard methods: `print`, `plot`, `predict`, `AIC`, etc.
 - Observation and transect-level distance function covariates
 - Standard R formula model specification (e.g.,
   `distance ~ elevation + observer`)
 - Measurement unit control and automatic conversion
-- Automated bootstrap confidence intervals
+- Automated bootstrap confidence intervals in parallel
 - Overall (study area) and site level abundance estimates
 - Help and wiki content taught at multiple workshops and reviewed by
   multiple authors
@@ -113,7 +120,7 @@ install.packages("Rdistance")
 ```
 
 2.  ***Development version***: `Rdistance` is under active development,
-    and the development version often contains patches between
+    and the ‘development’ version often contains patches between
     official releases. Inspect commit messages for commits following the
     most recent release for a description of the patches. Install the
     development version from
