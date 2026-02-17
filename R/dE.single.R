@@ -355,7 +355,7 @@ dE.single <- function( data
 
   # Check whether need to use non-gradient optimizer ----
   if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
-    # checkNEvalPts(getOption("Rdistance_intEvalPts")) # make sure coefs match, before save
+    # oneStep, triangle
     origOp <- options(Rdistance_optimizer = "hookeJeeves")
     nInts <- getOption("Rdistance_intEvalPts")
     if(nInts < 301){
@@ -364,7 +364,7 @@ dE.single <- function( data
     }
     checkNEvalPts(getOption("Rdistance_intEvalPts")) # make sure coefs match
   } else {
-    # Check univariate and Hooke-Jeeves; can't do univariate problems ----
+    # Check whether problem is univariate and Hooke-Jeeves is called for; HJ can't do univariate problems ----
     termLabs <- attr(stats::terms(modelList$formula), "term.labels")
     termLabs <- termLabs[!grepl("groupsize\\(", termLabs)]
     if( (length(termLabs) == 0) && 

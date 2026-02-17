@@ -122,13 +122,6 @@ integrateDfuncs <- function( object
     # and the likelihood applies the link function
     intType = "Trapazoid"
     
-    # coefLocs <- (length(ml$par)-(ml$expansions-1)):(length(ml$par))
-    # object <- cbind(object
-    #                , matrix(ml$par[coefLocs]
-    #                         , nrow = nrow(object)
-    #                         , ncol=ml$expansions
-    #                         , byrow = TRUE
-    #                ))  # n X ([#canonical] + nexp)
     object[,1] <- log(object[,1]) 
     
     outArea <- integrateOneStepNumeric(object
@@ -138,6 +131,17 @@ integrateDfuncs <- function( object
                                        , expansions = ml$expansions
                                        , series = ml$series
                                        , isPoints = is.points(ml))
+    
+  } else if( likExpan == "triangle_0_line" ){
+    
+    # CASE: triangle, 0 expansions, lines ----
+    # Answer is:Theta <- object[,1];p <- object[,2];outArea <- Theta / p
+    intType = "Exact"
+    
+    outArea <- integrateTriangleLines(object
+                                      , w.lo = ml$w.lo
+                                      , w.hi = ml$w.hi
+                                      , Units = ml$outputUnits)
     
   } else if( likExpan == "Gamma_0_line"){
     # CASE: Gamma, 0 expansions, lines ----

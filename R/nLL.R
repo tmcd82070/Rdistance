@@ -90,7 +90,7 @@ nLL <- function(a
   L <- f.like( a = a
              , dist = d
              , covars = X
-             , w.hi = ml$w.hi - ml$w.lo # needed only for oneStep
+             , w.hi = ml$w.hi - ml$w.lo # needed for some but not all Likes
              )
   key <- L$L.unscaled  # (n vector)
   parms <- L$params
@@ -102,7 +102,7 @@ nLL <- function(a
     
     if(!(ml$likelihood %in% differentiableLikelihoods())){
       # Expansion domain depends on parameters.
-      # e.g., Apply expansion between 0 and theta for oneStep
+      # e.g., Apply expansion between 0 and theta for oneStep, triangle
       W <- setUnits(exp(parms[,1]), units(d))
       W <- W - ml$w.lo
     } else { 
