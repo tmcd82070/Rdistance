@@ -108,8 +108,8 @@ oneStep.start.limits <- function (ml){
   
   if( ncovars <= 1 ){
     # (Intercept)-only model. Use tighter bounds.
-    low <- log(w.lo + fuzz)
-    high <- log(w.hi - fuzz)
+    low <- log(max(w.lo, min(x)) + fuzz)
+    high <- log(min(w.hi, max(x)) - fuzz)
   } else {
     # We have covariates
     low <- rep(negInf, ncovars)
