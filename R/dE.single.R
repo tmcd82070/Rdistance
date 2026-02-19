@@ -373,6 +373,24 @@ dE.single <- function( data
         stop(paste("Cannot estimate an intercept-only model using 'hookeJeeves'.",
                    "Reset optimizer with options(Rdistance_optimizer = 'nlminb'), or restart R",
                    "and re-attach Rdistance"))  
+    } else if( (modelList$likelihood %in% differentiableLikelihoods()) &&
+               (getOption("Rdistance_optimizer") == "hookeJeeves") ){
+        mess <- paste("You requested the non-gradient"
+                      , Rdistance:::colorize(getOption("Rdistance_optimizer"))
+                      , "optimizer for the"
+                      , Rdistance:::colorize(modelList$likelihood)
+                      , "likelihood."
+                      , "This likelihood can use the faster"
+                      , Rdistance:::colorize("nlminb")
+                      , "method.  Optimizer is controled using options('Rdistance_optimizer' = <method>)"
+                      , "[see help('RdistanceControls')]."
+                      , Rdistance:::colorize("Switch optimizer to the gradient method?")
+                      )
+        writeLines(strwrap(mess))
+        yn <- readline( "[Enter or Y = yes/Else = no]?" )
+        if( nchar(yn) == 0 || toupper(yn) == "Y" ){
+          options(Rdistance_optimizer = "nlminb")
+        }
     }
   }
   
