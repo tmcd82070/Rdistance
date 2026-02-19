@@ -36,10 +36,20 @@ triangle.start.limits <- function (ml){
   
   strtVals <- oneStep.start.limits(ml)
   
-  # Only difference from oneStep is theta high
+  # Change theta high to allow it to exceed w
   ncovars <- nCovars(stats::model.matrix(ml))
   posInf <- getOption("Rdistance_posInf")
   strtVals$high[1:ncovars] <- posInf
+  
+  # P returned is proportion < theta, change to triangle parameterzation
+  Theta <- strtVals$start[1]
+  pStar <- strtVals$start[ncovars + 1]
+  wStar <- dropUnits(ml$w.hi - setUnits(Theta, fit$outputUnits))
+  p <- Theta * (1 - pStar) / (pStar * (Theta + 2 * wStar) - Theta)
+  p <- min( p, strtVals$high[ncovars + 1] )
+  p <- max( p, strtVals$low[ncovars + 1] )
+  strtVals$start[ncovars + 1] <- p
+  
 
   strtVals
 }
