@@ -47,13 +47,17 @@ oneStep.start.limits <- function (ml){
   posInf <- getOption("Rdistance_posInf")
   negInf <- getOption("Rdistance_negInf")
   
+  # Save these for later
+  min.d <- min(dist, na.rm = T)
+  max.d <- max(dist, na.rm = T)
+  
   # w.lo and w.hi should always have values, so the following 
   # never fires, but just in case.
   if(is.null(w.lo) | is.na(w.lo)){
-    w.lo <- min(dist, na.rm = T)
+    w.lo <- min.d
   }
   if(is.null(w.hi) | is.na(w.hi)){
-    w.hi <- max(dist, na.rm = T)
+    w.hi <- max.d
   }
 
   # Only time dist2 will not have units is when user overides requirement
@@ -108,8 +112,8 @@ oneStep.start.limits <- function (ml){
   
   if( ncovars <= 1 ){
     # (Intercept)-only model. Use tighter bounds.
-    low <- log(max(w.lo, min(x)) + fuzz)
-    high <- log(min(w.hi, max(x)) - fuzz)
+    low <- log(max(w.lo, min.d) + fuzz)
+    high <- log(min(w.hi, max.d) - fuzz)
   } else {
     # We have covariates
     low <- rep(negInf, ncovars)
