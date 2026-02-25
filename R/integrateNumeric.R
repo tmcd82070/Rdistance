@@ -117,17 +117,29 @@ integrateNumeric <- function(object
 
   f.like <- utils::getFromNamespace(paste0( likelihood, ".like"), "Rdistance")    
 
-  y <- f.like(
+  likeObj <- f.like(
       a = object
     , dist = d
     , covars = XIntOnly
     , w.hi = w.hi - w.lo # I don't think we need w.hi in f.like here
   )
-  y <- y$L.unscaled # (nInts x n) = (length(d) X nrow(parms))
+  
+  y <- likeObj$L.unscaled # (nInts x n) = (length(d) X nrow(object))
 
   if( expansions > 0 ){
-    # we know that likelihood is a differentiableLikelihoods (not oneStep)
-    W <- rep(w.hi - w.lo, nrow(object))
+    # oneStep expansion integration is handled elsewhere
+    if(!(ml$likelihood %in% differentiableLikelihoods())){
+      # Expansion domain depends on parameters.
+      # e.g., Apply expansion between 0 and theta for triangle
+      W <- likeObj$params
+      W <- W[1, 1:ncol(y)] # drop second parameter which is tagged onto end
+      W <- setUnits(exp(W), Units) # W always constant w/in columns
+      W <- W - ml$w.lo
+    } else { 
+      # Most likelihoods: expansions constant across params
+      W <- ml$w.hi - ml$w.lo
+    }
+    
     exp.terms <- Rdistance::expansionTerms(a = object
                                            , d = d
                                            , series = series
