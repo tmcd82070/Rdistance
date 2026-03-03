@@ -1,15 +1,15 @@
 # Submission comments
 
-This submission (v4.3.1) contains a critical bug fix. Prior versions 
-incorrectly reported ESW for scaling factors (`g.x.scl`) less than 1.0.
+This submission (v4.4.0) adds functionality.  This submission contains 
+new routines to fit the 'triangle' likelikhood function. 
 
 # Current submission
 
-* 4.3.1
+* 4.4.0
 
 # Prior submission
 
-* 4.3.0   
+* 4.3.1   
 
 # Local Check
 
