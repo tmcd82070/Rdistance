@@ -355,8 +355,24 @@ dE.single <- function( data
 
   # Check whether need to use non-gradient optimizer ----
   if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
-    # oneStep, triangle
-    origOp <- options(Rdistance_optimizer = "hookeJeeves")
+    optimizerAlgo <- getOption("Rdistance_optimizer")
+    if( optimizerAlgo %in% c("nlminb") ){ # the list of gradient-based methods
+      origOp <- options(Rdistance_optimizer = "hookeJeeves") # default for non-smooth likelihoods
+    } else {
+      origOp <- list("Rdistance_optimizer" = "unchanged")
+    }
+    if( optimizerAlgo %in% "optim" ){
+      optimizerMethod <- getOption("Rdistance_optimMeth")
+      if( optimizerMethod %in% c("BFGS","CG","L-BFGS-B") ){
+        stop(paste("Gradient based optimization method"
+                      , optimizerMethod
+                      , "cannot be used because likelihood"
+                      , modelList$likelihood
+                      , "is not smooth (i.e., differentiable)."
+                      , "Use method 'Nelder-Mead' or 'SANN'."
+                      ))
+      }
+    }
     nInts <- getOption("Rdistance_intEvalPts")
     if(nInts < 301){
       # bump up integral points
@@ -400,7 +416,7 @@ dE.single <- function( data
                     )
 
   # Put original optimizer back in options if needed ----
-  if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
+  if( (origOp$Rdistance_optimizer == "nlminb") && (getOption(Rdistance_optimizer) == "hookeJeeves") ){ 
     options(origOp)
   }
 

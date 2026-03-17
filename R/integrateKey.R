@@ -63,11 +63,20 @@ integrateKey <- function(ml, key, f0, plot = FALSE){
   F <- function(x, d, fd){
     stats::approx(d, fd, xout = x, rule = c(1,2))$y
   }
-  keyIntegralR <- stats::integrate(f = F 
-                            , lower = ml$w.lo
-                            , upper = ml$w.hi
-                            , d = dObsUni
-                            , fd = keyUni)
+  
+  if( (length(dObsUni) > 1) && all(!is.na(keyUni)) && all(!is.infinite(keyUni)) ){
+    keyIntegralR <- stats::integrate(f = F 
+                              , lower = ml$w.lo
+                              , upper = ml$w.hi
+                              , d = dObsUni
+                              , fd = keyUni)
+  } else {
+    # really bad value of params, probably using optim without limits
+    keyIntegralR <- list(
+        value = "Missing or Infinite"
+      , abs.err = Inf
+    )
+  }
   
   # Plot ----
   if( plot ){
