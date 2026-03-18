@@ -111,116 +111,117 @@ output units will be the same as those on
 distances in \code{data}.}
 }
 \value{
-An object of class 'dfunc'.  Objects of class 'dfunc' 
-are lists containing the following components:
+An object of class 'dfunc' with the following components:
 
   \item{par}{The vector of estimated parameter values. 
-    Length of this vector for built-in likelihoods is one 
-    (for the function's parameter) plus the 
-    number of expansion terms plus one if the likelihood is 
-    'hazrate' (which has
-    two parameters). }
+    Length of this vector is the sum of the following: 
+    \enumerate{
+       \item The number of columns of the design matrix. This equals the 
+       number of covariates in the distance function plus one for the 
+       intercept, assuming an intercept is included.
+       \item The number of constant parameters in the distance function.
+       Constant parameters are those not related to covariates.  For example, 
+       the expornent 'k' parameter for hazard rate likelihood, or 
+       the mixing fraction 'p' for the oneStep likelihood. This can be zero.
+       \item The number of expansion functions called for.  This equals 
+       the input \code{expansions}. 
+    }
+  }
+ 
+  \item{loglik}{The maximized value of the log likelihood.}
+  
+  \item{convergence}{The convergence code. This code 
+    is returned by the optimizing routine (e.g., \code{optim} or \code{nlminb}).  
+    Values other than 0 indicate suspect convergence.}
+    
+  \item{message}{If maximization did not converge (\code{convergence != 0}),
+    this is the reason given by the optimizing routine.  
+  }
     
   \item{varcovar}{The variance-covariance matrix for coefficients 
-    of the distance function, estimated by the inverse of the fit's Hessian.  
-    If maximization has been performed by Nlminb or HookesJeeves, Rdistance estimates the 
-    Hessian from the second derivative of the log likelihood surface 
+    of the distance function, either estimated by the inverse of 
+    the fit's Hessian or by bootstrapping.  
+    If the likelihood is smooth (i.e., those listed by 
+    \code{Rdistance:::differentiableLikelihoods())}, 
+    Rdistance initially estimates the variance-covariance matrix using the 
+    second derivative of the log likelihood surface 
     at the final estimates, where second derivatives are estimated by 
-    numeric differentiation (see \code{\link{secondDeriv}}. If Optim 
-    performed the maximization, Rdistance uses the Hessian returned 
-    by Optim.  The variance-covariance matrix is re-set to NULL 
-    if the Hessian is not positive-definite.  
+    numeric differentiation (by routine \code{\link{secondDeriv}}. 
+    The variance-covariance matrix is re-set to NULL 
+    if the Hessian is not positive-definite.  If bootstrap resampling
+    has been performed (using \code{abundEstim}), the variance-covariance
+    matrix is re-estimated using the bootstrap values of parameters
+    and automatically reset.  
     Error estimates derived from bootstrapping are generally 
-    more reliable. I.e., re-compute coefficient confidence intervals 
-    using the bootstrap values in component \code{$B} of an abundance object.}   
+    preferable to the asymptotic estimates, hence the automatic 
+    re-set.}   
     
-  \item{loglik}{The maximized value of the log likelihood.}
-    
-  \item{convergence}{The convergence code. This code 
-    is returned by \code{optim} or \code{nlminb}.  Values other than 0 indicate suspect 
-    convergence.}
-    
-  \item{likelihood}{The name of the likelihood. This is 
-    the value of the argument \code{likelihood}. }
+  \item{limits}{A list containing the lower and upper limits of parameters.}
+  
+  \item{evaluations}{The number of likelihood evaluations performed by the 
+  optimizer.}
+  
+  \item{mf}{An R 'model frame' containing the detections (within the strip 
+  or circle) used in the fit, covariates specified in the formula, 
+  and groupsizes.  Column 'dist' contains the 
+  observed distances. The intercept, if included in the model, is not 
+  included as a column in this model frame. (Test whether an intercept 
+  is included using \code{attr(terms(return$mf), "intercept")}). 
+  Column 'offset(...)' contains group sizes associated with 
+  the values of 'dist'. Name of the group size column is "offset(...)", 
+  not "groupsize(...)", so that group sizes can be treated offsets in 
+  other R routines.  The \code{$mf} component is a proper \code{model.frame} and contains
+  both 'terms' and 'contrasts' attributes. This model frame 
+  contains only non-missing distances between \code{w.lo} and \code{w.hi}. }
+  
+  \item{data}{The original nested data frame subset to information required 
+  to complete distance estimation.  This data frame contains information 
+  on replication (i.e., rows are sites and are re-sampled during bootstrapping),
+  missing distances, missing transect lengths, and distances outside the observation 
+  strip from \code{w.lo} and \code{w.hi}. }
+
+  \item{formula}{The distance function's formula.}
+  
+  \item{dataName}{Name of the original nested data frame.}
+  
+  \item{likelihood}{The name of the likelihood fitted to observation 
+  distances. }
     
   \item{w.lo}{Left-truncation value used during the fit.}
   
   \item{w.hi}{Right-truncation value used during the fit.}
   
-  \item{mf}{A modelframe of detections within the strip 
-  or circle used in the fit.  Column 'dist' contains the 
-  observed distances. 
-  Column 'offset(...)' contains group sizes associated with 
-  the values of 'dist'. Group 
-  sizes are only used in \code{abundEstim}.  This model frame 
-  contains only non-missing distances between \code{w.lo} and \code{w.hi}. }
-  
-  \item{model.frame}{A \code{model.frame} object containing observed distances 
-  (the 'response'), covariates specified in the formula, and group sizes if they
-  were specified.  If specified, the name of the group size column is "offset(-variable-)", 
-  not "groupsize(-variable-)", because internally it is easier to treat group sizes  
-  as an offset in the model.  This component is a proper \code{model.frame} and contains
-  both 'terms' and 'contrasts' attributes. }
-  
-  \item{siteID.cols}{A vector containing the transect ID column names in \code{detectionData}
-  and \code{siteData}. Transect IDs can be a composite of two or more columns and hence 
-  this component can have length greater than 1. }
-    
   \item{expansions}{The number of expansion terms used 
-  during estimation.}
+  during the fit.}
   
-  \item{series}{The type of expansion used during estimation.}
+  \item{series}{The type of expansion used during estimation. This is 
+  only relevant if \code{expansions > 0}.}
   
-  \item{call}{The original call of this function.}
+  \item{x.scl}{The distance at which 
+  the function has been scaled to some value.  
+  This is the \emph{x} at which the distance function 
+  g(\emph{x}) = \code{g.x.scl}. } 
+    
+  \item{g.x.scl}{The height of the distance function 
+    at a distance of \code{x.scl}. }
+    
+  \item{outputUnits}{A list of type 'symbolic_units' containing the 
+  physical measurement units used during estimation. }
   
-  \item{call.x.scl}{The \emph{input} or user requested 
-    distance at which the distance function is scaled. }
-    
-  \item{call.g.x.scl}{The \code{input} value specifying the 
-    height of the distance function at a distance 
-    of \code{call.x.scl}.  }
-    
-  \item{call.observer}{The value of input parameter \code{observer}.
-    The input \code{observer} parameter is only applicable when 
-    \code{g.x.scl} is a data frame.}
-    
-  \item{fit}{The fitted object returned by \code{optim}.  
-    See documentation for \code{optim}.}
-    
-  \item{factor.names}{The names of any factors in \code{formula}. }
+  \item{asymptoticSE}{A logical scalar indication whether the 
+  variance-covariance matrix in component \code{varcovar} is 
+  asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE; 
+  estimated by boostrap resampling).}
   
-  \item{pointSurvey}{The input value of \code{pointSurvey}. 
-    This is TRUE if distances are radial from a point. FALSE 
-    if distances are perpendicular off-transect. }
+  \item{optimizer}{The optimizing routine used.}
     
-  \item{formula}{The formula specified for the detection function.}
+  \item{call}{The original function call.}
   
-  \item{control}{A list containing values of the 'control' parameters 
-  set by \code{RdistanceControls}.}
+  \item{nCovars}{The number of exogenous covariates fitted in the 
+  distance function. Does not include the intercept. }
   
-  \item{outputUnits}{The measurement units used for output.  All 
-    distance measurements are converted to these units internally. }
-    
-  \item{asymptoticSE}{Logical indicating whether the variance-
-  covariance matrix in component \code{varcovar} is asymptotic (TRUE) (i.e., 
-  based on the Hessian of maximization) or bootstrap (FALSE) (i.e., 
-  estimated after bootstrap iterations). 
-  }
-    
-  \item{x.scl}{The \emph{actual} distance at which 
-    the distance function is scaled to some value.  
-    i.e., this is the actual \emph{x} at 
-    which g(\emph{x}) = \code{g.x.scl}.
-    Note that \code{call.x.scl} = \code{x.scl} unless 
-    \code{call.x.scl} == "max", in which case \code{x.scl} is the 
-    distance at which \emph{g}() is maximized. } 
-    
-  \item{g.x.scl}{The \emph{actual} height of the distance function 
-    at a distance of \code{x.scl}. Note that \code{g.x.scl} = 
-    \code{call.g.x.scl} unless \code{call.g.x.scl}
-    is a multiple observer data frame, in which case \code{g.x.scl} is the 
-    actual height of the distance function at \code{x.scl} computed 
-    from the multiple observer data frame.   }
+  \item{LhoodType}{The type of likelihood fitted. Currently, only 'parametric' 
+  types are fitted.  }
 }
 \description{
 Fits a detection function to off-transect 
