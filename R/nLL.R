@@ -90,7 +90,7 @@ nLL <- function(a
   L <- f.like( a = a
              , dist = d
              , covars = X
-             , w.hi = ml$w.hi - ml$w.lo # needed only for oneStep
+             , w.hi = ml$w.hi - ml$w.lo # needed for some but not all Likes
              )
   key <- L$L.unscaled  # (n vector)
   parms <- L$params
@@ -102,7 +102,7 @@ nLL <- function(a
     
     if(!(ml$likelihood %in% differentiableLikelihoods())){
       # Expansion domain depends on parameters.
-      # e.g., Apply expansion between 0 and theta for oneStep
+      # e.g., Apply expansion between 0 and theta for oneStep, triangle
       W <- setUnits(exp(parms[,1]), units(d))
       W <- W - ml$w.lo
     } else { 
@@ -154,6 +154,7 @@ nLL <- function(a
   outArea <- integrateDfuncs( parms, ml )
   
   if( verbosity >= 3 ){
+    cat(colorize(paste(paste(rep("-", 60), collapse = ""), "\n")))
     likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", transectType(ml))
     cat(paste(" "
               , attr(outArea, "integralType")
@@ -211,6 +212,19 @@ nLL <- function(a
       integrateKey(ml, key, f0 = 1 / unique(outArea), plot=TRUE )
     } else if( verbosity >= 2) {
       integrateKey(ml, key, f0 = 1 / unique(outArea), plot=FALSE )
+    }
+  }
+  if( verbosity >= 4 ){
+    cat(crayon::bgRed( paste("data[1:5]      =", paste(d[1:5], collapse = ", "), "\n")))
+    cat(crayon::bgRed( paste("key[1:5]       =", paste(keySave[1:5], collapse = ", "), "\n")))
+    cat(crayon::bgRed( paste("exp.terms[1:5] =", paste(exp.terms[1:5], collapse = ", "), "\n")))
+    cat(crayon::bgRed( paste("keyScaled[1:5] =", paste(key[1:5], collapse = ", "), "\n")))
+    cat(crayon::bgRed( paste("W[1:5]         =", paste(W[1:5], collapse = ", "), "\n")))
+  }
+  if( verbosity >= 5 ){
+    yn <- readline("Abort [y/N]?")
+    if( toupper(yn) == "Y" ){
+      stop("Aborted by user.")
     }
   }
   

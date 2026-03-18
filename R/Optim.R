@@ -18,22 +18,40 @@ Optim <- function(ml, strt.lims){
   )
   
   verboseLevel <- getOption("Rdistance_verbosity")
+  optimMeth <- getOption("Rdistance_optimMeth")
+  
   if( verboseLevel >= 1 ){
-    cat(colorize("OPTIM gradient method L-BFGS-B maximization ----\n", col = "red"))
+    cat(colorize(paste(
+        optimMeth
+      , "maximization via function OPTIM"
+      , "----\n"), col = "red"))
   }
-  
-  fit <- stats::optim(
-      par = strt.lims$start
-    , fn = nLL
-    , lower = dropUnits(strt.lims$low) # safe
-    , upper = dropUnits(strt.lims$high)
-    , hessian = TRUE
-    , control = contRl
-    , method = c("L-BFGS-B")
-    , ml = ml
-    , verbosity = verboseLevel
-  )
-  
+
+  if( optimMeth %in% c("L-BFGS-B") ){
+    # can use limits, else no
+    fit <- stats::optim(
+        par = strt.lims$start
+      , fn = nLL
+      , lower = dropUnits(strt.lims$low) # safe
+      , upper = dropUnits(strt.lims$high)
+      , hessian = TRUE
+      , control = contRl
+      , method = optimMeth
+      , ml = ml
+      , verbosity = verboseLevel
+    )
+  } else {
+    fit <- stats::optim(
+        par = strt.lims$start
+      , fn = nLL
+      , hessian = TRUE
+      , control = contRl
+      , method = optimMeth
+      , ml = ml
+      , verbosity = verboseLevel
+    )
+    
+  }
   names(fit$par) <- strt.lims$names
   if( ml$asymptoticSE ){
     fit$varcovar <- Rdistance::varcovarEstim(fit, ml)

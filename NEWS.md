@@ -1,3 +1,10 @@
+Changes in version 4.4.0 (2026-02-25)
+==============
+
+*   **Functionality change**: Added the `triangle` likelihood function 
+to the list of built-in distance likelihoods. The `triangle` likelihood 
+fits a mixture of a triangle and uniform distributions. 
+
 Changes in version 4.3.1 (2026-02-10)
 ==============
 
