@@ -357,60 +357,7 @@ dE.single <- function( data
   }
 
   # Check whether need to use non-gradient optimizer ----
-  optimizerChanged <- FALSE
-  nIntsChanged <- FALSE
-  if( !(modelList$likelihood %in% differentiableLikelihoods()) ){
-    optimizerAlgo <- getOption("Rdistance_optimizer")
-    if( optimizerAlgo %in% c("nlminb") ){ # the list of gradient-based methods
-      origOp <- options(Rdistance_optimizer = "optim") # default for non-smooth likelihoods
-      optimizerChanged <- TRUE
-    } 
-    if( optimizerAlgo %in% "optim" ){
-      optimizerMethod <- getOption("Rdistance_optimMeth")
-      if( optimizerMethod %in% c("BFGS","CG","L-BFGS-B") ){
-        stop(paste("Gradient based optimization method"
-                      , optimizerMethod
-                      , "cannot be used because likelihood"
-                      , modelList$likelihood
-                      , "is not smooth (i.e., differentiable)."
-                      , "Use method 'Nelder-Mead' or 'SANN'."
-                      ))
-      }
-    }
-    nInts <- getOption("Rdistance_intEvalPts")
-    if(nInts < 301){
-      # bump up integral points
-      options(Rdistance_intEvalPts = 301)
-      nIntsChanged <- TRUE
-    }
-    checkNEvalPts(getOption("Rdistance_intEvalPts")) # make sure coefs match
-  } else {
-    # Check whether problem is univariate and Hooke-Jeeves is called for; HJ can't do univariate problems ----
-    termLabs <- attr(stats::terms(modelList$formula), "term.labels")
-    termLabs <- termLabs[!grepl("groupsize\\(", termLabs)]
-    if( (length(termLabs) == 0) && 
-        (getOption("Rdistance_optimizer") == "hookeJeeves") &&
-        (modelList$likelihood != "hazrate") ){
-        stop(paste("Cannot estimate an intercept-only model using 'hookeJeeves'.",
-                   "Reset optimizer with options(Rdistance_optimizer = 'nlminb'), or restart R",
-                   "and re-attach Rdistance"))  
-    } else if( (modelList$likelihood %in% differentiableLikelihoods()) &&
-               (getOption("Rdistance_optimizer") %in% c("hookeJeeves", "optim")) ){
-        mess <- paste("You requested the non-gradient"
-                      , colorize(getOption("Rdistance_optimizer"))
-                      , "optimizer for the"
-                      , colorize(modelList$likelihood)
-                      , "likelihood."
-                      , "This likelihood can use the faster"
-                      , colorize("nlminb")
-                      , "method.  Optimizer is controled using options('Rdistance_optimizer' = <method>)"
-                      , "[see help('RdistanceControls')]."
-                      , "Proceeding with"
-                      , colorize(getOption("Rdistance_optimizer"))
-                      )
-        writeLines(strwrap(mess))
-    }
-  }
+  changedOptions <- setOptimizer(modelList)
   
   # Perform optimization
   fit <- mlEstimates( ml = modelList
@@ -420,23 +367,11 @@ dE.single <- function( data
   # Assemble results
   ans <- c(fit, modelList)
   ans$optimizer <- getOption("Rdistance_optimizer")
-  if( ans$optimizer == "optim" ){
-    ans$optimizer <- paste(
-            ans$optimizer
-          , getOption("Rdistance_optimMeth")
-          , sep = "_"
-    )
-  }
   class(ans) <- "dfunc"
 
   # Put original options back if needed ----
-  if( optimizerChanged ){ 
-    options(origOp)
-  }
-  if( nIntsChanged ){ 
-    options(nInts)
-  }
-  
+  options(changedOptions)
+
   if ( ans$likelihood != "Gamma" ){
     # not absolutely necessary. 
     # Could estimate these later in print and plot methods.

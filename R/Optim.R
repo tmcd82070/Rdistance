@@ -18,16 +18,17 @@ Optim <- function(ml, strt.lims){
   )
   
   verboseLevel <- getOption("Rdistance_verbosity")
-  optimMeth <- getOption("Rdistance_optimMeth")
+  optimMeth <- getOption("Rdistance_optimizer")
+  optimSubMeth <- sub("^.+_", "", optimMeth)
   
   if( verboseLevel >= 1 ){
     cat(colorize(paste(
         optimMeth
-      , "maximization via function OPTIM"
+      , "maximization"
       , "----\n"), col = "red"))
   }
 
-  if( optimMeth %in% c("L-BFGS-B") ){
+  if( optimSubMeth %in% c("L-BFGS-B") ){
     # can use limits, else no
     fit <- stats::optim(
         par = strt.lims$start
@@ -36,7 +37,7 @@ Optim <- function(ml, strt.lims){
       , upper = dropUnits(strt.lims$high)
       , hessian = TRUE
       , control = contRl
-      , method = optimMeth
+      , method = optimSubMeth
       , ml = ml
       , verbosity = verboseLevel
     )
@@ -46,7 +47,7 @@ Optim <- function(ml, strt.lims){
       , fn = nLL
       , hessian = TRUE
       , control = contRl
-      , method = optimMeth
+      , method = optimSubMeth
       , ml = ml
       , verbosity = verboseLevel
     )
@@ -72,7 +73,6 @@ Optim <- function(ml, strt.lims){
   
   names(fit)[names(fit) == "feval"] <- "evaluations"
   names(fit)[names(fit) == "niter"] <- "iterations"
-  
   
   fit
 } 
