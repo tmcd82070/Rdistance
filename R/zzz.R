@@ -34,6 +34,7 @@
                                   , "oneStep"
                                   , "Gamma"
                                   , "triangle"
+                                  , "huber"
                                     )
   )
   toset <- !(names(op.Rdist) %in% names(op))

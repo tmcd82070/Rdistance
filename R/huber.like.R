@@ -15,50 +15,69 @@
 #' 
 #' @details
 #' The 'huber' likelihood is an inverted version of the 
-#' Huber loss function mixed with a uniform distribution. 
-#' The 'huber' likelihood is, 
+#' Huber loss function, mixed with a uniform at the upper end, and contains
+#' three canonical parameters. 
+#' The 'huber' distance function is a negative quadratic 
+#' between \code{0} and its first parameter \eqn{\theta_1}{T1},
+#' linear between \eqn{\theta_1}{T1} and \eqn{\theta_1 + \theta_2}{T1 + T2}, and 
+#' constant  after \eqn{\theta_1 + \theta_2}{T1 + T2}.
+#' Specifically, the 'huber' likelihood is, 
 #' \deqn{
-#'    f(x|\theta_1,\theta_2, p) = \left(1 - \frac{h(x)}{m}\right) I(0 < x \leq \theta_.)  + p*I(\theta_.< x \leq w.hi)
+#'    f(d|\theta_1,\theta_2, p) = \left(1 - \frac{(1-p)h(d)}{m}\right) \,
+#'      I(0 \leq d \leq \Theta) \  + \  p \, I(\Theta < d \leq w)
 #' }
 #' where
-#' \eqn{\theta_. = \theta_1 + \theta_2}{T = T1 + T2}
+#' \eqn{\Theta = \theta_1 + \theta_2}{T = T1 + T2}, \eqn{w} = \code{w.hi - w.lo},
+#' \eqn{
+#'  m = \theta_1(\Theta - 0.5\theta_1)
+#' }{
+#'  m = T1(T - 0.5(T1))
+#' }
+#' and \emph{h(d)} is Huber loss between 0 and \eqn{\Theta}{T}, i.e.,
+#' \deqn{
+#'  h(d)  = 0.5d^2\, I(0 \leq d \leq \theta_1) \ + \ 
+#'          \theta_1(d - 0.5\theta_1)\, I(\theta_1 < d \leq \Theta).
+#' }
 #' 
-#' \deqn{
-#'  m = \theta_1(0.5\theta_1 + \theta_2)
-#' }
-#' and \emph{h(x)} is Huber loss with a plateau, i.e.,
-#' \deqn{
-#'  h(x) = 0.5x^2 ,
-#' }
-#' for \eqn{x < \theta_1}
-#' \deqn{
-#'  h(x) = \theta_1(x - 0.5\theta_1^2),
-#' }
-#' for \eqn{\theta_1 < x < (\theta_1 + \theta_2)}.
-#' The 'huber' distance function is quadratic between \code{0} and \eqn{\theta_1}{T1}, 
-#' linear between \eqn{\theta_2}{T2} and \eqn{\theta_1 + \theta_2}{T1 + T2}, and 
-#' constant  after \eqn{\theta_1 + \theta_2}{T1 + T2}.
-#' 
-#' The first parameter, \eqn{\theta_1}{T1}, is related to covariates if present. 
+#' The first parameter, \eqn{\theta_1}{T1}, is related to covariates, 
 #' i.e., \eqn{log(\theta_1) = \beta_0 + \beta_1x_1 + \ldots + \beta_qx_q}{
-#' log(T_1) = B_0 + B_1(x_1) + ... + B_q(x_q)}.
+#' log(T_1) = B_0 + B_1(x_1) + ... + B_q(x_q)}.  \eqn{\theta_2}{T2} and \eqn{p} 
+#' are constant across covariate values.
 #' 
 #' @examples
 #' 
-#' d <- seq(0, 100, length=101)
-#' covs <- cbind(
-#'    matrix(1,2*length(d),1)
-#'  , matrix(c(rep(0,length(d)), rep(1,length(d))), 2*length(d), 1)
-#'  )
-#' y <- huber.like(c(log(40), -log(2), 40), d, covs)$L.unscaled
-#' plot(d,y[1:101],type="l")
-#' lines(d,y[102:202], col = "blue" )
-#' abline(v = exp(log(40)), lty = 2)  # transition to linear, group 1
-#' abline(v = exp(log(40) - log(2)), lty = 2) # transition to linear, group 2
+#' t1 <- c(65,80,120)
+#' t2 <- 60
+#' p  <- 0.05
+#' a <- matrix(c(log(t1)
+#'        , rep(t2,3)
+#'        , rep(p,3))
+#'        , 3,3)
+#' d <- seq(0, 200, length=201)
+#' X <- matrix(1,length(d),1)
+#' y <- huber.like(a, d, X)
 #' 
-#' # transitions to zero
-#' exp(log(40)) + 40
-#' exp(log(40) - log(2)) + 40
+#' # Plot showing covariate effects 
+#' plot(range(d), range(y$L.unscaled)
+#'   , type = "n", xlab = "d", ylab = "Huber(d)")
+#' for(i in 1:3){
+#'   # Distance functions
+#'   lines(d
+#'     , y$L.unscaled[,i]
+#'     , col = i
+#'     , lwd= 2)
+#'   # Quadradic to linear transitions
+#'   points(exp(a[i,1])
+#'     , y$L.unscaled[(t1[i]-0.1) < d & d < (t1[i]+0.01),i]
+#'     , pch = 16
+#'     , col = i )
+#'   # Linear to constant transition
+#'   Theta <- exp(a[i,1]) + a[i,2]
+#'   points(Theta
+#'     , y$L.unscaled[(Theta-0.1) < d & d < (Theta+0.1),i]
+#'     , pch = 15
+#'     , col = i )
+#' }
 #' 
 #' @export
 #' 
@@ -113,7 +132,7 @@ huber.like <- function(a
   
   return(
     list(L.unscaled = h, 
-         params = data.frame(par1 = theta1
+         params = data.frame(par1 = s
                            , par2 = p[1]
                            , par3 = p[2])
     )
