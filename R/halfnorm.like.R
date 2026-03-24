@@ -65,22 +65,19 @@
 #'    distances in \code{dist}.
 #'    Each row is associated with 
 #'    a single distance, and each column is associated with 
-#'    a single case (row of \code{a}).  This matrix is  
-#'    "unscaled" because the underlying likelihood does 
-#'    not integrate to one. Values in \code{L.unscaled} 
-#'    are always greater than or equal to zero.
+#'    a single case (row of \code{a}).  Values in this matrix are  
+#'    the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
+#'    These values are "unscaled" likelihood values; they must be 
+#'    scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi  
+#'    to form proper likelihood values. 
 #'    
-#'  \item \bold{params}: A \emph{n}X\emph{k}X\emph{b} array 
-#'  of the 
-#'  likelihood's (canonical) parameters in link space (i.e., on 
-#'  log scale). First page contains 
-#'  parameter values related to covariates (i.e., 
-#'  \emph{s = exp(x'a)}),
-#'  while subsequent pages contain other parameters. 
-#'  \emph{b} = 1 for halfnorm, negexp; \emph{b} = 2 for 
-#'  hazrate, oneStep, Gamma, and others.
+#'  \item \bold{params}: A \emph{n}X\emph{b}X\emph{k}  array 
+#'  of the likelihood's (canonical) parameters in link space (i.e., on 
+#'  log scale; \emph{b} = number of canonical parameters in 
+#'  the likelihood). 
 #'  Rows correspond to distances in \code{dist}. Columns 
-#'  correspond to rows from argument \code{a}. 
+#'  correspond to parameters (columns of \code{a}), 
+#'  and pages correspond to cases (rows of \code{a}). 
 #' }
 #'  
 #' @seealso \code{\link{dfuncEstim}}, 
