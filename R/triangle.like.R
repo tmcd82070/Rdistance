@@ -11,7 +11,7 @@
 #' @details Rdistance's \code{triangle} likelihood is a mixture of a 
 #' triangle and uniform distribution. The 'triangle' density function
 #' is  
-#' \deqn{f(d|\theta) = (1 - \frac{1-p}{\theta}d) I(0 \leq d \leq \theta) + 
+#' \deqn{f(d|\theta, p) = (1 - \frac{1-p}{\theta}d) I(0 \leq d \leq \theta) + 
 #'        p I(\theta \le d \leq w),}{
 #'        f(d|T) = (1 - (1-p)*d/T)I(0<=d<=T) + p*I(T<d<=w),}
 #' where 
