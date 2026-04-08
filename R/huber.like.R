@@ -98,30 +98,36 @@ huber.like <- function(a
     beta <- matrix(a[1:q], nrow = 1) # 1 X q
     p <- a[(q+1):(q+2), drop = TRUE]     # 1 X 2
   }
-  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
-  theta1 <- exp(s)  # link function here
   
-  dist <- dropUnits(dist)
+  s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
   
   theta2 <- p[1]
-  range <- theta1 + theta2
+  p <- p[2]
   
   # theta1 is location of transition between 
   # squared trend and linear. 
   # theta2 is distance between theta1 and range, 
 
-  # Huber loss function
-  h <- ifelse( dist <= theta1
-              , 0.5 * dist^2
-              , theta1*(dist - 0.5*theta1)
-  )
-  
-  # Flip it over
-  mx <- theta1*(range - 0.5*theta1)
-  h <-  1 - (h / mx)*(1-p[2])
-  h <- ifelse( dist > range
-             , p[2]
-             , h)
+  if(p < 0 | p > 1 | theta2 < 0){
+    h <- matrix(NA, length(dist), 1)
+  } else {
+    theta1 <- exp(s)  # link function here
+    dist <- dropUnits(dist)
+    range <- theta1 + theta2
+    
+    # Huber loss function
+    h <- ifelse( dist <= theta1
+                , 0.5 * dist^2
+                , theta1*(dist - 0.5*theta1)
+    )
+    
+    # Flip it over
+    mx <- theta1*(range - 0.5*theta1)
+    h <-  1 - (h / mx)*(1-p)
+    h <- ifelse( dist > range
+               , p
+               , h)
+  }
 
   # Integrate under the function and scale
   # integral0a <- beta^2*range - (2/3)*beta^3
@@ -133,8 +139,9 @@ huber.like <- function(a
   return(
     list(L.unscaled = h, 
          params = data.frame(par1 = s
-                           , par2 = p[1]
-                           , par3 = p[2])
+                           , par2 = theta2
+                           , par3 = p
+                           , row.names = NULL)
     )
   )
   

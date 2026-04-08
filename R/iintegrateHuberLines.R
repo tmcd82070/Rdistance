@@ -50,6 +50,9 @@ integrateHuberLines <- function(object
 
   if( inherits(object, "dfunc") ){
     Units <- object$outputUnits
+    
+    y <- stats::predict(object, newdata = newdata, type="dfunc")
+    
     object <- stats::predict(object = object
                         , newdata = newdata
                         , type = "parameters"
@@ -60,13 +63,25 @@ integrateHuberLines <- function(object
   theta1 <- setUnits(object[,1], Units)
   theta2 <- setUnits(object[,2], Units)
   p      <- setUnits(object[,3], "1")
-  Theta  <- theta1 + theta2
-  m      <- theta1*(Theta - 0.5*theta1)
+  T2     <- theta1 + theta2
+  m      <- theta1 * (T2 - 0.5*theta1)
+  gAtT1  <- one - (one - p) * theta1^2 / (2*m)
+  w      <- w.hi - w.lo
 
-  part1 <- theta1 - (one - p)*theta1^3 / (6*m)   # 0 to theta1
-  part2 <- theta2 * ((theta1^2 / (2*m)) + p) / 2 # theta1 to theta1 + theta2 (a trapazoid)
-  part3 <- p * (w.hi - w.lo - Theta)             # theta1 + theta2 to w (a rectangle)
+  upLim1 <- pmin(theta1, w)
+  part1  <- upLim1 - (one - p)*upLim1^3 / (6*m)   # 0 to theta1
 
+  T1over <- theta1 > w
+  T2over <- T2 > w
+
+  part2  <- theta2 * (gAtT1 + p) / 2 # trapazoid, T1 to T2 for T2 < w
+  gAtW   <- one - (one - p)*w^2 / (2*m)
+  part2[T2over] <- (w - theta1) * (gAtT1 + gAtW) / 2 # theta1 to w trapazoid, for T2>w
+  part2[T1over] <- 0 # T1 over w, no trapazoid
+  
+  part3  <- p * (w - T2) # theta1 + theta2 to w (a rectangle)
+  part3[T1over | T2over] <- 0
+  
   outArea <- part1 + part2 + part3  # units should be Units (linear)
   
   outArea 
