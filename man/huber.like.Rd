@@ -140,7 +140,6 @@ for(i in 1:3){
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, 
-         \code{\link{abundEstim}},
-         other \code{<likelihood>.like} functions
+See \href{https://mcdonalddatasciences.com/Rdistance.html}{Rdistance tutorials}
+for a method to generate random observations from the Huber likelihood.
 }

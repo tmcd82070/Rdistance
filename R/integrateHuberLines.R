@@ -17,27 +17,29 @@
 #' @examples
 #' 
 #' w <- 250
-#' T <- 160
-#' p <- 0.4
-#' obj <- matrix(c(T,p), 1, 2)
+#' T1 <- 160
+#' T2 <- 20
+#' p <- 0.03
+#' obj <- matrix(c(T1,T2,p), 1, 3)
 #' 
-#' integrateTriangleLines(obj
+#' integrateHuberLines(obj
 #'   , w.lo = units::set_units(0,"m")
 #'   , w.hi = units::set_units(w,"m")
 #'   , Units = "m")
 #'   
 #' # same
-#' (1 + p) * T / 2 + p * (w - T)
+#' huber.cumFunc(w,T1,T2,p,w)
 #' 
 #' # check by numeric integration
-#' triLike <- function(d, T, p, wl, wh) { 
-#'   y <- triangle.like(a = c(log(T), p)
+#' hubLike <- function(d, T1, T2, p, wl, wh) { 
+#'   y <- huber.like(a = c(log(T1), T2, p)
 #'            , dist = d - wl
 #'            , covars = matrix(1, length(d))
 #'            , w.hi = wh - wl)$L.unscaled
 #'   y
 #' }
-#' integrate(triLike, lower = 0, upper = w, T = T, p = p, wl = 0, wh = w)
+#' integrate(hubLike, lower = 0, upper = w, T1 = T1
+#'         , T2 = T2, p = p, wl = 0, wh = w)
 #'   
 #' @export
 #' 
@@ -59,31 +61,18 @@ integrateHuberLines <- function(object
     )
   } 
   
-  one    <- setUnits(1, "1")
   theta1 <- setUnits(object[,1], Units)
   theta2 <- setUnits(object[,2], Units)
   p      <- setUnits(object[,3], "1")
-  T2     <- theta1 + theta2
-  m      <- theta1 * (T2 - 0.5*theta1)
-  gAtT1  <- one - (one - p) * theta1^2 / (2*m)
-  w      <- w.hi - w.lo
+  w      <- rep(w.hi - w.lo, nrow(object))
 
-  upLim1 <- pmin(theta1, w)
-  part1  <- upLim1 - (one - p)*upLim1^3 / (6*m)   # 0 to theta1
+  outArea <- huber.cumFunc(x = w
+                         , t1 = theta1 
+                         , t2 = theta2 
+                         , p = p 
+                         , w = w
+  )
 
-  T1over <- theta1 > w
-  T2over <- T2 > w
-
-  part2  <- theta2 * (gAtT1 + p) / 2 # trapazoid, T1 to T2 for T2 < w
-  gAtW   <- one - (one - p)*w^2 / (2*m)
-  part2[T2over] <- (w - theta1) * (gAtT1 + gAtW) / 2 # theta1 to w trapazoid, for T2>w
-  part2[T1over] <- 0 # T1 over w, no trapazoid
-  
-  part3  <- p * (w - T2) # theta1 + theta2 to w (a rectangle)
-  part3[T1over | T2over] <- 0
-  
-  outArea <- part1 + part2 + part3  # units should be Units (linear)
-  
   outArea 
   
 }

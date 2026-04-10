@@ -44,6 +44,9 @@
 #' log(T_1) = B_0 + B_1(x_1) + ... + B_q(x_q)}.  \eqn{\theta_2}{T2} and \eqn{p} 
 #' are constant across covariate values.
 #' 
+#' @seealso See \href{https://mcdonalddatasciences.com/Rdistance.html}{Rdistance tutorials}
+#' for a method to generate random observations from the Huber likelihood.
+#' 
 #' @examples
 #' 
 #' t1 <- c(65,80,120)
