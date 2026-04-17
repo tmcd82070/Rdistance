@@ -82,6 +82,7 @@ autoDistSamp <- function (data
                           , R = 500
                           , plot.bs = FALSE
                           , showProgress = TRUE
+                          , parallel = TRUE
                           
                           , plot = TRUE
                           , criterion = "AICc"
@@ -264,7 +265,9 @@ autoDistSamp <- function (data
               , ci = ci
               , R = R
               , plot.bs = plot.bs
-              , showProgress = showProgress)
+              , showProgress = showProgress
+              , parallel = parallel
+              )
   
   # Store the fitting table, just in case user wants it.
   abund$fitTable <- fit.table

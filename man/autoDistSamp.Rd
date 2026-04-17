@@ -22,6 +22,7 @@ autoDistSamp(
   R = 500,
   plot.bs = FALSE,
   showProgress = TRUE,
+  parallel = TRUE,
   plot = TRUE,
   criterion = "AICc"
 )
@@ -158,6 +159,18 @@ progress bar during bootstrapping. Default is \code{TRUE}.
 It is handy to shut off the 
 progress bar if running this within another function. 
 Ignored unless \code{parallel = FALSE}.}
+
+\item{parallel}{A logical scalar, or a positive integer; ignored unless 
+confidence intervals are requested (i.e., \code{!is.null(ci)}).
+If TRUE, bootstrap iterations are 
+run in parallel using the maximum number of CPU cores minus 1. 
+The maximum number of CPU cores is reported by \code{parallel::detectCores()}.
+If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap 
+iterations are performed in parallel on that many cores. 
+If FALSE, bootstrap iterations are performed in series, and progress 
+will be shown if \code{showProgress == TRUE}. Parameters 
+\code{showProgress} and \code{plot.bs} are ignored when operating
+in parallel.}
 
 \item{plot}{Logical scalar specifying whether to plot models during model selection. 
 If \code{TRUE}, a histogram with fitted distance function is plotted for every model. 
