@@ -32,7 +32,7 @@ setOptimizer <- function(ml){
                      , "cannot be used because likelihood"
                      , ml$likelihood
                      , "is not smooth (i.e., differentiable)."
-                     , "Use method 'optim_Nelder-Mead', 'optim_SANN', or 'hookeJeeves'."
+                     , "Use 'options('Rdistance_optimizer' = 'optim_Nelder-Mead')'."
           ))
         }
     }

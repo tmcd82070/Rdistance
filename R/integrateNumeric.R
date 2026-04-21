@@ -79,7 +79,7 @@ integrateNumeric <- function(object
                            , isPoints = NULL
                            , likelihood = NULL
                              ){
-  
+
   if( inherits(object, "dfunc") ){
     w.lo <- object$w.lo
     w.hi <- object$w.hi 
@@ -112,6 +112,7 @@ integrateNumeric <- function(object
   d <- seq(zero, w.hi - w.lo, length=nInts) 
   dx <- d[2] - d[1]  # or (w.hi - w.lo) / (nInts-1); could do diff(dx) if unequal intervals
 
+  
   # don't need covars since params are always computed
   XIntOnly <- matrix(1, nrow = length(d), ncol = 1) 
 
@@ -127,24 +128,23 @@ integrateNumeric <- function(object
   y <- likeObj$L.unscaled # (nInts x n) = (length(d) X nrow(object))
 
   if( expansions > 0 ){
-    # oneStep expansion integration is handled elsewhere
-    if(!(ml$likelihood %in% differentiableLikelihoods())){
-      # Expansion domain depends on parameters.
-      # e.g., Apply expansion between 0 and theta for triangle
-      W <- likeObj$params
-      W <- W[1, 1:ncol(y)] # drop second parameter which is tagged onto end
-      W <- setUnits(exp(W), Units) # W always constant w/in columns
-      W <- W - ml$w.lo
-    } else { 
-      # Most likelihoods: expansions constant across params
-      W <- ml$w.hi - ml$w.lo
-    }
-    
+    # a bit awkward here: must construct a 'ml' object
+    ml <- list(
+        likelihood = likelihood
+      , outputUnits = Units
+      , w.lo = w.lo
+      , w.hi = w.hi
+    )
+    W <- expandW(ml = ml
+               , params = likeObj$params
+               , k = ncol(y)
+               )
+
     exp.terms <- Rdistance::expansionTerms(a = object
-                                           , d = d
-                                           , series = series
-                                           , nexp = expansions
-                                           , w = W)
+                                         , d = d
+                                         , series = series
+                                         , nexp = expansions
+                                         , w = W)
     y <- y * exp.terms
     y[ !is.na(y) & (y <= 0) ] <- getOption("Rdistance_zero")
 

@@ -60,7 +60,8 @@
 #' @return A list containing the following two components:
 #' \itemize{
 #'   \item \bold{L.unscaled}: A matrix of size 
-#'    \emph{n}X\emph{k} 
+#'    \emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
+#'    cases = \code{nrow(a)})
 #'    containing likelihood values evaluated at 
 #'    distances in \code{dist}.
 #'    Each row is associated with 
@@ -74,7 +75,7 @@
 #'  \item \bold{params}: A \emph{n}X\emph{b}X\emph{k}  array 
 #'  of the likelihood's (canonical) parameters in link space (i.e., on 
 #'  log scale; \emph{b} = number of canonical parameters in 
-#'  the likelihood). 
+#'  the likelihood; \emph{k} = number of cases). 
 #'  Rows correspond to distances in \code{dist}. Columns 
 #'  correspond to parameters (columns of \code{a}), 
 #'  and pages correspond to cases (rows of \code{a}). 

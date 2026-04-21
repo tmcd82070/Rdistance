@@ -103,7 +103,7 @@ integrateKey <- function(ml, key, f0, plot = FALSE){
   #           , colorize(keyIntegral)
   #           , " (should be ~1)\n"
   #           ))
-  cat(paste0("    base::integrate key "
+  cat(paste0("  base::integrate of key "
              , colorize(keyIntegralR$value)
              , " (+-"
              , colorize(formatC(keyIntegralR$abs.err, format="f", digits = 7))

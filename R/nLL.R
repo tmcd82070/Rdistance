@@ -84,6 +84,7 @@ nLL <- function(a
   # I call Buckland's "key" function just "likelihood".
   # Returns one value per observation. Expansions, if any, 
   # are applied below, after this.
+  fuzz <- getOption("Rdistance_fuzz")
   f.like <- utils::getFromNamespace(paste0( ml$likelihood, ".like"), "Rdistance")    
   d <- distances(ml) - ml$w.lo # observed distances, n of them
   X <- stats::model.matrix(ml)
@@ -92,97 +93,102 @@ nLL <- function(a
              , covars = X
              , w.hi = ml$w.hi - ml$w.lo # needed for some but not all Likes
              )
-  key <- L$L.unscaled  # (n vector)
+  key <- L$L.unscaled  # (n X k matrix)
   parms <- L$params
-  
-  # Evaluate and apply the expansions ----
-  if( ml$expansions > 0 ){
-    # This 'if' not necessary b/c exp.terms = 1 when ml$expansions = 0,
-    # but, this may save a tiny bit of time when ml$expansions = 0
-    
-    if(!(ml$likelihood %in% differentiableLikelihoods())){
-      # Expansion domain depends on parameters.
-      # e.g., Apply expansion between 0 and theta for oneStep, triangle
-      W <- setUnits(exp(parms[,1]), units(d))
-      W <- W - ml$w.lo
-    } else { 
-      # Most likelihoods: expansions constant across params
-      W <- ml$w.hi - ml$w.lo
-    }
-    
-    # Dimensions: n = length(d) = nrow(parms); k = length(W) 
-    # Here, W is either length 1 or n
-    # The following call to expansionTerms returns matrix size (n X k); here,
-    #  either nx1 or nxn.
-    exp.terms <- Rdistance::expansionTerms(a = a
-                                           , d = d
-                                           , series = ml$series
-                                           , nexp = ml$expansions
-                                           , w = W)
-    
-    if( ncol(exp.terms) > 1 ){
-      # W is len k; so exp.terms is kxk
-      exp.terms <- diag(exp.terms)
-    }
-    
-    key <- key * exp.terms
 
-    # b/c no monotonicity restraints yet, function can go negative, 
-    key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")
-    
-  }
-
-  # Apply d if point survey ----
-  if(is.points(ml)){
-    key <- d * key  # element-wise
-  }
-  
-  # Integrate under the distance function so can scale to density ----
-  # This yields area under g(x), which is ESW, and is used to get f(x) = g(x)/ESW
-  parms[,1] <- exp(parms[,1]) # variable param
-  if( ml$expansions > 0 ){
-    # append expansion coefs to parms; needed during integration
-    coefLocs <- length(a) - (ml$expansions:1) + 1 
-    parms <- cbind(parms
-                    , matrix( a[coefLocs]
-                             , nrow = nrow(parms)
-                             , ncol = ml$expansions
-                             , byrow = TRUE
-                    ))  # n X ([#canonical] + nexp)
-  }
-  
-  outArea <- integrateDfuncs( parms, ml )
-  
   if( verbosity >= 3 ){
-    cat(colorize(paste(paste(rep("-", 60), collapse = ""), "\n")))
     likExpan <- paste0(ml$likelihood, "_", ml$expansions, "_", transectType(ml))
+    cat(colorize(paste(paste(rep("-", 40), collapse = ""))))
     cat(paste(" "
-              , attr(outArea, "integralType")
               , colorize(likExpan)
-              , "integral ="
-              , colorize(unique(outArea))
               , "\n"))
   }
   
-  # Scale g(x) into f(x) ----
-  key <- key / outArea
-
-  # Note: Key or d*Key should integrate to 1.0 every iteration
-  # Note 2: if POINTS, key has units, remove them b/c nlminb can't handle em.
-  key <- dropUnits(key)
-
-  # Check for really bad values ----
-  #   RULE: Any impossible observations (i.e., key exactly 0) get 
-  #   replaced by fuzz so that log(L) does not return -Inf. "exactly 0" is 
-  #   less than fuzz. Worst fitting objects now contribute -log(fuzz) ~ 31.5 to LL
   
-  fuzz <- getOption("Rdistance_fuzz")
+  if( all(is.na(key)) ){
+    # Parameters are out of bounds.  Happens when using optim.
+    # Save a bunch of computation by doing this...
+    key <- matrix(fuzz, nrow = nrow(key), ncol = ncol(key))
+    if( verbosity >= 4 ){
+      # for later
+      exp.terms <- rep(NA, 5)
+      W <- NA
+    }
+    
+  } else {
+    # Evaluate and apply the expansions ----
+    if( ml$expansions > 0 ){
+      W <- expandW(ml = ml
+                 , params = parms
+                 , k = ncol(key)  # I think this is always 1
+                 )
+      # The following call to expansionTerms returns matrix size (n X k); here,
+      #  either nx1 or nxn.
+      exp.terms <- Rdistance::expansionTerms(a = a
+                                             , d = d
+                                             , series = ml$series
+                                             , nexp = ml$expansions
+                                             , w = W)
+      
+      if( ncol(exp.terms) > 1 ){
+        # W is len k; so exp.terms is kxk
+        exp.terms <- diag(exp.terms)
+      }
+      
+      key <- key * exp.terms
+  
+      # b/c no monotonicity restraints yet, function can go negative, 
+      key[ !is.na(key) & (key <= 0) ] <- getOption("Rdistance_zero")
+    }
+  
+    # Apply d if point survey ----
+    if(is.points(ml)){
+      key <- d * key  # element-wise
+    }
 
-  ind <- is.na(key) | (key < fuzz)
-  if( any(ind) ){
-    key[ ind ] <- fuzz # replace them
-    # key <- key[ !ind ]   # drop them
-  }
+    
+    # Integrate under the distance function so can scale to density ----
+    # This yields area under g(x), which is ESW, and is used to get f(x) = g(x)/ESW
+    parms[,1] <- exp(parms[,1]) # variable param
+    if( ml$expansions > 0 ){
+      # append expansion coefs to parms; needed during integration
+      coefLocs <- length(a) - (ml$expansions:1) + 1 
+      parms <- cbind(parms
+                      , matrix( a[coefLocs]
+                               , nrow = nrow(parms)
+                               , ncol = ml$expansions
+                               , byrow = TRUE
+                      ))  # n X ([#canonical] + nexp)
+    }
+    
+    outArea <- integrateDfuncs( parms, ml )
+    
+    if( verbosity >= 3 ){
+      cat(paste(" "
+                , "integral ="
+                , colorize(unique(outArea))
+                , "\n"))
+    }
+    
+    # Scale g(x) into f(x) ----
+    key <- key / outArea
+
+    # Note: Key or d*Key should integrate to 1.0 every iteration
+    # Note 2: if POINTS, key has units, remove them b/c nlminb can't handle em.
+    key <- dropUnits(key)
+  
+    # Check for really bad values ----
+    #   RULE: Any impossible observations (i.e., key exactly 0) get 
+    #   replaced by fuzz so that log(L) does not return -Inf. "exactly 0" is 
+    #   less than fuzz. Worst fitting objects now contribute -log(fuzz) ~ 31.5 to LL
+    
+  
+    ind <- is.na(key) | (key < fuzz)
+    if( any(ind) ){
+      key[ ind ] <- fuzz # replace them
+    }
+
+  } # endif - if(all(is.na(key)))  
   
   # Compute neg log likelihood ----
   nLL <- -sum(log(key), na.rm=TRUE)  # Note that distances > w in L are set to NA
@@ -216,17 +222,19 @@ nLL <- function(a
   }
   if( verbosity >= 4 ){
     cat(crayon::bgRed( paste("data[1:5]      =", paste(d[1:5], collapse = ", "), "\n")))
-    cat(crayon::bgRed( paste("key[1:5]       =", paste(keySave[1:5], collapse = ", "), "\n")))
+    cat(crayon::bgRed( paste("key[1:5]       =", paste(key[1:5], collapse = ", "), "\n")))
     cat(crayon::bgRed( paste("exp.terms[1:5] =", paste(exp.terms[1:5], collapse = ", "), "\n")))
-    cat(crayon::bgRed( paste("keyScaled[1:5] =", paste(key[1:5], collapse = ", "), "\n")))
-    cat(crayon::bgRed( paste("W[1:5]         =", paste(W[1:5], collapse = ", "), "\n")))
+    cat(crayon::bgRed( paste("W              =", paste(W, collapse = ", "), "\n")))
   }
+  
+  
   if( verbosity >= 5 ){
     yn <- readline("Abort [y/N]?")
     if( toupper(yn) == "Y" ){
       stop("Aborted by user.")
     }
   }
+
   
   nLL
 }

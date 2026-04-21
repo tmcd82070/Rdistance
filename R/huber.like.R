@@ -95,11 +95,13 @@ huber.like <- function(a
   q <- Rdistance:::nCovars(covars)
   
   if(is.matrix(a)){
+    k <- nrow(a) 
     beta <- a[,1:q, drop = FALSE]  # k X q
-    p <- a[1, (q+1):(q+2), drop = TRUE]     # 1 X 2
+    p <- a[1, (q+1):(q+2)]     # 1 X 2
   } else {
+    k <- 1
     beta <- matrix(a[1:q], nrow = 1) # 1 X q
-    p <- a[(q+1):(q+2), drop = TRUE]     # 1 X 2
+    p <- a[(q+1):(q+2)]     # 1 X 2
   }
   
   s <- covars %*% t(beta) # (nXq) %*% (qXk) = nXk
@@ -112,7 +114,7 @@ huber.like <- function(a
   # theta2 is distance between theta1 and range, 
 
   if(p < 0 | p > 1 | theta2 < 0){
-    h <- matrix(NA, length(dist), 1)
+    h <- matrix(NA, nrow = length(dist), ncol = k)
   } else {
     theta1 <- exp(s)  # link function here
     dist <- dropUnits(dist)
@@ -141,10 +143,10 @@ huber.like <- function(a
   
   return(
     list(L.unscaled = h, 
-         params = data.frame(par1 = s
-                           , par2 = theta2
-                           , par3 = p
-                           , row.names = NULL)
+         params = cbind(par1 = s
+                      , par2 = theta2
+                      , par3 = p
+                      )
     )
   )
   
