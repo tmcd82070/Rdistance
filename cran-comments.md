@@ -1,7 +1,9 @@
 # Submission comments
 
 This submission (v4.4.0) adds functionality.  This submission contains 
-new routines to fit the 'triangle' likelikhood function. 
+new routines to fit the 'triangle' and 'huber' likelihood functions. 
+Documentation and examples updated. Several routines have been streamlined
+and run more efficiently.
 
 # Current submission
 
@@ -18,7 +20,8 @@ R CMD check --as-cran results
 No ERRORs or WARNINGs. 
 
 local environment:
-Windows 11 Pro, R version 4.5.2
+Windows 11 Pro
+R.version.string = "R version 4.5.2 (2025-10-31 ucrt)"
 
 # Rhub Checks (via Github actions)
 

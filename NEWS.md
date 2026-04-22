@@ -1,9 +1,21 @@
-Changes in version 4.4.0 (2026-02-25)
+Changes in version 4.4.0 (2026-04-22)
 ==============
 
-*   **Functionality change**: Added the `triangle` likelihood function 
-to the list of built-in distance likelihoods. The `triangle` likelihood 
-fits a mixture of a triangle and uniform distributions. 
+*   **Functionality change**: Added `triangle` distance function, a 
+mixture of triangle and uniform distributions. See `help(triangle.like)` 
+examples.
+*   **Functionality change**: Added `huber` distance function, a 
+mixture of an inverted version of Huber loss and a uniform distribution. 
+See `help(huber.like)` examples.
+*   **Functionality change**: Changed bounds on the `oneStep` Theta parameter 
+to the minimum and maximum of distances, thus ensuring the ledge lies within
+the range of observed distances. 
+*   **Functionality change**: Implemented use of `stats::optim` for optimization.
+Prior to this, the only non-gradient optimizer was HookeJeeves. Default 
+optimizer for `oneStep`, `triangle`, and `huber` is now the Nelder-Mead 
+implementation in `optim`.
+*   **Update**: Minor documentation updates and clarifications.
+*   *Note*: No bugs found that effect results produced by prior versions. 
 
 Changes in version 4.3.1 (2026-02-10)
 ==============
@@ -54,7 +66,7 @@ squared units (e.g., 3 %m%. assigns meters to 3). See `help(unitHelpers)`.
 *   **Functionality change**: Included b-spline expansion factors for distance 
 functions. Expansion factors are now `cosine`, `hermite`, `simple`, 
 and `bspline`.
-*   **Functionality change**: Added verbocity option. This prints intermediate 
+*   **Functionality change**: Added verbosity option. This prints intermediate 
 parameter estimates and likelihoods during maximization. 
 Set `options(Rdistance_verbocity = 1)`
 or higher to see progressively more detailed intermediate output. 
