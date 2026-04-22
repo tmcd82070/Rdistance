@@ -228,6 +228,7 @@
 #'                 , area = 4105 %km^2%.
 #'                 , ci = NULL
 #'                 )
+#' summary(fit)
 #'          
 #' @export
 abundEstim <- function(object

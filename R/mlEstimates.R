@@ -26,6 +26,7 @@ mlEstimates <- function( ml
   #      These don't matter here.
   
   optimFunc <- getOption("Rdistance_optimizer")
+  optimFunc <- gsub("_.+$", "", optimFunc)
 
   fit <- switch( optimFunc
       , "optim" = Optim(ml, strt.lims)

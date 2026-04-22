@@ -143,6 +143,16 @@ integrateDfuncs <- function( object
                                       , w.hi = ml$w.hi
                                       , Units = ml$outputUnits)
     
+  } else if( likExpan == "huber_0_line" ){
+    
+    # CASE: huber, 0 expansions, lines ----
+    intType = "Exact"
+    
+    outArea <- integrateHuberLines(object
+                                  , w.lo = ml$w.lo
+                                  , w.hi = ml$w.hi
+                                  , Units = ml$outputUnits)
+    
   } else if( likExpan == "Gamma_0_line"){
     # CASE: Gamma, 0 expansions, lines ----
     intType = "Exact"

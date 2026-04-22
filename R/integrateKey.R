@@ -60,16 +60,19 @@ integrateKey <- function(ml, key, f0, plot = FALSE){
   # keyIntegral <- sum(fy*intCoefs)*dx/3 
   
   # R integrate ----
+  
   F <- function(x, d, fd){
     stats::approx(d, fd, xout = x, rule = c(1,2))$y
   }
   
   if( (length(dObsUni) > 1) && all(!is.na(keyUni)) && all(!is.infinite(keyUni)) ){
-    keyIntegralR <- stats::integrate(f = F 
+    tryCatch(keyIntegralR <- stats::integrate(f = F 
                               , lower = ml$w.lo
                               , upper = ml$w.hi
                               , d = dObsUni
                               , fd = keyUni)
+             , error = function(e) e
+    )
   } else {
     # really bad value of params, probably using optim without limits
     keyIntegralR <- list(
@@ -100,7 +103,7 @@ integrateKey <- function(ml, key, f0, plot = FALSE){
   #           , colorize(keyIntegral)
   #           , " (should be ~1)\n"
   #           ))
-  cat(paste0("    base::integrate key "
+  cat(paste0("  base::integrate of key "
              , colorize(keyIntegralR$value)
              , " (+-"
              , colorize(formatC(keyIntegralR$abs.err, format="f", digits = 7))

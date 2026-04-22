@@ -10,8 +10,8 @@
 #' 
 #' @return A character vector of differentiable 
 #' likelihoods. 
-
-# Do not export
+#' 
+#' @export
 
 differentiableLikelihoods<-function(){
   

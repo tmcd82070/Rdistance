@@ -31,25 +31,36 @@ by less than this amount between iterations,
 optimization stops and a solution is declared. 
 
   \item \code{Rdistance_optimizer}: A string specifying the optimizer 
-to use.  Results can vary among optimizers, so 
+to use.  Results do not often, but can vary among optimizers, so 
 switching algorithms sometimes makes a poorly 
 behaved distance function converge, particularly when 
-parameters are near their boundaries.  Valid 
+parameters are near their boundaries.  Gradient based methods 
+are only appropriate for smooth likelihoods. Valid 
 values are: 
 \itemize{
-   \item "optim": Uses \code{optim::optim}, method "L-BFGS-B", 
-   a finite-difference gradient based approach.
-   \item "nlminb": Uses \code{stats:nlminb}, a finite-difference
+   \item "default": If the likelihood is smooth, i.e., listed in the 
+   output of \code{differentiableLikelihoods()}, optimization defaults to
+   the gradient-based method in \code{\link[stats]{nlminb}}. If the 
+   likelihood is not smooth, optimization defaults to the Nelder-Mead 
+   method in \code{\link[stats]{optim}}. 
+   \item "optim_<method>": Uses the "<method>" method in stats::optim. 
+   For example, "optim_Nelder-Mead" uses 
+   the Nelder-Mead method in optim. See \code{\link[stats]{optim}} for 
+   documentation of the six available methods. 
+   \item "nlminb": Uses \code{\link[stats]{nlminb}}, a finite-difference
    gradient based approach. 
-   \item "hookeJeeves": Uses \code{dfoptim::hjkb}, a 
+   \item "hookeJeeves": Uses \code{\link[dfoptim]{hjkb}}, a 
    derivative-free approach for continuous and discontinuous 
    likelihoods.
 }
-The authors have had better luck with "nlminb" 
+The authors recommend "nlminb" 
 when likelihoods are differentiable (i.e. smooth). 
-"optim" seems to perform better when solutions are near, 
-but not on,parameter boundaries. "hookeJeeves" works well in 
-all cases but is slightly slower than "nlminb".    
+"optim_Nelder-Mead" is recommended for non-smooth likelihoods. 
+"optim_Nelder-Mead" also performs better when solutions are near, 
+but not on, parameter boundaries. "hookeJeeves" works well in 
+all cases but can be slower than the others. All methods can be applied
+to smooth likelihoods, but only gradient-free methods can be applied to 
+discontinuous likelihoods (such as oneStep and triangle).
 
   \item \code{Rdistance_hessEps}: A vector of parameter distances used during 
 computation of numeric second derivatives. These distances control
@@ -102,7 +113,10 @@ the abundance print method.
 options(Rdistance_maxIters=2000)
 
 # change optimizer and decrease tolerance
-options(list(Rdistance_optimizer="optim", Rdistance_likeTol=1e-6)) 
+op <- options(list(Rdistance_optimizer="optim_Nelder-Mead"
+                 , Rdistance_likeTol=1e-6)) 
 
+# change back
+options(op)
 }
 \concept{control optimization}

@@ -92,20 +92,20 @@ expansionTerms <- function(a, d, series, nexp, w){
   
   if( nexp > 0 ){
     # dimensions:
-    #  d = length(d) = number of distances
-    #  n = length(w) 
+    #  n = length(d) = number of distances
+    #  k = length(w) 
     #  nexp = number of expasions
     # Note:
     #  nrow(a) == length(w) for all likes 
     
-    dscl <- dropUnits(outer(d, w, "/")) # d X n
+    dscl <- dropUnits(outer(d, w, "/")) # n X k
     
     indOutside <- dscl > 1  # save this for later
 
     if (series=="cosine"){
-      exp.term <- cosine.expansion( dscl, nexp ) # returns d X n X nexp array
+      exp.term <- cosine.expansion( dscl, nexp ) # returns n X k X nexp array
     } else if (series=="sine"){
-      exp.term <- sine.expansion( dscl, nexp ) # returns d X n X nexp array
+      exp.term <- sine.expansion( dscl, nexp ) # returns n X k X nexp array
     } else if (series=="hermite"){
       exp.term <- hermite.expansion( dscl, nexp )
     } else if (series == "simple") {

@@ -11,8 +11,7 @@
   
   op <- options()
   op.Rdist <- list(
-      Rdistance_optimizer = "nlminb"
-    , Rdistance_optimMeth = "Nelder-Mead"
+      Rdistance_optimizer = "default"
     , Rdistance_evalMax   = 2000
     , Rdistance_maxIters  = 1000
     , Rdistance_likeTol   = (.Machine$double.eps)^(1/1.75)
@@ -35,6 +34,7 @@
                                   , "oneStep"
                                   , "Gamma"
                                   , "triangle"
+                                  , "huber"
                                     )
   )
   toset <- !(names(op.Rdist) %in% names(op))
@@ -49,7 +49,6 @@
   # in case user has an option starting with "Rdistance_".
   op.Rdist <- list(
       "Rdistance_optimizer" = NULL
-    , "Rdistance_optimMeth" = NULL
     , "Rdistance_evalMax"   = NULL
     , "Rdistance_maxIters"  = NULL 
     , "Rdistance_likeTol"   = NULL

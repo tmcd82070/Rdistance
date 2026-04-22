@@ -44,7 +44,7 @@ triangle.start.limits <- function (ml){
   # P returned is proportion < theta, change to triangle parameterzation
   Theta <- strtVals$start[1]
   pStar <- strtVals$start[ncovars + 1]
-  wStar <- dropUnits(ml$w.hi - setUnits(Theta, fit$outputUnits))
+  wStar <- dropUnits(ml$w.hi - setUnits(Theta, ml$outputUnits))
   p <- Theta * (1 - pStar) / (pStar * (Theta + 2 * wStar) - Theta)
   p <- min( p, strtVals$high[ncovars + 1] )
   p <- max( p, strtVals$low[ncovars + 1] )
