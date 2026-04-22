@@ -18,7 +18,7 @@
 #' discontinuity at Theta. Accurate numeric integration requires 
 #' inserting Theta and Theta+ (a value just larger than Theta) 
 #' into the series of points being evaluated. Because this creates 
-#' un-equal intervals, the Trapazoid rule must be used. 
+#' un-equal intervals, the Trapezoid rule must be used. 
 #' Rdistance's Simpson's rule routine 
 #' (\code{\link{integrateNumeric}}) will not work for oneStep likelihoods 
 #' that have expansions. 

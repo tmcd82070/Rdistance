@@ -1,6 +1,6 @@
 #' @title Insert oneStep Likelihood breaks
 #' 
-#' @description Compute break points in a onestep likelihood
+#' @description Compute break points in a oneStep likelihood
 #' and insert them into a sequence of distances.  The idea 
 #' is to insert a point just left and just right of the breaks 
 #' so that they plot as vertical lines. 

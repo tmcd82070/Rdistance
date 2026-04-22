@@ -5,7 +5,7 @@
 #' distribution. 
 #' 
 #' @param params A matrix of Gamma distribution parameters. First column 
-#' is the scale parameter, and is a fuction of covariates.
+#' is the scale parameter, and is a function of covariates.
 #' Second column is the shape parameter. 
 #' 
 #' @return A vector of the locations of the gamma modes associated 

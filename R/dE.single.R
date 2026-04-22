@@ -92,7 +92,7 @@
 #' asymptotic variance-covariance matrix for parameters based on the 
 #' likelihood's Hessian (2nd derivative). If maximization 
 #' has been performed by Nlminb or HookesJeeves, the asymptotic 
-#' Hessian is estimated using numeric second deriviatives 
+#' Hessian is estimated using numeric second derivatives 
 #' of the likelihood at the maximum likelihood solution. If 
 #' maximization was performed by Optim, the last Hessian of 
 #' the maximization is returned 
@@ -189,7 +189,7 @@
 #'        intercept, assuming an intercept is included.
 #'        \item The number of constant parameters in the distance function.
 #'        Constant parameters are those not related to covariates.  For example, 
-#'        the expornent 'k' parameter for hazard rate likelihood, or 
+#'        the exponent 'k' parameter for hazard rate likelihood, or 
 #'        the mixing fraction 'p' for the oneStep likelihood. This can be zero.
 #'        \item The number of expansion functions called for.  This equals 
 #'        the input \code{expansions}. 
@@ -279,7 +279,7 @@
 #'   \item{asymptoticSE}{A logical scalar indication whether the 
 #'   variance-covariance matrix in component \code{varcovar} is 
 #'   asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE; 
-#'   estimated by boostrap resampling).}
+#'   estimated by bootsrap resampling).}
 #'   
 #'   \item{optimizer}{The optimizing routine used.}
 #'     
