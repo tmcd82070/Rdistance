@@ -49,7 +49,6 @@
   # in case user has an option starting with "Rdistance_".
   op.Rdist <- list(
       "Rdistance_optimizer" = NULL
-    , "Rdistance_optimMeth" = NULL
     , "Rdistance_evalMax"   = NULL
     , "Rdistance_maxIters"  = NULL 
     , "Rdistance_likeTol"   = NULL

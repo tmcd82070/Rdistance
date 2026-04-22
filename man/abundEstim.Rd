@@ -241,6 +241,7 @@ fit <- abundEstim(dfunc
                 , area = 4105 \%km^2\%.
                 , ci = NULL
                 )
+summary(fit)
          
 }
 \references{

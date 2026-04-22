@@ -92,29 +92,29 @@ is the vector of estimated coefficients.
 \examples{
 
 w <- 250
-T <- 160
+Theta <- 160
 p <- 0.4
 d <- seq(0,w,length = w+1)
-y <- (1 - ((1-p)/T)*d)*(d <= T) + p*(d > T)
+y <- (1 - ((1-p)/Theta)*d)*(d <= Theta) + p*(d > Theta)
 plot(d, y, type="l", ylim = c(0,1), xlab = "Distance", ylab = "Probability")
-points(T, p, pch=16, col = "red")
-lines(c(-10,T), c(p,p), lty = 2, col = "grey")
-axis(2, at=p, label = "p", line = 2, srt = 0, tick = F)
-lines(c(T,T), c(-1,p), lty = 2, col = "grey")
-axis(1, at=T, label = "T", line = 2, tick = F)
+points(Theta, p, pch=16, col = "red")
+lines(c(-10,Theta), c(p,p), lty = 2, col = "grey")
+axis(2, at=p, label = "p", line = 1, srt = 0, tick = FALSE)
+lines(c(Theta,Theta), c(-1,p), lty = 2, col = "grey")
+axis(1, at=Theta, label = "Theta", line = 2, tick = FALSE)
 
-T <- 25
+Theta <- 25
 p <- 0.2
-y <- (1 - ((1-p)/T)*d)*(d <= T) + p*(d > T)
+y <- (1 - ((1-p)/Theta)*d)*(d <= Theta) + p*(d > Theta)
 lines(d, y)
-points(T, p, pch=16, col = "red")
-lines(c(-10,T), c(p,p), lty = 2, col = "grey")
-axis(2, at=p, label = "p", line = 2, srt = 0, tick = F)
-lines(c(T,T), c(-1,p), lty = 2, col = "grey")
-axis(1, at=T, label = "T", line = 2, tick = F)
+points(Theta, p, pch=16, col = "red")
+lines(c(-10,Theta), c(p,p), lty = 2, col = "grey")
+axis(2, at=p, label = "p", line = 1, srt = 0, tick = FALSE)
+lines(c(Theta,Theta), c(-1,p), lty = 2, col = "grey")
+axis(1, at=Theta, label = "Theta", line = 2, tick = FALSE)
 
 # same as above
-y <- triangle.like(a = c(log(T), p)
+y <- triangle.like(a = c(log(Theta), p)
                  , dist = d
                  , covars = matrix(1, length(d))
                  , w.hi = 250)

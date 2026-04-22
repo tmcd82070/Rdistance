@@ -56,7 +56,7 @@
 #' "optim_Nelder-Mead" is recommended for non-smooth likelihoods. 
 #' "optim_Nelder-Mead" also performs better when solutions are near, 
 #' but not on, parameter boundaries. "hookeJeeves" works well in 
-#' all cases but is slightly slower than "nlminb". All methods can be applied
+#' all cases but can be slower than the others. All methods can be applied
 #' to smooth likelihoods, but only gradient-free methods can be applied to 
 #' discontinuous likelihoods (such as oneStep and triangle).
 #'
@@ -111,7 +111,10 @@
 #' options(Rdistance_maxIters=2000)
 #' 
 #' # change optimizer and decrease tolerance
-#' options(list(Rdistance_optimizer="optim", Rdistance_likeTol=1e-6)) 
+#' op <- options(list(Rdistance_optimizer="optim_Nelder-Mead"
+#'                  , Rdistance_likeTol=1e-6)) 
 #' 
+#' # change back
+#' options(op)
 #' @name RdistanceControls
 NULL
