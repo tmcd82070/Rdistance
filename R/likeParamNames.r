@@ -25,7 +25,7 @@ likeParamNames <- function(like.form){
        , triangle = c("Theta", "p")
        , huber = c("Theta1", "Theta2", "p")
        , {    
-           error(paste("Unknown likelihood. Found", like.form))
+           stop(paste("Unknown likelihood. Found", like.form))
          }
   )
   

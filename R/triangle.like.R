@@ -69,7 +69,7 @@ triangle.like <- function(a
     stop(paste("Argument 'dist' must be a vector or single-column matrix.",
                "Found array with", length(dim(dist)), "dimensions."))
   }
-  q <- Rdistance:::nCovars(covars) 
+  q <- nCovars(covars) 
   if(is.matrix(a)){
     beta <- a[,1:q, drop = FALSE]  # k X q
     p <- a[1, q+1, drop = TRUE]     # 1 X 1

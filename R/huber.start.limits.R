@@ -10,7 +10,7 @@
 #' @export
 huber.start.limits <- function(ml){
 
-  X <- model.matrix(ml)
+  X <- stats::model.matrix(ml)
   dist <- Rdistance::distances(ml)  
   
   np <- ncol(X)  
@@ -26,8 +26,8 @@ huber.start.limits <- function(ml){
   w <- dropUnits(whi - wlo)
   
   # Initial values for Theta1, Theta2, and p
-  q1  <- dropUnits(quantile(dist, p = 0.33))
-  q2  <- dropUnits(quantile(dist, p = 0.67))
+  q1  <- dropUnits(stats::quantile(dist, p = 0.33))
+  q2  <- dropUnits(stats::quantile(dist, p = 0.67))
   p1 <- 0.05
     
   start <- c(log(q1)

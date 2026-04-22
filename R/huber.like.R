@@ -92,7 +92,7 @@ huber.like <- function(a
   # What's in a? : 
   #     a = [(Intercept), b1, ..., bp, range, <expansion coef>]
   
-  q <- Rdistance:::nCovars(covars)
+  q <- nCovars(covars)
   
   if(is.matrix(a)){
     k <- nrow(a) 

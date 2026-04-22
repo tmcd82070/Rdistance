@@ -40,16 +40,16 @@ values are:
 \itemize{
    \item "default": If the likelihood is smooth, i.e., listed in the 
    output of \code{differentiableLikelihoods()}, optimization defaults to
-   the gradient-based method in \code{\link{stats::nlminb}}. If the 
+   the gradient-based method in \code{\link[stats]{nlminb}}. If the 
    likelihood is not smooth, optimization defaults to the Nelder-Mead 
-   method in \code{\link{stats:optim}}. 
+   method in \code{\link[stats]{optim}}. 
    \item "optim_<method>": Uses the "<method>" method in stats::optim. 
    For example, "optim_Nelder-Mead" uses 
-   the Nelder-Mead method in optim. See \code{\link{stats::optim}} for 
+   the Nelder-Mead method in optim. See \code{\link[stats]{optim}} for 
    documentation of the six available methods. 
-   \item "nlminb": Uses \code{stats:nlminb}, a finite-difference
+   \item "nlminb": Uses \code{\link[stats]{nlminb}}, a finite-difference
    gradient based approach. 
-   \item "hookeJeeves": Uses \code{dfoptim::hjkb}, a 
+   \item "hookeJeeves": Uses \code{\link[dfoptim]{hjkb}}, a 
    derivative-free approach for continuous and discontinuous 
    likelihoods.
 }
