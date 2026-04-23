@@ -160,20 +160,20 @@
 #' `outputUnits` is NULL), and 
 #' all output is reported 
 #' in units of `outputUnits`. Valid conversions must exist between 
-#' units or an error is thrown.  For example, meters cannot be converted
-#' into hectares.
+#' units or an error is thrown (e.g., meters cannot convert 
+#' into hectares).
 #'   
 #' Measurement units can be assigned using one of Rdistance's 
-#' unit helper routines (see `help(unitHelpers)`), or from 
-#' routines in the `units` package (e.g., 
-#' `x <- units::set_units(x, "<units>")`). 
-#' See `units::`[units::valid_udunits()]
+#' unit helper routines (see `help(unitHelpers)`), Rdistance's 
+#' [setUnits()] function, or [units::set_units()] 
+#' See [units::valid_udunits()]
 #' for a list of valid symbolic units. 
 #' 
 #' If measurements are truly unit-less, or measurement units are unknown, 
 #' set `options(Rdist_requireUnits = FALSE)`.  This suppresses 
-#' all unit checks and conversions.  Users are on their own 
-#' to make sure inputs are scaled correctly and that output units are known. 
+#' all unit checks and conversions.  Users are on their own here
+#' and must make sure all inputs are scaled correctly so that internal 
+#' computations are correct and output units are known. 
 #'  
 #' @details
 #' Optimization and estimation controls can be modified using `options()`. 
@@ -181,32 +181,24 @@
 #' 
 #' @return  An object of class 'dfunc' with the following components:
 #' 
-#'   \item{par}{The vector of estimated parameter values. 
+#' * `par`: The vector of estimated parameter values. 
 #'     Length of this vector is the sum of the following: 
-#'     \enumerate{
-#'        \item The number of columns of the design matrix. This equals the 
-#'        number of covariates in the distance function plus one for the 
-#'        intercept, assuming an intercept is included.
-#'        \item The number of constant parameters in the distance function.
+#'    1. The number of columns of the design matrix. This equals the 
+#'       number of covariates in the distance function plus one for the 
+#'       intercept, assuming an intercept is included.
+#'    1. The number of constant parameters in the distance function.
 #'        Constant parameters are those not related to covariates.  For example, 
 #'        the exponent 'k' parameter for hazard rate likelihood, or 
 #'        the mixing fraction 'p' for the oneStep likelihood. This can be zero.
-#'        \item The number of expansion functions called for.  This equals 
+#'    1. The number of expansion functions called for.  This equals 
 #'        the input `expansions`. 
-#'     }
-#'   }
-#'  
-#'   \item{loglik}{The maximized value of the log likelihood.}
-#'   
-#'   \item{convergence}{The convergence code. This code 
+#' *  `loglik`: The maximized value of the log likelihood.
+#' *  `convergence`: The convergence code. This code 
 #'     is returned by the optimizing routine (e.g., `optim` or `nlminb`).  
-#'     Values other than 0 indicate suspect convergence.}
-#'     
-#'   \item{message}{If maximization did not converge (`convergence != 0`),
+#'     Values other than 0 indicate suspect convergence.
+#' *  `message`: If maximization did not converge (`convergence != 0`),
 #'     this is the reason given by the optimizing routine.  
-#'   }
-#'     
-#'   \item{varcovar}{The variance-covariance matrix for coefficients 
+#' *  `varcovar`: The variance-covariance matrix for coefficients 
 #'     of the distance function, either estimated by the inverse of 
 #'     the fit's Hessian or by bootstrapping.  
 #'     If the likelihood is smooth (i.e., those listed by 
@@ -214,82 +206,59 @@
 #'     Rdistance initially estimates the variance-covariance matrix using the 
 #'     second derivative of the log likelihood surface 
 #'     at the final estimates, where second derivatives are estimated by 
-#'     numeric differentiation (by routine [secondDeriv()]. 
+#'     numeric differentiation (in routine [secondDeriv()]. 
 #'     The variance-covariance matrix is re-set to NULL 
 #'     if the Hessian is not positive-definite.  If bootstrap resampling
-#'     has been performed (using `abundEstim`), the variance-covariance
+#'     has been performed (using [abundEstim()]), the variance-covariance
 #'     matrix is re-estimated using the bootstrap values of parameters
 #'     and automatically reset.  
 #'     Error estimates derived from bootstrapping are generally 
 #'     preferable to the asymptotic estimates, hence the automatic 
-#'     re-set.}   
-#'     
-#'   \item{limits}{A list containing the lower and upper limits of parameters.}
-#'   
-#'   \item{evaluations}{The number of likelihood evaluations performed by the 
-#'   optimizer.}
-#'   
-#'   \item{mf}{An R 'model frame' containing the detections (within the strip 
+#'     re-set.  
+#' *  `limits`: A list containing the lower and upper limits of parameters.
+#' *  `evaluations`: The number of likelihood evaluations performed by the 
+#'   optimizer.
+#' *  `mf`: An R 'model frame' containing the detections (within the strip 
 #'   or circle) used in the fit, covariates specified in the formula, 
 #'   and groupsizes.  Column 'dist' contains the 
 #'   observed distances. The intercept, if included in the model, is not 
 #'   included as a column in this model frame. (Test whether an intercept 
 #'   is included using `attr(terms(return$mf), "intercept")`). 
-#'   Column 'offset(...)' contains group sizes associated with 
-#'   the values of 'dist'. Name of the group size column is "offset(...)", 
+#'   Column `offset(...)` contains group sizes associated with 
+#'   the values of `dist`. Name of the group size column is "offset(...)", 
 #'   not "groupsize(...)", so that group sizes can be treated offsets in 
-#'   other R routines.  The `$mf` component is a proper `model.frame` and contains
-#'   both 'terms' and 'contrasts' attributes. This model frame 
-#'   contains only non-missing distances between `w.lo` and `w.hi`. }
-#'   
-#'   \item{data}{The original nested data frame subset to information required 
+#'   other R routines.  The `mf` component is a proper `model.frame` and contains
+#'   both terms and contrasts attributes. This model frame 
+#'   contains only non-missing distances between `w.lo` and `w.hi`. 
+#' *  `data`: The original nested data frame subset to information required 
 #'   to complete distance estimation.  This data frame contains information 
 #'   on replication (i.e., rows are sites and are re-sampled during bootstrapping),
 #'   missing distances, missing transect lengths, and distances outside the observation 
-#'   strip from `w.lo` and `w.hi`. }
-#'
-#'   \item{formula}{The distance function's formula.}
-#'   
-#'   \item{dataName}{Name of the original nested data frame.}
-#'   
-#'   \item{likelihood}{The name of the likelihood fitted to observation 
-#'   distances. }
-#'     
-#'   \item{w.lo}{Left-truncation value used during the fit.}
-#'   
-#'   \item{w.hi}{Right-truncation value used during the fit.}
-#'   
-#'   \item{expansions}{The number of expansion terms used 
-#'   during the fit.}
-#'   
-#'   \item{series}{The type of expansion used during estimation. This is 
-#'   only relevant if `expansions > 0`.}
-#'   
-#'   \item{x.scl}{The distance at which 
-#'   the function has been scaled to some value.  
-#'   This is the *x* at which the distance function 
-#'   g(*x*) = `g.x.scl`. } 
-#'     
-#'   \item{g.x.scl}{The height of the distance function 
-#'     at a distance of `x.scl`. }
-#'     
-#'   \item{outputUnits}{A list of type 'symbolic_units' containing the 
-#'   physical measurement units used during estimation. }
-#'   
-#'   \item{asymptoticSE}{A logical scalar indication whether the 
+#'   strip (below `w.lo` or above `w.hi`). 
+#' *  `formula`: The distance function's formula.
+#' *  `dataName`: Name of the original nested data frame.
+#' *  `likelihood`: The name of the likelihood fitted to observation 
+#'   distances. 
+#' *  `w.lo`: Left-truncation value used during the fit.
+#' *  `w.hi`: Right-truncation value used during the fit.
+#' *  `expansions`: The number of expansion terms.
+#' *  `series`: The type of expansion used during estimation. This is 
+#'   only relevant if `expansions > 0`.
+#' *  `x.scl`: The distance at which the function has been scaled to some value.  
+#'   This is the *x* at which g(*x*) = `g.x.scl`. 
+#' *  `g.x.scl`: The height of the distance function at distance `x.scl`. 
+#' *  `outputUnits`: A list of type `symbolic_units` containing the 
+#'   physical measurement units used during estimation. 
+#' *  `asymptoticSE`: A logical scalar indication whether the 
 #'   variance-covariance matrix in component `varcovar` is 
 #'   asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE; 
-#'   estimated by bootsrap resampling).}
-#'   
-#'   \item{optimizer}{The optimizing routine used.}
-#'     
-#'   \item{call}{The original function call.}
-#'   
-#'   \item{nCovars}{The number of exogenous covariates fitted in the 
-#'   distance function. Does not include the intercept. }
-#'   
-#'   \item{LhoodType}{The type of likelihood fitted. Currently, only 'parametric' 
-#'   types are fitted.  }
+#'   estimated by bootsrap resampling).
+#' *  `optimizer`: The optimizing routine used.
+#' *  `call`: The original function call.
+#' *  `nCovars`: The number of exogenous covariates fitted in the 
+#'   distance function. Does not include the intercept. 
+#' * `LhoodType`: The type of likelihood fitted. Currently, only 'parametric' 
+#'   types are fitted.  
 #'     
 #'     
 #'     

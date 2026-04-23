@@ -95,8 +95,8 @@ distances in \code{data}.}
 }
 \value{
 An object of class 'dfunc' with the following components:
-
-\item{par}{The vector of estimated parameter values.
+\itemize{
+\item \code{par}: The vector of estimated parameter values.
 Length of this vector is the sum of the following:
 \enumerate{
 \item The number of columns of the design matrix. This equals the
@@ -109,19 +109,13 @@ the mixing fraction 'p' for the oneStep likelihood. This can be zero.
 \item The number of expansion functions called for.  This equals
 the input \code{expansions}.
 }
-}
-
-\item{loglik}{The maximized value of the log likelihood.}
-
-\item{convergence}{The convergence code. This code
+\item \code{loglik}: The maximized value of the log likelihood.
+\item \code{convergence}: The convergence code. This code
 is returned by the optimizing routine (e.g., \code{optim} or \code{nlminb}).
-Values other than 0 indicate suspect convergence.}
-
-\item{message}{If maximization did not converge (\code{convergence != 0}),
+Values other than 0 indicate suspect convergence.
+\item \code{message}: If maximization did not converge (\code{convergence != 0}),
 this is the reason given by the optimizing routine.
-}
-
-\item{varcovar}{The variance-covariance matrix for coefficients
+\item \code{varcovar}: The variance-covariance matrix for coefficients
 of the distance function, either estimated by the inverse of
 the fit's Hessian or by bootstrapping.
 If the likelihood is smooth (i.e., those listed by
@@ -129,82 +123,60 @@ If the likelihood is smooth (i.e., those listed by
 Rdistance initially estimates the variance-covariance matrix using the
 second derivative of the log likelihood surface
 at the final estimates, where second derivatives are estimated by
-numeric differentiation (by routine \code{\link[=secondDeriv]{secondDeriv()}}.
+numeric differentiation (in routine \code{\link[=secondDeriv]{secondDeriv()}}.
 The variance-covariance matrix is re-set to NULL
 if the Hessian is not positive-definite.  If bootstrap resampling
-has been performed (using \code{abundEstim}), the variance-covariance
+has been performed (using \code{\link[=abundEstim]{abundEstim()}}), the variance-covariance
 matrix is re-estimated using the bootstrap values of parameters
 and automatically reset.
 Error estimates derived from bootstrapping are generally
 preferable to the asymptotic estimates, hence the automatic
-re-set.}
-
-\item{limits}{A list containing the lower and upper limits of parameters.}
-
-\item{evaluations}{The number of likelihood evaluations performed by the
-optimizer.}
-
-\item{mf}{An R 'model frame' containing the detections (within the strip
+re-set.
+\item \code{limits}: A list containing the lower and upper limits of parameters.
+\item \code{evaluations}: The number of likelihood evaluations performed by the
+optimizer.
+\item \code{mf}: An R 'model frame' containing the detections (within the strip
 or circle) used in the fit, covariates specified in the formula,
 and groupsizes.  Column 'dist' contains the
 observed distances. The intercept, if included in the model, is not
 included as a column in this model frame. (Test whether an intercept
 is included using \code{attr(terms(return$mf), "intercept")}).
-Column 'offset(...)' contains group sizes associated with
-the values of 'dist'. Name of the group size column is "offset(...)",
+Column \code{offset(...)} contains group sizes associated with
+the values of \code{dist}. Name of the group size column is "offset(...)",
 not "groupsize(...)", so that group sizes can be treated offsets in
-other R routines.  The \verb{$mf} component is a proper \code{model.frame} and contains
-both 'terms' and 'contrasts' attributes. This model frame
-contains only non-missing distances between \code{w.lo} and \code{w.hi}. }
-
-\item{data}{The original nested data frame subset to information required
+other R routines.  The \code{mf} component is a proper \code{model.frame} and contains
+both terms and contrasts attributes. This model frame
+contains only non-missing distances between \code{w.lo} and \code{w.hi}.
+\item \code{data}: The original nested data frame subset to information required
 to complete distance estimation.  This data frame contains information
 on replication (i.e., rows are sites and are re-sampled during bootstrapping),
 missing distances, missing transect lengths, and distances outside the observation
-strip from \code{w.lo} and \code{w.hi}. }
-
-\item{formula}{The distance function's formula.}
-
-\item{dataName}{Name of the original nested data frame.}
-
-\item{likelihood}{The name of the likelihood fitted to observation
-distances. }
-
-\item{w.lo}{Left-truncation value used during the fit.}
-
-\item{w.hi}{Right-truncation value used during the fit.}
-
-\item{expansions}{The number of expansion terms used
-during the fit.}
-
-\item{series}{The type of expansion used during estimation. This is
-only relevant if \code{expansions > 0}.}
-
-\item{x.scl}{The distance at which
-the function has been scaled to some value.
-This is the \emph{x} at which the distance function
-g(\emph{x}) = \code{g.x.scl}. }
-
-\item{g.x.scl}{The height of the distance function
-at a distance of \code{x.scl}. }
-
-\item{outputUnits}{A list of type 'symbolic_units' containing the
-physical measurement units used during estimation. }
-
-\item{asymptoticSE}{A logical scalar indication whether the
+strip (below \code{w.lo} or above \code{w.hi}).
+\item \code{formula}: The distance function's formula.
+\item \code{dataName}: Name of the original nested data frame.
+\item \code{likelihood}: The name of the likelihood fitted to observation
+distances.
+\item \code{w.lo}: Left-truncation value used during the fit.
+\item \code{w.hi}: Right-truncation value used during the fit.
+\item \code{expansions}: The number of expansion terms.
+\item \code{series}: The type of expansion used during estimation. This is
+only relevant if \code{expansions > 0}.
+\item \code{x.scl}: The distance at which the function has been scaled to some value.
+This is the \emph{x} at which g(\emph{x}) = \code{g.x.scl}.
+\item \code{g.x.scl}: The height of the distance function at distance \code{x.scl}.
+\item \code{outputUnits}: A list of type \code{symbolic_units} containing the
+physical measurement units used during estimation.
+\item \code{asymptoticSE}: A logical scalar indication whether the
 variance-covariance matrix in component \code{varcovar} is
 asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE;
-estimated by bootsrap resampling).}
-
-\item{optimizer}{The optimizing routine used.}
-
-\item{call}{The original function call.}
-
-\item{nCovars}{The number of exogenous covariates fitted in the
-distance function. Does not include the intercept. }
-
-\item{LhoodType}{The type of likelihood fitted. Currently, only 'parametric'
-types are fitted.  }
+estimated by bootsrap resampling).
+\item \code{optimizer}: The optimizing routine used.
+\item \code{call}: The original function call.
+\item \code{nCovars}: The number of exogenous covariates fitted in the
+distance function. Does not include the intercept.
+\item \code{LhoodType}: The type of likelihood fitted. Currently, only 'parametric'
+types are fitted.
+}
 }
 \description{
 Fits a detection function using maximum likelihood.
@@ -261,20 +233,20 @@ converted to the units specified by \code{outputUnits}
 \code{outputUnits} is NULL), and
 all output is reported
 in units of \code{outputUnits}. Valid conversions must exist between
-units or an error is thrown.  For example, meters cannot be converted
-into hectares.
+units or an error is thrown (e.g., meters cannot convert
+into hectares).
 
 Measurement units can be assigned using one of Rdistance's
-unit helper routines (see \code{help(unitHelpers)}), or from
-routines in the \code{units} package (e.g.,
-\code{x <- units::set_units(x, "<units>")}).
-See \verb{units::}\code{\link[units:valid_udunits]{units::valid_udunits()}}
+unit helper routines (see \code{help(unitHelpers)}), Rdistance's
+\code{\link[=setUnits]{setUnits()}} function, or \code{\link[units:units]{units::set_units()}}
+See \code{\link[units:valid_udunits]{units::valid_udunits()}}
 for a list of valid symbolic units.
 
 If measurements are truly unit-less, or measurement units are unknown,
 set \code{options(Rdist_requireUnits = FALSE)}.  This suppresses
-all unit checks and conversions.  Users are on their own
-to make sure inputs are scaled correctly and that output units are known.
+all unit checks and conversions.  Users are on their own here
+and must make sure all inputs are scaled correctly so that internal
+computations are correct and output units are known.
 }
 
 \examples{

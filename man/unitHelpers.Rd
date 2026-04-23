@@ -68,7 +68,7 @@ See Details.}
 For \verb{\%#\%} and \code{setUnits}, argument \code{x} with
 units \code{u} attached.
 
-For all the fixed unit assignment operators (i.e., \%\if{html}{\out{<units>}}\%),
+For all the fixed unit assignment operators (i.e., \%units\%),
 argument x with the respective units assigned.
 
 For \code{dropUnits}, argument \code{x} with no units. If

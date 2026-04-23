@@ -223,20 +223,20 @@ converted to the units specified by \code{outputUnits}
 \code{outputUnits} is NULL), and
 all output is reported
 in units of \code{outputUnits}. Valid conversions must exist between
-units or an error is thrown.  For example, meters cannot be converted
-into hectares.
+units or an error is thrown (e.g., meters cannot convert
+into hectares).
 
 Measurement units can be assigned using one of Rdistance's
-unit helper routines (see \code{help(unitHelpers)}), or from
-routines in the \code{units} package (e.g.,
-\code{x <- units::set_units(x, "<units>")}).
-See \verb{units::}\code{\link[units:valid_udunits]{units::valid_udunits()}}
+unit helper routines (see \code{help(unitHelpers)}), Rdistance's
+\code{\link[=setUnits]{setUnits()}} function, or \code{\link[units:units]{units::set_units()}}
+See \code{\link[units:valid_udunits]{units::valid_udunits()}}
 for a list of valid symbolic units.
 
 If measurements are truly unit-less, or measurement units are unknown,
 set \code{options(Rdist_requireUnits = FALSE)}.  This suppresses
-all unit checks and conversions.  Users are on their own
-to make sure inputs are scaled correctly and that output units are known.
+all unit checks and conversions.  Users are on their own here
+and must make sure all inputs are scaled correctly so that internal
+computations are correct and output units are known.
 }
 
 \examples{
