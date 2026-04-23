@@ -89,8 +89,8 @@ from other functions and the calling functions do not accommodate
 units.
 
 Assign units with statement like \code{units(detectionDf$dist) <- "m"}
-or \code{setUnits(w.hi, "km")} or \verb{w.hi <- 150 \\\%#\\\% "m"} or
-\verb{w.hi <- 150 \\\%m\\\%.}.
+or \code{setUnits(w.hi, "km")} or \code{w.hi <- 150 \%#\% "m"} or
+\code{w.hi <- 150 \%m\%.}.
 Measurement units of
 the various physical quantities need not
 be equal because appropriate conversions occur internally.

@@ -25,14 +25,14 @@ the transect to the detected group.
 }
 \item \code{observer}: Factor (six levels), identity of the observer who surveyed
 the point.
-\item \code{bare}: Number, the mean bare ground cover (\\%)
+\item \code{bare}: Number, the mean bare ground cover (\%)
 within 100 m of each point.
 \item \code{herb}: Number, the mean herbaceous
-cover (\\%) within 100 m of each point.
+cover (\%) within 100 m of each point.
 \item \code{shrub}: Number, the mean
-shrub cover (\\%) within 100 m of each point.
+shrub cover (\%) within 100 m of each point.
 \item \code{height}: Number,
-the mean shrub height (cm) within 100 m of each point.
+the mean shrub height [cm] within 100 m of each point.
 \item \code{npoints}: The number of point counts on the transect.
 }
 }

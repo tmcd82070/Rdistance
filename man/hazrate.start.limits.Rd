@@ -28,7 +28,7 @@ A list containing the following components
 \item{names}{Vector of names for the likelihood parameters and expansion terms.}
 
 The length of each vector in the return is:
-\verb{(Num expansions) + 1 + 1*(like \\\%in\\\% c("hazrate")) + (Num Covars)}.
+\verb{(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)}.
 }
 \description{
 Compute starting values and limits for the hazard rate distance

@@ -17,18 +17,18 @@
 #' 
 #' \enumerate{ 
 #'   \item `siteID`: Factor (72 levels), the site or transect surveyed.  
-#'   \item `length`: Number, the length (m) of each transect.  
+#'   \item `length`: Number, the length in meters (\[m\]) of each transect.  
 #'   \item `observer`: Factor (five levels), identity of the observer 
 #'   who surveyed the transect.
-#'   \item `bare`: Number, the mean bare ground cover (\%) within 100 m of each transect.
-#'   \item `herb`: Number, the mean herbaceous cover (\%) within 100 m of
+#'   \item `bare`: Number, the mean bare ground cover (%) within 100 \[m\] of each transect.
+#'   \item `herb`: Number, the mean herbaceous cover (%) within 100 \[m\] of
 #'   each transect.
-#'   \item `shrub`: Number, the mean shrub cover (\%) within
+#'   \item `shrub`: Number, the mean shrub cover (%) within
 #'   100 m of each transect.
 #'   \item `height`: Number, the mean shrub height 
-#'   (cm) within 100 m of each transect.
-#'   \item `shrubclass`: Factor (two levels), shrub class is "Low"" when 
-#'   shrub cover is < 10\%, "High" otherwise.  
+#'   \[cm\] within 100 m of each transect.
+#'   \item `shrubclass`: Factor (two levels), shrub class is "Low" when 
+#'   shrub cover is < 10%, "High" otherwise.  
 #' }
 #' 
 #' @seealso [sparrowDetectionData()]

@@ -14,14 +14,14 @@
 #' \item `siteID`: Factor (120 levels), the site or point surveyed.  
 #' \item `observer`: Factor (six levels), identity of the observer who surveyed
 #' the point.  
-#' \item `bare`: Number, the mean bare ground cover (\%)
+#' \item `bare`: Number, the mean bare ground cover (%)
 #' within 100 m of each point.  
 #' \item `herb`: Number, the mean herbaceous
-#' cover (\%) within 100 m of each point.  
+#' cover (%) within 100 \[m\] of each point.  
 #' \item `shrub`: Number, the mean
-#' shrub cover (\%) within 100 m of each point.  
+#' shrub cover (%) within 100 \[m\] of each point.  
 #' \item `height`: Number,
-#' the mean shrub height (cm) within 100 m of each point.  }
+#' the mean shrub height \[cm\] within 100 \[m\] of each point.  }
 #' 
 #' @seealso [thrasherDetectionData()]
 #' 

@@ -91,7 +91,7 @@
 #'  tibble containing density and abundance on the area surveyed by every
 #'  transect. 
 #'   
-#' @section Bootstrap Confidence Intervals:
+#' # Bootstrap Confidence Intervals:
 #' 
 #'   Rdistance's nested data frames (produced by [RdistDf()])
 #'   contain all information required to estimate bootstrap CIs. 
@@ -125,10 +125,10 @@
 #'   skips the iteration and effectively ignores the 
 #'   failed iterations. 
 #'   If the proportion of failed iterations is small 
-#'   (less than 20\% by default), the resulting abundance confidence interval 
+#'   (less than 20% by default), the resulting abundance confidence interval 
 #'   is probably valid and no warning is issued.  If the proportion of 
 #'   non-convergent iterations 
-#'   is not small (exceeds 20\% by default), a warning is issued.  
+#'   is not small (exceeds 20% by default), a warning is issued.  
 #'   The warning can be modified  
 #'   by re-setting option `"Rdistance_maxBSFailPropForWarning"` to
 #'   the acceptable proportion of failures.. 

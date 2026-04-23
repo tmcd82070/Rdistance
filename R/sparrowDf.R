@@ -22,12 +22,12 @@
 #'   for that row of the data frame. 
 #'   \item `length`: The length, in meters \[m\], of each transect.  
 #'   \item `observer`: Identity of the observer who surveyed the transect.
-#'   \item `bare`: The mean bare ground cover (\%) within 100 \[m\] of the transect.
-#'   \item `herb`: The mean herbaceous cover (\%) within 100 \[m\] of the transect.
-#'   \item `shrub`: The mean shrub cover (\%) within 100 \[m\] of the transect.
+#'   \item `bare`: The mean bare ground cover (%) within 100 \[m\] of the transect.
+#'   \item `herb`: The mean herbaceous cover (%) within 100 \[m\] of the transect.
+#'   \item `shrub`: The mean shrub cover (%) within 100 \[m\] of the transect.
 #'   \item `height`: The mean shrub height \[cm\] within 100 \[m\] of the transect.
-#'   \item `shrubclass`: Shrub class factor.  Either "Low"" when 
-#'   shrub cover is < 10\%, or "High" if cover >= 10\%.  
+#'   \item `shrubclass`: Shrub class factor.  Either "Low" when 
+#'   shrub cover is < 10%, or "High" if cover >= 10%.  
 #' }
 #'  
 #' The embedded data frame in column `detections` contains the following

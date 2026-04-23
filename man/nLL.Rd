@@ -14,7 +14,7 @@ likelihood contain one or two canonical parameters (see Details).
 If one or more expansions are called for, coefficients for the
 expansion terms follow coefficients for the canonical parameters.
 i.e., length of this vector is
-\verb{(num Covars incl. intercept) + expansions + 1*(like \\\%in\\\% c("hazrate"))}.}
+\verb{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate"))}.}
 
 \item{ml}{Either a Rdistance 'model frame' or an Rdistance
 'fitted object'.  Both are of class "dfunc".

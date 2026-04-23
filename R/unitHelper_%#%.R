@@ -10,7 +10,7 @@
 #' assign to `x`, e.g., "m", "km", "m^2".  Valid units are  
 #' listed in columns "(symbol|name)" of [units::valid_udunits()].
 #' 
-#' @returns For \%#\% and `setUnits`, argument `x` with 
+#' @returns For `%#%` and `setUnits`, argument `x` with 
 #' units `u` attached. 
 #' 
 #' @examples 

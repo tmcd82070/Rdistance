@@ -17,12 +17,12 @@ Column descriptions:
 for that row of the data frame.
 \item \code{length}: The length, in meters [m], of each transect.
 \item \code{observer}: Identity of the observer who surveyed the transect.
-\item \code{bare}: The mean bare ground cover (\\%) within 100 [m] of the transect.
-\item \code{herb}: The mean herbaceous cover (\\%) within 100 [m] of the transect.
-\item \code{shrub}: The mean shrub cover (\\%) within 100 [m] of the transect.
+\item \code{bare}: The mean bare ground cover (\%) within 100 [m] of the transect.
+\item \code{herb}: The mean herbaceous cover (\%) within 100 [m] of the transect.
+\item \code{shrub}: The mean shrub cover (\%) within 100 [m] of the transect.
 \item \code{height}: The mean shrub height [cm] within 100 [m] of the transect.
-\item \code{shrubclass}: Shrub class factor.  Either "Low"" when
-shrub cover is < 10\\%, or "High" if cover >= 10\\%.
+\item \code{shrubclass}: Shrub class factor.  Either "Low" when
+shrub cover is < 10\%, or "High" if cover >= 10\%.
 }
 
 The embedded data frame in column \code{detections} contains the following

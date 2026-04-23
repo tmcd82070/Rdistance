@@ -54,7 +54,7 @@
 #' coefficients in 
 #' Rdistance (i.e., \eqn{\sigma = exp(x'a)}{s = exp(x'a)}) can be 
 #' interpreted as normal standard errors.  
-#' Approximately 95\% of distances should 
+#' Approximately 95% of distances should 
 #' occur between 0 and 2\eqn{\sigma}{s}.
 #' 
 #' @return A list containing the following two components:

@@ -29,7 +29,7 @@
 #'   \item{names}{Vector of names for the likelihood parameters and expansion terms.}
 #'   
 #' The length of each vector in the return is:
-#'   `(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)`.
+#'   `(Num expansions) + 1 + 1*(like %in% c("hazrate")) + (Num Covars)`.
 #'  
 #' @seealso [dfuncEstim()]
 #' @examples 

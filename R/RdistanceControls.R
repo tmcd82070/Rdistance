@@ -87,8 +87,8 @@
 #' units.
 #' 
 #' Assign units with statement like `units(detectionDf$dist) <- "m"`
-#' or `setUnits(w.hi, "km")` or `w.hi <- 150 \%#\% "m"` or 
-#' `w.hi <- 150 \%m\%.`.  
+#' or `setUnits(w.hi, "km")` or `w.hi <- 150 %#% "m"` or 
+#' `w.hi <- 150 %m%.`.  
 #' Measurement units of 
 #' the various physical quantities need not 
 #' be equal because appropriate conversions occur internally.

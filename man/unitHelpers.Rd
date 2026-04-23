@@ -26,29 +26,29 @@
 \usage{
 x \%#\% u
 
-x \%acre\% .
+x %acre% .
 
-x \%cm\% .
+x %cm% .
 
-x \%ft\% .
+x %ft% .
 
-x \%ha\% .
+x %ha% .
 
-x \%inches\% .
+x %inches% .
 
-x \%km\% .
+x %km% .
 
-x \%km^2\% .
+x %km^2% .
 
-x \%m\% .
+x %m% .
 
-x \%m^2\% .
+x %m^2% .
 
-x \%mi\% .
+x %mi% .
 
-x \%mi^2\% .
+x %mi^2% .
 
-x \%yd\% .
+x %yd% .
 
 dropUnits(x)
 
@@ -65,10 +65,10 @@ listed in columns "(symbol|name)" of \code{\link[units:valid_udunits]{units::val
 See Details.}
 }
 \value{
-For \\%#\\% and \code{setUnits}, argument \code{x} with
+For \verb{\%#\%} and \code{setUnits}, argument \code{x} with
 units \code{u} attached.
 
-For all the fixed unit assignment operators (i.e., \\%\if{html}{\out{<units>}}\\%),
+For all the fixed unit assignment operators (i.e., \%\if{html}{\out{<units>}}\%),
 argument x with the respective units assigned.
 
 For \code{dropUnits}, argument \code{x} with no units. If
@@ -79,15 +79,15 @@ Helper functions for assigning physical measurement units in Rdistance.
 All are convenience wrappers for \verb{units::}\code{\link[units:units]{units::set_units()}}.
 }
 \details{
-The fixed unit assignment operators are designed to behave somewhat like
+The fixed unit assignment operators are designed to behave like
 unary operators (i.e., 1 argument);
 but, R does not allow
 user defined unary operators.
-Technically, the fixed unit assignment operators are instances of
+Technically, these fixed unit assignment operators are instances of
 R's user-defined infix
 operator, and as such they require two arguments.
 Their syntax must be
-\verb{x \\\%<units>\\\% <something>}; but, the second argument is ignored
+\verb{x \%<units>\% <something>}; but, the second argument is ignored
 and '.' is suggested. See Examples.
 }
 \examples{

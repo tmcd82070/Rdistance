@@ -10,18 +10,18 @@ a site (transect) surveyed.  Column descriptions:
 
 \enumerate{
 \item \code{siteID}: Factor (72 levels), the site or transect surveyed.
-\item \code{length}: Number, the length (m) of each transect.
+\item \code{length}: Number, the length in meters ([m]) of each transect.
 \item \code{observer}: Factor (five levels), identity of the observer
 who surveyed the transect.
-\item \code{bare}: Number, the mean bare ground cover (\\%) within 100 m of each transect.
-\item \code{herb}: Number, the mean herbaceous cover (\\%) within 100 m of
+\item \code{bare}: Number, the mean bare ground cover (\%) within 100 [m] of each transect.
+\item \code{herb}: Number, the mean herbaceous cover (\%) within 100 [m] of
 each transect.
-\item \code{shrub}: Number, the mean shrub cover (\\%) within
+\item \code{shrub}: Number, the mean shrub cover (\%) within
 100 m of each transect.
 \item \code{height}: Number, the mean shrub height
-(cm) within 100 m of each transect.
-\item \code{shrubclass}: Factor (two levels), shrub class is "Low"" when
-shrub cover is < 10\\%, "High" otherwise.
+[cm] within 100 m of each transect.
+\item \code{shrubclass}: Factor (two levels), shrub class is "Low" when
+shrub cover is < 10\%, "High" otherwise.
 }
 }
 \source{
