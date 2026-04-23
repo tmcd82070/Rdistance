@@ -17,3 +17,5 @@ README_files
 ^NOTES.html$
 .Renviron$
 ^CRAN-SUBMISSION$
+^\.positai$
+^\.claude$
