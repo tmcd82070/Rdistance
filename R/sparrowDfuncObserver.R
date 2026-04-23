@@ -11,11 +11,11 @@
 #' 
 #' @format An estimated distance function object with 
 #' class 'dfunc'. See 'Value' section of 
-#' \code{\link{dfuncEstim}} for 
+#' [dfuncEstim()] for 
 #' description of components. 
 #' 
-#' @seealso \code{\link{sparrowSiteData}} and 
-#' \code{\link{sparrowDetectionData}} for description of the data
+#' @seealso [sparrowSiteData()] and 
+#' [sparrowDetectionData()] for description of the data
 #' 
 #' 
 #' @examples

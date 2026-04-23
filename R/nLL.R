@@ -5,25 +5,25 @@
 #'   and the estimated parameters.
 #'
 #' @param a A vector of likelihood parameter values. Length and 
-#' meaning depend on \code{ml$series} and \code{ml$expansions}. If no expansion 
-#' terms were called for (i.e., \code{ml$expansions = 0}), the distance 
+#' meaning depend on `ml$series` and `ml$expansions`. If no expansion 
+#' terms were called for (i.e., `ml$expansions = 0`), the distance 
 #' likelihood contain one or two canonical parameters (see Details). 
 #' If one or more expansions are called for, coefficients for the 
 #' expansion terms follow coefficients for the canonical parameters.  
 #' i.e., length of this vector is 
-#'   \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate"))}.
+#'   `(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate"))`.
 #'   
 #' @inheritParams startLimits
 #' 
 #' @param verbosity The level of output produced during estimation. 
-#' \code{verbosity} = 0 produces no output. Increasing values 
-#' of \code{verbosity} >= 1 produce increasing levels of intermediate details.
+#' `verbosity` = 0 produces no output. Increasing values 
+#' of `verbosity` >= 1 produce increasing levels of intermediate details.
 #' This is mostly used for de-bugging and checking convergence.
 #'  
 #' @details
-#' \bold{Expansion Terms}: If \code{ml$expansions} = k (k > 0), 
-#' the expansion function specified by \code{ml$series} is 
-#' called (see for example \code{\link{cosine.expansion}}). 
+#' **Expansion Terms**: If `ml$expansions` = k (k > 0), 
+#' the expansion function specified by `ml$series` is 
+#' called (see for example [cosine.expansion()]). 
 #' Assuming \eqn{h_{ij}(x)}{h_ij(x)} is the 
 #' \eqn{j^{th}}{j-th} expansion term for the 
 #' \eqn{i^{th}}{i-th} distance and that 
@@ -35,10 +35,10 @@
 #' = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
 #'   
 #' @return A scalar, the negative of the log likelihood evaluated at 
-#' parameters \code{a}.
+#' parameters `a`.
 #' 
-#' @seealso See \code{\link{halfnorm.like}} and links there; 
-#'  \code{\link{dfuncEstim}}
+#' @seealso See [halfnorm.like()] and links there; 
+#'  [dfuncEstim()]
 #' 
 #' @examples
 #' 

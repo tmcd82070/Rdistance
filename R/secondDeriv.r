@@ -4,7 +4,7 @@
 #' arbitrary multidimensional function at a particular location.
 #' 
 #' @param x The location (a vector) where the second derivatives 
-#' of \code{FUN} are desired.
+#' of `FUN` are desired.
 #' 
 #' @param FUN An R function for which the second derivatives are 
 #' sought.  
@@ -13,39 +13,39 @@
 #' to evaluate the 2nd derivative, 
 #' and ... are additional parameters needed to evaluate the function.
 #' FUN must return a single value (scalar), the height of the 
-#' surface above \code{x}, i.e., FUN evaluated at x.  
+#' surface above `x`, i.e., FUN evaluated at x.  
 #' 
 #' @param eps A vector of small relative 
-#' distances to add to \code{x} 
+#' distances to add to `x` 
 #' when evaluating derivatives.   This determines the '\eqn{dx}' of 
 #' the numerical derivatives.  That is, the function 
-#' is evaluated at \code{x}, \code{x+dx}, and \code{x+2*dx}, where 
-#' \eqn{dx} = \code{x*eps^0.25}, in order to compute the second 
+#' is evaluated at `x`, `x+dx`, and `x+2*dx`, where 
+#' \eqn{dx} = `x*eps^0.25`, in order to compute the second 
 #' derivative. 
-#' \code{eps} defaults to 1e-8 for all 
+#' `eps` defaults to 1e-8 for all 
 #' dimensions which equates to setting \eqn{dx} to one percent
-#' of each \code{x} (i.e., by default the function is 
-#' evaluate at \code{x}, \code{1.01*x} and \code{1.02*x} 
+#' of each `x` (i.e., by default the function is 
+#' evaluate at `x`, `1.01*x` and `1.02*x` 
 #' to compute the second derivative).  
 #' 
-#' One might want to change \code{eps} if the scale 
-#' of dimensions in \code{x} varies wildly (e.g., kilometers and millimeters), 
+#' One might want to change `eps` if the scale 
+#' of dimensions in `x` varies wildly (e.g., kilometers and millimeters), 
 #' or if changes between 
-#' \code{FUN(x)} and \code{FUN(x*1.01)} are below machine precision.
-#' If length of \code{eps} is less than length of \code{x},
-#' \code{eps} is replicated to the length of \code{x}. 
+#' `FUN(x)` and `FUN(x*1.01)` are below machine precision.
+#' If length of `eps` is less than length of `x`,
+#' `eps` is replicated to the length of `x`. 
 #' 
-#' @param \dots Any arguments passed to \code{FUN}. 
+#' @param \dots Any arguments passed to `FUN`. 
 #' 
 #' @details This function uses the "5-point" numeric second derivative 
 #' method advocated in numerous numerical recipe texts.  During computation
 #' of the 2nd derivative, FUN must be 
 #' capable of being evaluated at numerous locations within a hyper-ellipsoid 
-#' with cardinal radii 2*\code{x}*(\code{eps})^0.25 = 0.02*\code{x} at the 
-#' default value of \code{eps}.   
+#' with cardinal radii 2*`x`*(`eps`)^0.25 = 0.02*`x` at the 
+#' default value of `eps`.   
 #' 
 #' A handy way to use this function is to call an optimization routine 
-#' like \code{nlminb} with FUN, then call this function with the 
+#' like `nlminb` with FUN, then call this function with the 
 #' optimized values (solution) and FUN.  This will yield the hessian 
 #' at the solution and this is can produce a better 
 #' estimate of the variance-covariance
@@ -54,8 +54,8 @@
 #' at the next-to-last step of optimization. 
 #' 
 #' An estimate of the variance-covariance matrix, which is used in 
-#' \code{Rdistance}, is \code{solve(hessian)} where \code{hessian} is
-#' \code{secondDeriv(<parameter estimates>, <likelihood>)}.  
+#' `Rdistance`, is `solve(hessian)` where `hessian` is
+#' `secondDeriv(<parameter estimates>, <likelihood>)`.  
 #' 
 #' @examples 
 #' 

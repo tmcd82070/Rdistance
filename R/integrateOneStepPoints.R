@@ -6,44 +6,44 @@
 #' 
 #' @param object Either an Rdistance fitted distance function
 #' (an object that inherits from class "dfunc"; usually produced 
-#' by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
-#' distance function parameters (e.g., \code{matrix(exp(fit$par),1)}). 
+#' by a call to [dfuncEstim()]), or a matrix of canonical 
+#' distance function parameters (e.g., `matrix(exp(fit$par),1)`). 
 #' If a matrix, each row corresponds to a 
 #' distance function and each column is a parameter. The first column is 
 #' the parameter related to sighting covariates and must be transformed 
 #' to the "real" space (i.e., inverse link, which is \eqn{exp()}, must 
-#' be applied outside this routine).  If \code{object} is a matrix, 
+#' be applied outside this routine).  If `object` is a matrix, 
 #' it should not have measurement units because
 #' only derived quantities (e.g., ESW) have units; Rdistance function 
 #' parameters themselves never have units.
 #' 
 #' @param newdata A data frame containing new values for 
 #' the distance function covariates. If NULL and 
-#' \code{object} is a fitted distance function, the  
+#' `object` is a fitted distance function, the  
 #' observed covariates stored in
-#' \code{object} are used (behavior similar to \code{\link{predict.lm}}).
-#' Argument \code{newdata} is ignored if \code{object} is a matrix.
+#' `object` are used (behavior similar to [predict.lm()]).
+#' Argument `newdata` is ignored if `object` is a matrix.
 #' 
 #' @param w.lo Minimum sighting distance or left-truncation value
-#' if \code{object} is a matrix.
-#' Ignored if \code{object} 
+#' if `object` is a matrix.
+#' Ignored if `object` 
 #' is a fitted distance function. 
 #' Must have physical measurement units. 
 #' 
 #' @param w.hi Maximum sighting distance or right-truncation value
-#' if \code{object} is a matrix.
-#' Ignored if \code{object} 
+#' if `object` is a matrix.
+#' Ignored if `object` 
 #' is a fitted distance function.
 #' Must have physical measurement units. 
 #' 
 #' @param Units Physical units of sighting distances if 
-#' \code{object} is a matrix. Sighting distance units can differ from units 
-#' of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
+#' `object` is a matrix. Sighting distance units can differ from units 
+#' of `w.lo` or `w.hi`.   Ignored if `object`
 #' is a fitted distance function.
 #' 
 #' @section Note:
 #' Users will not normally call this function. It is called 
-#' internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}. 
+#' internally by [nLL()] and [effectiveDistance()]. 
 #' 
 #' @details 
 #' Returned integrals are
@@ -55,18 +55,18 @@
 #' one-step proportion.
 #' 
 #' @return A vector of areas under the distance functions represented in 
-#' \code{object}. 
-#' If \code{object} is a distance function and 
-#' \code{newdata} is specified, the returned vector's length is 
-#' \code{nrow(newdata)}.  If \code{object} is a distance function and 
-#' \code{newdata} is NULL, 
-#' returned vector's length is \code{length(distances(object))}. If 
-#' \code{object} is a matrix, return's length is 
-#' \code{nrow(object)}. 
+#' `object`. 
+#' If `object` is a distance function and 
+#' `newdata` is specified, the returned vector's length is 
+#' `nrow(newdata)`.  If `object` is a distance function and 
+#' `newdata` is NULL, 
+#' returned vector's length is `length(distances(object))`. If 
+#' `object` is a matrix, return's length is 
+#' `nrow(object)`. 
 #' 
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateOneStepNumeric}}; 
-#' \code{\link{integrateOneStepLines}} 
+#' @seealso [integrateNumeric()]; [integrateOneStepNumeric()]; 
+#' [integrateOneStepLines()] 
 #' 
 #' @examples
 #' 

@@ -13,17 +13,17 @@
 #' \deqn{f(d|\alpha, \sigma) = \left(\frac{d}{m}\right)^{\alpha - 1}e^{-(d-m)/\sigma},}{
 #' f(d|a,s) =  (d/m)^{a-1} exp(-(d-m)/s),
 #' }
-#' where \eqn{\alpha}{a} is the \bold{shape} parameter, \eqn{\sigma}{s} is 
-#' the \bold{scale} parameter, and \eqn{m = (\alpha-1)\sigma}{m = (a-1)s}.
+#' where \eqn{\alpha}{a} is the **shape** parameter, \eqn{\sigma}{s} is 
+#' the **scale** parameter, and \eqn{m = (\alpha-1)\sigma}{m = (a-1)s}.
 #' \eqn{m} is the mode of the Gamma function, and in Rdistance it's 
 #' scaled to have a maximum of 1.0 at \eqn{m}.  
-#' The \bold{scale} parameter is a function of the shape parameter 
-#' \emph{and} sighting covariates, i.e., 
+#' The **scale** parameter is a function of the shape parameter 
+#' *and* sighting covariates, i.e., 
 #' \deqn{\sigma = k [exp(x'\beta)],}{s = k*exp(x'b),}
 #' where \eqn{x} is a vector of covariate values associated with distance \eqn{d} 
-#' (i.e., a row of \code{covars}), \eqn{\beta}{b} is a vector of the 
-#' first \eqn{q} (=\code{ncol(covars)}) values of the first argument 
-#' of the function (\code{a}), and 
+#' (i.e., a row of `covars`), \eqn{\beta}{b} is a vector of the 
+#' first \eqn{q} (=`ncol(covars)`) values of the first argument 
+#' of the function (`a`), and 
 #' \eqn{k} is a function of the shape parameter, i.e., 
 #' \deqn{k = \frac{1}{\Gamma(\alpha)}  \left(\frac{a - 1}{e^1} \right)^{a - 1}.}{
 #' k = (1/Gamma(a)) * (((a - 1)/exp(1))^(a - 1)).}  
@@ -31,12 +31,12 @@
 #' \eqn{q+1}-st value in the function's first argument and is constrained to 
 #' be strictly greater than 1.0.
 #'  
-#' See Examples for use of \code{\link{GammaReparam}} to compute \eqn{\alpha}{a}
+#' See Examples for use of [GammaReparam()] to compute \eqn{\alpha}{a}
 #' and \eqn{\sigma}{s} from fitted object coefficients.
 #'   
 #' @inherit halfnorm.like return seealso
 #'    
-#' @references Becker, E. F., and P. X. Quang, 2009. \emph{A Gamma-Shaped Detection Function for Line-Transect Surveys with Mark-Recapture and Covariate Data.}
+#' @references Becker, E. F., and P. X. Quang, 2009. *A Gamma-Shaped Detection Function for Line-Transect Surveys with Mark-Recapture and Covariate Data.*
 #'   Journal of Agricultural, Biological, and Environmental Statistics 14(2):207-223.
 #'   
 #' @examples 

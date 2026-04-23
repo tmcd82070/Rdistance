@@ -14,17 +14,17 @@
 #' @inherit integrateOneStepPoints return
 #' 
 #' @details 
-#' The \code{\link{oneStep.like}} function has an extremely large 
+#' The [oneStep.like()] function has an extremely large 
 #' discontinuity at Theta. Accurate numeric integration requires 
 #' inserting Theta and Theta+ (a value just larger than Theta) 
 #' into the series of points being evaluated. Because this creates 
 #' un-equal intervals, the Trapezoid rule must be used. 
 #' Rdistance's Simpson's rule routine 
-#' (\code{\link{integrateNumeric}}) will not work for oneStep likelihoods 
+#' ([integrateNumeric()]) will not work for oneStep likelihoods 
 #' that have expansions. 
 #' 
-#' @seealso \code{\link{integrateNumeric}}; 
-#' \code{\link{integrateOneStepLines}}; \code{\link{integrateOneStepPoints}}
+#' @seealso [integrateNumeric()]; 
+#' [integrateOneStepLines()]; [integrateOneStepPoints()]
 #' 
 #' @export
 #' 

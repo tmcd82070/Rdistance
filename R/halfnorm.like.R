@@ -8,27 +8,27 @@
 #' @param a A vector or matrix of covariate 
 #' and expansion term 
 #' coefficients. If matrix, dimension is 
-#' \emph{k} X \emph{p}, where 
-#' \emph{k} = \code{nrow(a)}) is the number of coefficient
-#' vectors to evaluate (cases) and \emph{p} 
-#' = \code{ncol(a)})
+#' *k* X *p*, where 
+#' *k* = `nrow(a)`) is the number of coefficient
+#' vectors to evaluate (cases) and *p* 
+#' = `ncol(a)`)
 #' is the number of covariate and expansion 
 #' coefficients in the likelihood (i.e., rows are 
-#' cases and columns are covariates). If \code{a} is a 
+#' cases and columns are covariates). If `a` is a 
 #' dimensionless vector, it is interpreted as a 
-#' single row with \emph{k} = 1. 
-#' Covariate coefficients in \code{a} are the first 
-#' \emph{q} values (\emph{q} <= \emph{p}), and must 
+#' single row with *k* = 1. 
+#' Covariate coefficients in `a` are the first 
+#' *q* values (*q* <= *p*), and must 
 #' be on a log scale.
 #' 
-#' @param dist A numeric vector of length \emph{n} or 
-#' a single-column matrix (dimension \emph{n}X1) containing 
+#' @param dist A numeric vector of length *n* or 
+#' a single-column matrix (dimension *n*X1) containing 
 #' detection distances at which to evaluate the likelihood.
 #' 
-#' @param covars A numeric vector of length \emph{q} or a
-#' matrix of dimension \emph{n}X\emph{q} containing 
+#' @param covars A numeric vector of length *q* or a
+#' matrix of dimension *n*X*q* containing 
 #' covariate values 
-#' associated with distances in argument \code{dist}. 
+#' associated with distances in argument `dist`. 
 #' 
 #' @param w.hi A numeric scalar containing maximum 
 #' distance. The right-hand cutoff or upper limit. 
@@ -41,13 +41,13 @@
 #' \deqn{f(d|\sigma) = \exp(-\frac{d^2}{2\sigma^2})}{f(d|s) = exp(-d^2 / (2*s^2))}
 #' where \eqn{\sigma = exp(x'a)}{s = exp(x'a)}, \eqn{x} is a vector of 
 #' covariate values associated with distance \eqn{d} 
-#' (i.e., a row of \code{covars}), and 
-#' \eqn{a} is a vector of the first $q$ (=\code{ncol(covars)}) 
-#' values in argument \code{a}.
+#' (i.e., a row of `covars`), and 
+#' \eqn{a} is a vector of the first $q$ (=`ncol(covars)`) 
+#' values in argument `a`.
 #' 
 #' Some authors parameterize the halfnorm without 
 #' the "2" in the denominator of the exponent. 
-#' \code{Rdistance} includes 
+#' `Rdistance` includes 
 #' "2" in this denominator to make 
 #' quantiles of the half normal agree with 
 #' the standard normal. This means that half-normal 
@@ -59,31 +59,31 @@
 #' 
 #' @return A list containing the following two components:
 #' \itemize{
-#'   \item \bold{L.unscaled}: A matrix of size 
-#'    \emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
-#'    cases = \code{nrow(a)})
+#'   \item **L.unscaled**: A matrix of size 
+#'    *n*X*k* (*n* = length `dist`; *k* = number of
+#'    cases = `nrow(a)`)
 #'    containing likelihood values evaluated at 
-#'    distances in \code{dist}.
+#'    distances in `dist`.
 #'    Each row is associated with 
 #'    a single distance, and each column is associated with 
-#'    a single case (row of \code{a}).  Values in this matrix are  
+#'    a single case (row of `a`).  Values in this matrix are  
 #'    the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
 #'    These values are "unscaled" likelihood values; they must be 
 #'    scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi  
 #'    to form proper likelihood values. 
 #'    
-#'  \item \bold{params}: A \emph{n}X\emph{b}X\emph{k}  array 
+#'  \item **params**: A *n*X*b*X*k*  array 
 #'  of the likelihood's (canonical) parameters in link space (i.e., on 
-#'  log scale; \emph{b} = number of canonical parameters in 
-#'  the likelihood; \emph{k} = number of cases). 
-#'  Rows correspond to distances in \code{dist}. Columns 
-#'  correspond to parameters (columns of \code{a}), 
-#'  and pages correspond to cases (rows of \code{a}). 
+#'  log scale; *b* = number of canonical parameters in 
+#'  the likelihood; *k* = number of cases). 
+#'  Rows correspond to distances in `dist`. Columns 
+#'  correspond to parameters (columns of `a`), 
+#'  and pages correspond to cases (rows of `a`). 
 #' }
 #'  
-#' @seealso \code{\link{dfuncEstim}}, 
-#'          \code{\link{abundEstim}},
-#'          other \code{<likelihood>.like} functions
+#' @seealso [dfuncEstim()], 
+#'          [abundEstim()],
+#'          other `<likelihood>.like` functions
 #'          
 #' @examples  
 #' d <- seq(0, 100, length=100)

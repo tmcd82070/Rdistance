@@ -8,20 +8,20 @@
 #' @param include.zero Boolean value specifying whether to include 0 on the x-axis 
 #' of the plot.  A value of TRUE will include 0 on the left hand end of the x-axis
 #' regardless of the range of distances.  A value of FALSE will plot only the
-#' observation strip (\code{w.lo} to \code{w.hi}).
+#' observation strip (`w.lo` to `w.hi`).
 #'   
-#' @param nbins Internally, this function uses \code{hist} to compute histogram
-#'   bars for the plot. This argument is the \code{breaks} argument to
-#'   \code{hist}.  This can be either a vector giving the breakpoints between
+#' @param nbins Internally, this function uses `hist` to compute histogram
+#'   bars for the plot. This argument is the `breaks` argument to
+#'   `hist`.  This can be either a vector giving the breakpoints between
 #'   bars, the suggested number of bars (a single number), a string naming
 #'   an algorithm to compute the number of bars, or a function to compute the
-#'   number of bars.  See \code{\link{hist}} for all options.
+#'   number of bars.  See [hist()] for all options.
 #'   
-#' @param newdata Data frame (similar to \code{newdata} parameter 
-#' of \code{\link{lm}}) containing new values for covariates in 
+#' @param newdata Data frame (similar to `newdata` parameter 
+#' of [lm()]) containing new values for covariates in 
 #' the distance function.
 #' One distance function is computed and plotted for each row in the data frame. 
-#' If \code{newdata} is NULL, a single distance function is plotted 
+#' If `newdata` is NULL, a single distance function is plotted 
 #' for mean values of all numeric covariates and mode values for all 
 #' factor covariates. 
 #'   
@@ -43,23 +43,23 @@
 #' 
 #' @param ylab Label for the y-axis
 #' 
-#' @param density If \code{plotBars=TRUE}, a vector giving the density of 
+#' @param density If `plotBars=TRUE`, a vector giving the density of 
 #' shading lines, in lines per inch, for the bars underneath 
 #' the distance function, repeated as necessary to exceed the number 
 #' of bars. Values of NULL or a number strictly less than 0 
-#' mean solid fill using colors from parameter \code{col}. 
-#' If \code{density = 0}, bars are not filled and only the borders are rendered. 
-#' If \code{density} > 0, bars are shaded with colors and angles from 
-#' parameters \code{col} and \code{angle}.
+#' mean solid fill using colors from parameter `col`. 
+#' If `density = 0`, bars are not filled and only the borders are rendered. 
+#' If `density` > 0, bars are shaded with colors and angles from 
+#' parameters `col` and `angle`.
 #' 
-#' @param angle When \code{density} > 0, the slope of bar shading lines, 
+#' @param angle When `density` > 0, the slope of bar shading lines, 
 #' given as an angle in degrees (counter-clockwise), repeated as necessary
 #' to exceed the number of bars.
 #' 
 #' @param col A vector of bar fill colors or line colors when bars are 
-#' drawn and \code{density != 0}, repeated as necessary to exceed the number
+#' drawn and `density != 0`, repeated as necessary to exceed the number
 #' of bars. Also used for the bar borders when
-#' \code{border = TRUE}.
+#' `border = TRUE`.
 #' 
 #' @param circles Logical scalar requesting the location of detection distances
 #' be plotted. If TRUE, open circles are plotted at predicted distance 
@@ -71,52 +71,52 @@
 #' @param border The color of bar borders when bars are plotted, 
 #' repeated as necessary to exceed the number of bars. A 
 #' value of NA or FALSE means no borders. If bars are shaded with lines 
-#' (i.e., \code{density>0}), \code{border = TRUE} uses the same 
+#' (i.e., `density>0`), `border = TRUE` uses the same 
 #' color for the border as for the shading lines.  Otherwise, fill color
-#' or shaded line color are specified in \code{col} while 
-#' border color is specified in \code{border}.  
+#' or shaded line color are specified in `col` while 
+#' border color is specified in `border`.  
 #' 
 #' @param vertLines Logical scalar specifying whether to plot vertical 
-#'  lines at \code{w.lo} and \code{w.hi} from 0 to the  
+#'  lines at `w.lo` and `w.hi` from 0 to the  
 #'  distance function. 
 #'  
 #' @param col.dfunc Color of the distance function(s).
 #' If only one distance function (one line) is being plotted, 
 #' the default color is "red".
-#' If covariates or \code{newdata} are present, 
-#' the default value uses \code{graphics::rainbow(n)}, 
-#' where \code{n} is the number 
-#' of plotted distance functions.  Otherwise, \code{col.dfunc} 
+#' If covariates or `newdata` are present, 
+#' the default value uses `graphics::rainbow(n)`, 
+#' where `n` is the number 
+#' of plotted distance functions.  Otherwise, `col.dfunc` 
 #' is replicated to the required length.  Plot all 
 #' distance functions in the same color by setting 
-#' \code{col.dfunc} to
+#' `col.dfunc` to
 #' a scalar. Plot blue-red pairs of distance functions 
-#' by setting \code{col.dfunc} = \code{c("blue", "red")}. Etc. 
+#' by setting `col.dfunc` = `c("blue", "red")`. Etc. 
 #'   
 #' @param lty.dfunc Line type of the distance function(s).
-#' If covariates or \code{newdata} is present, 
+#' If covariates or `newdata` is present, 
 #' the default uses line types  
-#' to \code{1:n}, where \code{n} is the number 
-#' of plotted distance functions.  Otherwise, \code{lty.dfunc} 
+#' to `1:n`, where `n` is the number 
+#' of plotted distance functions.  Otherwise, `lty.dfunc` 
 #' is replicated to the required length. Plot solid lines
-#' by specifying \code{lty.dfunc = 1}. Plot solid-dashed line pairs
-#' by specifying \code{lty.dfunc = c(1,2)}. Etc.
+#' by specifying `lty.dfunc = 1`. Plot solid-dashed line pairs
+#' by specifying `lty.dfunc = c(1,2)`. Etc.
 #' 
 #' @param lwd.dfunc Line width of the distance function(s), replicated 
 #' to the required length. Default is 2 for all lines.  
 #' 
 #' @param \dots When bars are plotted, this routine 
-#'  uses \code{graphics::barplot} to draw the 
+#'  uses `graphics::barplot` to draw the 
 #'  plotting region and bars. When bars are not plotted,
-#'  this routine sets up the plot with \code{graphics::plot}.
-#'  \dots can be any argument to \code{barplot} or \code{plot} EXCEPT  
-#'  \code{width}, \code{ylim}, \code{xlim}, 
-#'  \code{density}, \code{angle}, and \code{space}. For example, 
-#'  set the main title with \code{main = "Main Title"}.
+#'  this routine sets up the plot with `graphics::plot`.
+#'  \dots can be any argument to `barplot` or `plot` EXCEPT  
+#'  `width`, `ylim`, `xlim`, 
+#'  `density`, `angle`, and `space`. For example, 
+#'  set the main title with `main = "Main Title"`.
 #' 
 #' @inherit plot.dfunc return
 #' 
-#' @seealso \code{\link{plot.dfunc}}
+#' @seealso [plot.dfunc()]
 #' 
 #' @examples
 #' 

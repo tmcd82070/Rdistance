@@ -7,16 +7,16 @@
 likeParamNames(like.form)
 }
 \arguments{
-\item{like.form}{A text string naming the form of the likelihood. 
+\item{like.form}{A text string naming the form of the likelihood.
 An error is thrown if the likelihood is unknown.}
 }
 \value{
 A vector of parameter names for the likelihood
 }
 \description{
-Returns names of the likelihood parameters. This is 
+Returns names of the likelihood parameters. This is
 a helper function and is not
-necessary for estimation.  It is nice to label some 
+necessary for estimation.  It is nice to label some
 parameters with descriptive
 names like "sigma" or "k", depending on the likelihood.
 }

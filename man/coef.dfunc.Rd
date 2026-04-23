@@ -8,17 +8,17 @@
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
 \item{...}{Ignored}
 }
 \value{
-The estimated coefficient vector for the detection function. 
-Length and interpretation of values vary 
+The estimated coefficient vector for the detection function.
+Length and interpretation of values vary
 depending on the form of the detection function and expansion terms.
 }
 \description{
-Extract distance model coefficients from 
+Extract distance model coefficients from
 an estimated detection function object.
 }
 \examples{
@@ -36,5 +36,5 @@ coef(dfunc)
  
 }
 \seealso{
-\code{\link{AIC}}, \code{\link{dfuncEstim}}
+\code{\link[=AIC]{AIC()}}, \code{\link[=dfuncEstim]{dfuncEstim()}}
 }

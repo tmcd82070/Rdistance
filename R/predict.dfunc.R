@@ -6,133 +6,133 @@
 #' objects.
 #' 
 #' @param object An Rdistance model frame or fitted distance function,
-#' normally produced by a call to \code{\link{dfuncEstim}}. 
+#' normally produced by a call to [dfuncEstim()]. 
 #' 
 #' @param newdata A data frame containing new values of 
 #' the covariates at which to evaluate the distance functions. 
-#' If \code{newdata}
+#' If `newdata`
 #' is NULL, distance functions are evaluated at values of 
 #' the observed covariates and results in one prediction 
-#' per distance or transect (see parameter \code{type}). 
-#' If \code{newdata} is not NULL and the model does not contains covariates, 
-#' this routine returns one prediction for each row in \code{newdata}, but 
-#' columns and values in \code{newdata} are ignored. 
+#' per distance or transect (see parameter `type`). 
+#' If `newdata` is not NULL and the model does not contains covariates, 
+#' this routine returns one prediction for each row in `newdata`, but 
+#' columns and values in `newdata` are ignored. 
 #' 
 #' @param type The type of predictions desired. 
 #' \itemize{
-#'   \item \bold{If \code{type} == "parameters"}: Returned value is 
+#'   \item **If `type` == "parameters"**: Returned value is 
 #'     a matrix of predicted (canonical) parameters of the 
-#'     likelihood function. If \code{newdata} is NULL, return contains 
+#'     likelihood function. If `newdata` is NULL, return contains 
 #'     one parameter value for every detection distance
-#'     in \code{object$mf} (distances in \code{object$mf} are between 
-#'     \code{object$w.lo} and \code{object$w.hi} and non-missing). 
-#'     If \code{newdata} is not NULL, returned vector 
-#'     has one parameter for every row in \code{newdata}. Parameter 
-#'     \code{distances} is ignored when \code{type} == "parameters". 
+#'     in `object$mf` (distances in `object$mf` are between 
+#'     `object$w.lo` and `object$w.hi` and non-missing). 
+#'     If `newdata` is not NULL, returned vector 
+#'     has one parameter for every row in `newdata`. Parameter 
+#'     `distances` is ignored when `type` == "parameters". 
 #'     Canonical parameters (non-expansion terms)
 #'     are returned on the response (inverse-link) scale.  Raw 
-#'     canonical parameters in \code{object$par} are stored in 
+#'     canonical parameters in `object$par` are stored in 
 #'     the link scale.  Expansion term parameters use the identity 
 #'     link, so their value in the output equals their value 
-#'     in \code{object$par}. 
+#'     in `object$par`. 
 #'     
-#'   \item \bold{If \code{type} == "likelihood"}: Returned value is a 
-#'     matrix of \bold{unscaled} likelihood values for all  
-#'     observed distances in \code{object$mf}, i.e., raw distance functions
-#'     evaluated at the observed distances.  Parameters \code{newdata} and 
-#'     \code{distances} are ignored when \code{type} is "likelihood". 
+#'   \item **If `type` == "likelihood"**: Returned value is a 
+#'     matrix of **unscaled** likelihood values for all  
+#'     observed distances in `object$mf`, i.e., raw distance functions
+#'     evaluated at the observed distances.  Parameters `newdata` and 
+#'     `distances` are ignored when `type` is "likelihood". 
 #'     The negative log likelihood of the full data set is
-#'     \code{-sum(log(predict(object,type="likelihood") / 
-#'     effectiveDistance(object)))}. 
+#'     `-sum(log(predict(object,type="likelihood") / 
+#'     effectiveDistance(object)))`. 
 #'     
-#'   \item \bold{If \code{type} == "dfuncs" or "dfunc"}: Returned  
+#'   \item **If `type` == "dfuncs" or "dfunc"**: Returned  
 #'     value is a matrix whose columns contain scaled distance functions. 
 #'     The distance functions in each column are evaluated at distances   
-#'     in argument \code{distances}, not at the observed 
-#'     distances in \code{object$mf}. The number of distance functions
-#'     returned (i.e., number of columns) depends on \code{newdata} 
+#'     in argument `distances`, not at the observed 
+#'     distances in `object$mf`. The number of distance functions
+#'     returned (i.e., number of columns) depends on `newdata` 
 #'     as follows: 
 #'     \itemize{
-#'        \item If \code{newdata} is NULL, one distance function 
-#'        will be returned for every detection in \code{object$mf}
+#'        \item If `newdata` is NULL, one distance function 
+#'        will be returned for every detection in `object$mf`
 #'        that has valid covariate values.    
-#'       \item If \code{newdata} is not NULL, one distance function 
-#'       will be returned for each observation (row) in \code{newdata}. 
+#'       \item If `newdata` is not NULL, one distance function 
+#'       will be returned for each observation (row) in `newdata`. 
 #'     }
 #'     
-#'    \item \bold{If \code{type} == "density" or "abundance"}: Returned 
+#'    \item **If `type` == "density" or "abundance"**: Returned 
 #'    object is a tibble containing predicted density and abundance 
 #'    on the area surveyed by each transect. 
 #'  }  
 #'  
-#'  If \code{object} is a smoothed distance function, it does not have parameters
+#'  If `object` is a smoothed distance function, it does not have parameters
 #'  and this routine will only return scaled distance functions, densities, or 
 #'  abundances. That is, 
-#'  \code{type} = "parameters" when \code{object} is smoothed 
+#'  `type` = "parameters" when `object` is smoothed 
 #'  does not make sense and the smoothed distance function estimate 
-#'  will be returned if \code{type} does not equal "density" or "abundance". 
+#'  will be returned if `type` does not equal "density" or "abundance". 
 #' 
 #' @param distances A vector or 1-column matrix of 
 #' distances at which to evaluate 
 #' distance functions, when distance functions 
-#' are requested.  \code{distances} must have measurement units. 
+#' are requested.  `distances` must have measurement units. 
 #' Any distances outside the observation 
-#' strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
-#' \code{distances} is NULL, a sequence 
-#' of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
+#' strip (`object$w.lo` to `object$w.hi`) are discarded.  If 
+#' `distances` is NULL, a sequence 
+#' of `getOption("Rdistance_intEvalPts")` (default 101) evenly 
 #' spaced distances between 
-#' \code{object$w.lo} and \code{object$w.hi} (inclusive) is used. 
+#' `object$w.lo` and `object$w.hi` (inclusive) is used. 
 #' 
 #' @inheritParams abundEstim
 #'
-#' @param \dots Included for compatibility with generic \code{predict} methods.
+#' @param \dots Included for compatibility with generic `predict` methods.
 #' 
 #' @return A matrix containing predictions: 
 #' \itemize{
-#'   \item \bold{If \code{type} is "parameters"}, the returned matrix 
+#'   \item **If `type` is "parameters"**, the returned matrix 
 #'   contains likelihood parameters. The extent of the 
 #'   first dimension (rows) in the returned matrix is equal to 
 #'   either the number of detection distances 
-#'   in the observed strip or number of rows in \code{newdata}. 
+#'   in the observed strip or number of rows in `newdata`. 
 #'   The returned matrix's second dimension (columns) is 
 #'   the number of parameters in the likelihood 
 #'   plus the number of expansion terms.  
 #'   See the help for each likelihoods to interpret  
 #'   returned parameter values. All parameters are returned 
-#'   on the inverse-link scale; i.e., \emph{exponential} for canonical 
-#'   parameters and \emph{identity} for expansion terms. 
+#'   on the inverse-link scale; i.e., *exponential* for canonical 
+#'   parameters and *identity* for expansion terms. 
 #'   
-#'   \item \bold{If \code{type} is "dfuncs" or "dfunc"}, columns of the 
-#'   returned matrix contains detection functions (i.e., \emph{g(x)}).  
+#'   \item **If `type` is "dfuncs" or "dfunc"**, columns of the 
+#'   returned matrix contains detection functions (i.e., *g(x)*).  
 #'   The extent of the first 
 #'   dimension (number of rows) is either the number of distances 
-#'   specified in \code{distances}
-#'   or \code{options()$Rdistance_intEvalPts} if \code{distances} is 
+#'   specified in `distances`
+#'   or `options()$Rdistance_intEvalPts` if `distances` is 
 #'   not specified.
 #'   The extent of the second dimension (number of columns) is: 
 #'     \itemize{
 #'       \item the number of detections with non-missing distances: 
-#'       if \code{newdata} is NULL.
-#'       \item the number of rows in \code{newdata} if 
-#'        \code{newdata} is specified.
+#'       if `newdata` is NULL.
+#'       \item the number of rows in `newdata` if 
+#'        `newdata` is specified.
 #'     }
 #'   All distance functions in columns of the return are scaled 
-#'   to \code{object$g.x.scale} at \code{object$x.scl}. The returned matrix has 
+#'   to `object$g.x.scale` at `object$x.scl`. The returned matrix has 
 #'   the following additional attributes:
 #'    \itemize{
-#'       \item \code{attr(return, "distances")} is the vector of distances used to 
-#'       predict the function in \code{return}.  Either the input \code{distances} object
-#'       or the computed sequence of distances when \code{distances} is NULL. 
-#'       \item \code{attr(return, "x0")} is the vector of distances at which each 
-#'        distance function in \code{return} was scaled. i.e., the vector of 
-#'        \code{x.scl}.
-#'       \item \code{attr(return, "g.x.scl")} is the height of \emph{g(x)} (the distance 
-#'        function) at \emph{x0}. 
+#'       \item `attr(return, "distances")` is the vector of distances used to 
+#'       predict the function in `return`.  Either the input `distances` object
+#'       or the computed sequence of distances when `distances` is NULL. 
+#'       \item `attr(return, "x0")` is the vector of distances at which each 
+#'        distance function in `return` was scaled. i.e., the vector of 
+#'        `x.scl`.
+#'       \item `attr(return, "g.x.scl")` is the height of *g(x)* (the distance 
+#'        function) at *x0*. 
 #'   }
 #'   
-#'   \item \bold{If \code{type} is "density" or "abundance"}, the return is a 
+#'   \item **If `type` is "density" or "abundance"**, the return is a 
 #'   tibble containing density and abundance estimates by transect.  
-#'   All transects in the input data (i.e., \code{object$data}) are 
+#'   All transects in the input data (i.e., `object$data`) are 
 #'   included, even those with missing lengths. 
 #'    Columns in the tibble are:
 #'    \itemize{
@@ -145,8 +145,8 @@
 #'    } 
 #' }
 #' 
-#' @seealso \code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
-#' \code{\link{hazrate.like}}
+#' @seealso [halfnorm.like()], [negexp.like()], 
+#' [hazrate.like()]
 #' 
 #' @examples
 #' 

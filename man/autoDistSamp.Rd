@@ -28,123 +28,123 @@ autoDistSamp(
 )
 }
 \arguments{
-\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames 
+\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames
 contain one line per transect and a list-based column. The list-based
-column contains a data frame with detection information. 
-The detection information data frame on each row contains (at least) distances 
+column contains a data frame with detection information.
+The detection information data frame on each row contains (at least) distances
 and group sizes of all targets detected on the transect.
-Function \code{\link{RdistDf}} creates \code{RdistDf} data frames 
-from separate transect and detection data frames. 
-\code{\link{is.RdistDf}} checks whether data frames
+Function \code{\link[=RdistDf]{RdistDf()}} creates \code{RdistDf} data frames
+from separate transect and detection data frames.
+\code{\link[=is.RdistDf]{is.RdistDf()}} checks whether data frames
 are \code{RdistDf}'s.}
 
-\item{formula}{A standard formula object.  For example, \code{dist ~ 1}, 
+\item{formula}{A standard formula object.  For example, \code{dist ~ 1},
 \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
-is the name of the vector containing off-transect or radial detection distances.  
-The right-hand side contains the names of covariate 
+is the name of the vector containing off-transect or radial detection distances.
+The right-hand side contains the names of covariate
 vectors to fit in the detection
-function, and potentially group sizes. Group sizes are specified 
-by including \code{+ groupsize(<variable>)} in the RHS 
+function, and potentially group sizes. Group sizes are specified
+by including \verb{+ groupsize(<variable>)} in the RHS
 (see 'Group Sizes' section).
-Covariates can be either detection level 
-or transect level and can appear in  \code{data} or exist in the 
-global working environment. Regular R scoping 
+Covariates can be either detection level
+or transect level and can appear in  \code{data} or exist in the
+global working environment. Regular R scoping
 rules apply.}
 
-\item{likelihoods}{String vector specifying the likelihoods to fit. 
-See 'likelihood' parameter of \code{\link{dfuncEstim}}.}
+\item{likelihoods}{String vector specifying the likelihoods to fit.
+See 'likelihood' parameter of \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
-This is the minimum possible off-transect distance. Default is 0.  If 
-\code{w.lo} is greater than 0, it must have measurement units. 
+\item{w.lo}{Lower or left-truncation limit of the distances in distance data.
+This is the minimum possible off-transect distance. Default is 0.  If
+\code{w.lo} is greater than 0, it must have measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{w.hi}{Upper or right-truncation limit of the distances 
-in \code{dist}. This is the maximum off-transect distance that 
-could be observed. If unspecified (i.e., NULL), 
-right-truncation is set to the maximum of the observed 
-distances.  If \code{w.hi} is specified, it must have  
-measurement units.  
+\item{w.hi}{Upper or right-truncation limit of the distances
+in \code{dist}. This is the maximum off-transect distance that
+could be observed. If unspecified (i.e., NULL),
+right-truncation is set to the maximum of the observed
+distances.  If \code{w.hi} is specified, it must have
+measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{expansions}{A scalar specifying the number of terms 
-in \code{series} to compute. Depending on the series, 
-this could be 0 through 5.  The default of 0 equates 
-to no expansion terms of any type.  No expansion terms 
-are allowed (i.e., \code{expansions} is forced to 0) if 
-covariates are present in the detection function 
+\item{expansions}{A scalar specifying the number of terms
+in \code{series} to compute. Depending on the series,
+this could be 0 through 5.  The default of 0 equates
+to no expansion terms of any type.  No expansion terms
+are allowed (i.e., \code{expansions} is forced to 0) if
+covariates are present in the detection function
 (i.e., right-hand side of \code{formula} includes
 something other than \code{1}).}
 
-\item{series}{If \code{expansions} > 0, this string 
-specifies the type of expansion to use. Valid values at 
+\item{series}{If \code{expansions} > 0, this string
+specifies the type of expansion to use. Valid values at
 present are 'simple', 'hermite', and 'cosine'.}
 
-\item{x.scl}{The x coordinate (a distance) at which the 
+\item{x.scl}{The x coordinate (a distance) at which the
 detection function will be scaled.  \code{g.x.scl} can be a distance
-or the string "max".  
-When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
-units assigned. 
+or the string "max".
+When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement
+units assigned.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{g.x.scl}{Height of the distance function at coordinate \code{x}. 
-The distance function 
-will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. 
-If \code{g.x.scl} is not 
-a data frame, it must be a numeric value (vector of length 1) 
+\item{g.x.scl}{Height of the distance function at coordinate \code{x}.
+The distance function
+will be scaled so that g(\code{x.scl}) = \code{g.x.scl}.
+If \code{g.x.scl} is not
+a data frame, it must be a numeric value (vector of length 1)
 between 0 and 1.}
 
-\item{warn}{A logical scalar specifying whether to issue 
-an R warning if the estimation did not converge or if one 
-or more parameter estimates are at their boundaries.  
+\item{warn}{A logical scalar specifying whether to issue
+an R warning if the estimation did not converge or if one
+or more parameter estimates are at their boundaries.
 For estimation, \code{warn} should generally be left at
-its default value of \code{TRUE}.  When computing bootstrap 
-confidence intervals, setting \code{warn = FALSE} 
-turns off annoying warnings when an iteration does 
-not converge.  Regardless of \code{warn}, after 
-completion all messages about 
-convergence and boundary conditions are printed 
-by \code{print.dfunc}, \code{print.abund}, and 
+its default value of \code{TRUE}.  When computing bootstrap
+confidence intervals, setting \code{warn = FALSE}
+turns off annoying warnings when an iteration does
+not converge.  Regardless of \code{warn}, after
+completion all messages about
+convergence and boundary conditions are printed
+by \code{print.dfunc}, \code{print.abund}, and
 \code{plot.dfunc}.}
 
-\item{outputUnits}{A string specifying the symbolic measurement 
+\item{outputUnits}{A string specifying the symbolic measurement
 units for results. Valid units are listed in \code{units::valid_udunits()}.
-The strings for common distance symbolic units are: 
-"m" - meters, "ft" - feet, "cm" - centimeters, "mm" - 
-millimeters, "mi" - miles, "nmile" - 
-nautical miles ("nm" is nano meters), "in" - inches, 
-"yd" - yards, "km" - kilometers, "fathom" - fathoms, 
-"chains" - chains, and "furlong" - furlongs.  
+The strings for common distance symbolic units are:
+"m" - meters, "ft" - feet, "cm" - centimeters, "mm" -
+millimeters, "mi" - miles, "nmile" -
+nautical miles ("nm" is nano meters), "in" - inches,
+"yd" - yards, "km" - kilometers, "fathom" - fathoms,
+"chains" - chains, and "furlong" - furlongs.
 If \code{outputUnits} is unspecified (NULL),
-output units will be the same as those on 
+output units will be the same as those on
 distances in \code{data}.}
 
-\item{area}{A scalar containing the total area of inference. Usually, this is 
-study area size.  If \code{area} is NULL (the default), 
+\item{area}{A scalar containing the total area of inference. Usually, this is
+study area size.  If \code{area} is NULL (the default),
 \code{area} will be set to 1 square unit of the output units and density estimates
-will be produced. 
-If \code{area} is not NULL, it must have measurement units 
-assigned by the \code{units} package. 
+will be produced.
+If \code{area} is not NULL, it must have measurement units
+assigned by the \code{units} package.
 The units on \code{area} must be convertible
-to squared output units. Units 
-on \code{area} must be two-dimensional. 
-For example, if output units are "foo", 
+to squared output units. Units
+on \code{area} must be two-dimensional.
+For example, if output units are "foo",
 units on area must be convertible to "foo^2" by the \code{units}
 package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
 
 \item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
-The proportion of the default sampling unit that 
-  was surveyed.  If both sides of line transects were observed, 
-  \code{propUnitSurveyed}
-  = 1.  If only a single side of line transects were observed, set 
-  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
-  the proportion of each circle that was observed. Length must either be
-  1 or the total number of transects in \code{x}.}
+The proportion of the default sampling unit that
+was surveyed.  If both sides of line transects were observed,
+\code{propUnitSurveyed}
+= 1.  If only a single side of line transects were observed, set
+\code{propUnitSurveyed} = 0.5. For point transects, this should be set to
+the proportion of each circle that was observed. Length must either be
+1 or the total number of transects in \code{x}.}
 
-\item{ci}{A scalar indicating the confidence level of confidence intervals. 
+\item{ci}{A scalar indicating the confidence level of confidence intervals.
 Confidence intervals are computed using a bias corrected bootstrap
-method. If \code{ci = NULL} or \code{ci == NA}, confidence intervals 
+method. If \code{ci = NULL} or \code{ci == NA}, confidence intervals
 are not computed.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
@@ -155,82 +155,82 @@ bootstrap iterations.
 Ignored unless \code{parallel = FALSE}.}
 
 \item{showProgress}{A logical indicating whether to show a text-based
-progress bar during bootstrapping. Default is \code{TRUE}. 
-It is handy to shut off the 
-progress bar if running this within another function. 
+progress bar during bootstrapping. Default is \code{TRUE}.
+It is handy to shut off the
+progress bar if running this within another function.
 Ignored unless \code{parallel = FALSE}.}
 
-\item{parallel}{A logical scalar, or a positive integer; ignored unless 
+\item{parallel}{A logical scalar, or a positive integer; ignored unless
 confidence intervals are requested (i.e., \code{!is.null(ci)}).
-If TRUE, bootstrap iterations are 
-run in parallel using the maximum number of CPU cores minus 1. 
+If TRUE, bootstrap iterations are
+run in parallel using the maximum number of CPU cores minus 1.
 The maximum number of CPU cores is reported by \code{parallel::detectCores()}.
-If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap 
-iterations are performed in parallel on that many cores. 
-If FALSE, bootstrap iterations are performed in series, and progress 
-will be shown if \code{showProgress == TRUE}. Parameters 
+If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap
+iterations are performed in parallel on that many cores.
+If FALSE, bootstrap iterations are performed in series, and progress
+will be shown if \code{showProgress == TRUE}. Parameters
 \code{showProgress} and \code{plot.bs} are ignored when operating
 in parallel.}
 
-\item{plot}{Logical scalar specifying whether to plot models during model selection. 
-If \code{TRUE}, a histogram with fitted distance function is plotted for every model. 
-The function pauses between each plot and prompts the user for whether they want to continue. 
+\item{plot}{Logical scalar specifying whether to plot models during model selection.
+If \code{TRUE}, a histogram with fitted distance function is plotted for every model.
+The function pauses between each plot and prompts the user for whether they want to continue.
 To suppress user prompts, set \code{plot} = \code{FALSE}.}
 
 \item{criterion}{A string specifying the criterion to use when assessing model fit.
-The best fitting model, as defined by this routine, has the lowest value 
-of this criterion.  This must be one of "AICc" (the default), 
-"AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
+The best fitting model, as defined by this routine, has the lowest value
+of this criterion.  This must be one of "AICc" (the default),
+"AIC", or "BIC".  See \code{\link[=AIC.dfunc]{AIC.dfunc()}} for formulas.}
 }
 \value{
 An Rdistance 'abundance estimate' object, which is a list of
-  class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
-  object (see \code{\link{dfuncEstim}}), plus the following: 
-  
-  \item{estimates}{A tibble containing fitted coefficients in the
-  distance function, density in the area(s) surveyed, 
-  abundance on the study area, the number of groups seen 
-  between w.lo and w.hi, the number 
-  of individuals seen between w.lo and w.hi, 
-  study area size, surveyed area, average group size, and 
-  average effective detection distance.
-  }
-  
-  \item{B}{If confidence intervals were requested, a tibble 
-  containing all bootstrap values of coefficients, 
-  density, abundance, groups seen, individuals seen, 
-  study area size, surveyed area size, average group size, 
-  and average effective detection distance.  The number of rows is always 
-  \code{R}, the requested number of bootstrap 
-  iterations.  If an iteration fails, the
-  corresponding row in \code{B} is \code{NA} (hence, use 'na.rm = TRUE' 
-  when computing summaries). Columns 1 through \code{length(coef(dfunc))}
-  contain bootstrap realizations of the distance function's coefficients. 
-  }
-  
-  \item{ci}{Confidence level of the confidence intervals}
+class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
+object (see \code{\link[=dfuncEstim]{dfuncEstim()}}), plus the following:
+
+\item{estimates}{A tibble containing fitted coefficients in the
+distance function, density in the area(s) surveyed,
+abundance on the study area, the number of groups seen
+between w.lo and w.hi, the number
+of individuals seen between w.lo and w.hi,
+study area size, surveyed area, average group size, and
+average effective detection distance.
+}
+
+\item{B}{If confidence intervals were requested, a tibble
+containing all bootstrap values of coefficients,
+density, abundance, groups seen, individuals seen,
+study area size, surveyed area size, average group size,
+and average effective detection distance.  The number of rows is always
+\code{R}, the requested number of bootstrap
+iterations.  If an iteration fails, the
+corresponding row in \code{B} is \code{NA} (hence, use \code{na.rm = TRUE}
+when computing summaries). Columns 1 through \code{length(coef(dfunc))}
+contain bootstrap realizations of the distance function's coefficients.
+}
+
+\item{ci}{Confidence level of the confidence intervals}
 }
 \description{
 Perform automated likelihood, expansion, and series
-selection for a classic distance sampling analysis.  Estimate 
+selection for a classic distance sampling analysis.  Estimate
 abundance using the best fitting likelihood, expansion, and series.
 }
 \details{
-During distance function selection, all combinations of likelihoods, series, and 
-number of expansions is fitted. For example, if \code{likelihoods} has 3 elements, 
-\code{series} has 2 elements, and \code{expansions} has 4 elements, 
-this routine fits a total of 3 (likelihoods) * 2 (series) * 4 (expansions) 
-= 24 models.  Default parameters fit 9 detection functions, i.e.,  
-all combinations of "halfnorm", "hazrate", and "negexp" likelihoods 
-and 0 through 3 expansions. Other combinations are specified through 
-values of \code{likelihoods}, \code{series}, and \code{expansions}. 
+During distance function selection, all combinations of likelihoods, series, and
+number of expansions is fitted. For example, if \code{likelihoods} has 3 elements,
+\code{series} has 2 elements, and \code{expansions} has 4 elements,
+this routine fits a total of 3 (likelihoods) * 2 (series) * 4 (expansions)
+= 24 models.  Default parameters fit 9 detection functions, i.e.,
+all combinations of "halfnorm", "hazrate", and "negexp" likelihoods
+and 0 through 3 expansions. Other combinations are specified through
+values of \code{likelihoods}, \code{series}, and \code{expansions}.
 
-Suppress all intermediate output using \code{plot.bs=FALSE}, 
-\code{showProgress=FALSE}, and \code{plot=FALSE}. 
+Suppress all intermediate output using \code{plot.bs=FALSE},
+\code{showProgress=FALSE}, and \code{plot=FALSE}.
 
 The returned abundance estimate object contains
-an additional component, the fitting table (a list of models fitted and 
-criterion values) in component \code{$fitTable}.
+an additional component, the fitting table (a list of models fitted and
+criterion values) in component \verb{$fitTable}.
 }
 \examples{
 # Load example sparrow data (line transect survey type)
@@ -256,5 +256,5 @@ autoDistSamp(data = sparrowDf
            
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=abundEstim]{abundEstim()}}.
 }

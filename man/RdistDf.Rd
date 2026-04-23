@@ -15,227 +15,227 @@ RdistDf(
 )
 }
 \arguments{
-\item{transectDf}{A data frame with one row per transect and 
-columns containing information about the entire transect. 
-At a minimum, this data frame must contain the transect's ID so 
-it can be merged with \code{detectionDf}, (see parameter \code{by}) 
-and the amount of effort the transect represents 
-(see parameter \code{.effortCol}).  
-All detections are made on a transect, but not all transects 
-require detections. That is, \code{transectDf} 
+\item{transectDf}{A data frame with one row per transect and
+columns containing information about the entire transect.
+At a minimum, this data frame must contain the transect's ID so
+it can be merged with \code{detectionDf}, (see parameter \code{by})
+and the amount of effort the transect represents
+(see parameter \code{.effortCol}).
+All detections are made on a transect, but not all transects
+require detections. That is, \code{transectDf}
 should contain rows, and hence
-ID's and lengths, of all surveyed transects, even those on 
-which no targets were detected (so-called "zero transects"). 
-Transect-level covariates, such 
-as habitat type, elevation, or observer IDs, should appear as variables 
+ID's and lengths, of all surveyed transects, even those on
+which no targets were detected (so-called "zero transects").
+Transect-level covariates, such
+as habitat type, elevation, or observer IDs, should appear as variables
 in this data frame.}
 
 \item{detectionDf}{A data frame containing
-detection information associated with each transect.  
-At a minimum, each row of this data 
+detection information associated with each transect.
+At a minimum, each row of this data
 frame must contain the following:
 \itemize{
-  \item \bold{Transect IDs}: The ID of the transect on 
-  which a target group was detected so that the 
-  detection data frame can be merged with \code{transectDf} 
-  (see parameter \code{by}). Multiple detections on the same transect 
-  are possible and hence multiple rows in \code{detectonDf} 
-  can contain the same transect ID. 
-     
-  \item \bold{Detection Distances}: The distance at which each 
-  detection was made. The distance column will eventually be 
-  specified on the left-hand 
-  side of \code{formula} in a call to \code{dfuncEstim}.  
-  As of Rdistance version 3.0.0, detection distances must have 
-  physical measurement units assigned. See 
-  \bold{Measurement Units}. 
+\item \strong{Transect IDs}: The ID of the transect on
+which a target group was detected so that the
+detection data frame can be merged with \code{transectDf}
+(see parameter \code{by}). Multiple detections on the same transect
+are possible and hence multiple rows in \code{detectonDf}
+can contain the same transect ID.
+
+\item \strong{Detection Distances}: The distance at which each
+detection was made. The distance column will eventually be
+specified on the left-hand
+side of \code{formula} in a call to \code{dfuncEstim}.
+As of Rdistance version 3.0.0, detection distances must have
+physical measurement units assigned. See
+\strong{Measurement Units}.
 }
-Optional columns in `detectionDf`:
+Optional columns in \code{detectionDf}:
 \itemize{
-   \item \bold{Group sizes}:If sighted targets vary in size, or group sizes 
-         are not all 1, \code{detectionDf} must 
-         also contain a column specifying group sizes. Non-unity group sizes 
-         are specified using \code{+groupsize(columnName)} on the 
-         right-hand-side of \code{formula} in an eventual call to \code{dfuncEstim}. 
-         
-   \item \bold{Detection Level Covariates}: Such as sex, color, habitat, etc. 
+\item \strong{Group sizes}:If sighted targets vary in size, or group sizes
+are not all 1, \code{detectionDf} must
+also contain a column specifying group sizes. Non-unity group sizes
+are specified using \code{+groupsize(columnName)} on the
+right-hand-side of \code{formula} in an eventual call to \code{dfuncEstim}.
+
+\item \strong{Detection Level Covariates}: Such as sex, color, habitat, etc.
 }}
 
 \item{by}{A character vector of variables to use in the join. The right-hand
-side of this join identifies unique transects (unique 
-rows) in both \code{transectDf} and the output (see warning in \bold{Details}).
-If NULL, the join will be 'natural', using all common variables 
-in \code{transectDf} and \code{detectionDf}. To join on 
-specific variables, specify a character vector of 
-the variables. For example, by = c("a", "b") 
-joins \code{transectDf$a} to \code{detectionDf$a} and 
-\code{transectDf$b} to \code{detectionDf$b}. If join variable names 
-differ between \code{transectDf} and \code{detectionDf}, 
-use a named character vector like by = c("a" = "b", 
-"c" = "d") which joins \code{transectDf$a} to 
-\code{detectionDf$b} and 
+side of this join identifies unique transects (unique
+rows) in both \code{transectDf} and the output (see warning in \strong{Details}).
+If NULL, the join will be 'natural', using all common variables
+in \code{transectDf} and \code{detectionDf}. To join on
+specific variables, specify a character vector of
+the variables. For example, by = c("a", "b")
+joins \code{transectDf$a} to \code{detectionDf$a} and
+\code{transectDf$b} to \code{detectionDf$b}. If join variable names
+differ between \code{transectDf} and \code{detectionDf},
+use a named character vector like by = c("a" = "b",
+"c" = "d") which joins \code{transectDf$a} to
+\code{detectionDf$b} and
 \code{transectDf$c} to \code{detectionDf$d}.}
 
 \item{pointSurvey}{If TRUE, observations were
-made from discrete points (i.e., during a point-transect survey) and distances 
-are radial from observation point to target.  If FALSE, 
-observations were made along a continuous transect 
-(i.e., during a line-transect survey) and distances are from target to nearest 
+made from discrete points (i.e., during a point-transect survey) and distances
+are radial from observation point to target.  If FALSE,
+observations were made along a continuous transect
+(i.e., during a line-transect survey) and distances are from target to nearest
 point on the transect (i.e., perpendicular to transect).}
 
-\item{observer}{Type of observer system.  Legal values are \bold{"single"} for 
-single observer systems, \bold{"1given2"} for a double observer system 
-wherein observations 
+\item{observer}{Type of observer system.  Legal values are \strong{"single"} for
+single observer systems, \strong{"1given2"} for a double observer system
+wherein observations
 made by observer 1 are tested against observations made by observer 2,
-\bold{"2given1"} for a double observer system wherein observations 
+\strong{"2given1"} for a double observer system wherein observations
 made by observer 2 are tested against observations made by observer 1, and
-\bold{"both"} for a double observer system wherein observations 
+\strong{"both"} for a double observer system wherein observations
 made by both observers are tested against the other and combined.}
 
 \item{.detectionCol}{Name of the list column that will
 contain detection data frames. Default name is "detections".
-Detection distances (LHS of `dfuncEstim` formula) and 
-group sizes are normally 
-columns in the nested detection data frames embedded in 
-`.detectionCol`.}
+Detection distances (LHS of \code{dfuncEstim} formula) and
+group sizes are normally
+columns in the nested detection data frames embedded in
+\code{.detectionCol}.}
 
-\item{.effortCol}{For continuous line transects, 
-this specifies the name of a column in \code{transectDf} 
-containing transect lengths, which must have measurement units.  
-For point transects, this specifies the name of a column containing 
-the number of points on each transect.  The effort column for point 
-transects \emph{cannot} contain 
-measurement units. Default is "length" for line-transects, "numPoints" for 
+\item{.effortCol}{For continuous line transects,
+this specifies the name of a column in \code{transectDf}
+containing transect lengths, which must have measurement units.
+For point transects, this specifies the name of a column containing
+the number of points on each transect.  The effort column for point
+transects \emph{cannot} contain
+measurement units. Default is "length" for line-transects, "numPoints" for
 point-transects. If those names are not found, the first column
-in the merged data frame whose name contains 'point' 
+in the merged data frame whose name contains 'point'
 (for point transects) or 'length' (for line transects)
-is used and a message is printed. Matching is case insensitive, 
-so for example, 'nPoints' and 
-'N_point' and 'numberOfPoints' will all be matched.   If two or more column 
-names match the effort column search terms, a warning is issued. 
-See \bold{Transect Lengths} for a description of point and line transects.}
+is used and a message is printed. Matching is case insensitive,
+so for example, 'nPoints' and
+'N_point' and 'numberOfPoints' will all be matched.   If two or more column
+names match the effort column search terms, a warning is issued.
+See \strong{Transect Lengths} for a description of point and line transects.}
 }
 \value{
-A nested tibble (a generalization of base data frames) 
-with one row per transect, and detection 
-information in a list column.  Technically, the return is 
-a grouped \code{tibble} from 
-the \code{tibble} package with one row per group, and a list 
-column containing detection information. 
-Survey type, observer system, and name of the effort column 
-are recorded 
-as attributes (\code{transType}, \code{obsType}, and \code{effortColumn}, respectfully). 
-The return prints nicely using methods 
-in package \code{tibble}.  If returned objects print strangely, 
-attach library \code{tibble}.  A summary method tailored to distance sampling 
+A nested tibble (a generalization of base data frames)
+with one row per transect, and detection
+information in a list column.  Technically, the return is
+a grouped \code{tibble} from
+the \code{tibble} package with one row per group, and a list
+column containing detection information.
+Survey type, observer system, and name of the effort column
+are recorded
+as attributes (\code{transType}, \code{obsType}, and \code{effortColumn}, respectfully).
+The return prints nicely using methods
+in package \code{tibble}.  If returned objects print strangely,
+attach library \code{tibble}.  A summary method tailored to distance sampling
 is available (i.e., \code{summary(return)}).
 }
 \description{
-Makes an \code{Rdistance} data frame from 
-separate transect and detection 
-data frames. \code{Rdistance} data frames are nested 
-data frames with one row per transect. Detection 
-information for each transect appears in a list-based 
+Makes an \code{Rdistance} data frame from
+separate transect and detection
+data frames. \code{Rdistance} data frames are nested
+data frames with one row per transect. Detection
+information for each transect appears in a list-based
 column that itself contains a
-data frame. See \bold{Rdistance Data Frames}. 
+data frame. See \strong{Rdistance Data Frames}.
 
-\code{Rdistance} data frames can be constructed using calls to 
-\code{dplyr::nest_by} and \code{dplyr::right_jion}, with subsequent 
-attribute assignment (see \bold{Examples}). This routine is 
+\code{Rdistance} data frames can be constructed using calls to
+\code{dplyr::nest_by} and \code{dplyr::right_jion}, with subsequent
+attribute assignment (see \strong{Examples}). This routine is
 a convenient wrapper for those calls.
 }
 \details{
-For valid bootstrap estimates of confidence intervals (computed in \code{\link{abundEstim}}), 
-each row of the nested data frame must represent one transect (more generally, 
+For valid bootstrap estimates of confidence intervals (computed in \code{\link[=abundEstim]{abundEstim()}}),
+each row of the nested data frame must represent one transect (more generally,
 one sampling unit), and none should
-be duplicated. The combination of transect columns 
-in \code{by} (i.e., the LHS of the merge, or "a" and "b" of 
-\code{by = c("a" = "d", "b" = "c")} for example) 
-should specify \emph{unique} transects and unique rows of 
-\code{transectDf}. \bold{Warning:} If \code{by} 
-does not specify unique rows of \code{transectDf}, \code{dplyr::left_join}, 
-which is called internally, will perform a many-to-many merge without 
-warning, and this normally duplicates both 
+be duplicated. The combination of transect columns
+in \code{by} (i.e., the LHS of the merge, or "a" and "b" of
+\code{by = c("a" = "d", "b" = "c")} for example)
+should specify \emph{unique} transects and unique rows of
+\code{transectDf}. \strong{Warning:} If \code{by}
+does not specify unique rows of \code{transectDf}, \code{dplyr::left_join},
+which is called internally, will perform a many-to-many merge without
+warning, and this normally duplicates both
 transects and detections.
 }
 \section{Rdistance Data Frames}{
- 
+
 
 \code{RdistDf} data frames contain the following information:
 
 \itemize{
-  \item \bold{Transect Information}: Each row of the 
-  data frame contains transect id and effort. Effort is 
-  transect length for line-transects, and number of points for 
-  point-transects.
-  Optionally, transect-level covariates (such as habitat or observer
-  id) appear on each row. 
-  \item \bold{Detection Information}: Observation distances
-  (either perpendicular off-transect or radial off-point) appear 
-  in a data frame stored in a list column.  If detected groups
-  occasionally included more than one target, a group size column must 
-  be present in the list-column data frame.
-  Optionally, detection-level covariates (such as sex or size)
-  can appear in the data frame of the list column.
-  \item \bold{Distance Type}: The type of observation distances, either 
-  perpendicular off-transect (for line-transects studies) or 
-  radial off-point (for point-transect studies) must appear as an 
-  attribute of \code{RdistDf}'s. 
-  \item \bold{Observer Type}: The type of observation system used, either 
-  single observer or one of three types of multiple observer systems, must 
-  appear as an attribute of \code{RdistDf}'s.
+\item \strong{Transect Information}: Each row of the
+data frame contains transect id and effort. Effort is
+transect length for line-transects, and number of points for
+point-transects.
+Optionally, transect-level covariates (such as habitat or observer
+id) appear on each row.
+\item \strong{Detection Information}: Observation distances
+(either perpendicular off-transect or radial off-point) appear
+in a data frame stored in a list column.  If detected groups
+occasionally included more than one target, a group size column must
+be present in the list-column data frame.
+Optionally, detection-level covariates (such as sex or size)
+can appear in the data frame of the list column.
+\item \strong{Distance Type}: The type of observation distances, either
+perpendicular off-transect (for line-transects studies) or
+radial off-point (for point-transect studies) must appear as an
+attribute of \code{RdistDf}'s.
+\item \strong{Observer Type}: The type of observation system used, either
+single observer or one of three types of multiple observer systems, must
+appear as an attribute of \code{RdistDf}'s.
 }
 }
 
 \section{Transect Lengths}{
 
-Line-transects are continuous paths with targets detectable at 
+Line-transects are continuous paths with targets detectable at
 any point.  Point transects
-consist of one or more discrete points along a path 
-from which observers search for targets. 
+consist of one or more discrete points along a path
+from which observers search for targets.
 The length of a line-transect is it's physical length (e.g., km or miles).
-The 'length' of a point transect is 
-the number of points along the transect. Single 
+The 'length' of a point transect is
+the number of points along the transect. Single
 points are considered transects of length one. The length of line-transects
-must have a physical measurement unit (e.g., 'm' or 'ft').  The length of 
+must have a physical measurement unit (e.g., 'm' or 'ft').  The length of
 point-transects must be a unit-less integers (i.e., number of points).
 }
 
 \section{Measurement Units}{
- 
-As of \code{Rdistance} version 3.0.0, measurement units are 
-require on all physical distances. 
-Requiring units ensures that internal calculations and results 
-(e.g., ESW and abundance) are correct 
-and that output units are clear.   
-Physical distances are required on
-off-transect distances, radial distances, truncation distances 
-(\code{w.lo}, unless it is zero; and \code{w.hi}, unless it is NULL), 
-scale locations (\code{x.scl}, unless it is zero),
-line-transect lengths, and study area size. All units are 
-1-dimensional except those on study area, which are 2-dimensional. 
 
-Physical measurement units can vary. For example, 
-off-transect distances can be meters ("m"), \code{w.hi} can be inches ("in"), 
-and \code{w.lo} can be kilometers ("km").  Internally, all distances are 
-converted to the units specified by \code{outputUnits} 
-(or the units of input distances if 
-\code{outputUnits} is NULL), and 
-all output is reported 
-in units of \code{outputUnits}. Valid conversions must exist between 
+As of \code{Rdistance} version 3.0.0, measurement units are
+require on all physical distances.
+Requiring units ensures that internal calculations and results
+(e.g., ESW and abundance) are correct
+and that output units are clear.
+Physical distances are required on
+off-transect distances, radial distances, truncation distances
+(\code{w.lo}, unless it is zero; and \code{w.hi}, unless it is NULL),
+scale locations (\code{x.scl}, unless it is zero),
+line-transect lengths, and study area size. All units are
+1-dimensional except those on study area, which are 2-dimensional.
+
+Physical measurement units can vary. For example,
+off-transect distances can be meters ("m"), \code{w.hi} can be inches ("in"),
+and \code{w.lo} can be kilometers ("km").  Internally, all distances are
+converted to the units specified by \code{outputUnits}
+(or the units of input distances if
+\code{outputUnits} is NULL), and
+all output is reported
+in units of \code{outputUnits}. Valid conversions must exist between
 units or an error is thrown.  For example, meters cannot be converted
 into hectares.
-  
-Measurement units can be assigned using one of Rdistance's 
-unit helper routines (see \code{help(unitHelpers)}), or from 
-routines in the \code{units} package (e.g., 
-\code{x <- units::set_units(x, "<units>")}). 
-See \code{units::}\code{\link[units]{valid_udunits}}
-for a list of valid symbolic units. 
 
-If measurements are truly unit-less, or measurement units are unknown, 
-set \code{options(Rdist_requireUnits = FALSE)}.  This suppresses 
-all unit checks and conversions.  Users are on their own 
+Measurement units can be assigned using one of Rdistance's
+unit helper routines (see \code{help(unitHelpers)}), or from
+routines in the \code{units} package (e.g.,
+\code{x <- units::set_units(x, "<units>")}).
+See \verb{units::}\code{\link[units:valid_udunits]{units::valid_udunits()}}
+for a list of valid symbolic units.
+
+If measurements are truly unit-less, or measurement units are unknown,
+set \code{options(Rdist_requireUnits = FALSE)}.  This suppresses
+all unit checks and conversions.  Users are on their own
 to make sure inputs are scaled correctly and that output units are known.
 }
 
@@ -297,6 +297,6 @@ summary(thrasherDf, formula = dist ~ groupsize(groupsize))
                
 }
 \seealso{
-\code{\link{is.RdistDf}}: check validity of RdistDf data frames;
- \code{\link{dfuncEstim}}: estimate distance function.
+\code{\link[=is.RdistDf]{is.RdistDf()}}: check validity of RdistDf data frames;
+\code{\link[=dfuncEstim]{dfuncEstim()}}: estimate distance function.
 }

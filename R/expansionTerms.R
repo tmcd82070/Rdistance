@@ -5,35 +5,35 @@
 #' a base distance function. 
 #' 
 #' @param a A vector or matrix of (estimated) coefficients. 
-#' \code{a} has length \eqn{p} + \code{nexp} (if a vector) or dimension
-#' (\eqn{k}, \eqn{p} + \code{nexp}), where \eqn{p} is the number 
+#' `a` has length \eqn{p} + `nexp` (if a vector) or dimension
+#' (\eqn{k}, \eqn{p} + `nexp`), where \eqn{p} is the number 
 #' of canonical parameters in the likelihood and \eqn{k} is the 
-#' number of 'cases' (coefficient vectors = \code{nrow(a)}) to evaluate. 
+#' number of 'cases' (coefficient vectors = `nrow(a)`) to evaluate. 
 #' The first \eqn{p}
-#' elements of \code{a}, or the first \eqn{p} columns if \code{a}
+#' elements of `a`, or the first \eqn{p} columns if `a`
 #' is a matrix, are ignored. I.e., Expansion 
-#' term coefficients are the last \code{nexp} elements or columns 
-#' of \code{a}. 
+#' term coefficients are the last `nexp` elements or columns 
+#' of `a`. 
 #'
 #' @param d A vector or 1-column matrix of 
 #' distances at which to evaluate 
-#' the expansion terms.  \code{d} should be distances 
+#' the expansion terms.  `d` should be distances 
 #' above w.lo, i.e., distances - w.lo. 
-#' Parameters \code{d} and \code{w}
+#' Parameters `d` and `w`
 #' must have compatible measurement units.
 #' 
 #' @param nexp Number of expansion terms.  Integer from 0 to 5. 
 #'
 #' @param w A vector specifying strip width for every 'case' 
-#' in \code{a}.  Vector must have length \code{length(a)} or \code{nrow(a)}. 
+#' in `a`.  Vector must have length `length(a)` or `nrow(a)`. 
 #' In general, this is constant vector containing the range 
-#' of sighting distances, i.e., \code{rep(w.hi - w.low, nrow(a))}. 
+#' of sighting distances, i.e., `rep(w.hi - w.low, nrow(a))`. 
 #' But, for some likelihoods (e.g., 'oneStep') this vector allows the user to 
 #' restrict application of the expansion terms to less than the full range 
 #' of distances. For the 'oneStep' likelihood, expansion terms are only 
 #' applied between 0 and \eqn{\Theta}{T}, the boundary of the two uniforms, 
 #' which varies by 'case' when covariates are present.  
-#' Parameters \code{d} and \code{w} must 
+#' Parameters `d` and `w` must 
 #' have compatible measurement units.
 #' 
 #' @inheritParams dE.single 
@@ -41,23 +41,23 @@
 #' @details
 #' Expansion terms modify the base likelihood function
 #' and are used to incorporate "wiggle".  The modified distance function is,
-#' \code{key * expTerms} where \code{key} is a vector of values in
-#' the base likelihood function (e.g., \code{halfnorm.like()$L.unscaled}) 
-#' and \code{expTerms} is the 
+#' `key * expTerms` where `key` is a vector of values in
+#' the base likelihood function (e.g., `halfnorm.like()$L.unscaled`) 
+#' and `expTerms` is the 
 #' matrix returned by this routine. In equation form, 
 #'   \deqn{f(x_i|\beta,a_1,a_2,\dots,a_m) = 
 #'    f(x_i|\beta)(1 + \sum_{k=1}^{m} a_k h_{k}(x_i/w)).}{f(x(i)|beta,a_1,a_2,...,a_k) = 
 #'    f(x(i)|beta)(1 + a(1) h_1(x(i)/w) + a(2) h_2(x(i)/w) + ... + a(m) h_m(x(i)/w)). },
-#' where \eqn{m} = the the number of expansions (\code{nexp}), \eqn{h_{j}(x)}{h_j(x)} 
+#' where \eqn{m} = the the number of expansions (`nexp`), \eqn{h_{j}(x)}{h_j(x)} 
 #' are expansion terms for distance \eqn{x}, and  
 #' \eqn{a_1, a_2, \dots, a_m}{a(1), a(2), ..., a(m)} are the (estimated) 
 #' expansion term coefficients.
 #' 
-#' @return If \code{nexp} equals 0, 1 is returned. 
-#' If \code{nexp} is greater than 0, a matrix of 
+#' @return If `nexp` equals 0, 1 is returned. 
+#' If `nexp` is greater than 0, a matrix of 
 #' size \eqn{n}X\eqn{k} containing expansion terms, 
-#' where \eqn{n} = \code{length(d)} and \eqn{k} = \code{nrow(a)}. The 
-#' expansion series associated with row \eqn{j} of \code{a} 
+#' where \eqn{n} = `length(d)` and \eqn{k} = `nrow(a)`. The 
+#' expansion series associated with row \eqn{j} of `a` 
 #' are in column \eqn{j} of the return. i.e., 
 #' element (\eqn{i},\eqn{j}) of the return is 
 #'   \deqn{1 + \sum_{k=1}^{m} a_{jk} h_{k}(x_{i}/w).}{(1 + a(j1) h_1(x(i)/w) + ... + a(jm) h_m(x(i)/w)).}

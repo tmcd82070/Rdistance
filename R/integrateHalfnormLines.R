@@ -19,10 +19,10 @@
 #' i-th observed distance, and \eqn{\Phi}{Pnorm} is the standard normal 
 #' cumulative probability function. 
 #' Rdistance uses R's base 
-#' function \code{pnorm()}, which for all intents and purposes is exact.
+#' function `pnorm()`, which for all intents and purposes is exact.
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
-#' \code{\link{integrateOneStepLines}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpLines()]; 
+#' [integrateOneStepLines()] 
 #' 
 #' @examples
 #' 

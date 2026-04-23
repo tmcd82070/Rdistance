@@ -17,8 +17,8 @@
 #' where \eqn{w = w.hi - w.lo} and \eqn{\sigma_i}{s} is the estimated half-normal 
 #' distance function parameter for the i-th observed distance.  
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpPoints}}; 
-#' \code{\link{integrateOneStepPoints}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpPoints()]; 
+#' [integrateOneStepPoints()] 
 #' 
 #' @examples
 #' 

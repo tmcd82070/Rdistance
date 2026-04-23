@@ -13,7 +13,7 @@
 #' @param xseq A vector of distances into which the break points 
 #' are inserted. 
 #' 
-#' @return A vector like \code{xseq}, but with the break points 
+#' @return A vector like `xseq`, but with the break points 
 #' inserted. 
 #' 
 #' 

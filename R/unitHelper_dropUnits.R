@@ -2,8 +2,8 @@
 #' 
 #' @rdname unitHelpers
 #' 
-#' @returns For \code{dropUnits}, argument \code{x} with no units. If 
-#' input \code{x} has no units, \code{x} is returned unchanged. 
+#' @returns For `dropUnits`, argument `x` with no units. If 
+#' input `x` has no units, `x` is returned unchanged. 
 #' 
 dropUnits <- function(x){
   units::set_units(x, NULL)

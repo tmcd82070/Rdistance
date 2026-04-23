@@ -7,21 +7,21 @@
 expandW(ml, params, k)
 }
 \arguments{
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
+\item{ml}{Either a Rdistance 'model frame' or an Rdistance
+'fitted object'.  Both are of class "dfunc".
+Rdistance 'model frames' are lists containing components
+necessary to estimate a distance function, but no estimates.
 Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
+produced by calls to \code{\link[=parseModel]{parseModel()}}.
 Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
+are typically produced by calls to \code{\link[=dfuncEstim]{dfuncEstim()}}.
 'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
+with additional components such as the parameters estimates,
 log likelihood value, convergence information, and the variance-
 covariance matrix of the parameters.}
 
-\item{params}{A matrix of likelihood parameters.  Size is (number 
-of distances) X [(number of cases) + (number of non-covariate parameter)].}
+\item{params}{A matrix of likelihood parameters.  Size is (number
+of distances) X ((number of cases) + (number of non-covariate parameter)).}
 
 \item{k}{The number of cases.}
 }
@@ -29,10 +29,10 @@ of distances) X [(number of cases) + (number of non-covariate parameter)].}
 A plain vector of length k containing expansion domains, with units.
 }
 \description{
-The domain to which expansion factors are applied varies by likelihood. 
-When the domain varies, it depends on parameter values. For example, 
-\code{oneStep} expansion factors are applied between 
-0 and the likelihood's first parameter (\eqn{\theta}{Theta}), which 
-varies by covariates.  This function computes the likelihood-specific 
+The domain to which expansion factors are applied varies by likelihood.
+When the domain varies, it depends on parameter values. For example,
+\code{oneStep} expansion factors are applied between
+0 and the likelihood's first parameter (\eqn{\theta}{Theta}), which
+varies by covariates.  This function computes the likelihood-specific
 expansion domains
 }

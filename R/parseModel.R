@@ -20,10 +20,10 @@
 #' number of expansions, etc.  Rdistance model frames contain a 
 #' subset of fitted Rdistance model components. 
 #' 
-#' @seealso \code{\link{RdistDf}}, which returns an 
-#' Rdistance \emph{data} frame;
-#' \code{\link{dfuncEstim}}, which returns an 
-#' Rdistance \emph{fitted} model.
+#' @seealso [RdistDf()], which returns an 
+#' Rdistance *data* frame;
+#' [dfuncEstim()], which returns an 
+#' Rdistance *fitted* model.
 #' 
 #' @examples
 #' 

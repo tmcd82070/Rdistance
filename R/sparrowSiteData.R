@@ -16,22 +16,22 @@
 #' a site (transect) surveyed.  Column descriptions: 
 #' 
 #' \enumerate{ 
-#'   \item \code{siteID}: Factor (72 levels), the site or transect surveyed.  
-#'   \item \code{length}: Number, the length (m) of each transect.  
-#'   \item \code{observer}: Factor (five levels), identity of the observer 
+#'   \item `siteID`: Factor (72 levels), the site or transect surveyed.  
+#'   \item `length`: Number, the length (m) of each transect.  
+#'   \item `observer`: Factor (five levels), identity of the observer 
 #'   who surveyed the transect.
-#'   \item \code{bare}: Number, the mean bare ground cover (\%) within 100 m of each transect.
-#'   \item \code{herb}: Number, the mean herbaceous cover (\%) within 100 m of
+#'   \item `bare`: Number, the mean bare ground cover (\%) within 100 m of each transect.
+#'   \item `herb`: Number, the mean herbaceous cover (\%) within 100 m of
 #'   each transect.
-#'   \item \code{shrub}: Number, the mean shrub cover (\%) within
+#'   \item `shrub`: Number, the mean shrub cover (\%) within
 #'   100 m of each transect.
-#'   \item \code{height}: Number, the mean shrub height 
+#'   \item `height`: Number, the mean shrub height 
 #'   (cm) within 100 m of each transect.
-#'   \item \code{shrubclass}: Factor (two levels), shrub class is "Low"" when 
+#'   \item `shrubclass`: Factor (two levels), shrub class is "Low"" when 
 #'   shrub cover is < 10\%, "High" otherwise.  
 #' }
 #' 
-#' @seealso \code{\link{sparrowDetectionData}}
+#' @seealso [sparrowDetectionData()]
 #' 
 #' @source The Brewer's sparrow data are a subset of the data collected 
 #' by Jason Carlisle and various field technicians for his Ph.D. from the 
@@ -46,7 +46,7 @@
 #' 
 #' Carlisle, J. D., and A. D. Chalfoun. 2020. The abundance of Greater 
 #' Sage-Grouse as a proxy for the abundance of sagebrush-associated songbirds 
-#' in Wyoming, USA. \emph{Avian Conservation and Ecology} 15(2):16. 
+#' in Wyoming, USA. *Avian Conservation and Ecology* 15(2):16. 
 #' \doi{10.5751/ACE-01702-150216}
 #' 
 NULL

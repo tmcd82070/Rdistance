@@ -8,36 +8,36 @@ predLikelihood(object, params)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{params}{A matrix of distance function parameters. 
+\item{params}{A matrix of distance function parameters.
 Rows are observations, columns contain the set of parameters
 (canonical and expansion) for each observation.}
 }
 \value{
-A vector of distance function values, of length 
-n = number of observed distances = length(distances(x)). 
-Elements in \code{distances(x)} correspond, in order, 
+A vector of distance function values, of length
+n = number of observed distances = length(distances(x)).
+Elements in \code{distances(x)} correspond, in order,
 to values in the returned vector.
 }
 \description{
-An internal prediction function to predict (compute) 
-the values of distance functions at a set of observed values. 
+An internal prediction function to predict (compute)
+the values of distance functions at a set of observed values.
 Unlike \code{predDfuncs}, which evaluates distance
-functions at EVERY input distance, this routine evaluates 
-distance functions at only ONE distance. This is what's 
+functions at EVERY input distance, this routine evaluates
+distance functions at only ONE distance. This is what's
 appropriate for likelihood computation.
-This version allows for matrix inputs and 
+This version allows for matrix inputs and
 uses matrix operations, and is thus faster than earlier
 looping versions.
 }
 \details{
-Assuming \code{L} is the vector returned by this function, 
-the negative log likelihood is \code{-sum(log(L / I), na.rm=T)}, 
-where \code{I} is the integration constant, or 
-area under the likelihood between 
-\code{w.lo} and \code{w.hi}. 
-Note that returned likelihood values for distances less 
-than \code{w.lo} or greater than \code{w.hi} are \code{NA}; 
+Assuming \code{L} is the vector returned by this function,
+the negative log likelihood is \code{-sum(log(L / I), na.rm=T)},
+where \code{I} is the integration constant, or
+area under the likelihood between
+\code{w.lo} and \code{w.hi}.
+Note that returned likelihood values for distances less
+than \code{w.lo} or greater than \code{w.hi} are \code{NA};
 hence, \code{na.rm=TRUE} in the sum.
 }

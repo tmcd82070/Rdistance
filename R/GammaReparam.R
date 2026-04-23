@@ -13,7 +13,7 @@
 #' re-parameterized versions of the input parameters suitable for 
 #' us in R::dgamma().
 #' 
-#' @seealso 'Details' section of \code{\link{Gamma.like}}  
+#' @seealso 'Details' section of [Gamma.like()]  
 #' for Rdistance's Gamma distribution
 #' 
 #' @examples

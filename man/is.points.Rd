@@ -7,16 +7,16 @@
 is.points(x)
 }
 \arguments{
-\item{x}{Either an estimated distance function, output by 
-\code{dfuncEstim}, or an Rdistance nested data frame, output by 
+\item{x}{Either an estimated distance function, output by
+\code{dfuncEstim}, or an Rdistance nested data frame, output by
 \code{RdistDf}.}
 }
 \value{
-TRUE if the model frame or fitted distance function 
-contains point surveys.  FALSE if the model frame or distance 
+TRUE if the model frame or fitted distance function
+contains point surveys.  FALSE if the model frame or distance
 function contains line transect surveys.
 }
 \description{
-Determines whether a distance function is for a point survey 
+Determines whether a distance function is for a point survey
 or line survey.
 }

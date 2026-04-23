@@ -1,7 +1,7 @@
 #' @title dfuncEstim error messages
 #' 
 #' @description
-#' Utility function to produce error messages suitable for \code{stop}
+#' Utility function to produce error messages suitable for `stop`
 #' 
 #' @param txt A text string describing the error. 
 #' 

@@ -15,7 +15,7 @@ If nEvalPts is not acceptable, an error is thrown. Simpson's composite
 coefficients are store in options()
 }
 \description{
-Check that number of integration intervals is odd and 
+Check that number of integration intervals is odd and
 sufficiently large. Plus, compute and store the Simpson's Composite
 rule coefficients.
 }

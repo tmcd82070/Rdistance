@@ -1,8 +1,8 @@
 #' @title Plot method for distance (detection) functions
 #'   
-#' @description Plot method for objects of class '\code{dfunc}'.  Objects of 
-#' class '\code{dfunc}' are estimated distance functions produced by 
-#' \code{\link{dfuncEstim}}. 
+#' @description Plot method for objects of class '`dfunc`'.  Objects of 
+#' class '`dfunc`' are estimated distance functions produced by 
+#' [dfuncEstim()]. 
 #'   
 #' @inheritDotParams plot.dfunc.para include.zero nbins newdata 
 #'     legend vertLines plotBars density angle xlab ylab 
@@ -10,17 +10,17 @@
 #'   
 #' @inheritParams print.dfunc 
 #' 
-#' @details If \code{plotBars} is TRUE, a scaled histogram is plotted
+#' @details If `plotBars` is TRUE, a scaled histogram is plotted
 #'  and the estimated distance function
 #'   is plotted over the top of it.  When bars are plotted, 
-#'   this routine uses \code{graphics::barplot} 
+#'   this routine uses `graphics::barplot` 
 #'  for setting up the initial plotting region and
-#'  most parameters to \code{graphics::barplot} can 
+#'  most parameters to `graphics::barplot` can 
 #'  be specified (exceptions noted above in description of '\dots').
 #'  
 #'  The form of the likelihood and any series
 #'   expansions is printed in the main title (overwrite this with 
-#'   \code{main="<my title>"}). Convergence of the distance
+#'   `main="<my title>"`). Convergence of the distance
 #'   function is checked.  If the distance function did not converge, a warning
 #'   is printed over the top of the histogram.  If one or more parameter
 #'   estimates are at their limits (likely indicating non-convergence or poor
@@ -29,18 +29,18 @@
 #'   
 #' @return The input distance function is returned, with two additional
 #'   components than can be used to reconstruct the plotted bars.  (To 
-#'   obtain values of the plotted distance functions, use \code{predict}
-#'   with \code{type = "distances"}.) 
+#'   obtain values of the plotted distance functions, use `predict`
+#'   with `type = "distances"`.) 
 #'   The additional components are:
 #'   \item{barHeights}{A vector containing the scaled bar heights drawn 
 #'   on the plot.}
 #'   \item{barWidths}{A vector or scalar of the bar widths drawn on 
 #'   the plot, with measurement units.  }
-#'   Re-plot the bars with \code{barplot( return$barHeights, 
-#'   width = return$barWidths )}.
+#'   Re-plot the bars with `barplot( return$barHeights, 
+#'   width = return$barWidths )`.
 #'   
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
-#'   \code{\link{print.abund}}
+#' @seealso [dfuncEstim()], [print.dfunc()],
+#'   [print.abund()]
 #'   
 #' @examples 
 #' # Simulated RdistDf

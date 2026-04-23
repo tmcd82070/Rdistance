@@ -9,7 +9,7 @@
 #' @param ... Ignored
 #' 
 #' @param na.rm Whether to include or exclude missing distance values. 
-#' In \code{ml}, the model list containing the model frame, missing 
+#' In `ml`, the model list containing the model frame, missing 
 #' values of the response (distance) are potentially present for two 
 #' reasons: (1) they are outside the strip w.lo to w.hi, and (2) they
 #' are missing because the crew did not get a distance for that observation.

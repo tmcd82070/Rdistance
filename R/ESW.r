@@ -2,14 +2,14 @@
 #'   
 #' @description Returns effective strip width (ESW) for 
 #'   line-transect detection functions. 
-#'   See \code{\link{EDR}} is for point transects.  
+#'   See [EDR()] is for point transects.  
 #'   
 #' @inheritParams effectiveDistance
 #' 
 #' @details ESW is area under 
 #'   a scaled distance function between its
-#'   left-truncation limit (\code{obj$w.lo}) and its right-truncation 
-#'   limit (\code{obj$w.hi}). \if{latex}{I.e., 
+#'   left-truncation limit (`obj$w.lo`) and its right-truncation 
+#'   limit (`obj$w.hi`). \if{latex}{I.e., 
 #'     \deqn{ESW = \int_{w.lo}^{w.hi} g(x)dx,} 
 #'   where \eqn{g(x)} is the distance
 #'   function scaled so that \eqn{g(x.scl) = g.x.scl}
@@ -25,8 +25,8 @@
 #'   
 #' @inherit effectiveDistance return   
 #'   
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{EDR}}, 
-#' \code{\link{effectiveDistance}}
+#' @seealso [dfuncEstim()], [EDR()], 
+#' [effectiveDistance()]
 #' 
 #' @examples
 #' data(sparrowDfuncObserver)

@@ -7,37 +7,37 @@
 hermite.expansion(x, expansions)
 }
 \arguments{
-\item{x}{A numeric matrix of distances at which to evaluate 
+\item{x}{A numeric matrix of distances at which to evaluate
 the expansion series. For distance analysis, \code{x} should
 be the proportion of the maximum sighting distance
 at which a group was sighted, i.e., \eqn{x = d/w}, where \eqn{d}
 is sighting distance and \eqn{w} is maximum sighting distance.}
 
-\item{expansions}{A scalar specifying the number of 
-expansion terms to compute. Must be one of the 
+\item{expansions}{A scalar specifying the number of
+expansion terms to compute. Must be one of the
 integers 1, 2, 3, 4, or 5.}
 }
 \value{
 A 3D array of size \code{nrow(x)} X \code{ncol(x)} X \code{expansions}.
-  The 'pages' (3rd dimension) of this array are the cosine expansions of 
-  \code{x}. i.e., page 1 is the first expansion term of \code{x}, 
-  page 2 is the second expansion term of \code{x}, etc.
+The 'pages' (3rd dimension) of this array are the cosine expansions of
+\code{x}. i.e., page 1 is the first expansion term of \code{x},
+page 2 is the second expansion term of \code{x}, etc.
 }
 \description{
-Computes Hermite expansion terms for use in 
+Computes Hermite expansion terms for use in
 distance analysis. The Hermite (and other expansions) allow "wiggle" in
 estimated distance functions.
 }
 \details{
-There are, in general, several expansions that can be called Hermite. Let \eqn{w = 4x - 2}{w = 4*x - 2}. 
+There are, in general, several expansions that can be called Hermite. Let \eqn{w = 4x - 2}{w = 4*x - 2}.
 Rdistance's Hermite expansions are:
-  \itemize{
-    \item \bold{First term}: \deqn{h_1(w) = w + 2,}{h1(w) = w + 2,}
-    \item \bold{Second term}: \deqn{h_2(w) = w^2 - 4,}{h2(w) = w^2 - 4,}
-    \item \bold{Third term}: \deqn{h_3(w) = w^3 - 3w + 2,}{h3(w) = w^3 - 3*w + 2,}
-    \item \bold{Fourth term}: \deqn{h_4(w) = w^4 - 6w^2 + 8,}{h4(w) = w^4 - 6*w^2 + 8,}
-  }
-  The maximum number of expansion terms computed is 4.
+\itemize{
+\item \strong{First term}: \deqn{h_1(w) = w + 2,}{h1(w) = w + 2,}
+\item \strong{Second term}: \deqn{h_2(w) = w^2 - 4,}{h2(w) = w^2 - 4,}
+\item \strong{Third term}: \deqn{h_3(w) = w^3 - 3w + 2,}{h3(w) = w^3 - 3*w + 2,}
+\item \strong{Fourth term}: \deqn{h_4(w) = w^4 - 6w^2 + 8,}{h4(w) = w^4 - 6*w^2 + 8,}
+}
+The maximum number of expansion terms computed is 4.
 }
 \examples{
 x <- matrix(seq(0, 1, length = 200), ncol = 1)
@@ -47,8 +47,8 @@ matlines(x, herm.expn[,1,1:4], col=rainbow(4), lty = 1)
 
 }
 \seealso{
-\code{\link{dfuncEstim}}
-, \code{\link{cosine.expansion}}
-, \code{\link{sine.expansion}}
-, \code{\link{simple.expansion}}.
+\code{\link[=dfuncEstim]{dfuncEstim()}}
+, \code{\link[=cosine.expansion]{cosine.expansion()}}
+, \code{\link[=sine.expansion]{sine.expansion()}}
+, \code{\link[=simple.expansion]{simple.expansion()}}.
 }

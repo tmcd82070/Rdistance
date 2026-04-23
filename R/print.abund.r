@@ -1,20 +1,20 @@
 #' @title Print abundance estimates
 #' 
-#' @description Print an object of class \code{c("abund","dfunc")} 
-#' produced by \code{abundEstim}.
+#' @description Print an object of class `c("abund","dfunc")` 
+#' produced by `abundEstim`.
 #' 
-#' @param x An object output by \code{abundEstim}.  This is a distance 
+#' @param x An object output by `abundEstim`.  This is a distance 
 #' function object augmented with abundance estimates, and has 
-#' class \code{c("abund", "dfunc")}.
+#' class `c("abund", "dfunc")`.
 #'   
 #' @param \dots Included for compatibility to other print methods.  
 #' Ignored here.
 #' 
 #' @return 0 is invisibly returned
 #' 
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 
-#' \code{\link{summary.dfunc}}, \code{\link{print.dfunc}}, 
-#' \code{\link{summary.abund}}
+#' @seealso [dfuncEstim()], [abundEstim()], 
+#' [summary.dfunc()], [print.dfunc()], 
+#' [summary.abund()]
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)

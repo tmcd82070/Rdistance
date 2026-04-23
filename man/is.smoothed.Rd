@@ -8,12 +8,12 @@ is.smoothed(object)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 }
 \value{
-TRUE if the model frame or fitted distance function 
-arises from a non-parametric density smoother. FALSE if the 
-model frame or distance 
+TRUE if the model frame or fitted distance function
+arises from a non-parametric density smoother. FALSE if the
+model frame or distance
 function is a parameterized function.
 }
 \description{

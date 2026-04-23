@@ -7,8 +7,8 @@
 \method{print}{dfunc}(x, ...)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{x}{An estimated detection function object, normally
+produced by calling \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
 \item{\dots}{Included for compatibility with other print methods.  Ignored here.}
 }
@@ -16,7 +16,7 @@ produced by calling \code{\link{dfuncEstim}}.}
 The input distance function (\code{x}) is returned invisibly.
 }
 \description{
-Print method for distance function objects produced 
+Print method for distance function objects produced
 by \code{dfuncEstim}.
 }
 \examples{
@@ -32,6 +32,6 @@ dfunc
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, 
-\code{\link{print.abund}}, \code{\link{summary.dfunc}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=plot.dfunc]{plot.dfunc()}},
+\code{\link[=print.abund]{print.abund()}}, \code{\link[=summary.dfunc]{summary.dfunc()}}
 }

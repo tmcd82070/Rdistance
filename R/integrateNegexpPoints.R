@@ -20,7 +20,7 @@
 #' function parameter for the 
 #' i-th observed distance. 
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpLines()] 
 #' 
 #' @examples
 #' 

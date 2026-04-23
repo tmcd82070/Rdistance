@@ -18,11 +18,11 @@
 #' parameter for the Gamma distance function, and \eqn{m} is the mode of Gamma
 #' (i.e., \eqn{(\alpha - 1)\sigma_i}{(a-1)s_i}. 
 #' Rdistance computes the integral using R's base function 
-#' \code{pgamma()}, which for all intents and purposes is exact. 
-#' See also \code{\link{Gamma.like}}.
+#' `pgamma()`, which for all intents and purposes is exact. 
+#' See also [Gamma.like()].
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
-#' \code{\link{integrateOneStepLines}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpLines()]; 
+#' [integrateOneStepLines()] 
 #' 
 #' @examples
 #' 

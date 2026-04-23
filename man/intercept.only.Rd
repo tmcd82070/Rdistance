@@ -8,16 +8,16 @@ intercept.only(object)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 }
 \value{
 TRUE if \code{object} contains an intercept-only.
-FALSE if \code{object} contains at least one detection-level 
+FALSE if \code{object} contains at least one detection-level
 or transect-level covariate in the detection function.
 }
 \description{
-Utility function to detect whether a distance function has 
-covariates beyond the intercept. If the model contains an 
+Utility function to detect whether a distance function has
+covariates beyond the intercept. If the model contains an
 intercept-only, effective distance is constant across detections
 and short-cuts can be implemented in code.
 }

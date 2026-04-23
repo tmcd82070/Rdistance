@@ -1,7 +1,7 @@
 #' @title Summarize abundance estimates
 #' 
-#' @description Summarize an object of class \code{c("abund","dfunc")} 
-#' that is output by \code{abundEstim}.
+#' @description Summarize an object of class `c("abund","dfunc")` 
+#' that is output by `abundEstim`.
 #' 
 #' @inheritParams print.abund
 #'
@@ -9,13 +9,13 @@
 #'    
 #' @details
 #' If the proportion of bootstrap iterations that failed is 
-#' greater than \code{getOption("Rdistance_maxBSFailPropForWarning")}, 
+#' greater than `getOption("Rdistance_maxBSFailPropForWarning")`, 
 #' a warning about the validity of CI's is issued and 
 #' a diagnostic message printed.  Increasing this option to a number greater 
-#' than 1 will kill the warning (e.g., \code{options(Rdistance_maxBSFailPropForWarning = 1.3)}), 
+#' than 1 will kill the warning (e.g., `options(Rdistance_maxBSFailPropForWarning = 1.3)`), 
 #' but ignoring a large number of non-convergent
 #' bootstrap iterations may be a bad idea (i.e., validity of the CI is 
-#' questionable). The default value for \code{Rdistance_maxBSFailPropForWarning}
+#' questionable). The default value for `Rdistance_maxBSFailPropForWarning`
 #' is 0.2.
 #' 
 #' @param \dots Included for compatibility to other print methods.  
@@ -23,9 +23,9 @@
 #' 
 #' @return 0 is invisibly returned.
 #' 
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 
-#' \code{\link{summary.dfunc}}, \code{\link{print.dfunc}}, 
-#' \code{\link{print.abund}}
+#' @seealso [dfuncEstim()], [abundEstim()], 
+#' [summary.dfunc()], [print.dfunc()], 
+#' [print.abund()]
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)

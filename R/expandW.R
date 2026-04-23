@@ -3,7 +3,7 @@
 #' @description
 #' The domain to which expansion factors are applied varies by likelihood. 
 #' When the domain varies, it depends on parameter values. For example, 
-#' \code{oneStep} expansion factors are applied between 
+#' `oneStep` expansion factors are applied between 
 #' 0 and the likelihood's first parameter (\eqn{\theta}{Theta}), which 
 #' varies by covariates.  This function computes the likelihood-specific 
 #' expansion domains
@@ -11,7 +11,7 @@
 #' @inheritParams startLimits
 #' 
 #' @param params A matrix of likelihood parameters.  Size is (number 
-#' of distances) X [(number of cases) + (number of non-covariate parameter)].
+#' of distances) X ((number of cases) + (number of non-covariate parameter)).
 #' 
 #' @param k The number of cases.
 #' 

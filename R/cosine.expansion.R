@@ -5,7 +5,7 @@
 #' shape of distance likelihood functions. 
 #'   
 #' @param x A numeric matrix of distances at which to evaluate 
-#' the expansion series. For distance analysis, \code{x} should
+#' the expansion series. For distance analysis, `x` should
 #' be the proportion of the maximum sighting distance
 #' at which a group was sighted, i.e., \eqn{x = d/w}, where \eqn{d}
 #' is sighting distance and \eqn{w} is maximum sighting distance.
@@ -16,11 +16,11 @@
 #' 
 #' @details The cosine expansion used here is:
 #'   \itemize{
-#'     \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
-#'     \item \bold{Second term}: \deqn{h_2(x)=\cos(4\pi x),}{h2(x) = cos(4*Pi*x),}
-#'     \item \bold{Third term}: \deqn{h_3(x)=\cos(6\pi x),}{h3(x) = cos(6*Pi*x),}
-#'     \item \bold{Fourth term}: \deqn{h_4(x)=\cos(8\pi x),}{h4(x) = cos(8*Pi*x),}
-#'     \item \bold{Fifth term}: \deqn{h_5(x)=\cos(10\pi x),}{h5(x) = cos(10*Pi*x),}
+#'     \item **First term**: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
+#'     \item **Second term**: \deqn{h_2(x)=\cos(4\pi x),}{h2(x) = cos(4*Pi*x),}
+#'     \item **Third term**: \deqn{h_3(x)=\cos(6\pi x),}{h3(x) = cos(6*Pi*x),}
+#'     \item **Fourth term**: \deqn{h_4(x)=\cos(8\pi x),}{h4(x) = cos(8*Pi*x),}
+#'     \item **Fifth term**: \deqn{h_5(x)=\cos(10\pi x),}{h5(x) = cos(10*Pi*x),}
 #'   }
 #'   The maximum number of expansion terms is 5.
 #'   
@@ -29,14 +29,14 @@
 #' the sine and cosine expansions fit different models. 
 #'   
 #'   
-#' @return A 3D array of size \code{nrow(x)} X \code{ncol(x)} X \code{expansions}.
+#' @return A 3D array of size `nrow(x)` X `ncol(x)` X `expansions`.
 #'   The 'pages' (3rd dimension) of this array are the cosine expansions of 
-#'   \code{x}. i.e., page 1 is the first expansion term of \code{x}, 
-#'   page 2 is the second expansion term of \code{x}, etc.
+#'   `x`. i.e., page 1 is the first expansion term of `x`, 
+#'   page 2 is the second expansion term of `x`, etc.
 #'   
-#' @seealso \code{\link{dfuncEstim}}, 
-#'          \code{\link{hermite.expansion}}, 
-#'          \code{\link{simple.expansion}}
+#' @seealso [dfuncEstim()], 
+#'          [hermite.expansion()], 
+#'          [simple.expansion()]
 #'   
 #' @examples 
 #' x <- matrix(seq(0, 1, length = 200), ncol = 1)

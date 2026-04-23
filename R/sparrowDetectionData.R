@@ -15,18 +15,18 @@
 #' @format A data.frame containing 356 rows and 5 columns.  Each row represents
 #' a detected group of sparrows.  Column descriptions: 
 #' \enumerate{ 
-#'   \item \code{siteID}: Factor (72 levels), the site or transect where the detection
+#'   \item `siteID`: Factor (72 levels), the site or transect where the detection
 #'   was made.  
-#'   \item \code{groupsize}: Number, the number of individuals within
+#'   \item `groupsize`: Number, the number of individuals within
 #'   the detected group.  
-#'   \item \code{sightdist}: Number, distance (m) from the observer to the detected group.  
-#'   \item \code{sightangle}: Number, the angle (degrees) from the transect 
+#'   \item `sightdist`: Number, distance (m) from the observer to the detected group.  
+#'   \item `sightangle`: Number, the angle (degrees) from the transect 
 #'   line to the detected group.  
-#'   \item \code{dist}: Number, the perpendicular, off-transect distance (m) from the
+#'   \item `dist`: Number, the perpendicular, off-transect distance (m) from the
 #'   transect to the detected group.  This is the distance used in analysis.
-#'   Calculated using \code{\link{perpDists}}.  }
+#'   Calculated using [perpDists()].  }
 #' 
-#' @seealso \code{\link{sparrowSiteData}}
+#' @seealso [sparrowSiteData()]
 #' 
 #' @source The Brewer's sparrow data are a subset of the data collected 
 #' by Jason Carlisle and various field technicians for his Ph.D. from the 
@@ -41,7 +41,7 @@
 #' 
 #' Carlisle, J. D., and A. D. Chalfoun. 2020. The abundance of Greater 
 #' Sage-Grouse as a proxy for the abundance of sagebrush-associated songbirds 
-#' in Wyoming, USA. \emph{Avian Conservation and Ecology} 15(2):16. 
+#' in Wyoming, USA. *Avian Conservation and Ecology* 15(2):16. 
 #' \doi{10.5751/ACE-01702-150216}
 #' 
 NULL

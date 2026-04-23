@@ -9,7 +9,7 @@ perpDists(sightDist, sightAngle, data)
 \arguments{
 \item{sightDist}{Character, name of column in \code{data} that contains the observed or sighting distances from the observer to the detected objects.}
 
-\item{sightAngle}{Character, name of column in \code{data} that contains the observed or sighting angles from the line transect to the detected 
+\item{sightAngle}{Character, name of column in \code{data} that contains the observed or sighting angles from the line transect to the detected
 objects.  Angles must be measured in degrees.}
 
 \item{data}{data.frame object containing sighting distance and sighting angle.}
@@ -21,8 +21,8 @@ A vector of off-transect (or perpendicular) distances.  Units are the same as \c
 Computes off-transect (also called 'perpendicular') distances from measures of sighting distance and sighting angle.
 }
 \details{
-If observers recorded sighting distance and sighting angle (as is often common in line transect surveys), use this function to convert 
-  to off-transect distances, the required input data for \code{dfunc.estim}.
+If observers recorded sighting distance and sighting angle (as is often common in line transect surveys), use this function to convert
+to off-transect distances, the required input data for \code{dfunc.estim}.
 }
 \examples{
 # Load the example dataset of sparrow detections from package
@@ -32,9 +32,9 @@ sparrowDetectionData$perpDist <- perpDists(sightDist="sightdist", sightAngle="si
                                            data=sparrowDetectionData)
 }
 \references{
-Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993. 
-  \emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
+Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L. 1993.
+\emph{Distance Sampling: Estimating Abundance of Biological Populations}. Chapman and Hall, London.
 }
 \seealso{
-\code{\link{dfuncEstim}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}
 }

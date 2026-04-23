@@ -2,16 +2,16 @@
 #' 
 #' @description
 #' Helper functions for assigning physical measurement units in Rdistance. 
-#' All are convenience wrappers for \code{units::}\code{\link[units]{set_units}}. 
+#' All are convenience wrappers for `units::`[units::set_units()]. 
 #' 
 #' @param x A numeric vector or matrix.  
 #' 
 #' @param u A string representing physical measurement units to 
-#' assign to \code{x}, e.g., "m", "km", "m^2".  Valid units are  
-#' listed in columns "(symbol|name)" of \code{\link[units]{valid_udunits}}.
+#' assign to `x`, e.g., "m", "km", "m^2".  Valid units are  
+#' listed in columns "(symbol|name)" of [units::valid_udunits()].
 #' 
-#' @returns For \%#\% and \code{setUnits}, argument \code{x} with 
-#' units \code{u} attached. 
+#' @returns For \%#\% and `setUnits`, argument `x` with 
+#' units `u` attached. 
 #' 
 #' @examples 
 #' 

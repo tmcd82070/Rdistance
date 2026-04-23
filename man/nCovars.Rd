@@ -11,15 +11,13 @@ nCovars(X)
 }
 \value{
 An integer scalar
-
-# do not export
 }
 \description{
 Return number of covariates in a distance model
 }
 \details{
-The reason this routine is needed is that sometimes 
-we pass one row of covariates to a likelihood function. 
-If so, it may come in as a normal vector, not a matrix. 
+The reason this routine is needed is that sometimes
+we pass one row of covariates to a likelihood function.
+If so, it may come in as a normal vector, not a matrix.
 If a normal vector, ncol(X) does not work.
 }

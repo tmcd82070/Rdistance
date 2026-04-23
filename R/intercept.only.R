@@ -8,8 +8,8 @@
 #' 
 #' @inheritParams predict.dfunc
 #'
-#' @return TRUE if \code{object} contains an intercept-only.
-#' FALSE if \code{object} contains at least one detection-level 
+#' @return TRUE if `object` contains an intercept-only.
+#' FALSE if `object` contains at least one detection-level 
 #' or transect-level covariate in the detection function.
 #' 
 # NOT EXPORTED

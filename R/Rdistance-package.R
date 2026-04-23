@@ -3,30 +3,30 @@
 #' @title Rdistance - Distance Sampling Analyses for Abundance Estimation
 #' 
 #' @description 
-#' \code{Rdistance} contains functions and associated routines to analyze
+#' `Rdistance` contains functions and associated routines to analyze
 #' distance-sampling data collected on point or line transects. 
-#' Some of \code{Rdistance}'s features include:
+#' Some of `Rdistance`'s features include:
 #' \itemize{
 #'    \item Accommodation of both point and line transect analyses 
-#'     in one routine (\code{\link{dfuncEstim}}).
+#'     in one routine ([dfuncEstim()]).
 #'    \item Regression-like formula for inclusion of distance function
-#'    covariates (\code{\link{dfuncEstim}}).
+#'    covariates ([dfuncEstim()]).
 #'    \item Automatic bootstrap confidence intervals 
-#'    (\code{\link{abundEstim}}).
+#'    ([abundEstim()]).
 #'    \item Availability of both study-area and site-level abundance
-#'    estimates (\code{help("predict.dfunc")}).
+#'    estimates (`help("predict.dfunc")`).
 #'    \item Classical, parametric distance functions
-#'    (\code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, 
-#'    \code{\link{negexp.like}}), and
-#'    expansion functions (\code{\link{cosine.expansion}}, 
-#'    \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}).
+#'    ([halfnorm.like()], [hazrate.like()], 
+#'    [negexp.like()]), and
+#'    expansion functions ([cosine.expansion()], 
+#'    [hermite.expansion()], [simple.expansion()]).
 #'    
 #'    
 #'    \item Automated distance function fits and selection 
-#'    \code{\link{autoDistSamp}}.
+#'    [autoDistSamp()].
 #'    
-#'    \item \code{print}, \code{plot}, \code{predict}, \code{coef}, 
-#'    and \code{summary} methods for distance function objects and 
+#'    \item `print`, `plot`, `predict`, `coef`, 
+#'    and `summary` methods for distance function objects and 
 #'    abundance classes.
 #' }
 #' 
@@ -37,9 +37,9 @@
 #' randomly placed transects in a study area with the objective of
 #' sighting animals and estimating density or abundance.  Data collected
 #' during line transect surveys consists of sighting records for
-#' \emph{targets}, usually either individuals or groups of individuals.  Among
+#' *targets*, usually either individuals or groups of individuals.  Among
 #' the collected data, off-transect distances are recorded or computed from
-#' other information (see \code{\link{perpDists}}).  Off-transect distances 
+#' other information (see [perpDists()]).  Off-transect distances 
 #' are the perpendicular distances from the transect to the location of 
 #' the initial sighting cue.
 #' When groups are the target, the number of individuals in the group is
@@ -50,7 +50,7 @@
 #' popular method for avian surveys where detections are often auditory 
 #' cues, but is also appropriate when automated detectors are placed along
 #' a route.  Point transect surveys collect distances from the observer to 
-#' the target and are sometimes called \emph{radial} distances.   
+#' the target and are sometimes called *radial* distances.   
 #' 
 #' 
 #' A fundamental characteristic of both line and point-based 
@@ -70,30 +70,30 @@
 #' 
 #' @section Relationship to other software: 
 #' A detailed comparison of
-#' \code{Rdistance} to other options for distance sampling analysis (e.g.,
-#' Program DISTANCE, R package \code{Distance}, and R package \code{unmarked})
-#' is forthcoming.  While some of the functionality in \code{Rdistance} 
+#' `Rdistance` to other options for distance sampling analysis (e.g.,
+#' Program DISTANCE, R package `Distance`, and R package `unmarked`)
+#' is forthcoming.  While some of the functionality in `Rdistance` 
 #' is not unique, our aim is to provide an easy-to-use, rigorous,
 #' and flexible analysis option for distance-sampling data.  
 #' We understand that beginning
 #' users often need software that is both easy to use and easy to understand,
 #' and that advanced users often require greater flexibility and customization.
-#' Our aim is to meet the demands of both user groups.  \code{Rdistance} is
+#' Our aim is to meet the demands of both user groups.  `Rdistance` is
 #' under active development, so please contact us with issues, feature
 #' requests, etc. through the package's GitHub website
-#' (\url{https://github.com/tmcd82070/Rdistance}).
+#' (<https://github.com/tmcd82070/Rdistance>).
 #' 
 #' @section Data sets:
-#'  \code{Rdistance} contains four example data sets: two collected using 
-#' line-transect methods (i.e., \code{\link{sparrowDetectionData}} and
-#' \code{\link{sparrowSiteData}}) and two collected using point-transect
+#'  `Rdistance` contains four example data sets: two collected using 
+#' line-transect methods (i.e., [sparrowDetectionData()] and
+#' [sparrowSiteData()]) and two collected using point-transect
 #' methods (i.e.,
-#' \code{\link{thrasherDetectionData}} and \code{\link{thrasherSiteData}}).
+#' [thrasherDetectionData()] and [thrasherSiteData()]).
 #' 
 #' 
 #' @references Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
-#'   1993. \emph{Distance Sampling: Estimating Abundance of Biological
-#'   Populations}. Chapman and Hall, London.
+#'   1993. *Distance Sampling: Estimating Abundance of Biological
+#'   Populations*. Chapman and Hall, London.
 #' 
 #' @aliases Rdistance-package distance Rdistance point-transect line-transect
 #' 

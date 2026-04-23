@@ -3,78 +3,78 @@
 #' @description Estimate distance function scaling factor
 #' , g(0) or g(x), for a specified distance function.
 #' 
-#' @param fit An estimated \code{dfunc} object.  See \code{dfuncEstim}.
+#' @param fit An estimated `dfunc` object.  See `dfuncEstim`.
 #'   
 #' @details This routine scales sightability such that 
-#' g(\code{x.scl}) = \code{g.x.scl}, where g() is the sightability function.
-#' Specification of \code{x.scl} and \code{g.x.scl} covers several estimation cases:
+#' g(`x.scl`) = `g.x.scl`, where g() is the sightability function.
+#' Specification of `x.scl` and `g.x.scl` covers several estimation cases:
 #' \enumerate{  
-#'   \item \bold{g(0) = 1} : (the default) Inputs are \code{x.scl} = 0, \code{g.x.scl} = 1. 
-#'   If \code{w.lo} > 0, \code{x.scl} will be set to \code{w.lo}
-#'   so technically this case is g(\code{w.low}) = 1.
+#'   \item **g(0) = 1** : (the default) Inputs are `x.scl` = 0, `g.x.scl` = 1. 
+#'   If `w.lo` > 0, `x.scl` will be set to `w.lo`
+#'   so technically this case is g(`w.low`) = 1.
 #'   
-#'   \item \bold{User supplied probability at specified distance}: Inputs are 
-#'   \code{x.scl} = a number greater than or equal 
-#'   to \code{w.lo}, \code{g.x.scl} = a number between 0 and 1.  This case 
+#'   \item **User supplied probability at specified distance**: Inputs are 
+#'   `x.scl` = a number greater than or equal 
+#'   to `w.lo`, `g.x.scl` = a number between 0 and 1.  This case 
 #'   covers situations where sightability on the transect (distance 0) is 
 #'   not perfect.  This case  assumes researchers have an independent 
 #'   estimate of sightability at distance 
-#'   \code{x.scl} off the transect.  For example, researchers could be
+#'   `x.scl` off the transect.  For example, researchers could be
 #'   using multiple 
-#'   observers to estimate that sightability at distance \code{x.scl} 
-#'   is \code{g.x.scl}. 
+#'   observers to estimate that sightability at distance `x.scl` 
+#'   is `g.x.scl`. 
 #'   
-#'   \item \bold{Maximum sightability specified}: Inputs 
-#'   are \code{x.scl}="max", \code{g.x.scl} =  a number 
+#'   \item **Maximum sightability specified**: Inputs 
+#'   are `x.scl`="max", `g.x.scl` =  a number 
 #'   between 0 and 1.  In this case, 
-#'   g() is scaled such that its maximum value is \code{g.x.scl}.  
+#'   g() is scaled such that its maximum value is `g.x.scl`.  
 #'   This routine computes the distance at which g() is maximum, sets 
-#'   g()'s height there to \code{g.x.scl}, and returns \code{x.max} where 
+#'   g()'s height there to `g.x.scl`, and returns `x.max` where 
 #'   x.max is the distance at which g is maximized. This case covers the 
 #'   common aerial survey situation where maximum sightability is slightly 
 #'   off the transect, but the distance at which the maximum occurs 
 #'   is unknown. 
 #'   
-#'   \item \bold{Double observer system}: Inputs are 
-#'   \code{x.scl}="max", \code{g.x.scl} = <a data frame>. 
-#'   In this case, g(\emph{x}) = \emph{h}, where \emph{x} is the distance that 
-#'   maximizes g and \emph{h} is the height of g() at \emph{x} 
+#'   \item **Double observer system**: Inputs are 
+#'   `x.scl`="max", `g.x.scl` = <a data frame>. 
+#'   In this case, g(*x*) = *h*, where *x* is the distance that 
+#'   maximizes g and *h* is the height of g() at *x* 
 #'   computed from the double observer data frame (see below for 
 #'   structure of the double observer data frame).
 #'   
 #'   
-#'   \item \bold{Distance of independence specified, height computed from double 
-#'   observer system}: Inputs are 
-#'   \code{x.scl} = a number greater than or equal to \code{w.lo}
-#'   \code{g.x.scl} = a data frame.  In this case, g(\code{x.scl}) = \emph{h}, 
-#'   where \emph{h} is computed from the double observer data frame 
+#'   \item **Distance of independence specified, height computed from double 
+#'   observer system**: Inputs are 
+#'   `x.scl` = a number greater than or equal to `w.lo`
+#'   `g.x.scl` = a data frame.  In this case, g(`x.scl`) = *h*, 
+#'   where *h* is computed from the double observer data frame 
 #'   (see below for structure of the double observer data frame). 
 #'
 #' }   
 #'   
-#'   When \code{x.scl}, \code{g.x.scl}, or \code{observer} are NULL, the routine 
-#'   will look for and use \code{$call.x.scl}, or \code{$call.g.x.scl}, or 
-#'   \code{$call.observer} components of the \code{fit} object for whichever 
+#'   When `x.scl`, `g.x.scl`, or `observer` are NULL, the routine 
+#'   will look for and use `$call.x.scl`, or `$call.g.x.scl`, or 
+#'   `$call.observer` components of the `fit` object for whichever 
 #'   of these three parameters is missing.  Later, different 
-#'   values can be specified in a direct call to \code{F.gx.estim} 
+#'   values can be specified in a direct call to `F.gx.estim` 
 #'   without having to re-estimate the distance function. Because of this feature, 
-#'   the default values in \code{dfuncEstim} are \code{x.scl} = 0 and 
-#'   \code{g.x.scl} = 1 and \code{observer} = "both". 
+#'   the default values in `dfuncEstim` are `x.scl` = 0 and 
+#'   `g.x.scl` = 1 and `observer` = "both". 
 #'   
 #' @section Structure of the double observer data frame:  
-#' When \code{g.x.scl} is a data frame, it is assumed to contain 
-#'   the components \code{$obsby.1} and \code{$obsby.2} (no flexibility on names). 
+#' When `g.x.scl` is a data frame, it is assumed to contain 
+#'   the components `$obsby.1` and `$obsby.2` (no flexibility on names). 
 #'   Each row in the data frame contains data from one sighted target. 
-#'   The \code{$obsby.1} and \code{$obsby.2} components are 
+#'   The `$obsby.1` and `$obsby.2` components are 
 #'   TRUE/FALSE (logical) vectors indicating whether 
-#'   observer 1 (\code{obsby.1}) or observer 2 (\code{obsby.2}) spotted the target.
+#'   observer 1 (`obsby.1`) or observer 2 (`obsby.2`) spotted the target.
 #'   
 #' @return A list comprised of the following components:
 #'   \item{x.scl}{The value of x (distance) at which g() is evaluated.  }
-#'   \item{comp2 }{The estimated value of g() when evaluated at \code{x.scl}.  }
+#'   \item{comp2 }{The estimated value of g() when evaluated at `x.scl`.  }
 #'   
 #' 
-#' @seealso \code{\link{dfuncEstim}}
+#' @seealso [dfuncEstim()]
 #' 
 #' @examples 
 #' 

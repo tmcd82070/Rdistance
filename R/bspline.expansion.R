@@ -8,10 +8,10 @@
 #' 
 #' @inherit cosine.expansion return
 #'   
-#' @seealso \code{\link{dfuncEstim}}, 
-#'          \code{\link{cosine.expansion}},
-#'          \code{\link{hermite.expansion}}, 
-#'          \code{\link{simple.expansion}}.
+#' @seealso [dfuncEstim()], 
+#'          [cosine.expansion()],
+#'          [hermite.expansion()], 
+#'          [simple.expansion()].
 #'   
 #' @examples 
 #' x <- matrix(seq(0, 1, length = 200), ncol = 1)

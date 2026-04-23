@@ -6,18 +6,18 @@
 #' 
 #' @param n Number of coefficients, which is the number of points 
 #' at which the function of interest is evaluated.  The number of 
-#' intervals is \code{(n-1)/2}.  This number must be odd.
+#' intervals is `(n-1)/2`.  This number must be odd.
 #' 
 #' @return A vector of Simpson Composite rule coefficients 
 #' suitable for numeric integration. The return is a vector of 
 #' integers alternating between 4 and 2, with 1's on each end.
 #' 
 #' @details
-#' Let \code{x} be an vector of equally spaced points in the domain 
+#' Let `x` be an vector of equally spaced points in the domain 
 #' of a function f (equally spaced is critical). 
-#' Let \code{y = f(x)}. The numeric integral of f from \code{min(x)} 
-#' to \code{max(x)} is 
-#' \code{sum(simpsonCoefs(length(y)) * y) * (x[2] - x[1]) / 3}. 
+#' Let `y = f(x)`. The numeric integral of f from `min(x)` 
+#' to `max(x)` is 
+#' `sum(simpsonCoefs(length(y)) * y) * (x[2] - x[1]) / 3`. 
 #' 
 #' @examples
 #' 

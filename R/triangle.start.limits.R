@@ -7,7 +7,7 @@
 #' 
 #' @inherit startLimits return
 #' 
-#' @seealso \code{\link{triangle.like}}
+#' @seealso [triangle.like()]
 #' 
 #' @examples
 #' # make 'model list' object

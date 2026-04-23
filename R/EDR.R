@@ -2,7 +2,7 @@
 #'   
 #' @description Computes Effective Detection Radius (EDR) for estimated 
 #'   detection functions on point transects.  
-#'   See \code{\link{ESW}} is for line transects. 
+#'   See [ESW()] is for line transects. 
 #'   
 #' @inheritParams predict.dfunc
 #'   
@@ -17,8 +17,8 @@
 #' @inherit effectiveDistance return  
 #' 
 #'    
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{ESW}}, 
-#' \code{\link{effectiveDistance}}
+#' @seealso [dfuncEstim()], [ESW()], 
+#' [effectiveDistance()]
 #'   
 #' @examples
 #' # Load example thrasher data (point transect survey type)

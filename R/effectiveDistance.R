@@ -7,39 +7,39 @@
 #' @param newdata A data frame containing new values for 
 #' covariates at which either
 #' ESW's or EDR's will be computed. If NULL and 
-#'   \code{object} contains covariates, the  
+#'   `object` contains covariates, the  
 #'   covariates stored in
-#'   \code{object} are used (like \code{\link{predict.lm}}).
-#'   If not NULL, covariate values in \code{newdata}
+#'   `object` are used (like [predict.lm()]).
+#'   If not NULL, covariate values in `newdata`
 #'   are used. 
-#'   See \bold{Value} section for more information. 
+#'   See **Value** section for more information. 
 #'  
 #' @inheritParams predict.dfunc 
 #'   
 #' @details Serves as a wrapper for 
-#' \code{\link{ESW}} and \code{\link{EDR}}.
+#' [ESW()] and [EDR()].
 #' 
 #' Effective distances are areas under scaled 
 #' distance functions (i.e., area under g(x)). Areas are 
 #' exact for functions whose integral is known (e.g., negexp). 
 #' Numeric integration is used for all others. 
 #' 
-#' @return If \code{newdata} is present, the returned value is 
+#' @return If `newdata` is present, the returned value is 
 #' a vector of effective sampling distances associated with 
-#' covariate values in \code{newdata}. Length of return 
-#' in this case is the number of rows in \code{newdata}. 
-#' If \code{newdata} is NULL, the returned value is a vector 
+#' covariate values in `newdata`. Length of return 
+#' in this case is the number of rows in `newdata`. 
+#' If `newdata` is NULL, the returned value is a vector 
 #' of effective sampling distances associated with covariate 
-#' values in \code{object}. Length of return in this case 
+#' values in `object`. Length of return in this case 
 #' is the number of detected groups.  The returned vector 
-#' has measurement units, i.e., \code{object$outputUnits}.
+#' has measurement units, i.e., `object$outputUnits`.
 #' 
 #'      
-#' @seealso \code{\link{dfuncEstim}},
-#'   \code{\link{ESW}},
-#'   \code{\link{EDR}}, 
-#'   \code{\link{integrateNumeric}},
-#'   \code{\link{integrateNegexpLines}}
+#' @seealso [dfuncEstim()],
+#'   [ESW()],
+#'   [EDR()], 
+#'   [integrateNumeric()],
+#'   [integrateNegexpLines()]
 #' 
 #' @export
 

@@ -7,8 +7,8 @@
 \method{print}{abund}(x, ...)
 }
 \arguments{
-\item{x}{An object output by \code{abundEstim}.  This is a distance 
-function object augmented with abundance estimates, and has 
+\item{x}{An object output by \code{abundEstim}.  This is a distance
+function object augmented with abundance estimates, and has
 class \code{c("abund", "dfunc")}.}
 
 \item{\dots}{Included for compatibility to other print methods.
@@ -18,7 +18,7 @@ Ignored here.}
 0 is invisibly returned
 }
 \description{
-Print an object of class \code{c("abund","dfunc")} 
+Print an object of class \code{c("abund","dfunc")}
 produced by \code{abundEstim}.
 }
 \examples{
@@ -49,7 +49,7 @@ summary(fit)
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 
-\code{\link{summary.dfunc}}, \code{\link{print.dfunc}}, 
-\code{\link{summary.abund}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=abundEstim]{abundEstim()}},
+\code{\link[=summary.dfunc]{summary.dfunc()}}, \code{\link[=print.dfunc]{print.dfunc()}},
+\code{\link[=summary.abund]{summary.abund()}}
 }

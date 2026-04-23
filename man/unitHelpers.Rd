@@ -57,37 +57,37 @@ setUnits(x, u)
 \arguments{
 \item{x}{A numeric vector or matrix.}
 
-\item{u}{A string representing physical measurement units to 
-assign to \code{x}, e.g., "m", "km", "m^2".  Valid units are  
-listed in columns "(symbol|name)" of \code{\link[units]{valid_udunits}}.}
+\item{u}{A string representing physical measurement units to
+assign to \code{x}, e.g., "m", "km", "m^2".  Valid units are
+listed in columns "(symbol|name)" of \code{\link[units:valid_udunits]{units::valid_udunits()}}.}
 
 \item{.}{Placeholder for the fixed unit assignment operators. Ignored.
 See Details.}
 }
 \value{
-For \%#\% and \code{setUnits}, argument \code{x} with 
+For \\%#\\% and \code{setUnits}, argument \code{x} with
 units \code{u} attached.
 
-For all the fixed unit assignment operators (i.e., \%<units>\%), 
+For all the fixed unit assignment operators (i.e., \\%\if{html}{\out{<units>}}\\%),
 argument x with the respective units assigned.
 
-For \code{dropUnits}, argument \code{x} with no units. If 
+For \code{dropUnits}, argument \code{x} with no units. If
 input \code{x} has no units, \code{x} is returned unchanged.
 }
 \description{
-Helper functions for assigning physical measurement units in Rdistance. 
-All are convenience wrappers for \code{units::}\code{\link[units]{set_units}}.
+Helper functions for assigning physical measurement units in Rdistance.
+All are convenience wrappers for \verb{units::}\code{\link[units:units]{units::set_units()}}.
 }
 \details{
-The fixed unit assignment operators are designed to behave somewhat like 
+The fixed unit assignment operators are designed to behave somewhat like
 unary operators (i.e., 1 argument);
-but, R does not allow 
-user defined unary operators. 
+but, R does not allow
+user defined unary operators.
 Technically, the fixed unit assignment operators are instances of
-R's user-defined infix 
-operator, and as such they require two arguments. 
-Their syntax must be 
-\code{x \%<units>\% <something>}; but, the second argument is ignored
+R's user-defined infix
+operator, and as such they require two arguments.
+Their syntax must be
+\verb{x \\\%<units>\\\% <something>}; but, the second argument is ignored
 and '.' is suggested. See Examples.
 }
 \examples{

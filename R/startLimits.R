@@ -3,7 +3,7 @@
 #' @description 
 #' Returns starting values and limits (boundaries) for the parameters of 
 #'   distance functions.  This function is called by 
-#'   other routines in \code{Rdistance}, and is not intended to 
+#'   other routines in `Rdistance`, and is not intended to 
 #'   be called by the user. Replace this function in the global 
 #'   environment to change boundaries and starting values. 
 #'
@@ -12,9 +12,9 @@
 #' Rdistance 'model frames' are lists containing components 
 #' necessary to estimate a distance function, but no estimates. 
 #' Rdistance 'model frames' are typically
-#' produced by calls to \code{\link{parseModel}}. 
+#' produced by calls to [parseModel()]. 
 #' Rdistance 'fitted objects'
-#' are typically produced by calls to \code{\link{dfuncEstim}}.
+#' are typically produced by calls to [dfuncEstim()].
 #' 'Fitted objects' are 'model frames'
 #' with additional components such as the parameters estimates, 
 #' log likelihood value, convergence information, and the variance-
@@ -29,9 +29,9 @@
 #'   \item{names}{Vector of names for the likelihood parameters and expansion terms.}
 #'   
 #' The length of each vector in the return is:
-#'   \code{(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)}.
+#'   `(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)`.
 #'  
-#' @seealso \code{\link{dfuncEstim}}
+#' @seealso [dfuncEstim()]
 #' @examples 
 #'   data(sparrowDf)
 #'   

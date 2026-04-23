@@ -20,310 +20,309 @@ dE.single(
 )
 }
 \arguments{
-\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames 
+\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames
 contain one line per transect and a list-based column. The list-based
-column contains a data frame with detection information. 
-The detection information data frame on each row contains (at least) distances 
+column contains a data frame with detection information.
+The detection information data frame on each row contains (at least) distances
 and group sizes of all targets detected on the transect.
-Function \code{\link{RdistDf}} creates \code{RdistDf} data frames 
-from separate transect and detection data frames. 
-\code{\link{is.RdistDf}} checks whether data frames
+Function \code{\link[=RdistDf]{RdistDf()}} creates \code{RdistDf} data frames
+from separate transect and detection data frames.
+\code{\link[=is.RdistDf]{is.RdistDf()}} checks whether data frames
 are \code{RdistDf}'s.}
 
-\item{formula}{A standard formula object.  For example, \code{dist ~ 1}, 
+\item{formula}{A standard formula object.  For example, \code{dist ~ 1},
 \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
-is the name of the vector containing off-transect or radial detection distances.  
-The right-hand side contains the names of covariate 
+is the name of the vector containing off-transect or radial detection distances.
+The right-hand side contains the names of covariate
 vectors to fit in the detection
-function, and potentially group sizes. Group sizes are specified 
-by including \code{+ groupsize(<variable>)} in the RHS 
+function, and potentially group sizes. Group sizes are specified
+by including \verb{+ groupsize(<variable>)} in the RHS
 (see 'Group Sizes' section).
-Covariates can be either detection level 
-or transect level and can appear in  \code{data} or exist in the 
-global working environment. Regular R scoping 
+Covariates can be either detection level
+or transect level and can appear in  \code{data} or exist in the
+global working environment. Regular R scoping
 rules apply.}
 
-\item{likelihood}{String specifying the likelihood to fit. Built-in 
+\item{likelihood}{String specifying the likelihood to fit. Built-in
 likelihoods at present are "halfnorm", "hazrate", and "negexp".}
 
-\item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
-This is the minimum possible off-transect distance. Default is 0.  If 
-\code{w.lo} is greater than 0, it must have measurement units. 
+\item{w.lo}{Lower or left-truncation limit of the distances in distance data.
+This is the minimum possible off-transect distance. Default is 0.  If
+\code{w.lo} is greater than 0, it must have measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{w.hi}{Upper or right-truncation limit of the distances 
-in \code{dist}. This is the maximum off-transect distance that 
-could be observed. If unspecified (i.e., NULL), 
-right-truncation is set to the maximum of the observed 
-distances.  If \code{w.hi} is specified, it must have  
-measurement units.  
+\item{w.hi}{Upper or right-truncation limit of the distances
+in \code{dist}. This is the maximum off-transect distance that
+could be observed. If unspecified (i.e., NULL),
+right-truncation is set to the maximum of the observed
+distances.  If \code{w.hi} is specified, it must have
+measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{expansions}{A scalar specifying the number of terms 
-in \code{series} to compute. Depending on the series, 
-this could be 0 through 5.  The default of 0 equates 
-to no expansion terms of any type.  No expansion terms 
-are allowed (i.e., \code{expansions} is forced to 0) if 
-covariates are present in the detection function 
+\item{expansions}{A scalar specifying the number of terms
+in \code{series} to compute. Depending on the series,
+this could be 0 through 5.  The default of 0 equates
+to no expansion terms of any type.  No expansion terms
+are allowed (i.e., \code{expansions} is forced to 0) if
+covariates are present in the detection function
 (i.e., right-hand side of \code{formula} includes
 something other than \code{1}).}
 
-\item{series}{If \code{expansions} > 0, this string 
-specifies the type of expansion to use. Valid values at 
+\item{series}{If \code{expansions} > 0, this string
+specifies the type of expansion to use. Valid values at
 present are 'simple', 'hermite', and 'cosine'.}
 
-\item{x.scl}{The x coordinate (a distance) at which the 
+\item{x.scl}{The x coordinate (a distance) at which the
 detection function will be scaled.  \code{g.x.scl} can be a distance
-or the string "max".  
-When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
-units assigned. 
+or the string "max".
+When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement
+units assigned.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{g.x.scl}{Height of the distance function at coordinate \code{x}. 
-The distance function 
-will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. 
-If \code{g.x.scl} is not 
-a data frame, it must be a numeric value (vector of length 1) 
+\item{g.x.scl}{Height of the distance function at coordinate \code{x}.
+The distance function
+will be scaled so that g(\code{x.scl}) = \code{g.x.scl}.
+If \code{g.x.scl} is not
+a data frame, it must be a numeric value (vector of length 1)
 between 0 and 1.}
 
-\item{warn}{A logical scalar specifying whether to issue 
-an R warning if the estimation did not converge or if one 
-or more parameter estimates are at their boundaries.  
+\item{warn}{A logical scalar specifying whether to issue
+an R warning if the estimation did not converge or if one
+or more parameter estimates are at their boundaries.
 For estimation, \code{warn} should generally be left at
-its default value of \code{TRUE}.  When computing bootstrap 
-confidence intervals, setting \code{warn = FALSE} 
-turns off annoying warnings when an iteration does 
-not converge.  Regardless of \code{warn}, after 
-completion all messages about 
-convergence and boundary conditions are printed 
-by \code{print.dfunc}, \code{print.abund}, and 
+its default value of \code{TRUE}.  When computing bootstrap
+confidence intervals, setting \code{warn = FALSE}
+turns off annoying warnings when an iteration does
+not converge.  Regardless of \code{warn}, after
+completion all messages about
+convergence and boundary conditions are printed
+by \code{print.dfunc}, \code{print.abund}, and
 \code{plot.dfunc}.}
 
-\item{outputUnits}{A string specifying the symbolic measurement 
+\item{outputUnits}{A string specifying the symbolic measurement
 units for results. Valid units are listed in \code{units::valid_udunits()}.
-The strings for common distance symbolic units are: 
-"m" - meters, "ft" - feet, "cm" - centimeters, "mm" - 
-millimeters, "mi" - miles, "nmile" - 
-nautical miles ("nm" is nano meters), "in" - inches, 
-"yd" - yards, "km" - kilometers, "fathom" - fathoms, 
-"chains" - chains, and "furlong" - furlongs.  
+The strings for common distance symbolic units are:
+"m" - meters, "ft" - feet, "cm" - centimeters, "mm" -
+millimeters, "mi" - miles, "nmile" -
+nautical miles ("nm" is nano meters), "in" - inches,
+"yd" - yards, "km" - kilometers, "fathom" - fathoms,
+"chains" - chains, and "furlong" - furlongs.
 If \code{outputUnits} is unspecified (NULL),
-output units will be the same as those on 
+output units will be the same as those on
 distances in \code{data}.}
 
-\item{asymptoticSE}{Logical variable for whether to calculate 
+\item{asymptoticSE}{Logical variable for whether to calculate
 asymptotic standard errors. The default (TRUE) estimates an
-asymptotic variance-covariance matrix for parameters based on the 
-likelihood's Hessian (2nd derivative). If maximization 
-has been performed by Nlminb or HookesJeeves, the asymptotic 
-Hessian is estimated using numeric second deriviatives 
-of the likelihood at the maximum likelihood solution. If 
-maximization was performed by Optim, the last Hessian of 
-the maximization is returned 
+asymptotic variance-covariance matrix for parameters based on the
+likelihood's Hessian (2nd derivative). If maximization
+has been performed by Nlminb or HookesJeeves, the asymptotic
+Hessian is estimated using numeric second derivatives
+of the likelihood at the maximum likelihood solution. If
+maximization was performed by Optim, the last Hessian of
+the maximization is returned
 by Optim and used
-(see \code{\link{varcovarEstim}} and \code{\link{secondDeriv}}). 
-Asymptotic standard errors will not be estimated if 
-\code{asymptoticSE = FALSE}. If not estimated, 
-bootstrap iterations will run faster because the numeric Hessian, 
+(see \code{\link[=varcovarEstim]{varcovarEstim()}} and \code{\link[=secondDeriv]{secondDeriv()}}).
+Asymptotic standard errors will not be estimated if
+\code{asymptoticSE = FALSE}. If not estimated,
+bootstrap iterations will run faster because the numeric Hessian,
 which is discarded during bootstrapping,
 will not be calculated every iteration.}
 }
 \value{
 An object of class 'dfunc' with the following components:
 
-  \item{par}{The vector of estimated parameter values. 
-    Length of this vector is the sum of the following: 
-    \enumerate{
-       \item The number of columns of the design matrix. This equals the 
-       number of covariates in the distance function plus one for the 
-       intercept, assuming an intercept is included.
-       \item The number of constant parameters in the distance function.
-       Constant parameters are those not related to covariates.  For example, 
-       the expornent 'k' parameter for hazard rate likelihood, or 
-       the mixing fraction 'p' for the oneStep likelihood. This can be zero.
-       \item The number of expansion functions called for.  This equals 
-       the input \code{expansions}. 
-    }
-  }
- 
-  \item{loglik}{The maximized value of the log likelihood.}
-  
-  \item{convergence}{The convergence code. This code 
-    is returned by the optimizing routine (e.g., \code{optim} or \code{nlminb}).  
-    Values other than 0 indicate suspect convergence.}
-    
-  \item{message}{If maximization did not converge (\code{convergence != 0}),
-    this is the reason given by the optimizing routine.  
-  }
-    
-  \item{varcovar}{The variance-covariance matrix for coefficients 
-    of the distance function, either estimated by the inverse of 
-    the fit's Hessian or by bootstrapping.  
-    If the likelihood is smooth (i.e., those listed by 
-    \code{Rdistance:::differentiableLikelihoods())}, 
-    Rdistance initially estimates the variance-covariance matrix using the 
-    second derivative of the log likelihood surface 
-    at the final estimates, where second derivatives are estimated by 
-    numeric differentiation (by routine \code{\link{secondDeriv}}. 
-    The variance-covariance matrix is re-set to NULL 
-    if the Hessian is not positive-definite.  If bootstrap resampling
-    has been performed (using \code{abundEstim}), the variance-covariance
-    matrix is re-estimated using the bootstrap values of parameters
-    and automatically reset.  
-    Error estimates derived from bootstrapping are generally 
-    preferable to the asymptotic estimates, hence the automatic 
-    re-set.}   
-    
-  \item{limits}{A list containing the lower and upper limits of parameters.}
-  
-  \item{evaluations}{The number of likelihood evaluations performed by the 
-  optimizer.}
-  
-  \item{mf}{An R 'model frame' containing the detections (within the strip 
-  or circle) used in the fit, covariates specified in the formula, 
-  and groupsizes.  Column 'dist' contains the 
-  observed distances. The intercept, if included in the model, is not 
-  included as a column in this model frame. (Test whether an intercept 
-  is included using \code{attr(terms(return$mf), "intercept")}). 
-  Column 'offset(...)' contains group sizes associated with 
-  the values of 'dist'. Name of the group size column is "offset(...)", 
-  not "groupsize(...)", so that group sizes can be treated offsets in 
-  other R routines.  The \code{$mf} component is a proper \code{model.frame} and contains
-  both 'terms' and 'contrasts' attributes. This model frame 
-  contains only non-missing distances between \code{w.lo} and \code{w.hi}. }
-  
-  \item{data}{The original nested data frame subset to information required 
-  to complete distance estimation.  This data frame contains information 
-  on replication (i.e., rows are sites and are re-sampled during bootstrapping),
-  missing distances, missing transect lengths, and distances outside the observation 
-  strip from \code{w.lo} and \code{w.hi}. }
+\item{par}{The vector of estimated parameter values.
+Length of this vector is the sum of the following:
+\enumerate{
+\item The number of columns of the design matrix. This equals the
+number of covariates in the distance function plus one for the
+intercept, assuming an intercept is included.
+\item The number of constant parameters in the distance function.
+Constant parameters are those not related to covariates.  For example,
+the exponent 'k' parameter for hazard rate likelihood, or
+the mixing fraction 'p' for the oneStep likelihood. This can be zero.
+\item The number of expansion functions called for.  This equals
+the input \code{expansions}.
+}
+}
 
-  \item{formula}{The distance function's formula.}
-  
-  \item{dataName}{Name of the original nested data frame.}
-  
-  \item{likelihood}{The name of the likelihood fitted to observation 
-  distances. }
-    
-  \item{w.lo}{Left-truncation value used during the fit.}
-  
-  \item{w.hi}{Right-truncation value used during the fit.}
-  
-  \item{expansions}{The number of expansion terms used 
-  during the fit.}
-  
-  \item{series}{The type of expansion used during estimation. This is 
-  only relevant if \code{expansions > 0}.}
-  
-  \item{x.scl}{The distance at which 
-  the function has been scaled to some value.  
-  This is the \emph{x} at which the distance function 
-  g(\emph{x}) = \code{g.x.scl}. } 
-    
-  \item{g.x.scl}{The height of the distance function 
-    at a distance of \code{x.scl}. }
-    
-  \item{outputUnits}{A list of type 'symbolic_units' containing the 
-  physical measurement units used during estimation. }
-  
-  \item{asymptoticSE}{A logical scalar indication whether the 
-  variance-covariance matrix in component \code{varcovar} is 
-  asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE; 
-  estimated by boostrap resampling).}
-  
-  \item{optimizer}{The optimizing routine used.}
-    
-  \item{call}{The original function call.}
-  
-  \item{nCovars}{The number of exogenous covariates fitted in the 
-  distance function. Does not include the intercept. }
-  
-  \item{LhoodType}{The type of likelihood fitted. Currently, only 'parametric' 
-  types are fitted.  }
+\item{loglik}{The maximized value of the log likelihood.}
+
+\item{convergence}{The convergence code. This code
+is returned by the optimizing routine (e.g., \code{optim} or \code{nlminb}).
+Values other than 0 indicate suspect convergence.}
+
+\item{message}{If maximization did not converge (\code{convergence != 0}),
+this is the reason given by the optimizing routine.
+}
+
+\item{varcovar}{The variance-covariance matrix for coefficients
+of the distance function, either estimated by the inverse of
+the fit's Hessian or by bootstrapping.
+If the likelihood is smooth (i.e., those listed by
+\verb{Rdistance:::differentiableLikelihoods())},
+Rdistance initially estimates the variance-covariance matrix using the
+second derivative of the log likelihood surface
+at the final estimates, where second derivatives are estimated by
+numeric differentiation (by routine \code{\link[=secondDeriv]{secondDeriv()}}.
+The variance-covariance matrix is re-set to NULL
+if the Hessian is not positive-definite.  If bootstrap resampling
+has been performed (using \code{abundEstim}), the variance-covariance
+matrix is re-estimated using the bootstrap values of parameters
+and automatically reset.
+Error estimates derived from bootstrapping are generally
+preferable to the asymptotic estimates, hence the automatic
+re-set.}
+
+\item{limits}{A list containing the lower and upper limits of parameters.}
+
+\item{evaluations}{The number of likelihood evaluations performed by the
+optimizer.}
+
+\item{mf}{An R 'model frame' containing the detections (within the strip
+or circle) used in the fit, covariates specified in the formula,
+and groupsizes.  Column 'dist' contains the
+observed distances. The intercept, if included in the model, is not
+included as a column in this model frame. (Test whether an intercept
+is included using \code{attr(terms(return$mf), "intercept")}).
+Column 'offset(...)' contains group sizes associated with
+the values of 'dist'. Name of the group size column is "offset(...)",
+not "groupsize(...)", so that group sizes can be treated offsets in
+other R routines.  The \verb{$mf} component is a proper \code{model.frame} and contains
+both 'terms' and 'contrasts' attributes. This model frame
+contains only non-missing distances between \code{w.lo} and \code{w.hi}. }
+
+\item{data}{The original nested data frame subset to information required
+to complete distance estimation.  This data frame contains information
+on replication (i.e., rows are sites and are re-sampled during bootstrapping),
+missing distances, missing transect lengths, and distances outside the observation
+strip from \code{w.lo} and \code{w.hi}. }
+
+\item{formula}{The distance function's formula.}
+
+\item{dataName}{Name of the original nested data frame.}
+
+\item{likelihood}{The name of the likelihood fitted to observation
+distances. }
+
+\item{w.lo}{Left-truncation value used during the fit.}
+
+\item{w.hi}{Right-truncation value used during the fit.}
+
+\item{expansions}{The number of expansion terms used
+during the fit.}
+
+\item{series}{The type of expansion used during estimation. This is
+only relevant if \code{expansions > 0}.}
+
+\item{x.scl}{The distance at which
+the function has been scaled to some value.
+This is the \emph{x} at which the distance function
+g(\emph{x}) = \code{g.x.scl}. }
+
+\item{g.x.scl}{The height of the distance function
+at a distance of \code{x.scl}. }
+
+\item{outputUnits}{A list of type 'symbolic_units' containing the
+physical measurement units used during estimation. }
+
+\item{asymptoticSE}{A logical scalar indication whether the
+variance-covariance matrix in component \code{varcovar} is
+asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE;
+estimated by bootsrap resampling).}
+
+\item{optimizer}{The optimizing routine used.}
+
+\item{call}{The original function call.}
+
+\item{nCovars}{The number of exogenous covariates fitted in the
+distance function. Does not include the intercept. }
+
+\item{LhoodType}{The type of likelihood fitted. Currently, only 'parametric'
+types are fitted.  }
 }
 \description{
-Fits a detection function to off-transect 
+Fits a detection function to off-transect
 distances collected by a single observer.
 }
 \details{
-Optimization and estimation controls can be modified using \code{options()}. 
-See \code{\link{RdistanceControls}}.
+Optimization and estimation controls can be modified using \code{options()}.
+See \code{\link[=RdistanceControls]{RdistanceControls()}}.
 }
 \section{Group Sizes}{
- 
+
 To specify non-unity group sizes,  use \code{groupsize()}
-on the RHS of \code{formula}. When group sizes are not all 1, they must appear in a column 
-of the 'detections' list-column of \code{data}. 
-For example, \code{d ~ habitat + groupsize(number)} specifies  
-distances in column \code{d}, one covariate 
-named \code{habitat}, and that column \code{number} 
-contains the number of individuals 
-associated with each detection.  If group sizes are not specified, 
+on the RHS of \code{formula}. When group sizes are not all 1, they must appear in a column
+of the 'detections' list-column of \code{data}.
+For example, \code{d ~ habitat + groupsize(number)} specifies
+distances in column \code{d}, one covariate
+named \code{habitat}, and that column \code{number}
+contains the number of individuals
+associated with each detection.  If group sizes are not specified,
 all group sizes are assumed to be 1.
 }
 
 \section{Contrasts}{
- 
-Factor contrasts in \code{Rdistance} are specified 
-the same way as in \code{lm} or \code{glm}. 
-By default, \code{Rdistance} uses 
+
+Factor contrasts in \code{Rdistance} are specified
+the same way as in \code{lm} or \code{glm}.
+By default, \code{Rdistance} uses
 contrasts in \code{getOption("contrasts")}.  To change contrasts, use a statement
-like \code{options(contrasts = c(unordered = "contr.SAS", 
-ordered = "contr.poly"))}.  Or, to set contrasts for a 
-specific factor in the input data frame, use 
-\code{contrasts(df$A) <- "contr.sum"} or similar. 
-See \code{\link{contrasts}} or the \code{contrasts.arg}
-of \code{\link{model.matrix}}.
+like \code{options(contrasts = c(unordered = "contr.SAS",  ordered = "contr.poly"))}.  Or, to set contrasts for a
+specific factor in the input data frame, use
+\code{contrasts(df$A) <- "contr.sum"} or similar.
+See \code{\link[=contrasts]{contrasts()}} or the \code{contrasts.arg}
+of \code{\link[=model.matrix]{model.matrix()}}.
 }
 
 \section{Transect types}{
- 
-\code{Rdistance} accommodates two kinds of transects: continuous and point.  
+
+\code{Rdistance} accommodates two kinds of transects: continuous and point.
 Detections can occur at any point on continuous transects.
 \code{Rdistance} calls these 'line-transects' even though routes are not
 necessarily a straight line.
-On point transects, detections occur at a series of stops 
-(points). \code{Rdisance} calls these point-transects. Transects are the basic 
-sampling unit in both cases. \code{Rdistance} assumes each row of \code{data} 
-contains information from one transect. See \code{\link{RdistDf}} for 
+On point transects, detections occur at a series of stops
+(points). \code{Rdisance} calls these point-transects. Transects are the basic
+sampling unit in both cases. \code{Rdistance} assumes each row of \code{data}
+contains information from one transect. See \code{\link[=RdistDf]{RdistDf()}} for
 more details.
 }
 
 \section{Measurement Units}{
- 
-As of \code{Rdistance} version 3.0.0, measurement units are 
-require on all physical distances. 
-Requiring units ensures that internal calculations and results 
-(e.g., ESW and abundance) are correct 
-and that output units are clear.   
-Physical distances are required on
-off-transect distances, radial distances, truncation distances 
-(\code{w.lo}, unless it is zero; and \code{w.hi}, unless it is NULL), 
-scale locations (\code{x.scl}, unless it is zero),
-line-transect lengths, and study area size. All units are 
-1-dimensional except those on study area, which are 2-dimensional. 
 
-Physical measurement units can vary. For example, 
-off-transect distances can be meters ("m"), \code{w.hi} can be inches ("in"), 
-and \code{w.lo} can be kilometers ("km").  Internally, all distances are 
-converted to the units specified by \code{outputUnits} 
-(or the units of input distances if 
-\code{outputUnits} is NULL), and 
-all output is reported 
-in units of \code{outputUnits}. Valid conversions must exist between 
+As of \code{Rdistance} version 3.0.0, measurement units are
+require on all physical distances.
+Requiring units ensures that internal calculations and results
+(e.g., ESW and abundance) are correct
+and that output units are clear.
+Physical distances are required on
+off-transect distances, radial distances, truncation distances
+(\code{w.lo}, unless it is zero; and \code{w.hi}, unless it is NULL),
+scale locations (\code{x.scl}, unless it is zero),
+line-transect lengths, and study area size. All units are
+1-dimensional except those on study area, which are 2-dimensional.
+
+Physical measurement units can vary. For example,
+off-transect distances can be meters ("m"), \code{w.hi} can be inches ("in"),
+and \code{w.lo} can be kilometers ("km").  Internally, all distances are
+converted to the units specified by \code{outputUnits}
+(or the units of input distances if
+\code{outputUnits} is NULL), and
+all output is reported
+in units of \code{outputUnits}. Valid conversions must exist between
 units or an error is thrown.  For example, meters cannot be converted
 into hectares.
-  
-Measurement units can be assigned using one of Rdistance's 
-unit helper routines (see \code{help(unitHelpers)}), or from 
-routines in the \code{units} package (e.g., 
-\code{x <- units::set_units(x, "<units>")}). 
-See \code{units::}\code{\link[units]{valid_udunits}}
-for a list of valid symbolic units. 
 
-If measurements are truly unit-less, or measurement units are unknown, 
-set \code{options(Rdist_requireUnits = FALSE)}.  This suppresses 
-all unit checks and conversions.  Users are on their own 
+Measurement units can be assigned using one of Rdistance's
+unit helper routines (see \code{help(unitHelpers)}), or from
+routines in the \code{units} package (e.g.,
+\code{x <- units::set_units(x, "<units>")}).
+See \verb{units::}\code{\link[units:valid_udunits]{units::valid_udunits()}}
+for a list of valid symbolic units.
+
+If measurements are truly unit-less, or measurement units are unknown,
+set \code{options(Rdist_requireUnits = FALSE)}.  This suppresses
+all unit checks and conversions.  Users are on their own
 to make sure inputs are scaled correctly and that output units are known.
 }
 
@@ -339,10 +338,10 @@ plot(dfunc)
 }
 \references{
 Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
-   and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
-   abundance of biological populations}. Oxford University Press, Oxford, UK.
+and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
+abundance of biological populations}. Oxford University Press, Oxford, UK.
 }
 \seealso{
-\code{\link{abundEstim}}, \code{\link{autoDistSamp}}.
-Likelihood-specific help files (e.g., \code{\link{halfnorm.like}}).
+\code{\link[=abundEstim]{abundEstim()}}, \code{\link[=autoDistSamp]{autoDistSamp()}}.
+Likelihood-specific help files (e.g., \code{\link[=halfnorm.like]{halfnorm.like()}}).
 }

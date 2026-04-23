@@ -8,36 +8,36 @@ EDR(object, newdata = NULL)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{newdata}{A data frame containing new values of 
-the covariates at which to evaluate the distance functions. 
+\item{newdata}{A data frame containing new values of
+the covariates at which to evaluate the distance functions.
 If \code{newdata}
-is NULL, distance functions are evaluated at values of 
-the observed covariates and results in one prediction 
-per distance or transect (see parameter \code{type}). 
-If \code{newdata} is not NULL and the model does not contains covariates, 
-this routine returns one prediction for each row in \code{newdata}, but 
+is NULL, distance functions are evaluated at values of
+the observed covariates and results in one prediction
+per distance or transect (see parameter \code{type}).
+If \code{newdata} is not NULL and the model does not contains covariates,
+this routine returns one prediction for each row in \code{newdata}, but
 columns and values in \code{newdata} are ignored.}
 }
 \value{
-If \code{newdata} is present, the returned value is 
-a vector of effective sampling distances associated with 
-covariate values in \code{newdata}. Length of return 
-in this case is the number of rows in \code{newdata}. 
-If \code{newdata} is NULL, the returned value is a vector 
-of effective sampling distances associated with covariate 
-values in \code{object}. Length of return in this case 
-is the number of detected groups.  The returned vector 
+If \code{newdata} is present, the returned value is
+a vector of effective sampling distances associated with
+covariate values in \code{newdata}. Length of return
+in this case is the number of rows in \code{newdata}.
+If \code{newdata} is NULL, the returned value is a vector
+of effective sampling distances associated with covariate
+values in \code{object}. Length of return in this case
+is the number of detected groups.  The returned vector
 has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
-Computes Effective Detection Radius (EDR) for estimated 
-  detection functions on point transects.  
-  See \code{\link{ESW}} is for line transects.
+Computes Effective Detection Radius (EDR) for estimated
+detection functions on point transects.
+See \code{\link[=ESW]{ESW()}} is for line transects.
 }
 \details{
-Effective Detection Radius is the integral under the 
+Effective Detection Radius is the integral under the
 detection function times distance. \if{latex}{I.e., 
     \deqn{EDR = \int_{w.lo}^{w.hi} xg(x)dx,} 
   where \eqn{g(x)} is the distance
@@ -59,6 +59,6 @@ EDR(dfunc, newdata = data.frame(bare=30)) # vector length 1
   
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{ESW}}, 
-\code{\link{effectiveDistance}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=ESW]{ESW()}},
+\code{\link[=effectiveDistance]{effectiveDistance()}}
 }

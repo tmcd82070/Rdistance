@@ -7,30 +7,30 @@
 getNCores(parallel)
 }
 \arguments{
-\item{parallel}{A logical scalar, or a positive integer; ignored unless 
+\item{parallel}{A logical scalar, or a positive integer; ignored unless
 confidence intervals are requested (i.e., \code{!is.null(ci)}).
-If TRUE, bootstrap iterations are 
-run in parallel using the maximum number of CPU cores minus 1. 
+If TRUE, bootstrap iterations are
+run in parallel using the maximum number of CPU cores minus 1.
 The maximum number of CPU cores is reported by \code{parallel::detectCores()}.
-If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap 
-iterations are performed in parallel on that many cores. 
-If FALSE, bootstrap iterations are performed in series, and progress 
-will be shown if \code{showProgress == TRUE}. Parameters 
+If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap
+iterations are performed in parallel on that many cores.
+If FALSE, bootstrap iterations are performed in series, and progress
+will be shown if \code{showProgress == TRUE}. Parameters
 \code{showProgress} and \code{plot.bs} are ignored when operating
 in parallel.}
 }
 \value{
-A list with components $parallel and $cores. $parallel 
-is logical, T for parallel operations, F o.w.  $cores is the 
-number of cores to use during parallel operations.  $cores is 
+A list with components $parallel and $cores. $parallel
+is logical, T for parallel operations, F o.w.  $cores is the
+number of cores to use during parallel operations.  $cores is
 integer in the range 1, 2, ..., max(Available cores).
 }
 \description{
-Set the number of cores for parallel operations. 
+Set the number of cores for parallel operations.
 Also convert integer 'parallel' to TRUE-FALSE for ease.
 }
 \details{
-Input \code{parallel} <= 0 is converted to 1. 
+Input \code{parallel} <= 0 is converted to 1.
 Input \code{parallel} > maxCores is converted to maxCores.
 If input \code{parallel} is numeric, is first converted to integer
 by rounding down.

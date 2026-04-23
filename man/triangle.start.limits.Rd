@@ -7,31 +7,31 @@
 triangle.start.limits(ml)
 }
 \arguments{
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
+\item{ml}{Either a Rdistance 'model frame' or an Rdistance
+'fitted object'.  Both are of class "dfunc".
+Rdistance 'model frames' are lists containing components
+necessary to estimate a distance function, but no estimates.
 Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
+produced by calls to \code{\link[=parseModel]{parseModel()}}.
 Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
+are typically produced by calls to \code{\link[=dfuncEstim]{dfuncEstim()}}.
 'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
+with additional components such as the parameters estimates,
 log likelihood value, convergence information, and the variance-
 covariance matrix of the parameters.}
 }
 \value{
 A list containing the following components
-  \item{start}{Vector of starting values for parameters of the likelihood and expansion terms. }
-  \item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
-  \item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
-  \item{names}{Vector of names for the likelihood parameters and expansion terms.}
-  
+\item{start}{Vector of starting values for parameters of the likelihood and expansion terms. }
+\item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
+\item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
+\item{names}{Vector of names for the likelihood parameters and expansion terms.}
+
 The length of each vector in the return is:
-  \code{(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)}.
+\verb{(Num expansions) + 1 + 1*(like \\\%in\\\% c("hazrate")) + (Num Covars)}.
 }
 \description{
-Compute starting values and limits 
+Compute starting values and limits
 for the triangle distance function.
 }
 \examples{
@@ -58,5 +58,5 @@ abline(v = exp(sl$start["(Intercept)"]))
 
 }
 \seealso{
-\code{\link{triangle.like}}
+\code{\link[=triangle.like]{triangle.like()}}
 }

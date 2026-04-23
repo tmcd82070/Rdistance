@@ -7,13 +7,13 @@
 \method{plot}{dfunc}(x, ...)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{x}{An estimated detection function object, normally
+produced by calling \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
 \item{...}{
   Arguments passed on to \code{\link[=plot.dfunc.para]{plot.dfunc.para}}
   \describe{
-    \item{\code{include.zero}}{Boolean value specifying whether to include 0 on the x-axis 
+    \item{\code{include.zero}}{Boolean value specifying whether to include 0 on the x-axis
 of the plot.  A value of TRUE will include 0 on the left hand end of the x-axis
 regardless of the range of distances.  A value of FALSE will plot only the
 observation strip (\code{w.lo} to \code{w.hi}).}
@@ -22,105 +22,104 @@ bars for the plot. This argument is the \code{breaks} argument to
 \code{hist}.  This can be either a vector giving the breakpoints between
 bars, the suggested number of bars (a single number), a string naming
 an algorithm to compute the number of bars, or a function to compute the
-number of bars.  See \code{\link{hist}} for all options.}
-    \item{\code{newdata}}{Data frame (similar to \code{newdata} parameter 
-of \code{\link{lm}}) containing new values for covariates in 
+number of bars.  See \code{\link[=hist]{hist()}} for all options.}
+    \item{\code{newdata}}{Data frame (similar to \code{newdata} parameter
+of \code{\link[=lm]{lm()}}) containing new values for covariates in
 the distance function.
-One distance function is computed and plotted for each row in the data frame. 
-If \code{newdata} is NULL, a single distance function is plotted 
-for mean values of all numeric covariates and mode values for all 
+One distance function is computed and plotted for each row in the data frame.
+If \code{newdata} is NULL, a single distance function is plotted
+for mean values of all numeric covariates and mode values for all
 factor covariates.}
-    \item{\code{legend}}{Logical scalar for whether to include a legend. 
+    \item{\code{legend}}{Logical scalar for whether to include a legend.
 If TRUE, a legend will be included on the plot detailing
 the covariate values used to generate the plot.}
-    \item{\code{plotBars}}{Logical scalar for whether to plot the histogram 
-of distances behind the distance function.  If FALSE, no histogram 
+    \item{\code{plotBars}}{Logical scalar for whether to plot the histogram
+of distances behind the distance function.  If FALSE, no histogram
 is plotted, only the distance function line(s).}
     \item{\code{xlab}}{Label for the x-axis}
     \item{\code{ylab}}{Label for the y-axis}
-    \item{\code{density}}{If \code{plotBars=TRUE}, a vector giving the density of 
-shading lines, in lines per inch, for the bars underneath 
-the distance function, repeated as necessary to exceed the number 
-of bars. Values of NULL or a number strictly less than 0 
-mean solid fill using colors from parameter \code{col}. 
-If \code{density = 0}, bars are not filled and only the borders are rendered. 
-If \code{density} > 0, bars are shaded with colors and angles from 
+    \item{\code{density}}{If \code{plotBars=TRUE}, a vector giving the density of
+shading lines, in lines per inch, for the bars underneath
+the distance function, repeated as necessary to exceed the number
+of bars. Values of NULL or a number strictly less than 0
+mean solid fill using colors from parameter \code{col}.
+If \code{density = 0}, bars are not filled and only the borders are rendered.
+If \code{density} > 0, bars are shaded with colors and angles from
 parameters \code{col} and \code{angle}.}
-    \item{\code{angle}}{When \code{density} > 0, the slope of bar shading lines, 
+    \item{\code{angle}}{When \code{density} > 0, the slope of bar shading lines,
 given as an angle in degrees (counter-clockwise), repeated as necessary
 to exceed the number of bars.}
-    \item{\code{col}}{A vector of bar fill colors or line colors when bars are 
+    \item{\code{col}}{A vector of bar fill colors or line colors when bars are
 drawn and \code{density != 0}, repeated as necessary to exceed the number
 of bars. Also used for the bar borders when
 \code{border = TRUE}.}
-    \item{\code{border}}{The color of bar borders when bars are plotted, 
-repeated as necessary to exceed the number of bars. A 
-value of NA or FALSE means no borders. If bars are shaded with lines 
-(i.e., \code{density>0}), \code{border = TRUE} uses the same 
+    \item{\code{border}}{The color of bar borders when bars are plotted,
+repeated as necessary to exceed the number of bars. A
+value of NA or FALSE means no borders. If bars are shaded with lines
+(i.e., \code{density>0}), \code{border = TRUE} uses the same
 color for the border as for the shading lines.  Otherwise, fill color
-or shaded line color are specified in \code{col} while 
+or shaded line color are specified in \code{col} while
 border color is specified in \code{border}.}
-    \item{\code{vertLines}}{Logical scalar specifying whether to plot vertical 
-lines at \code{w.lo} and \code{w.hi} from 0 to the  
+    \item{\code{vertLines}}{Logical scalar specifying whether to plot vertical
+lines at \code{w.lo} and \code{w.hi} from 0 to the
 distance function.}
     \item{\code{col.dfunc}}{Color of the distance function(s).
-If only one distance function (one line) is being plotted, 
+If only one distance function (one line) is being plotted,
 the default color is "red".
-If covariates or \code{newdata} are present, 
-the default value uses \code{graphics::rainbow(n)}, 
-where \code{n} is the number 
-of plotted distance functions.  Otherwise, \code{col.dfunc} 
-is replicated to the required length.  Plot all 
-distance functions in the same color by setting 
+If covariates or \code{newdata} are present,
+the default value uses \code{graphics::rainbow(n)},
+where \code{n} is the number
+of plotted distance functions.  Otherwise, \code{col.dfunc}
+is replicated to the required length.  Plot all
+distance functions in the same color by setting
 \code{col.dfunc} to
-a scalar. Plot blue-red pairs of distance functions 
+a scalar. Plot blue-red pairs of distance functions
 by setting \code{col.dfunc} = \code{c("blue", "red")}. Etc.}
     \item{\code{lty.dfunc}}{Line type of the distance function(s).
-If covariates or \code{newdata} is present, 
-the default uses line types  
-to \code{1:n}, where \code{n} is the number 
-of plotted distance functions.  Otherwise, \code{lty.dfunc} 
+If covariates or \code{newdata} is present,
+the default uses line types
+to \code{1:n}, where \code{n} is the number
+of plotted distance functions.  Otherwise, \code{lty.dfunc}
 is replicated to the required length. Plot solid lines
 by specifying \code{lty.dfunc = 1}. Plot solid-dashed line pairs
 by specifying \code{lty.dfunc = c(1,2)}. Etc.}
-    \item{\code{lwd.dfunc}}{Line width of the distance function(s), replicated 
+    \item{\code{lwd.dfunc}}{Line width of the distance function(s), replicated
 to the required length. Default is 2 for all lines.}
   }}
 }
 \value{
 The input distance function is returned, with two additional
-  components than can be used to reconstruct the plotted bars.  (To 
-  obtain values of the plotted distance functions, use \code{predict}
-  with \code{type = "distances"}.) 
-  The additional components are:
-  \item{barHeights}{A vector containing the scaled bar heights drawn 
-  on the plot.}
-  \item{barWidths}{A vector or scalar of the bar widths drawn on 
-  the plot, with measurement units.  }
-  Re-plot the bars with \code{barplot( return$barHeights, 
-  width = return$barWidths )}.
+components than can be used to reconstruct the plotted bars.  (To
+obtain values of the plotted distance functions, use \code{predict}
+with \code{type = "distances"}.)
+The additional components are:
+\item{barHeights}{A vector containing the scaled bar heights drawn
+on the plot.}
+\item{barWidths}{A vector or scalar of the bar widths drawn on
+the plot, with measurement units.  }
+Re-plot the bars with \code{barplot( return$barHeights,  width = return$barWidths )}.
 }
 \description{
-Plot method for objects of class '\code{dfunc}'.  Objects of 
-class '\code{dfunc}' are estimated distance functions produced by 
-\code{\link{dfuncEstim}}.
+Plot method for objects of class '\code{dfunc}'.  Objects of
+class '\code{dfunc}' are estimated distance functions produced by
+\code{\link[=dfuncEstim]{dfuncEstim()}}.
 }
 \details{
 If \code{plotBars} is TRUE, a scaled histogram is plotted
- and the estimated distance function
-  is plotted over the top of it.  When bars are plotted, 
-  this routine uses \code{graphics::barplot} 
- for setting up the initial plotting region and
- most parameters to \code{graphics::barplot} can 
- be specified (exceptions noted above in description of '\dots').
- 
- The form of the likelihood and any series
-  expansions is printed in the main title (overwrite this with 
-  \code{main="<my title>"}). Convergence of the distance
-  function is checked.  If the distance function did not converge, a warning
-  is printed over the top of the histogram.  If one or more parameter
-  estimates are at their limits (likely indicating non-convergence or poor
-  fit), another warning is printed.
+and the estimated distance function
+is plotted over the top of it.  When bars are plotted,
+this routine uses \code{graphics::barplot}
+for setting up the initial plotting region and
+most parameters to \code{graphics::barplot} can
+be specified (exceptions noted above in description of '\dots').
+
+The form of the likelihood and any series
+expansions is printed in the main title (overwrite this with
+\code{main="<my title>"}). Convergence of the distance
+function is checked.  If the distance function did not converge, a warning
+is printed over the top of the histogram.  If one or more parameter
+estimates are at their limits (likely indicating non-convergence or poor
+fit), another warning is printed.
 }
 \examples{
 # Simulated RdistDf
@@ -211,6 +210,6 @@ plot(sparrowDfuncObserver
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{print.dfunc}},
-  \code{\link{print.abund}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=print.dfunc]{print.dfunc()}},
+\code{\link[=print.abund]{print.abund()}}
 }

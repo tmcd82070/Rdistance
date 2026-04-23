@@ -22,11 +22,11 @@
 #' function. 
 #' Rdistance uses the 
 #' incomplete gamma function implemented in 
-#' \code{\link[expint]{gammainc}}, which for 
+#' [expint::gammainc()], which for 
 #' all intents and purposes is exact.
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
-#' \code{\link{integrateOneStepLines}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpLines()]; 
+#' [integrateOneStepLines()] 
 #' 
 #' @examples
 #' 

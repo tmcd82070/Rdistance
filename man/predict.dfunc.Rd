@@ -16,102 +16,101 @@
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{newdata}{A data frame containing new values of 
-the covariates at which to evaluate the distance functions. 
+\item{newdata}{A data frame containing new values of
+the covariates at which to evaluate the distance functions.
 If \code{newdata}
-is NULL, distance functions are evaluated at values of 
-the observed covariates and results in one prediction 
-per distance or transect (see parameter \code{type}). 
-If \code{newdata} is not NULL and the model does not contains covariates, 
-this routine returns one prediction for each row in \code{newdata}, but 
+is NULL, distance functions are evaluated at values of
+the observed covariates and results in one prediction
+per distance or transect (see parameter \code{type}).
+If \code{newdata} is not NULL and the model does not contains covariates,
+this routine returns one prediction for each row in \code{newdata}, but
 columns and values in \code{newdata} are ignored.}
 
-\item{type}{The type of predictions desired. 
+\item{type}{The type of predictions desired.
 \itemize{
-  \item \bold{If \code{type} == "parameters"}: Returned value is 
-    a matrix of predicted (canonical) parameters of the 
-    likelihood function. If \code{newdata} is NULL, return contains 
-    one parameter value for every detection distance
-    in \code{object$mf} (distances in \code{object$mf} are between 
-    \code{object$w.lo} and \code{object$w.hi} and non-missing). 
-    If \code{newdata} is not NULL, returned vector 
-    has one parameter for every row in \code{newdata}. Parameter 
-    \code{distances} is ignored when \code{type} == "parameters". 
-    Canonical parameters (non-expansion terms)
-    are returned on the response (inverse-link) scale.  Raw 
-    canonical parameters in \code{object$par} are stored in 
-    the link scale.  Expansion term parameters use the identity 
-    link, so their value in the output equals their value 
-    in \code{object$par}. 
-    
-  \item \bold{If \code{type} == "likelihood"}: Returned value is a 
-    matrix of \bold{unscaled} likelihood values for all  
-    observed distances in \code{object$mf}, i.e., raw distance functions
-    evaluated at the observed distances.  Parameters \code{newdata} and 
-    \code{distances} are ignored when \code{type} is "likelihood". 
-    The negative log likelihood of the full data set is
-    \code{-sum(log(predict(object,type="likelihood") / 
-    effectiveDistance(object)))}. 
-    
-  \item \bold{If \code{type} == "dfuncs" or "dfunc"}: Returned  
-    value is a matrix whose columns contain scaled distance functions. 
-    The distance functions in each column are evaluated at distances   
-    in argument \code{distances}, not at the observed 
-    distances in \code{object$mf}. The number of distance functions
-    returned (i.e., number of columns) depends on \code{newdata} 
-    as follows: 
-    \itemize{
-       \item If \code{newdata} is NULL, one distance function 
-       will be returned for every detection in \code{object$mf}
-       that has valid covariate values.    
-      \item If \code{newdata} is not NULL, one distance function 
-      will be returned for each observation (row) in \code{newdata}. 
-    }
-    
-   \item \bold{If \code{type} == "density" or "abundance"}: Returned 
-   object is a tibble containing predicted density and abundance 
-   on the area surveyed by each transect. 
- }  
- 
- If \code{object} is a smoothed distance function, it does not have parameters
- and this routine will only return scaled distance functions, densities, or 
- abundances. That is, 
- \code{type} = "parameters" when \code{object} is smoothed 
- does not make sense and the smoothed distance function estimate 
- will be returned if \code{type} does not equal "density" or "abundance".}
+\item \strong{If \code{type} == "parameters"}: Returned value is
+a matrix of predicted (canonical) parameters of the
+likelihood function. If \code{newdata} is NULL, return contains
+one parameter value for every detection distance
+in \code{object$mf} (distances in \code{object$mf} are between
+\code{object$w.lo} and \code{object$w.hi} and non-missing).
+If \code{newdata} is not NULL, returned vector
+has one parameter for every row in \code{newdata}. Parameter
+\code{distances} is ignored when \code{type} == "parameters".
+Canonical parameters (non-expansion terms)
+are returned on the response (inverse-link) scale.  Raw
+canonical parameters in \code{object$par} are stored in
+the link scale.  Expansion term parameters use the identity
+link, so their value in the output equals their value
+in \code{object$par}.
 
-\item{distances}{A vector or 1-column matrix of 
-distances at which to evaluate 
-distance functions, when distance functions 
-are requested.  \code{distances} must have measurement units. 
-Any distances outside the observation 
-strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
-\code{distances} is NULL, a sequence 
-of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
-spaced distances between 
+\item \strong{If \code{type} == "likelihood"}: Returned value is a
+matrix of \strong{unscaled} likelihood values for all
+observed distances in \code{object$mf}, i.e., raw distance functions
+evaluated at the observed distances.  Parameters \code{newdata} and
+\code{distances} are ignored when \code{type} is "likelihood".
+The negative log likelihood of the full data set is
+\code{-sum(log(predict(object,type="likelihood") /  effectiveDistance(object)))}.
+
+\item \strong{If \code{type} == "dfuncs" or "dfunc"}: Returned
+value is a matrix whose columns contain scaled distance functions.
+The distance functions in each column are evaluated at distances
+in argument \code{distances}, not at the observed
+distances in \code{object$mf}. The number of distance functions
+returned (i.e., number of columns) depends on \code{newdata}
+as follows:
+\itemize{
+\item If \code{newdata} is NULL, one distance function
+will be returned for every detection in \code{object$mf}
+that has valid covariate values.
+\item If \code{newdata} is not NULL, one distance function
+will be returned for each observation (row) in \code{newdata}.
+}
+
+\item \strong{If \code{type} == "density" or "abundance"}: Returned
+object is a tibble containing predicted density and abundance
+on the area surveyed by each transect.
+}
+
+If \code{object} is a smoothed distance function, it does not have parameters
+and this routine will only return scaled distance functions, densities, or
+abundances. That is,
+\code{type} = "parameters" when \code{object} is smoothed
+does not make sense and the smoothed distance function estimate
+will be returned if \code{type} does not equal "density" or "abundance".}
+
+\item{distances}{A vector or 1-column matrix of
+distances at which to evaluate
+distance functions, when distance functions
+are requested.  \code{distances} must have measurement units.
+Any distances outside the observation
+strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If
+\code{distances} is NULL, a sequence
+of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly
+spaced distances between
 \code{object$w.lo} and \code{object$w.hi} (inclusive) is used.}
 
 \item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
-The proportion of the default sampling unit that 
-  was surveyed.  If both sides of line transects were observed, 
-  \code{propUnitSurveyed}
-  = 1.  If only a single side of line transects were observed, set 
-  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
-  the proportion of each circle that was observed. Length must either be
-  1 or the total number of transects in \code{x}.}
+The proportion of the default sampling unit that
+was surveyed.  If both sides of line transects were observed,
+\code{propUnitSurveyed}
+= 1.  If only a single side of line transects were observed, set
+\code{propUnitSurveyed} = 0.5. For point transects, this should be set to
+the proportion of each circle that was observed. Length must either be
+1 or the total number of transects in \code{x}.}
 
-\item{area}{A scalar containing the total area of inference. Usually, this is 
-study area size.  If \code{area} is NULL (the default), 
+\item{area}{A scalar containing the total area of inference. Usually, this is
+study area size.  If \code{area} is NULL (the default),
 \code{area} will be set to 1 square unit of the output units and density estimates
-will be produced. 
-If \code{area} is not NULL, it must have measurement units 
-assigned by the \code{units} package. 
+will be produced.
+If \code{area} is not NULL, it must have measurement units
+assigned by the \code{units} package.
 The units on \code{area} must be convertible
-to squared output units. Units 
-on \code{area} must be two-dimensional. 
-For example, if output units are "foo", 
+to squared output units. Units
+on \code{area} must be two-dimensional.
+For example, if output units are "foo",
 units on area must be convertible to "foo^2" by the \code{units}
 package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
@@ -119,68 +118,68 @@ others are acceptable.}
 \item{\dots}{Included for compatibility with generic \code{predict} methods.}
 }
 \value{
-A matrix containing predictions: 
+A matrix containing predictions:
 \itemize{
-  \item \bold{If \code{type} is "parameters"}, the returned matrix 
-  contains likelihood parameters. The extent of the 
-  first dimension (rows) in the returned matrix is equal to 
-  either the number of detection distances 
-  in the observed strip or number of rows in \code{newdata}. 
-  The returned matrix's second dimension (columns) is 
-  the number of parameters in the likelihood 
-  plus the number of expansion terms.  
-  See the help for each likelihoods to interpret  
-  returned parameter values. All parameters are returned 
-  on the inverse-link scale; i.e., \emph{exponential} for canonical 
-  parameters and \emph{identity} for expansion terms. 
-  
-  \item \bold{If \code{type} is "dfuncs" or "dfunc"}, columns of the 
-  returned matrix contains detection functions (i.e., \emph{g(x)}).  
-  The extent of the first 
-  dimension (number of rows) is either the number of distances 
-  specified in \code{distances}
-  or \code{options()$Rdistance_intEvalPts} if \code{distances} is 
-  not specified.
-  The extent of the second dimension (number of columns) is: 
-    \itemize{
-      \item the number of detections with non-missing distances: 
-      if \code{newdata} is NULL.
-      \item the number of rows in \code{newdata} if 
-       \code{newdata} is specified.
-    }
-  All distance functions in columns of the return are scaled 
-  to \code{object$g.x.scale} at \code{object$x.scl}. The returned matrix has 
-  the following additional attributes:
-   \itemize{
-      \item \code{attr(return, "distances")} is the vector of distances used to 
-      predict the function in \code{return}.  Either the input \code{distances} object
-      or the computed sequence of distances when \code{distances} is NULL. 
-      \item \code{attr(return, "x0")} is the vector of distances at which each 
-       distance function in \code{return} was scaled. i.e., the vector of 
-       \code{x.scl}.
-      \item \code{attr(return, "g.x.scl")} is the height of \emph{g(x)} (the distance 
-       function) at \emph{x0}. 
-  }
-  
-  \item \bold{If \code{type} is "density" or "abundance"}, the return is a 
-  tibble containing density and abundance estimates by transect.  
-  All transects in the input data (i.e., \code{object$data}) are 
-  included, even those with missing lengths. 
-   Columns in the tibble are:
-   \itemize{
-     \item transect ID: the grouping factor of the original RdistDf object.
-     \item individualsSeen: sum of non-missing group sizes on that transect.
-     \item avgPdetect: average probability of detection over groups sighted on that transect.
-     \item effort: size of the area surveyed by that transect.
-     \item density: density of individuals in the area surveyed by the transect.
-     \item abundance: abundance of individuals in the area surveyed by the transect.
-   } 
+\item \strong{If \code{type} is "parameters"}, the returned matrix
+contains likelihood parameters. The extent of the
+first dimension (rows) in the returned matrix is equal to
+either the number of detection distances
+in the observed strip or number of rows in \code{newdata}.
+The returned matrix's second dimension (columns) is
+the number of parameters in the likelihood
+plus the number of expansion terms.
+See the help for each likelihoods to interpret
+returned parameter values. All parameters are returned
+on the inverse-link scale; i.e., \emph{exponential} for canonical
+parameters and \emph{identity} for expansion terms.
+
+\item \strong{If \code{type} is "dfuncs" or "dfunc"}, columns of the
+returned matrix contains detection functions (i.e., \emph{g(x)}).
+The extent of the first
+dimension (number of rows) is either the number of distances
+specified in \code{distances}
+or \code{options()$Rdistance_intEvalPts} if \code{distances} is
+not specified.
+The extent of the second dimension (number of columns) is:
+\itemize{
+\item the number of detections with non-missing distances:
+if \code{newdata} is NULL.
+\item the number of rows in \code{newdata} if
+\code{newdata} is specified.
+}
+All distance functions in columns of the return are scaled
+to \code{object$g.x.scale} at \code{object$x.scl}. The returned matrix has
+the following additional attributes:
+\itemize{
+\item \code{attr(return, "distances")} is the vector of distances used to
+predict the function in \code{return}.  Either the input \code{distances} object
+or the computed sequence of distances when \code{distances} is NULL.
+\item \code{attr(return, "x0")} is the vector of distances at which each
+distance function in \code{return} was scaled. i.e., the vector of
+\code{x.scl}.
+\item \code{attr(return, "g.x.scl")} is the height of \emph{g(x)} (the distance
+function) at \emph{x0}.
+}
+
+\item \strong{If \code{type} is "density" or "abundance"}, the return is a
+tibble containing density and abundance estimates by transect.
+All transects in the input data (i.e., \code{object$data}) are
+included, even those with missing lengths.
+Columns in the tibble are:
+\itemize{
+\item transect ID: the grouping factor of the original RdistDf object.
+\item individualsSeen: sum of non-missing group sizes on that transect.
+\item avgPdetect: average probability of detection over groups sighted on that transect.
+\item effort: size of the area surveyed by that transect.
+\item density: density of individuals in the area surveyed by the transect.
+\item abundance: abundance of individuals in the area surveyed by the transect.
+}
 }
 }
 \description{
-Predict either likelihood parameters, 
-distance functions, site-specific density, or 
-site-specific abundance from estimated distance function 
+Predict either likelihood parameters,
+distance functions, site-specific density, or
+site-specific abundance from estimated distance function
 objects.
 }
 \examples{
@@ -244,6 +243,6 @@ predict(sparrowDfuncObserver
   
 }
 \seealso{
-\code{\link{halfnorm.like}}, \code{\link{negexp.like}}, 
-\code{\link{hazrate.like}}
+\code{\link[=halfnorm.like]{halfnorm.like()}}, \code{\link[=negexp.like]{negexp.like()}},
+\code{\link[=hazrate.like]{hazrate.like()}}
 }

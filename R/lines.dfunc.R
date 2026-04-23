@@ -2,7 +2,7 @@
 #'   
 #' @title lines.dfunc - Line plotting method for distance functions
 #'   
-#' @description Line plot method for objects of class '\code{dfunc}' 
+#' @description Line plot method for objects of class '`dfunc`' 
 #' that adds distance functions to an existing plot. 
 #'   
 #' @inheritParams plot.dfunc
@@ -12,22 +12,22 @@
 #' @param prob Logical scalar for whether to scale the distance function 
 #' to be a density function (integrates to one). Default behavior is designed 
 #' to be compatible with the plot method for distance functions 
-#' (\code{\link{plot.dfunc}}). By default, line transect distance 
+#' ([plot.dfunc()]). By default, line transect distance 
 #' functions are not scaled to a density and integrate to the effective strip width. 
 #' In contrast, point transects distance functions are scaled to be densities 
 #' by default. 
 #' 
-#' @param \dots Parameters passed to \code{lines.default} that control attributes like 
+#' @param \dots Parameters passed to `lines.default` that control attributes like 
 #' color, line width, line type, etc. 
 #'   
 #' @return A data frame containing the x and y coordinates of the 
 #' plotted line(s) is returned invisibly.  X coordinates in the 
-#' return are names \code{x}. Y coordinates in the return are named 
-#' \code{y1, y2, ..., yn}, i.e., one column per returned 
+#' return are names `x`. Y coordinates in the return are named 
+#' `y1, y2, ..., yn`, i.e., one column per returned 
 #' distance function.  
 #'   
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}},
-#'   \code{\link{print.abund}}
+#' @seealso [dfuncEstim()], [plot.dfunc()],
+#'   [print.abund()]
 #'   
 #' @examples 
 #' # a simulated RdistDf

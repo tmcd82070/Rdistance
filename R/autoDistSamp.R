@@ -9,37 +9,37 @@
 #' @inheritParams dfuncEstim
 #' 
 #' @param plot Logical scalar specifying whether to plot models during model selection. 
-#'   If \code{TRUE}, a histogram with fitted distance function is plotted for every model. 
+#'   If `TRUE`, a histogram with fitted distance function is plotted for every model. 
 #'   The function pauses between each plot and prompts the user for whether they want to continue. 
-#'   To suppress user prompts, set \code{plot} = \code{FALSE}.
+#'   To suppress user prompts, set `plot` = `FALSE`.
 #'   
 #' @param criterion A string specifying the criterion to use when assessing model fit.   
 #' The best fitting model, as defined by this routine, has the lowest value 
 #' of this criterion.  This must be one of "AICc" (the default), 
-#' "AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas. 
+#' "AIC", or "BIC".  See [AIC.dfunc()] for formulas. 
 #'   
 #' @param likelihoods String vector specifying the likelihoods to fit. 
-#' See 'likelihood' parameter of \code{\link{dfuncEstim}}.
+#' See 'likelihood' parameter of [dfuncEstim()].
 #'   
 #' @details During distance function selection, all combinations of likelihoods, series, and 
-#' number of expansions is fitted. For example, if \code{likelihoods} has 3 elements, 
-#' \code{series} has 2 elements, and \code{expansions} has 4 elements, 
+#' number of expansions is fitted. For example, if `likelihoods` has 3 elements, 
+#' `series` has 2 elements, and `expansions` has 4 elements, 
 #' this routine fits a total of 3 (likelihoods) * 2 (series) * 4 (expansions) 
 #' = 24 models.  Default parameters fit 9 detection functions, i.e.,  
 #' all combinations of "halfnorm", "hazrate", and "negexp" likelihoods 
 #' and 0 through 3 expansions. Other combinations are specified through 
-#' values of \code{likelihoods}, \code{series}, and \code{expansions}. 
+#' values of `likelihoods`, `series`, and `expansions`. 
 #' 
-#' Suppress all intermediate output using \code{plot.bs=FALSE}, 
-#' \code{showProgress=FALSE}, and \code{plot=FALSE}. 
+#' Suppress all intermediate output using `plot.bs=FALSE`, 
+#' `showProgress=FALSE`, and `plot=FALSE`. 
 #' 
 #' The returned abundance estimate object contains
 #' an additional component, the fitting table (a list of models fitted and 
-#' criterion values) in component \code{$fitTable}.
+#' criterion values) in component `$fitTable`.
 #' 
 #' @inherit abundEstim return
 #' 
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}.
+#' @seealso [dfuncEstim()], [abundEstim()].
 #' @examples 
 #' # Load example sparrow data (line transect survey type)
 #' data(sparrowDf)

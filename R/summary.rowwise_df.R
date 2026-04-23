@@ -1,23 +1,23 @@
 #' @title Summary method for Rdistance data frames 
 #' 
 #' @description Summary method for distance sampling data frames. 
-#' \code{Rdistance} data frames are rowwise tibbles. This routine is a 
+#' `Rdistance` data frames are rowwise tibbles. This routine is a 
 #' replacement summary method for rowwise_df's that  
 #' provides useful distance sampling descriptive statistics. 
 #' 
-#' @param object An \code{RdistDf} data frame. 
+#' @param object An `RdistDf` data frame. 
 #' 
 #' @inheritParams dE.single
 #' 
 #' @param ...  Other arguments for summary methods.
 #' 
-#' @return If \code{object} is an \code{RdistDf}, a data frame 
+#' @return If `object` is an `RdistDf`, a data frame 
 #' containing summary statistics relevant to distance sampling is returned
 #' invisibly.
-#' If \code{formula} is not specified, the number of distance observations
+#' If `formula` is not specified, the number of distance observations
 #' and target detections is not returned because the distances, group sizes,
 #' and covariates are not known. 
-#' If \code{object} is not an Rdistance data frame, return is the result of 
+#' If `object` is not an Rdistance data frame, return is the result of 
 #' the next summary method.
 #' 
 #' @examples

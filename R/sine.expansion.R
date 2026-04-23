@@ -8,11 +8,11 @@
 #' 
 #' @details The sine expansion used here is:
 #'   \itemize{
-#'     \item \bold{First term}: \deqn{h_1(x)=\sin(2\pi x)/2,}{h1(x) = sin(2*Pi*x)/2,}
-#'     \item \bold{Second term}: \deqn{h_2(x)=\sin(3\pi x)/2,}{h2(x) = sin(3*Pi*x)/2,}
-#'     \item \bold{Third term}: \deqn{h_3(x)=\sin(4\pi x)/2,}{h3(x) = sin(4*Pi*x)/2,}
-#'     \item \bold{Fourth term}: \deqn{h_4(x)=\sin(5\pi x)/2,}{h4(x) = sin(5*Pi*x)/2,}
-#'     \item \bold{Fifth term}: \deqn{h_5(x)=\sin(6\pi x)/2,}{h5(x) = sin(6*Pi*x)/2,}
+#'     \item **First term**: \deqn{h_1(x)=\sin(2\pi x)/2,}{h1(x) = sin(2*Pi*x)/2,}
+#'     \item **Second term**: \deqn{h_2(x)=\sin(3\pi x)/2,}{h2(x) = sin(3*Pi*x)/2,}
+#'     \item **Third term**: \deqn{h_3(x)=\sin(4\pi x)/2,}{h3(x) = sin(4*Pi*x)/2,}
+#'     \item **Fourth term**: \deqn{h_4(x)=\sin(5\pi x)/2,}{h4(x) = sin(5*Pi*x)/2,}
+#'     \item **Fifth term**: \deqn{h_5(x)=\sin(6\pi x)/2,}{h5(x) = sin(6*Pi*x)/2,}
 #'   }
 #'   The maximum number of expansion terms is 5.
 #'   
@@ -22,8 +22,8 @@
 #'   
 #' @inherit cosine.expansion return
 #'    
-#' @seealso \code{\link{dfuncEstim}}, 
-#'          \code{\link{cosine.expansion}}
+#' @seealso [dfuncEstim()], 
+#'          [cosine.expansion()]
 #'   
 #' @examples 
 #' x <- matrix(seq(0, 1, length = 200), ncol = 1)

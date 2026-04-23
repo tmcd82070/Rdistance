@@ -7,24 +7,24 @@
 bspline.expansion(x, expansions)
 }
 \arguments{
-\item{x}{A numeric matrix of distances at which to evaluate 
+\item{x}{A numeric matrix of distances at which to evaluate
 the expansion series. For distance analysis, \code{x} should
 be the proportion of the maximum sighting distance
 at which a group was sighted, i.e., \eqn{x = d/w}, where \eqn{d}
 is sighting distance and \eqn{w} is maximum sighting distance.}
 
-\item{expansions}{A scalar specifying the number of 
-expansion terms to compute. Must be one of the 
+\item{expansions}{A scalar specifying the number of
+expansion terms to compute. Must be one of the
 integers 1, 2, 3, 4, or 5.}
 }
 \value{
 A 3D array of size \code{nrow(x)} X \code{ncol(x)} X \code{expansions}.
-  The 'pages' (3rd dimension) of this array are the cosine expansions of 
-  \code{x}. i.e., page 1 is the first expansion term of \code{x}, 
-  page 2 is the second expansion term of \code{x}, etc.
+The 'pages' (3rd dimension) of this array are the cosine expansions of
+\code{x}. i.e., page 1 is the first expansion term of \code{x},
+page 2 is the second expansion term of \code{x}, etc.
 }
 \description{
-Computes spline, specifically b-spline, expansion terms that modify the 
+Computes spline, specifically b-spline, expansion terms that modify the
 shape of distance likelihood functions.
 }
 \examples{
@@ -35,8 +35,8 @@ matlines(x, spl.expn[,1,1:5], col=rainbow(5), lty = 1)
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, 
-         \code{\link{cosine.expansion}},
-         \code{\link{hermite.expansion}}, 
-         \code{\link{simple.expansion}}.
+\code{\link[=dfuncEstim]{dfuncEstim()}},
+\code{\link[=cosine.expansion]{cosine.expansion()}},
+\code{\link[=hermite.expansion]{hermite.expansion()}},
+\code{\link[=simple.expansion]{simple.expansion()}}.
 }

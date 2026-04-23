@@ -7,39 +7,39 @@
 cosine.expansion(x, expansions)
 }
 \arguments{
-\item{x}{A numeric matrix of distances at which to evaluate 
+\item{x}{A numeric matrix of distances at which to evaluate
 the expansion series. For distance analysis, \code{x} should
 be the proportion of the maximum sighting distance
 at which a group was sighted, i.e., \eqn{x = d/w}, where \eqn{d}
 is sighting distance and \eqn{w} is maximum sighting distance.}
 
-\item{expansions}{A scalar specifying the number of 
-expansion terms to compute. Must be one of the 
+\item{expansions}{A scalar specifying the number of
+expansion terms to compute. Must be one of the
 integers 1, 2, 3, 4, or 5.}
 }
 \value{
 A 3D array of size \code{nrow(x)} X \code{ncol(x)} X \code{expansions}.
-  The 'pages' (3rd dimension) of this array are the cosine expansions of 
-  \code{x}. i.e., page 1 is the first expansion term of \code{x}, 
-  page 2 is the second expansion term of \code{x}, etc.
+The 'pages' (3rd dimension) of this array are the cosine expansions of
+\code{x}. i.e., page 1 is the first expansion term of \code{x},
+page 2 is the second expansion term of \code{x}, etc.
 }
 \description{
-Computes the cosine expansion terms that modify the 
+Computes the cosine expansion terms that modify the
 shape of distance likelihood functions.
 }
 \details{
 The cosine expansion used here is:
-  \itemize{
-    \item \bold{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
-    \item \bold{Second term}: \deqn{h_2(x)=\cos(4\pi x),}{h2(x) = cos(4*Pi*x),}
-    \item \bold{Third term}: \deqn{h_3(x)=\cos(6\pi x),}{h3(x) = cos(6*Pi*x),}
-    \item \bold{Fourth term}: \deqn{h_4(x)=\cos(8\pi x),}{h4(x) = cos(8*Pi*x),}
-    \item \bold{Fifth term}: \deqn{h_5(x)=\cos(10\pi x),}{h5(x) = cos(10*Pi*x),}
-  }
-  The maximum number of expansion terms is 5.
-  
-The cosine expansion frequency in Rdistance is 2*pi. Each term is two pi more than 
-the previous. The sine expansion frequency in Rdistance is pi. Consequently, 
+\itemize{
+\item \strong{First term}: \deqn{h_1(x)=\cos(2\pi x),}{h1(x) = cos(2*Pi*x),}
+\item \strong{Second term}: \deqn{h_2(x)=\cos(4\pi x),}{h2(x) = cos(4*Pi*x),}
+\item \strong{Third term}: \deqn{h_3(x)=\cos(6\pi x),}{h3(x) = cos(6*Pi*x),}
+\item \strong{Fourth term}: \deqn{h_4(x)=\cos(8\pi x),}{h4(x) = cos(8*Pi*x),}
+\item \strong{Fifth term}: \deqn{h_5(x)=\cos(10\pi x),}{h5(x) = cos(10*Pi*x),}
+}
+The maximum number of expansion terms is 5.
+
+The cosine expansion frequency in Rdistance is 2*pi. Each term is two pi more than
+the previous. The sine expansion frequency in Rdistance is pi. Consequently,
 the sine and cosine expansions fit different models.
 }
 \examples{
@@ -50,7 +50,7 @@ matlines(x, cos.expn[,1,1:5], col=rainbow(5), lty = 1)
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, 
-         \code{\link{hermite.expansion}}, 
-         \code{\link{simple.expansion}}
+\code{\link[=dfuncEstim]{dfuncEstim()}},
+\code{\link[=hermite.expansion]{hermite.expansion()}},
+\code{\link[=simple.expansion]{simple.expansion()}}
 }

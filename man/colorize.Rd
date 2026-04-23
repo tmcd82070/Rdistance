@@ -10,34 +10,34 @@ colorize(STR, col = NULL, bg = NULL)
 \item{STR}{A vector of strings to colorize.}
 
 \item{col}{A string specifying the desired foreground color.
-This is passed straight to \code{crayon::style} and so must be 
-recognized as one of the 8 base crayon colors. i.e., 
-"black", "red", "green", "yellow", "blue", "magenta", "cyan", 
-"white", and "silver" (silver = gray). By default, numbers 
+This is passed straight to \code{crayon::style} and so must be
+recognized as one of the 8 base crayon colors. i.e.,
+"black", "red", "green", "yellow", "blue", "magenta", "cyan",
+"white", and "silver" (silver = gray). By default, numbers
 are styled in "green".}
 
-\item{bg}{A string specifying the desired background color. 
+\item{bg}{A string specifying the desired background color.
 Must be one of "bgBlack", "bgRed", "bgGreen", "bgYellow", "bgBlue"
-"bgMagenta", "bgCyan", or "bgWhite".  By default, no background 
+"bgMagenta", "bgCyan", or "bgWhite".  By default, no background
 is applied.}
 }
 \value{
-If color is not allowed in the terminal, the input 
-string is returned unperturbed.  If color is allowed, the input 
-string is returned with color and background ANSI code surrounding 
-the initial part of the string from character 1 to the character 
-before the [ in the first pair of [].
+If color is not allowed in the terminal, the input
+string is returned unperturbed.  If color is allowed, the input
+string is returned with color and background ANSI code surrounding
+the initial part of the string from character 1 to the character
+before the \code{[} in the first pair of \verb{[]}.
 }
 \description{
-Add ANSI color to a string using the 
-\code{crayon} package, if the R environment accepts color. 
-This function is needed because some  
-output cannot be colorized.  Color determination 
-is made by \code{crayon::has_color()}. 
+Add ANSI color to a string using the
+\code{crayon} package, if the R environment accepts color.
+This function is needed because some
+output cannot be colorized.  Color determination
+is made by \code{crayon::has_color()}.
 
-Rdistance results often include units, e.g., "25 [m]". 
-Only colorize the numbers, not the units.  Everything between the 
-first set of square brackets (\code{[...]}) is NOT colorized. 
+Rdistance results often include units, e.g., "25 [m]".
+Only colorize the numbers, not the units.  Everything between the
+first set of square brackets (\verb{[...]}) is NOT colorized.
 Subsequent sets of brackets (e.g., "25 [m] + 30 [ft]") ARE colorized
 (i.e., "[ft]" is color).
 }

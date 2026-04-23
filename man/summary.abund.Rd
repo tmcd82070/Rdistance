@@ -8,11 +8,11 @@
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
 \item{criterion}{A string specifying the model fit criterion to print.
-Must be one of "AICc" (the default), 
-"AIC", or "BIC".  See \code{\link{AIC.dfunc}} for formulas.}
+Must be one of "AICc" (the default),
+"AIC", or "BIC".  See \code{\link[=AIC.dfunc]{AIC.dfunc()}} for formulas.}
 
 \item{\dots}{Included for compatibility to other print methods.
 Ignored here.}
@@ -21,17 +21,17 @@ Ignored here.}
 0 is invisibly returned.
 }
 \description{
-Summarize an object of class \code{c("abund","dfunc")} 
+Summarize an object of class \code{c("abund","dfunc")}
 that is output by \code{abundEstim}.
 }
 \details{
-If the proportion of bootstrap iterations that failed is 
-greater than \code{getOption("Rdistance_maxBSFailPropForWarning")}, 
-a warning about the validity of CI's is issued and 
-a diagnostic message printed.  Increasing this option to a number greater 
-than 1 will kill the warning (e.g., \code{options(Rdistance_maxBSFailPropForWarning = 1.3)}), 
+If the proportion of bootstrap iterations that failed is
+greater than \code{getOption("Rdistance_maxBSFailPropForWarning")},
+a warning about the validity of CI's is issued and
+a diagnostic message printed.  Increasing this option to a number greater
+than 1 will kill the warning (e.g., \code{options(Rdistance_maxBSFailPropForWarning = 1.3)}),
 but ignoring a large number of non-convergent
-bootstrap iterations may be a bad idea (i.e., validity of the CI is 
+bootstrap iterations may be a bad idea (i.e., validity of the CI is
 questionable). The default value for \code{Rdistance_maxBSFailPropForWarning}
 is 0.2.
 }
@@ -59,7 +59,7 @@ summary(fit)
 }
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{abundEstim}}, 
-\code{\link{summary.dfunc}}, \code{\link{print.dfunc}}, 
-\code{\link{print.abund}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=abundEstim]{abundEstim()}},
+\code{\link[=summary.dfunc]{summary.dfunc()}}, \code{\link[=print.dfunc]{print.dfunc()}},
+\code{\link[=print.abund]{print.abund()}}
 }

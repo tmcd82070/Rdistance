@@ -11,18 +11,18 @@
 #' @inheritParams oneBsIter
 #' 
 #' @param parallel Logical scalar. TRUE if we are running iterations 
-#' in parallel across CPU cores.  Number of cores specified in \code{cores}.
+#' in parallel across CPU cores.  Number of cores specified in `cores`.
 #' 
 #' @param cores Integer scalar.  The number of CPU cores to use during 
-#' parallel operations, if requested.  Ignored if \code{parallel == FALSE}.
+#' parallel operations, if requested.  Ignored if `parallel == FALSE`.
 #' 
 #' @return A data frame containing density, abundance,  
 #' and other relevant statistics for every bootstrap iteration.
-#' Number of rows is \code{R}.  If the model from one iteration failed 
+#' Number of rows is `R`.  If the model from one iteration failed 
 #' for any reason (e.g., non-convergence), the entire row except the ID column
 #' is missing.
 #' 
-#' @seealso \code{\link{abundEstim}}; \code{\link{oneBsIter}}
+#' @seealso [abundEstim()]; [oneBsIter()]
 #' 
 #' @export
 bootstrap <- function(

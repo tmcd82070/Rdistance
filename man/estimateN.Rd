@@ -8,97 +8,97 @@ estimateN(object, area = NULL, propUnitSurveyed = 1)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{area}{A scalar containing the total area of inference. Usually, this is 
-study area size.  If \code{area} is NULL (the default), 
+\item{area}{A scalar containing the total area of inference. Usually, this is
+study area size.  If \code{area} is NULL (the default),
 \code{area} will be set to 1 square unit of the output units and density estimates
-will be produced. 
-If \code{area} is not NULL, it must have measurement units 
-assigned by the \code{units} package. 
+will be produced.
+If \code{area} is not NULL, it must have measurement units
+assigned by the \code{units} package.
 The units on \code{area} must be convertible
-to squared output units. Units 
-on \code{area} must be two-dimensional. 
-For example, if output units are "foo", 
+to squared output units. Units
+on \code{area} must be two-dimensional.
+For example, if output units are "foo",
 units on area must be convertible to "foo^2" by the \code{units}
 package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
 
 \item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
-The proportion of the default sampling unit that 
-  was surveyed.  If both sides of line transects were observed, 
-  \code{propUnitSurveyed}
-  = 1.  If only a single side of line transects were observed, set 
-  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
-  the proportion of each circle that was observed. Length must either be
-  1 or the total number of transects in \code{x}.}
+The proportion of the default sampling unit that
+was surveyed.  If both sides of line transects were observed,
+\code{propUnitSurveyed}
+= 1.  If only a single side of line transects were observed, set
+\code{propUnitSurveyed} = 0.5. For point transects, this should be set to
+the proportion of each circle that was observed. Length must either be
+1 or the total number of transects in \code{x}.}
 }
 \value{
 A list containing the following components:
 
-   \item{density}{Estimated density in the surveyed area.}
-   
-   \item{abundance}{Estimated abundance on the study area. Equals density if 
-   area is not specified.}
-   
-   \item{n.groups}{The number of detected groups (not individuals, unless all group sizes = 1).}
-   
-   \item{n.seen}{The number of individuals (sum of group sizes).}
-   
-   \item{area}{Total area of inference. Study area size}
-   
-   \item{surveyedUnits}{Number of surveyed sites.  This is total transect length
-   for line-transects or number of points for point-transects. This total transect
-   length does not include transects with missing lengths.}
-   
-   \item{propUnitSurveyed}{Proportion of the standard survey unit
-   that was observed}
-   
-   \item{avg.group.size}{Average group size on non-NA transects}
-   
-   \item{w}{Strip width. }
-   
-   \item{pDetection}{Probability of detection.}
-   
-For line-transects that do not involve covariates, object$density  
+\item{density}{Estimated density in the surveyed area.}
+
+\item{abundance}{Estimated abundance on the study area. Equals density if
+area is not specified.}
+
+\item{n.groups}{The number of detected groups (not individuals, unless all group sizes = 1).}
+
+\item{n.seen}{The number of individuals (sum of group sizes).}
+
+\item{area}{Total area of inference. Study area size}
+
+\item{surveyedUnits}{Number of surveyed sites.  This is total transect length
+for line-transects or number of points for point-transects. This total transect
+length does not include transects with missing lengths.}
+
+\item{propUnitSurveyed}{Proportion of the standard survey unit
+that was observed}
+
+\item{avg.group.size}{Average group size on non-NA transects}
+
+\item{w}{Strip width. }
+
+\item{pDetection}{Probability of detection.}
+
+For line-transects that do not involve covariates, object$density
 is object$n.seen / (2 * propUnitSurveyed * object$w * object$pDetection * object$surveyedUnits)
 }
 \description{
-Estimate abundance from an Rdistance fitted model. 
-This function is called internally by \code{abundEstim}.  Most users will call 
-\code{abundEstim} to estimate abundance unless they are running simulations or 
+Estimate abundance from an Rdistance fitted model.
+This function is called internally by \code{abundEstim}.  Most users will call
+\code{abundEstim} to estimate abundance unless they are running simulations or
 bootstrapping.
 }
 \details{
 The abundance estimate for line-transect surveys (if no covariates
-   are included in the detection function and both sides of the transect 
-   are observed) is 
-   \deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
-         N = n*A / (2*ESW*L)} 
-   where \emph{n} is total number of sighted individuals 
-  (i.e., \code{sum(groupSizes(dfunc))}), \emph{L} is the total length of 
-  surveyed transect (i.e., \code{sum(effort(dfunc))}),
-  and \emph{ESW} is effective strip width
-  computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
-  If only one side of transects were observed, the "2" in the denominator 
-  is not present (or, replaced with a "1"). 
-  
-  The abundance estimate for point transect surveys (if no covariates are
-  included) is 
-   \deqn{N =\frac{n(A)}{\pi(ESR^2)(P)}}{%
-         N = n*A / ((3.1415)*ESR^2*(P))} 
-   where \emph{n} is total number of sighted individuals (i.e., \code{sum(groupSizes(dfunc))}),
-   \emph{P} is the total number of surveyed points (i.e., \code{sum(effort(dfunc))}), 
-   and \emph{ESR} is effective search radius 
-   computed from the estimated distance function (i.e., \code{ESR(dfunc)}).
+are included in the detection function and both sides of the transect
+are observed) is
+\deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
+         N = n*A / (2*ESW*L)}
+where \emph{n} is total number of sighted individuals
+(i.e., \code{sum(groupSizes(dfunc))}), \emph{L} is the total length of
+surveyed transect (i.e., \code{sum(effort(dfunc))}),
+and \emph{ESW} is effective strip width
+computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
+If only one side of transects were observed, the "2" in the denominator
+is not present (or, replaced with a "1").
 
- This routine, \code{abundEstim}, estimates abundance on the 
- entire study area.  Site-specific density estimates 
- are computed by 
- \code{predict(x, type = "density")}, which returns a 
- tibble containing density and abundance on the area surveyed by every
- transect.
+The abundance estimate for point transect surveys (if no covariates are
+included) is
+\deqn{N =\frac{n(A)}{\pi(ESR^2)(P)}}{%
+         N = n*A / ((3.1415)*ESR^2*(P))}
+where \emph{n} is total number of sighted individuals (i.e., \code{sum(groupSizes(dfunc))}),
+\emph{P} is the total number of surveyed points (i.e., \code{sum(effort(dfunc))}),
+and \emph{ESR} is effective search radius
+computed from the estimated distance function (i.e., \code{ESR(dfunc)}).
+
+This routine, \code{abundEstim}, estimates abundance on the
+entire study area.  Site-specific density estimates
+are computed by
+\code{predict(x, type = "density")}, which returns a
+tibble containing density and abundance on the area surveyed by every
+transect.
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{abundEstim}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=abundEstim]{abundEstim()}}
 }

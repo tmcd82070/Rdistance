@@ -1,21 +1,21 @@
 #' @title Add color to result if terminal accepts it
 #' 
 #' @description Add ANSI color to a string using the 
-#' \code{crayon} package, if the R environment accepts color. 
+#' `crayon` package, if the R environment accepts color. 
 #' This function is needed because some  
 #' output cannot be colorized.  Color determination 
-#' is made by \code{crayon::has_color()}. 
+#' is made by `crayon::has_color()`. 
 #' 
-#' Rdistance results often include units, e.g., "25 [m]". 
+#' Rdistance results often include units, e.g., "25 \[m\]". 
 #' Only colorize the numbers, not the units.  Everything between the 
-#' first set of square brackets (\code{[...]}) is NOT colorized. 
-#' Subsequent sets of brackets (e.g., "25 [m] + 30 [ft]") ARE colorized
-#' (i.e., "[ft]" is color). 
+#' first set of square brackets (`[...]`) is NOT colorized. 
+#' Subsequent sets of brackets (e.g., "25 \[m\] + 30 \[ft\]") ARE colorized
+#' (i.e., "\[ft\]" is color). 
 #' 
 #' @param STR A vector of strings to colorize. 
 #' 
 #' @param col A string specifying the desired foreground color.  
-#' This is passed straight to \code{crayon::style} and so must be 
+#' This is passed straight to `crayon::style` and so must be 
 #' recognized as one of the 8 base crayon colors. i.e., 
 #' "black", "red", "green", "yellow", "blue", "magenta", "cyan", 
 #' "white", and "silver" (silver = gray). By default, numbers 
@@ -30,9 +30,9 @@
 #' string is returned unperturbed.  If color is allowed, the input 
 #' string is returned with color and background ANSI code surrounding 
 #' the initial part of the string from character 1 to the character 
-#' before the [ in the first pair of []. 
+#' before the `[` in the first pair of `[]`. 
 #' 
-#' @seealso \code{crayon::style}
+#' @seealso `crayon::style`
 #' 
 #' 
 # Do not export. In Rdistance namespace only

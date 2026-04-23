@@ -19,8 +19,8 @@
 #' function parameter for the 
 #' i-th observed distance. 
 #'  
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpPoints}}; 
-#' \code{\link{integrateOneStepLines}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpPoints()]; 
+#' [integrateOneStepLines()] 
 #' 
 #' @examples
 #' 

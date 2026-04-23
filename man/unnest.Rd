@@ -7,28 +7,28 @@
 unnest(data, ...)
 }
 \arguments{
-\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames 
+\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames
 contain one line per transect and a list-based column. The list-based
-column contains a data frame with detection information. 
-The detection information data frame on each row contains (at least) distances 
+column contains a data frame with detection information.
+The detection information data frame on each row contains (at least) distances
 and group sizes of all targets detected on the transect.
-Function \code{\link{RdistDf}} creates \code{RdistDf} data frames 
-from separate transect and detection data frames. 
-\code{\link{is.RdistDf}} checks whether data frames
+Function \code{\link[=RdistDf]{RdistDf()}} creates \code{RdistDf} data frames
+from separate transect and detection data frames.
+\code{\link[=is.RdistDf]{is.RdistDf()}} checks whether data frames
 are \code{RdistDf}'s.}
 
 \item{...}{Additional arguments passed to \code{tidyr::unnest} if
 \code{data} is not an RdistDf.}
 }
 \value{
-An expanded data frame, without embedded data frames. Rows 
+An expanded data frame, without embedded data frames. Rows
 in the return represent with one detection or one transect.  If multiple
 detections were made on one transect, the transect will appear on multiple
-rows.  If no detections were made on a transect, it will appear on one 
+rows.  If no detections were made on a transect, it will appear on one
 row with NA detection distance.
 }
 \description{
-Unnest an RdistDf data frame by expanding 
+Unnest an RdistDf data frame by expanding
 the embedded 'detections' column.  This unnest
 includes the so-called zero transects (transects without detections).
 }

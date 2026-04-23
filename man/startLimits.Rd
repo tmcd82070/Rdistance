@@ -7,35 +7,35 @@
 startLimits(ml)
 }
 \arguments{
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
+\item{ml}{Either a Rdistance 'model frame' or an Rdistance
+'fitted object'.  Both are of class "dfunc".
+Rdistance 'model frames' are lists containing components
+necessary to estimate a distance function, but no estimates.
 Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
+produced by calls to \code{\link[=parseModel]{parseModel()}}.
 Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
+are typically produced by calls to \code{\link[=dfuncEstim]{dfuncEstim()}}.
 'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
+with additional components such as the parameters estimates,
 log likelihood value, convergence information, and the variance-
 covariance matrix of the parameters.}
 }
 \value{
 A list containing the following components
-  \item{start}{Vector of starting values for parameters of the likelihood and expansion terms. }
-  \item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
-  \item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
-  \item{names}{Vector of names for the likelihood parameters and expansion terms.}
-  
+\item{start}{Vector of starting values for parameters of the likelihood and expansion terms. }
+\item{lowlimit}{Vector of lower limits for the likelihood parameters and expansion terms.}
+\item{uplimit}{Vector of upper limits for the likelihood parameters and expansion terms.}
+\item{names}{Vector of names for the likelihood parameters and expansion terms.}
+
 The length of each vector in the return is:
-  \code{(Num expansions) + 1 + 1*(like \%in\% c("hazrate")) + (Num Covars)}.
+\verb{(Num expansions) + 1 + 1*(like \\\%in\\\% c("hazrate")) + (Num Covars)}.
 }
 \description{
-Returns starting values and limits (boundaries) for the parameters of 
-  distance functions.  This function is called by 
-  other routines in \code{Rdistance}, and is not intended to 
-  be called by the user. Replace this function in the global 
-  environment to change boundaries and starting values.
+Returns starting values and limits (boundaries) for the parameters of
+distance functions.  This function is called by
+other routines in \code{Rdistance}, and is not intended to
+be called by the user. Replace this function in the global
+environment to change boundaries and starting values.
 }
 \examples{
   data(sparrowDf)
@@ -68,5 +68,5 @@ Returns starting values and limits (boundaries) for the parameters of
   
 }
 \seealso{
-\code{\link{dfuncEstim}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}
 }

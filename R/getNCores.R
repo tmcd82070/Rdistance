@@ -10,9 +10,9 @@
 #' number of cores to use during parallel operations.  $cores is 
 #' integer in the range 1, 2, ..., max(Available cores). 
 #' 
-#' @details Input \code{parallel} <= 0 is converted to 1. 
-#' Input \code{parallel} > maxCores is converted to maxCores.
-#' If input \code{parallel} is numeric, is first converted to integer
+#' @details Input `parallel` <= 0 is converted to 1. 
+#' Input `parallel` > maxCores is converted to maxCores.
+#' If input `parallel` is numeric, is first converted to integer
 #' by rounding down. 
 #' 
 

@@ -9,48 +9,48 @@
 \arguments{
 \item{object}{An \code{RdistDf} data frame.}
 
-\item{formula}{A standard formula object.  For example, \code{dist ~ 1}, 
+\item{formula}{A standard formula object.  For example, \code{dist ~ 1},
 \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
-is the name of the vector containing off-transect or radial detection distances.  
-The right-hand side contains the names of covariate 
+is the name of the vector containing off-transect or radial detection distances.
+The right-hand side contains the names of covariate
 vectors to fit in the detection
-function, and potentially group sizes. Group sizes are specified 
-by including \code{+ groupsize(<variable>)} in the RHS 
+function, and potentially group sizes. Group sizes are specified
+by including \verb{+ groupsize(<variable>)} in the RHS
 (see 'Group Sizes' section).
-Covariates can be either detection level 
-or transect level and can appear in  \code{data} or exist in the 
-global working environment. Regular R scoping 
+Covariates can be either detection level
+or transect level and can appear in  \code{data} or exist in the
+global working environment. Regular R scoping
 rules apply.}
 
-\item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
-This is the minimum possible off-transect distance. Default is 0.  If 
-\code{w.lo} is greater than 0, it must have measurement units. 
+\item{w.lo}{Lower or left-truncation limit of the distances in distance data.
+This is the minimum possible off-transect distance. Default is 0.  If
+\code{w.lo} is greater than 0, it must have measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{w.hi}{Upper or right-truncation limit of the distances 
-in \code{dist}. This is the maximum off-transect distance that 
-could be observed. If unspecified (i.e., NULL), 
-right-truncation is set to the maximum of the observed 
-distances.  If \code{w.hi} is specified, it must have  
-measurement units.  
+\item{w.hi}{Upper or right-truncation limit of the distances
+in \code{dist}. This is the maximum off-transect distance that
+could be observed. If unspecified (i.e., NULL),
+right-truncation is set to the maximum of the observed
+distances.  If \code{w.hi} is specified, it must have
+measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
 \item{...}{Other arguments for summary methods.}
 }
 \value{
-If \code{object} is an \code{RdistDf}, a data frame 
+If \code{object} is an \code{RdistDf}, a data frame
 containing summary statistics relevant to distance sampling is returned
 invisibly.
 If \code{formula} is not specified, the number of distance observations
 and target detections is not returned because the distances, group sizes,
-and covariates are not known. 
-If \code{object} is not an Rdistance data frame, return is the result of 
+and covariates are not known.
+If \code{object} is not an Rdistance data frame, return is the result of
 the next summary method.
 }
 \description{
-Summary method for distance sampling data frames. 
-\code{Rdistance} data frames are rowwise tibbles. This routine is a 
-replacement summary method for rowwise_df's that  
+Summary method for distance sampling data frames.
+\code{Rdistance} data frames are rowwise tibbles. This routine is a
+replacement summary method for rowwise_df's that
 provides useful distance sampling descriptive statistics.
 }
 \examples{

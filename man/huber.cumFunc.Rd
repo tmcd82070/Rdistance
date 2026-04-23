@@ -10,39 +10,39 @@ huber.cumFunc(x, t1, t2, p, w)
 \item{x}{A vector of distances. Can have units or not
 (i.e., regular numeric).}
 
-\item{t1}{A vector of values for the \eqn{\theta_1}{T1} parameter 
-of the `huber` likelihood. If \code{x} has units, \code{t1} must have 
+\item{t1}{A vector of values for the \eqn{\theta_1}{T1} parameter
+of the \code{huber} likelihood. If \code{x} has units, \code{t1} must have
 compatible units.}
 
-\item{t2}{A vector of values for the \eqn{\theta_2}{T2} parameter 
-of the `huber` likelihood. If \code{x} has units, \code{t2} must have 
+\item{t2}{A vector of values for the \eqn{\theta_2}{T2} parameter
+of the \code{huber} likelihood. If \code{x} has units, \code{t2} must have
 compatible units.}
 
-\item{p}{A vector of values for the \eqn{p} parameter of the 
-`huber` likelihood. If \code{x} has units, \code{p} must have 
-units of '[1]' (i.e., \code{setUnits(p,1)}).}
+\item{p}{A vector of values for the \eqn{p} parameter of the
+\code{huber} likelihood. If \code{x} has units, \code{p} must have
+units of \verb{[1]} (i.e., \code{setUnits(p,1)}).}
 
-\item{w}{A vector of maximum strip widths, the maximum distance. 
-If \code{x} has units, \code{x} must have 
+\item{w}{A vector of maximum strip widths, the maximum distance.
+If \code{x} has units, \code{x} must have
 compatible units.}
 }
 \value{
-A vector of values from the `huber` cumulative function. 
-The `huber` cumulative function is
+A vector of values from the \code{huber} cumulative function.
+The \code{huber} cumulative function is
 \deqn{
 F(x|\theta_1,\theta_2,p) = \int_0^x f(y|\theta_1,\theta_2,p) dy,}{
 F(x|T1,T2,p) = Area Under f(y|T1,T2,p) from 0 to x,
 }
-where \eqn{f(y|\theta_1,\theta_2,p)}{f(y|T1,T2,p)} is Rdistance's `huber` 
-likelihood. The only difference between this \emph{cumulative function}, 
+where \eqn{f(y|\theta_1,\theta_2,p)}{f(y|T1,T2,p)} is Rdistance's \code{huber}
+likelihood. The only difference between this \emph{cumulative function},
 and the \emph{cumulative distribution function}
-is the scaling constant. That is, the maximum of the \emph{cumulative 
+is the scaling constant. That is, the maximum of the \emph{cumulative
 function} is greater than 1 while the maximum \emph{cumulative distribution function}
 is exactly 1.
 }
 \description{
-Computes the cumulative function of the `huber` likelihood. The 
-cumulative function is proportional to the `huber` 
+Computes the cumulative function of the \code{huber} likelihood. The
+cumulative function is proportional to the \code{huber}
 cumulative distribution function, differing only by appropriate
 scaling constant.
 }
@@ -58,5 +58,5 @@ Fd <- fd / huber.cumFunc(200, 125, 25, .05, 200)
 
 }
 \seealso{
-\code{\link{huber.like}}
+\code{\link[=huber.like]{huber.like()}}
 }

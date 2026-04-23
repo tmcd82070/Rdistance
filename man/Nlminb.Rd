@@ -7,34 +7,34 @@
 Nlminb(ml, strt.lims)
 }
 \arguments{
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
+\item{ml}{Either a Rdistance 'model frame' or an Rdistance
+'fitted object'.  Both are of class "dfunc".
+Rdistance 'model frames' are lists containing components
+necessary to estimate a distance function, but no estimates.
 Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
+produced by calls to \code{\link[=parseModel]{parseModel()}}.
 Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
+are typically produced by calls to \code{\link[=dfuncEstim]{dfuncEstim()}}.
 'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
+with additional components such as the parameters estimates,
 log likelihood value, convergence information, and the variance-
 covariance matrix of the parameters.}
 
-\item{strt.lims}{A list containing start, low, and high limits for 
+\item{strt.lims}{A list containing start, low, and high limits for
 parameters of the requested likelihood. This list is typically produced
-by a call to \code{\link{startLimits}}.}
+by a call to \code{\link[=startLimits]{startLimits()}}.}
 }
 \value{
 A list with following named components:
 \itemize{
-  \item par = parameters
-  \item loglik = objective function value at minimum
-  \item convergence = 0 for yes, other for no
-  \item iterations = number of iterations
-  \item evaluations = function evaluations
-  \item message = a convergence message
-  \item varcovar = a variance covariance matrix of parameters
-  \item limits = low and high limits
+\item par = parameters
+\item loglik = objective function value at minimum
+\item convergence = 0 for yes, other for no
+\item iterations = number of iterations
+\item evaluations = function evaluations
+\item message = a convergence message
+\item varcovar = a variance covariance matrix of parameters
+\item limits = low and high limits
 }
 }
 \description{

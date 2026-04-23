@@ -9,7 +9,7 @@
 #' Second column is the shape parameter. 
 #' 
 #' @return A vector of the locations of the gamma modes associated 
-#' with each row in the \code{params} matrix. 
+#' with each row in the `params` matrix. 
 #' 
 #' @export
 GammaModes <- function( params ){

@@ -17,34 +17,34 @@ abundEstim(
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{area}{A scalar containing the total area of inference. Usually, this is 
-study area size.  If \code{area} is NULL (the default), 
+\item{area}{A scalar containing the total area of inference. Usually, this is
+study area size.  If \code{area} is NULL (the default),
 \code{area} will be set to 1 square unit of the output units and density estimates
-will be produced. 
-If \code{area} is not NULL, it must have measurement units 
-assigned by the \code{units} package. 
+will be produced.
+If \code{area} is not NULL, it must have measurement units
+assigned by the \code{units} package.
 The units on \code{area} must be convertible
-to squared output units. Units 
-on \code{area} must be two-dimensional. 
-For example, if output units are "foo", 
+to squared output units. Units
+on \code{area} must be two-dimensional.
+For example, if output units are "foo",
 units on area must be convertible to "foo^2" by the \code{units}
 package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
 
 \item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
-The proportion of the default sampling unit that 
-  was surveyed.  If both sides of line transects were observed, 
-  \code{propUnitSurveyed}
-  = 1.  If only a single side of line transects were observed, set 
-  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
-  the proportion of each circle that was observed. Length must either be
-  1 or the total number of transects in \code{x}.}
+The proportion of the default sampling unit that
+was surveyed.  If both sides of line transects were observed,
+\code{propUnitSurveyed}
+= 1.  If only a single side of line transects were observed, set
+\code{propUnitSurveyed} = 0.5. For point transects, this should be set to
+the proportion of each circle that was observed. Length must either be
+1 or the total number of transects in \code{x}.}
 
-\item{ci}{A scalar indicating the confidence level of confidence intervals. 
+\item{ci}{A scalar indicating the confidence level of confidence intervals.
 Confidence intervals are computed using a bias corrected bootstrap
-method. If \code{ci = NULL} or \code{ci == NA}, confidence intervals 
+method. If \code{ci = NULL} or \code{ci == NA}, confidence intervals
 are not computed.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
@@ -55,167 +55,167 @@ bootstrap iterations.
 Ignored unless \code{parallel = FALSE}.}
 
 \item{showProgress}{A logical indicating whether to show a text-based
-progress bar during bootstrapping. Default is \code{TRUE}. 
-It is handy to shut off the 
-progress bar if running this within another function. 
+progress bar during bootstrapping. Default is \code{TRUE}.
+It is handy to shut off the
+progress bar if running this within another function.
 Ignored unless \code{parallel = FALSE}.}
 
-\item{parallel}{A logical scalar, or a positive integer; ignored unless 
+\item{parallel}{A logical scalar, or a positive integer; ignored unless
 confidence intervals are requested (i.e., \code{!is.null(ci)}).
-If TRUE, bootstrap iterations are 
-run in parallel using the maximum number of CPU cores minus 1. 
+If TRUE, bootstrap iterations are
+run in parallel using the maximum number of CPU cores minus 1.
 The maximum number of CPU cores is reported by \code{parallel::detectCores()}.
-If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap 
-iterations are performed in parallel on that many cores. 
-If FALSE, bootstrap iterations are performed in series, and progress 
-will be shown if \code{showProgress == TRUE}. Parameters 
+If a positive integer (1 <= \code{parallel} <= maximum cores), bootstrap
+iterations are performed in parallel on that many cores.
+If FALSE, bootstrap iterations are performed in series, and progress
+will be shown if \code{showProgress == TRUE}. Parameters
 \code{showProgress} and \code{plot.bs} are ignored when operating
 in parallel.}
 }
 \value{
 An Rdistance 'abundance estimate' object, which is a list of
-  class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
-  object (see \code{\link{dfuncEstim}}), plus the following: 
-  
-  \item{estimates}{A tibble containing fitted coefficients in the
-  distance function, density in the area(s) surveyed, 
-  abundance on the study area, the number of groups seen 
-  between w.lo and w.hi, the number 
-  of individuals seen between w.lo and w.hi, 
-  study area size, surveyed area, average group size, and 
-  average effective detection distance.
-  }
-  
-  \item{B}{If confidence intervals were requested, a tibble 
-  containing all bootstrap values of coefficients, 
-  density, abundance, groups seen, individuals seen, 
-  study area size, surveyed area size, average group size, 
-  and average effective detection distance.  The number of rows is always 
-  \code{R}, the requested number of bootstrap 
-  iterations.  If an iteration fails, the
-  corresponding row in \code{B} is \code{NA} (hence, use 'na.rm = TRUE' 
-  when computing summaries). Columns 1 through \code{length(coef(dfunc))}
-  contain bootstrap realizations of the distance function's coefficients. 
-  }
-  
-  \item{ci}{Confidence level of the confidence intervals}
+class \code{c("abund", "dfunc")}, containing all the components of a "dfunc"
+object (see \code{\link[=dfuncEstim]{dfuncEstim()}}), plus the following:
+
+\item{estimates}{A tibble containing fitted coefficients in the
+distance function, density in the area(s) surveyed,
+abundance on the study area, the number of groups seen
+between w.lo and w.hi, the number
+of individuals seen between w.lo and w.hi,
+study area size, surveyed area, average group size, and
+average effective detection distance.
+}
+
+\item{B}{If confidence intervals were requested, a tibble
+containing all bootstrap values of coefficients,
+density, abundance, groups seen, individuals seen,
+study area size, surveyed area size, average group size,
+and average effective detection distance.  The number of rows is always
+\code{R}, the requested number of bootstrap
+iterations.  If an iteration fails, the
+corresponding row in \code{B} is \code{NA} (hence, use \code{na.rm = TRUE}
+when computing summaries). Columns 1 through \code{length(coef(dfunc))}
+contain bootstrap realizations of the distance function's coefficients.
+}
+
+\item{ci}{Confidence level of the confidence intervals}
 }
 \description{
 Estimate abundance (or density) from an estimated detection
-  function and supplemental information on observed group sizes, transect
-  lengths, area surveyed, etc.  Computes confidence intervals on
-  abundance (or density) using a the bias corrected bootstrap method.
+function and supplemental information on observed group sizes, transect
+lengths, area surveyed, etc.  Computes confidence intervals on
+abundance (or density) using a the bias corrected bootstrap method.
 }
 \details{
 The abundance estimate for line-transect surveys (if no covariates
-   are included in the detection function and both sides of the transect 
-   are observed) is 
-   \deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
-         N = n*A / (2*ESW*L)} 
-   where \emph{n} is total number of sighted individuals 
-  (i.e., \code{sum(groupSizes(dfunc))}), \emph{L} is the total length of 
-  surveyed transect (i.e., \code{sum(effort(dfunc))}),
-  and \emph{ESW} is effective strip width
-  computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
-  If only one side of transects were observed, the "2" in the denominator 
-  is not present (or, replaced with a "1"). 
-  
-  The abundance estimate for point transect surveys (if no covariates are
-  included) is 
-   \deqn{N =\frac{n(A)}{\pi(ESR^2)(P)}}{%
-         N = n*A / ((3.1415)*ESR^2*(P))} 
-   where \emph{n} is total number of sighted individuals (i.e., \code{sum(groupSizes(dfunc))}),
-   \emph{P} is the total number of surveyed points (i.e., \code{sum(effort(dfunc))}), 
-   and \emph{ESR} is effective search radius 
-   computed from the estimated distance function (i.e., \code{ESR(dfunc)}).
+are included in the detection function and both sides of the transect
+are observed) is
+\deqn{N =\frac{n(A)}{2(ESW)(L)}}{%
+         N = n*A / (2*ESW*L)}
+where \emph{n} is total number of sighted individuals
+(i.e., \code{sum(groupSizes(dfunc))}), \emph{L} is the total length of
+surveyed transect (i.e., \code{sum(effort(dfunc))}),
+and \emph{ESW} is effective strip width
+computed from the estimated distance function (i.e., \code{ESW(dfunc)}).
+If only one side of transects were observed, the "2" in the denominator
+is not present (or, replaced with a "1").
 
- This routine, \code{abundEstim}, estimates abundance on the 
- entire study area.  Site-specific density estimates 
- are computed by 
- \code{predict(x, type = "density")}, which returns a 
- tibble containing density and abundance on the area surveyed by every
- transect.
+The abundance estimate for point transect surveys (if no covariates are
+included) is
+\deqn{N =\frac{n(A)}{\pi(ESR^2)(P)}}{%
+         N = n*A / ((3.1415)*ESR^2*(P))}
+where \emph{n} is total number of sighted individuals (i.e., \code{sum(groupSizes(dfunc))}),
+\emph{P} is the total number of surveyed points (i.e., \code{sum(effort(dfunc))}),
+and \emph{ESR} is effective search radius
+computed from the estimated distance function (i.e., \code{ESR(dfunc)}).
+
+This routine, \code{abundEstim}, estimates abundance on the
+entire study area.  Site-specific density estimates
+are computed by
+\code{predict(x, type = "density")}, which returns a
+tibble containing density and abundance on the area surveyed by every
+transect.
 }
 \section{Bootstrap Confidence Intervals}{
 
 
-  Rdistance's nested data frames (produced by \code{\link{RdistDf}})
-  contain all information required to estimate bootstrap CIs. 
-  To compute bootstrap CIs, Rdistance resamples, with replacement,
-  the rows of the \code{$data} component contained in Rdistance 
-  fitted models. Rdistance assumes each row of \code{$data} 
-  contains information on one transect.
-  The \code{$data} component also contains 
-  information on which observations inform the 
-  detection function, which observations should be counted as 
-  detected targets, 
-  and which transects count toward transect length. 
-  After resampling rows of \code{$data}, Rdistance 
-  refits the distance function using non-missing distances, 
-  recomputes the detected number of targets using non-missing 
-  group sizes on transects with non-missing length, 
-  and re-computes total transect length from transects 
-  with non-missing lengths. 
-  By default, \code{R} = 500 bootstrap iterations are 
-  performed, after which bias
-  corrected confidence intervals are computed (Manly, 1997, section 3.4).
-  
-  The distance function is not re-selected during bootstrap resampling. The 
-  model of the input object is re-fitted every iteration.  
-  
-  During bootstrap iterations, the distance function can fail. 
-  An iteration can fail for a two reasons:
-  (1) no detections on the iteration, and (2) a bad configuration 
-  of distances that push the distance function's parameters to their 
-  limits. When an iteration fails, Rdistance 
-  skips the iteration and effectively ignores the 
-  failed iterations. 
-  If the proportion of failed iterations is small 
-  (less than 20\% by default), the resulting abundance confidence interval 
-  is probably valid and no warning is issued.  If the proportion of 
-  non-convergent iterations 
-  is not small (exceeds 20\% by default), a warning is issued.  
-  The warning can be modified  
-  by re-setting option \code{"Rdistance_maxBSFailPropForWarning"} to
-  the acceptable proportion of failures.. 
-  Setting \code{options(Rdistance_masBSFailPropForWarning = 1.0)} will turn 
-  suppress the warning. 
-  Setting \code{options(Rdistance_masBSFailPropForWarning = 0.0)} will 
-  warn if any iteration failed.  Results (density and effective 
-  sampling distance) 
-  from all successful iterations are contained in the  
-  non-NA rows of data frame 'B' in the output object.
+Rdistance's nested data frames (produced by \code{\link[=RdistDf]{RdistDf()}})
+contain all information required to estimate bootstrap CIs.
+To compute bootstrap CIs, Rdistance resamples, with replacement,
+the rows of the \verb{$data} component contained in Rdistance
+fitted models. Rdistance assumes each row of \verb{$data}
+contains information on one transect.
+The \verb{$data} component also contains
+information on which observations inform the
+detection function, which observations should be counted as
+detected targets,
+and which transects count toward transect length.
+After resampling rows of \verb{$data}, Rdistance
+refits the distance function using non-missing distances,
+recomputes the detected number of targets using non-missing
+group sizes on transects with non-missing length,
+and re-computes total transect length from transects
+with non-missing lengths.
+By default, \code{R} = 500 bootstrap iterations are
+performed, after which bias
+corrected confidence intervals are computed (Manly, 1997, section 3.4).
+
+The distance function is not re-selected during bootstrap resampling. The
+model of the input object is re-fitted every iteration.
+
+During bootstrap iterations, the distance function can fail.
+An iteration can fail for a two reasons:
+(1) no detections on the iteration, and (2) a bad configuration
+of distances that push the distance function's parameters to their
+limits. When an iteration fails, Rdistance
+skips the iteration and effectively ignores the
+failed iterations.
+If the proportion of failed iterations is small
+(less than 20\\% by default), the resulting abundance confidence interval
+is probably valid and no warning is issued.  If the proportion of
+non-convergent iterations
+is not small (exceeds 20\\% by default), a warning is issued.
+The warning can be modified
+by re-setting option \code{"Rdistance_maxBSFailPropForWarning"} to
+the acceptable proportion of failures..
+Setting \code{options(Rdistance_masBSFailPropForWarning = 1.0)} will turn
+suppress the warning.
+Setting \code{options(Rdistance_masBSFailPropForWarning = 0.0)} will
+warn if any iteration failed.  Results (density and effective
+sampling distance)
+from all successful iterations are contained in the
+non-NA rows of data frame 'B' in the output object.
 }
 
 \section{Missing Transect Lengths}{
 
 
-  Transect lengths can be missing in the RdistDf object. 
-  Missing length transects are equivalent
-  to 0 [m] transects and do not count toward total surveyed units,
-  nor do group sizes on these transects count toward total 
-  detected individuals.  
-  Use NA-length transects to include their associated distances 
-  during distance function estimation, but not when estimating abundance. 
-  For example, this allows estimation of abundance on one 
-  study area using off-transect distances from another.  This allows 
-  sightability to be estimated using two or more similar targets (e.g., 
-  two similar species), but abundance to be estimated separate for each 
-  target type.
-  Include NA-length transects by including the "extra" distance observations 
-  in the detection data frame, with valid
-  site IDs, but set the length of those site IDs to NA in the site data frame.
+Transect lengths can be missing in the RdistDf object.
+Missing length transects are equivalent
+to 0 [m] transects and do not count toward total surveyed units,
+nor do group sizes on these transects count toward total
+detected individuals.
+Use NA-length transects to include their associated distances
+during distance function estimation, but not when estimating abundance.
+For example, this allows estimation of abundance on one
+study area using off-transect distances from another.  This allows
+sightability to be estimated using two or more similar targets (e.g.,
+two similar species), but abundance to be estimated separate for each
+target type.
+Include NA-length transects by including the "extra" distance observations
+in the detection data frame, with valid
+site IDs, but set the length of those site IDs to NA in the site data frame.
 }
 
 \section{Point Transect Lengths}{
 
-  Point transects do not have a physical measurement for length. 
-  The "length" of point transects is the number of points on the transect. 
-  Point transects can contain only one point.  
-  Rdistance treats transects of points as independent 
-  and bootstrap resamples them to estimate variance. The number of points
-  on each point transect must exist in the RdistDf and cannot have 
-  physical measurement units (it is a count, not a distance).
+Point transects do not have a physical measurement for length.
+The "length" of point transects is the number of points on the transect.
+Point transects can contain only one point.
+Rdistance treats transects of points as independent
+and bootstrap resamples them to estimate variance. The number of points
+on each point transect must exist in the RdistDf and cannot have
+physical measurement units (it is a count, not a distance).
 }
 
 \examples{
@@ -245,14 +245,14 @@ summary(fit)
          
 }
 \references{
-Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and 
-  Monte-Carlo methods in biology}, London: Chapman and Hall.
-  
-  Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
-   and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
-   abundance of biological populations}. Oxford University Press, Oxford, UK.
+Manly, B.F.J. (1997) \emph{Randomization, bootstrap, and
+Monte-Carlo methods in biology}, London: Chapman and Hall.
+
+Buckland, S.T., D.R. Anderson, K.P. Burnham, J.L. Laake, D.L. Borchers,
+and L. Thomas. (2001) \emph{Introduction to distance sampling: estimating
+abundance of biological populations}. Oxford University Press, Oxford, UK.
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{autoDistSamp}}, 
- \code{\link{predict.dfunc}} with 'type = "density"'.
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=autoDistSamp]{autoDistSamp()}},
+\code{\link[=predict.dfunc]{predict.dfunc()}} with 'type = "density"'.
 }

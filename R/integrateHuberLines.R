@@ -11,8 +11,8 @@
 #' @inherit integrateOneStepPoints return
 #' 
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
-#' \code{\link{integrateHalfnormLines}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpLines()]; 
+#' [integrateHalfnormLines()] 
 #' 
 #' @examples
 #' 

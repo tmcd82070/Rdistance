@@ -17,30 +17,30 @@ oneBsIter(
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{area}{A scalar containing the total area of inference. Usually, this is 
-study area size.  If \code{area} is NULL (the default), 
+\item{area}{A scalar containing the total area of inference. Usually, this is
+study area size.  If \code{area} is NULL (the default),
 \code{area} will be set to 1 square unit of the output units and density estimates
-will be produced. 
-If \code{area} is not NULL, it must have measurement units 
-assigned by the \code{units} package. 
+will be produced.
+If \code{area} is not NULL, it must have measurement units
+assigned by the \code{units} package.
 The units on \code{area} must be convertible
-to squared output units. Units 
-on \code{area} must be two-dimensional. 
-For example, if output units are "foo", 
+to squared output units. Units
+on \code{area} must be two-dimensional.
+For example, if output units are "foo",
 units on area must be convertible to "foo^2" by the \code{units}
 package. Units of "km^2", "cm^2", "ha", "m^2", "acre", "mi^2", and several
 others are acceptable.}
 
 \item{propUnitSurveyed}{A scalar or vector of real numbers between 0 and 1.
-The proportion of the default sampling unit that 
-  was surveyed.  If both sides of line transects were observed, 
-  \code{propUnitSurveyed}
-  = 1.  If only a single side of line transects were observed, set 
-  \code{propUnitSurveyed} = 0.5. For point transects, this should be set to 
-  the proportion of each circle that was observed. Length must either be
-  1 or the total number of transects in \code{x}.}
+The proportion of the default sampling unit that
+was surveyed.  If both sides of line transects were observed,
+\code{propUnitSurveyed}
+= 1.  If only a single side of line transects were observed, set
+\code{propUnitSurveyed} = 0.5. For point transects, this should be set to
+the proportion of each circle that was observed. Length must either be
+1 or the total number of transects in \code{x}.}
 
 \item{pb}{A progress bar created with \code{progress::progress_bar$new()}.}
 
@@ -50,44 +50,44 @@ A plot must already exist because this uses \code{lines}.}
 \item{plotCovValues}{Data frame containing values of covariates to plot.
 Ignored if \code{plot.bs} is FALSE.}
 
-\item{warn}{A logical scalar specifying whether to issue 
-an R warning if the estimation did not converge or if one 
-or more parameter estimates are at their boundaries.  
+\item{warn}{A logical scalar specifying whether to issue
+an R warning if the estimation did not converge or if one
+or more parameter estimates are at their boundaries.
 For estimation, \code{warn} should generally be left at
-its default value of \code{TRUE}.  When computing bootstrap 
-confidence intervals, setting \code{warn = FALSE} 
-turns off annoying warnings when an iteration does 
-not converge.  Regardless of \code{warn}, after 
-completion all messages about 
-convergence and boundary conditions are printed 
-by \code{print.dfunc}, \code{print.abund}, and 
+its default value of \code{TRUE}.  When computing bootstrap
+confidence intervals, setting \code{warn = FALSE}
+turns off annoying warnings when an iteration does
+not converge.  Regardless of \code{warn}, after
+completion all messages about
+convergence and boundary conditions are printed
+by \code{print.dfunc}, \code{print.abund}, and
 \code{plot.dfunc}.}
 
-\item{asymptoticSE}{Logical variable for whether to calculate 
+\item{asymptoticSE}{Logical variable for whether to calculate
 asymptotic standard errors. The default (TRUE) estimates an
-asymptotic variance-covariance matrix for parameters based on the 
-likelihood's Hessian (2nd derivative). If maximization 
-has been performed by Nlminb or HookesJeeves, the asymptotic 
-Hessian is estimated using numeric second deriviatives 
-of the likelihood at the maximum likelihood solution. If 
-maximization was performed by Optim, the last Hessian of 
-the maximization is returned 
+asymptotic variance-covariance matrix for parameters based on the
+likelihood's Hessian (2nd derivative). If maximization
+has been performed by Nlminb or HookesJeeves, the asymptotic
+Hessian is estimated using numeric second derivatives
+of the likelihood at the maximum likelihood solution. If
+maximization was performed by Optim, the last Hessian of
+the maximization is returned
 by Optim and used
-(see \code{\link{varcovarEstim}} and \code{\link{secondDeriv}}). 
-Asymptotic standard errors will not be estimated if 
-\code{asymptoticSE = FALSE}. If not estimated, 
-bootstrap iterations will run faster because the numeric Hessian, 
+(see \code{\link[=varcovarEstim]{varcovarEstim()}} and \code{\link[=secondDeriv]{secondDeriv()}}).
+Asymptotic standard errors will not be estimated if
+\code{asymptoticSE = FALSE}. If not estimated,
+bootstrap iterations will run faster because the numeric Hessian,
 which is discarded during bootstrapping,
 will not be calculated every iteration.}
 }
 \value{
-A data frame containing density and abundance 
-and other relevant statistics for 
+A data frame containing density and abundance
+and other relevant statistics for
 one iteration of the bootstrap.
 }
 \description{
 Performs density and abundance estimation for one bootstrap iteration.
 }
 \seealso{
-\code{\link{bootstrap}}; \code{\link{abundEstim}}
+\code{\link[=bootstrap]{bootstrap()}}; \code{\link[=abundEstim]{abundEstim()}}
 }

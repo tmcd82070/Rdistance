@@ -7,10 +7,10 @@
 #' 
 #' @param strt.lims A list containing start, low, and high limits for 
 #' parameters of the requested likelihood. This list is typically produced
-#' by a call to \code{\link{startLimits}}.
+#' by a call to [startLimits()].
 #' 
 #' @return An Rdistance fitted model object. This object contains the 
-#' raw object returned by the optimization routine (e.g., \code{nlming}), 
+#' raw object returned by the optimization routine (e.g., `nlming`), 
 #' and additional components specific to Rdistance.
 #' 
 #' @export

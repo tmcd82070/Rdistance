@@ -11,19 +11,19 @@
 #' @format A data.frame containing 120 rows and 6 columns.  Each row represents
 #' a surveyed site (point).  Column descriptions: 
 #' \enumerate{ 
-#' \item \code{siteID}: Factor (120 levels), the site or point surveyed.  
-#' \item \code{observer}: Factor (six levels), identity of the observer who surveyed
+#' \item `siteID`: Factor (120 levels), the site or point surveyed.  
+#' \item `observer`: Factor (six levels), identity of the observer who surveyed
 #' the point.  
-#' \item \code{bare}: Number, the mean bare ground cover (\%)
+#' \item `bare`: Number, the mean bare ground cover (\%)
 #' within 100 m of each point.  
-#' \item \code{herb}: Number, the mean herbaceous
+#' \item `herb`: Number, the mean herbaceous
 #' cover (\%) within 100 m of each point.  
-#' \item \code{shrub}: Number, the mean
+#' \item `shrub`: Number, the mean
 #' shrub cover (\%) within 100 m of each point.  
-#' \item \code{height}: Number,
+#' \item `height`: Number,
 #' the mean shrub height (cm) within 100 m of each point.  }
 #' 
-#' @seealso \code{\link{thrasherDetectionData}}
+#' @seealso [thrasherDetectionData()]
 #' 
 #' @source The Sage Thrasher data are a subset of data collected 
 #' by Jason Carlisle and field technicians for his Ph.D. from the 
@@ -39,7 +39,7 @@
 #' Carlisle, J. D., A. D. Chalfoun, K. T. Smith, and J. L. Beck. 2018. 
 #' Nontarget effects on songbirds from habitat manipulation for Greater 
 #' Sage-Grouse: Implications for the umbrella species concept. 
-#' \emph{The Condor: Ornithological Applications} 120:439–455. 
+#' *The Condor: Ornithological Applications* 120:439–455. 
 #' \doi{10.1650/CONDOR-17-200.1}
 #' 
 NULL

@@ -18,99 +18,99 @@ integrateNumeric(
 }
 \arguments{
 \item{object}{Either an Rdistance fitted distance function
-(an object that inherits from class "dfunc"; usually produced 
-by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
-distance function parameters (e.g., \code{matrix(exp(fit$par),1)}). 
-If a matrix, each row corresponds to a 
-distance function and each column is a parameter. The first column is 
-the parameter related to sighting covariates and must be transformed 
-to the "real" space (i.e., inverse link, which is \eqn{exp()}, must 
-be applied outside this routine).  If \code{object} is a matrix, 
+(an object that inherits from class "dfunc"; usually produced
+by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}), or a matrix of canonical
+distance function parameters (e.g., \code{matrix(exp(fit$par),1)}).
+If a matrix, each row corresponds to a
+distance function and each column is a parameter. The first column is
+the parameter related to sighting covariates and must be transformed
+to the "real" space (i.e., inverse link, which is \eqn{exp()}, must
+be applied outside this routine).  If \code{object} is a matrix,
 it should not have measurement units because
-only derived quantities (e.g., ESW) have units; Rdistance function 
+only derived quantities (e.g., ESW) have units; Rdistance function
 parameters themselves never have units.}
 
-\item{newdata}{A data frame containing new values for 
-the distance function covariates. If NULL and 
-\code{object} is a fitted distance function, the  
+\item{newdata}{A data frame containing new values for
+the distance function covariates. If NULL and
+\code{object} is a fitted distance function, the
 observed covariates stored in
-\code{object} are used (behavior similar to \code{\link{predict.lm}}).
+\code{object} are used (behavior similar to \code{\link[=predict.lm]{predict.lm()}}).
 Argument \code{newdata} is ignored if \code{object} is a matrix.}
 
 \item{w.lo}{Minimum sighting distance or left-truncation value
 if \code{object} is a matrix.
-Ignored if \code{object} 
-is a fitted distance function. 
+Ignored if \code{object}
+is a fitted distance function.
 Must have physical measurement units.}
 
 \item{w.hi}{Maximum sighting distance or right-truncation value
 if \code{object} is a matrix.
-Ignored if \code{object} 
+Ignored if \code{object}
 is a fitted distance function.
 Must have physical measurement units.}
 
-\item{Units}{Physical units of sighting distances if 
-\code{object} is a matrix. Sighting distance units can differ from units 
+\item{Units}{Physical units of sighting distances if
+\code{object} is a matrix. Sighting distance units can differ from units
 of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
 is a fitted distance function.}
 
-\item{expansions}{A scalar specifying the number of terms 
-in \code{series} to compute. Depending on the series, 
-this could be 0 through 5.  The default of 0 equates 
-to no expansion terms of any type.  No expansion terms 
-are allowed (i.e., \code{expansions} is forced to 0) if 
-covariates are present in the detection function 
+\item{expansions}{A scalar specifying the number of terms
+in \code{series} to compute. Depending on the series,
+this could be 0 through 5.  The default of 0 equates
+to no expansion terms of any type.  No expansion terms
+are allowed (i.e., \code{expansions} is forced to 0) if
+covariates are present in the detection function
 (i.e., right-hand side of \code{formula} includes
 something other than \code{1}).}
 
-\item{series}{If \code{expansions} > 0, this string 
-specifies the type of expansion to use. Valid values at 
+\item{series}{If \code{expansions} > 0, this string
+specifies the type of expansion to use. Valid values at
 present are 'simple', 'hermite', and 'cosine'.}
 
 \item{isPoints}{Boolean. TRUE if integration is for point surveys.
-FALSE for line-transect surveys. Line-transect surveys integrate 
-under the distance function, g(x), while point surveys integrate under 
+FALSE for line-transect surveys. Line-transect surveys integrate
+under the distance function, g(x), while point surveys integrate under
 the distance function times distances, xg(x).}
 
-\item{likelihood}{String specifying the likelihood to fit. Built-in 
+\item{likelihood}{String specifying the likelihood to fit. Built-in
 likelihoods at present are "halfnorm", "hazrate", and "negexp".}
 }
 \value{
-A vector of areas under the distance functions represented in 
-\code{object}. 
-If \code{object} is a distance function and 
-\code{newdata} is specified, the returned vector's length is 
-\code{nrow(newdata)}.  If \code{object} is a distance function and 
-\code{newdata} is NULL, 
-returned vector's length is \code{length(distances(object))}. If 
-\code{object} is a matrix, return's length is 
+A vector of areas under the distance functions represented in
+\code{object}.
+If \code{object} is a distance function and
+\code{newdata} is specified, the returned vector's length is
+\code{nrow(newdata)}.  If \code{object} is a distance function and
+\code{newdata} is NULL,
+returned vector's length is \code{length(distances(object))}. If
+\code{object} is a matrix, return's length is
 \code{nrow(object)}.
 }
 \description{
 Numerically integrate under a distance function.
 }
 \section{Numeric Integration}{
- 
-Rdistance uses Simpson's composite 1/3 rule to numerically 
+
+Rdistance uses Simpson's composite 1/3 rule to numerically
 integrate distance functions from 0 to the maximum sighting distance
-(\code{w.hi - w.lo}). The number of points evaluated 
-during numerical integration is controlled by 
+(\code{w.hi - w.lo}). The number of points evaluated
+during numerical integration is controlled by
 \code{options(Rdistance_intEvalPts)} (default 101).
-Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
-requires an even number of intervals. 
-Lower values of 'Rdistance_intEvalPts' increase calculation speeds; 
+Option \code{Rdistance_intEvalPts} must be odd because Simpson's rule
+requires an even number of intervals.
+Lower values of \code{Rdistance_intEvalPts} increase calculation speeds;
 but, decrease accuracy.
-'Rdistance_intEvalPts' must be >= 5.  A warning is thrown if 
-'Rdistance_intEvalPts' < 29. Empirical tests by the author 
-suggest 'Rdistance_intEvalPts' values >= 30 are accurate 
+\code{Rdistance_intEvalPts} must be >= 5.  A warning is thrown if
+\code{Rdistance_intEvalPts} < 29. Empirical tests by the author
+suggest \code{Rdistance_intEvalPts} values >= 30 are accurate
 to several decimal points for smooth distance functions
 (e.g., hazrate, halfnorm, negexp)
-and that all 'Rdistance_intEvalPts' >= 101 produce 
-identical results if the distance function is not smooth. 
-  
+and that all \code{Rdistance_intEvalPts} >= 101 produce
+identical results if the distance function is not smooth.
+
 \emph{Details}: Let \code{n} = \code{options(Rdistance_intEvalPts)}.
-Evaluate the distance function at \code{n} equal-spaced 
-locations \{f(x0), f(x1), ..., f(xn)\} between 0 and (w.hi - w.lo). 
+Evaluate the distance function at \code{n} equal-spaced
+locations \{f(x0), f(x1), ..., f(xn)\} between 0 and (w.hi - w.lo).
 Simpson's composite approximation to the area under the curve is
 \deqn{\frac{1}{3}h(f(x_0) + 4f(x_1) + 2f(x_2) + 
      4f(x_3) + 2f(x_4) + ... + 2f(x_{n-2}) + 
@@ -122,14 +122,14 @@ Physical units on the return values
 are the original (linear) units if \code{object} contains line-transect data
 (e.g., [m]), or square of the original units if \code{object} contains
 point-transect data (e.g., [m^2]). Point-transect units are squared because
-the likelihood is the product of the detection function (which is unitless) 
+the likelihood is the product of the detection function (which is unitless)
 and distances (which have units).
 }
 
 \section{Note}{
 
-Users will not normally call this function. It is called 
-internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}.
+Users will not normally call this function. It is called
+internally by \code{\link[=nLL]{nLL()}} and \code{\link[=effectiveDistance]{effectiveDistance()}}.
 }
 
 \examples{

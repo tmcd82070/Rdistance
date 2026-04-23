@@ -7,93 +7,93 @@
 Gamma.like(a, dist, covars, w.hi = NULL)
 }
 \arguments{
-\item{a}{A vector or matrix of covariate 
-and expansion term 
-coefficients. If matrix, dimension is 
-\emph{k} X \emph{p}, where 
+\item{a}{A vector or matrix of covariate
+and expansion term
+coefficients. If matrix, dimension is
+\emph{k} X \emph{p}, where
 \emph{k} = \code{nrow(a)}) is the number of coefficient
-vectors to evaluate (cases) and \emph{p} 
+vectors to evaluate (cases) and \emph{p}
 = \code{ncol(a)})
-is the number of covariate and expansion 
-coefficients in the likelihood (i.e., rows are 
-cases and columns are covariates). If \code{a} is a 
-dimensionless vector, it is interpreted as a 
-single row with \emph{k} = 1. 
-Covariate coefficients in \code{a} are the first 
-\emph{q} values (\emph{q} <= \emph{p}), and must 
+is the number of covariate and expansion
+coefficients in the likelihood (i.e., rows are
+cases and columns are covariates). If \code{a} is a
+dimensionless vector, it is interpreted as a
+single row with \emph{k} = 1.
+Covariate coefficients in \code{a} are the first
+\emph{q} values (\emph{q} <= \emph{p}), and must
 be on a log scale.}
 
-\item{dist}{A numeric vector of length \emph{n} or 
-a single-column matrix (dimension \emph{n}X1) containing 
+\item{dist}{A numeric vector of length \emph{n} or
+a single-column matrix (dimension \emph{n}X1) containing
 detection distances at which to evaluate the likelihood.}
 
 \item{covars}{A numeric vector of length \emph{q} or a
-matrix of dimension \emph{n}X\emph{q} containing 
-covariate values 
+matrix of dimension \emph{n}X\emph{q} containing
+covariate values
 associated with distances in argument \code{dist}.}
 
-\item{w.hi}{A numeric scalar containing maximum 
-distance. The right-hand cutoff or upper limit. 
-Ignored by some likelihoods (such as halfnorm, 
+\item{w.hi}{A numeric scalar containing maximum
+distance. The right-hand cutoff or upper limit.
+Ignored by some likelihoods (such as halfnorm,
 negexp, and hazrate), but is a fixed parameter
-in other likelihoods (such as oneStep 
+in other likelihoods (such as oneStep
 and uniform).}
 }
 \value{
 A list containing the following two components:
 \itemize{
-  \item \bold{L.unscaled}: A matrix of size 
-   \emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
-   cases = \code{nrow(a)})
-   containing likelihood values evaluated at 
-   distances in \code{dist}.
-   Each row is associated with 
-   a single distance, and each column is associated with 
-   a single case (row of \code{a}).  Values in this matrix are  
-   the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
-   These values are "unscaled" likelihood values; they must be 
-   scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi  
-   to form proper likelihood values. 
-   
- \item \bold{params}: A \emph{n}X\emph{b}X\emph{k}  array 
- of the likelihood's (canonical) parameters in link space (i.e., on 
- log scale; \emph{b} = number of canonical parameters in 
- the likelihood; \emph{k} = number of cases). 
- Rows correspond to distances in \code{dist}. Columns 
- correspond to parameters (columns of \code{a}), 
- and pages correspond to cases (rows of \code{a}). 
+\item \strong{L.unscaled}: A matrix of size
+\emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
+cases = \code{nrow(a)})
+containing likelihood values evaluated at
+distances in \code{dist}.
+Each row is associated with
+a single distance, and each column is associated with
+a single case (row of \code{a}).  Values in this matrix are
+the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
+These values are "unscaled" likelihood values; they must be
+scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi
+to form proper likelihood values.
+
+\item \strong{params}: A \emph{n}X\emph{b}X\emph{k}  array
+of the likelihood's (canonical) parameters in link space (i.e., on
+log scale; \emph{b} = number of canonical parameters in
+the likelihood; \emph{k} = number of cases).
+Rows correspond to distances in \code{dist}. Columns
+correspond to parameters (columns of \code{a}),
+and pages correspond to cases (rows of \code{a}).
 }
 }
 \description{
-Evaluate the gamma distance function 
+Evaluate the gamma distance function
 for sighting distances, potentially including covariates
 and expansion terms
 }
 \details{
-The Rdistance implementation of a Gamma distance function follows 
-Becker and Quang (2009). Rdistance's Gamma distance function is 
+The Rdistance implementation of a Gamma distance function follows
+Becker and Quang (2009). Rdistance's Gamma distance function is
 \deqn{f(d|\alpha, \sigma) = \left(\frac{d}{m}\right)^{\alpha - 1}e^{-(d-m)/\sigma},}{
 f(d|a,s) =  (d/m)^{a-1} exp(-(d-m)/s),
 }
-where \eqn{\alpha}{a} is the \bold{shape} parameter, \eqn{\sigma}{s} is 
-the \bold{scale} parameter, and \eqn{m = (\alpha-1)\sigma}{m = (a-1)s}.
-\eqn{m} is the mode of the Gamma function, and in Rdistance it's 
-scaled to have a maximum of 1.0 at \eqn{m}.  
-The \bold{scale} parameter is a function of the shape parameter 
-\emph{and} sighting covariates, i.e., 
+where \eqn{\alpha}{a} is the \strong{shape} parameter, \eqn{\sigma}{s} is
+the \strong{scale} parameter, and \eqn{m = (\alpha-1)\sigma}{m = (a-1)s}.
+\eqn{m} is the mode of the Gamma function, and in Rdistance it's
+scaled to have a maximum of 1.0 at \eqn{m}.
+The \strong{scale} parameter is a function of the shape parameter
+\emph{and} sighting covariates, i.e.,
 \deqn{\sigma = k [exp(x'\beta)],}{s = k*exp(x'b),}
-where \eqn{x} is a vector of covariate values associated with distance \eqn{d} 
-(i.e., a row of \code{covars}), \eqn{\beta}{b} is a vector of the 
-first \eqn{q} (=\code{ncol(covars)}) values of the first argument 
-of the function (\code{a}), and 
-\eqn{k} is a function of the shape parameter, i.e., 
+where \eqn{x} is a vector of covariate values associated with distance \eqn{d}
+(i.e., a row of \code{covars}), \eqn{\beta}{b} is a vector of the
+first \eqn{q} (=\code{ncol(covars)}) values of the first argument
+of the function (\code{a}), and
+\eqn{k} is a function of the shape parameter, i.e.,
 \deqn{k = \frac{1}{\Gamma(\alpha)}  \left(\frac{a - 1}{e^1} \right)^{a - 1}.}{
-k = (1/Gamma(a)) * (((a - 1)/exp(1))^(a - 1)).}  
-The shape parameter \eqn{\alpha}{a} is the 
-\eqn{q+1}-st value in the function's first argument and is constrained to 
+k = (1/Gamma(a)) * (((a - 1)/exp(1))^(a - 1)).}
+The shape parameter \eqn{\alpha}{a} is the
+\eqn{q+1}-st value in the function's first argument and is constrained to
 be strictly greater than 1.0.
- 
-See Examples for use of \code{\link{GammaReparam}} to compute \eqn{\alpha}{a}
+
+See Examples for use of \code{\link[=GammaReparam]{GammaReparam()}} to compute \eqn{\alpha}{a}
 and \eqn{\sigma}{s} from fitted object coefficients.
 }
 \examples{
@@ -125,10 +125,10 @@ lines(x, g, lwd = 3, lty = 2, col="green3")
 }
 \references{
 Becker, E. F., and P. X. Quang, 2009. \emph{A Gamma-Shaped Detection Function for Line-Transect Surveys with Mark-Recapture and Covariate Data.}
-  Journal of Agricultural, Biological, and Environmental Statistics 14(2):207-223.
+Journal of Agricultural, Biological, and Environmental Statistics 14(2):207-223.
 }
 \seealso{
-\code{\link{dfuncEstim}}, 
-         \code{\link{abundEstim}},
-         other \code{<likelihood>.like} functions
+\code{\link[=dfuncEstim]{dfuncEstim()}},
+\code{\link[=abundEstim]{abundEstim()}},
+other \verb{<likelihood>.like} functions
 }

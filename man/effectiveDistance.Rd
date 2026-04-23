@@ -8,47 +8,47 @@ effectiveDistance(object, newdata = NULL)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{newdata}{A data frame containing new values for 
+\item{newdata}{A data frame containing new values for
 covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{object} contains covariates, the  
-  covariates stored in
-  \code{object} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+ESW's or EDR's will be computed. If NULL and
+\code{object} contains covariates, the
+covariates stored in
+\code{object} are used (like \code{\link[=predict.lm]{predict.lm()}}).
+If not NULL, covariate values in \code{newdata}
+are used.
+See \strong{Value} section for more information.}
 }
 \value{
-If \code{newdata} is present, the returned value is 
-a vector of effective sampling distances associated with 
-covariate values in \code{newdata}. Length of return 
-in this case is the number of rows in \code{newdata}. 
-If \code{newdata} is NULL, the returned value is a vector 
-of effective sampling distances associated with covariate 
-values in \code{object}. Length of return in this case 
-is the number of detected groups.  The returned vector 
+If \code{newdata} is present, the returned value is
+a vector of effective sampling distances associated with
+covariate values in \code{newdata}. Length of return
+in this case is the number of rows in \code{newdata}.
+If \code{newdata} is NULL, the returned value is a vector
+of effective sampling distances associated with covariate
+values in \code{object}. Length of return in this case
+is the number of detected groups.  The returned vector
 has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
 Computes Effective Strip Width (ESW) for line-transect detection
-  functions, or the analogous Effective Detection Radius (EDR) for point-transect
-  detection functions.
+functions, or the analogous Effective Detection Radius (EDR) for point-transect
+detection functions.
 }
 \details{
-Serves as a wrapper for 
-\code{\link{ESW}} and \code{\link{EDR}}.
+Serves as a wrapper for
+\code{\link[=ESW]{ESW()}} and \code{\link[=EDR]{EDR()}}.
 
-Effective distances are areas under scaled 
-distance functions (i.e., area under g(x)). Areas are 
-exact for functions whose integral is known (e.g., negexp). 
+Effective distances are areas under scaled
+distance functions (i.e., area under g(x)). Areas are
+exact for functions whose integral is known (e.g., negexp).
 Numeric integration is used for all others.
 }
 \seealso{
-\code{\link{dfuncEstim}},
-  \code{\link{ESW}},
-  \code{\link{EDR}}, 
-  \code{\link{integrateNumeric}},
-  \code{\link{integrateNegexpLines}}
+\code{\link[=dfuncEstim]{dfuncEstim()}},
+\code{\link[=ESW]{ESW()}},
+\code{\link[=EDR]{EDR()}},
+\code{\link[=integrateNumeric]{integrateNumeric()}},
+\code{\link[=integrateNegexpLines]{integrateNegexpLines()}}
 }

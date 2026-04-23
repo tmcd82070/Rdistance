@@ -3,13 +3,13 @@
 #' @description
 #' Check for the presence of physical measurement units on key
 #' columns of  
-#' an \code{RdistDf} data frame. 
+#' an `RdistDf` data frame. 
 #' 
-#' @param ml An \code{Rdistance} model list produced by 
-#' \code{\link{parseModel}} containing a list
+#' @param ml An `Rdistance` model list produced by 
+#' [parseModel()] containing a list
 #' of parameters for the distance model. 
 #' 
-#' @returns The input \code{ml} list, with units of various 
+#' @returns The input `ml` list, with units of various 
 #' quantities converted to common units.  If a check fails, for example, 
 #' a quantity does not have units, an error is thrown.
 #' 

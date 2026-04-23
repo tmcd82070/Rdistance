@@ -7,52 +7,52 @@
 nLL(a, ml, verbosity = 0)
 }
 \arguments{
-\item{a}{A vector of likelihood parameter values. Length and 
-meaning depend on \code{ml$series} and \code{ml$expansions}. If no expansion 
-terms were called for (i.e., \code{ml$expansions = 0}), the distance 
-likelihood contain one or two canonical parameters (see Details). 
-If one or more expansions are called for, coefficients for the 
-expansion terms follow coefficients for the canonical parameters.  
-i.e., length of this vector is 
-  \code{(num Covars incl. intercept) + expansions + 1*(like \%in\% c("hazrate"))}.}
+\item{a}{A vector of likelihood parameter values. Length and
+meaning depend on \code{ml$series} and \code{ml$expansions}. If no expansion
+terms were called for (i.e., \code{ml$expansions = 0}), the distance
+likelihood contain one or two canonical parameters (see Details).
+If one or more expansions are called for, coefficients for the
+expansion terms follow coefficients for the canonical parameters.
+i.e., length of this vector is
+\verb{(num Covars incl. intercept) + expansions + 1*(like \\\%in\\\% c("hazrate"))}.}
 
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
+\item{ml}{Either a Rdistance 'model frame' or an Rdistance
+'fitted object'.  Both are of class "dfunc".
+Rdistance 'model frames' are lists containing components
+necessary to estimate a distance function, but no estimates.
 Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
+produced by calls to \code{\link[=parseModel]{parseModel()}}.
 Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
+are typically produced by calls to \code{\link[=dfuncEstim]{dfuncEstim()}}.
 'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
+with additional components such as the parameters estimates,
 log likelihood value, convergence information, and the variance-
 covariance matrix of the parameters.}
 
-\item{verbosity}{The level of output produced during estimation. 
-\code{verbosity} = 0 produces no output. Increasing values 
+\item{verbosity}{The level of output produced during estimation.
+\code{verbosity} = 0 produces no output. Increasing values
 of \code{verbosity} >= 1 produce increasing levels of intermediate details.
 This is mostly used for de-bugging and checking convergence.}
 }
 \value{
-A scalar, the negative of the log likelihood evaluated at 
+A scalar, the negative of the log likelihood evaluated at
 parameters \code{a}.
 }
 \description{
-Return the negative log likelihood of 
+Return the negative log likelihood of
 observed detection distances given a likelihood
-  and the estimated parameters.
+and the estimated parameters.
 }
 \details{
-\bold{Expansion Terms}: If \code{ml$expansions} = k (k > 0), 
-the expansion function specified by \code{ml$series} is 
-called (see for example \code{\link{cosine.expansion}}). 
-Assuming \eqn{h_{ij}(x)}{h_ij(x)} is the 
-\eqn{j^{th}}{j-th} expansion term for the 
-\eqn{i^{th}}{i-th} distance and that 
-\eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)} 
-are (estimated) coefficients for the expansion terms, 
-the likelihood contribution for the \eqn{i^{th}}{i-th} 
+\strong{Expansion Terms}: If \code{ml$expansions} = k (k > 0),
+the expansion function specified by \code{ml$series} is
+called (see for example \code{\link[=cosine.expansion]{cosine.expansion()}}).
+Assuming \eqn{h_{ij}(x)}{h_ij(x)} is the
+\eqn{j^{th}}{j-th} expansion term for the
+\eqn{i^{th}}{i-th} distance and that
+\eqn{c_1, c_2, \dots, c_k}{c(1), c(2), ..., c(k)}
+are (estimated) coefficients for the expansion terms,
+the likelihood contribution for the \eqn{i^{th}}{i-th}
 distance is, \deqn{f(x|a,b,c_1,c_2,\dots,c_k) = 
 f(x|a,b)(1 + \sum_{j=1}^{k} c_j h_{ij}(x)).}{f(x|a,b,c_1,c_2,...,c_k) 
 = f(x|a,b)(1 + c(1) h_i1(x) + c(2) h_i2(x) + ... + c(k) h_ik(x)). }
@@ -81,6 +81,6 @@ scaler <- pnorm(units::drop_units(fit$w.hi), mean = 0, sd = exp(fit$par)) - 0.5
  
 }
 \seealso{
-See \code{\link{halfnorm.like}} and links there; 
- \code{\link{dfuncEstim}}
+See \code{\link[=halfnorm.like]{halfnorm.like()}} and links there;
+\code{\link[=dfuncEstim]{dfuncEstim()}}
 }

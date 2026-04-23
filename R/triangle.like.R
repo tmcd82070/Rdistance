@@ -8,7 +8,7 @@
 #' 
 #' @inherit halfnorm.like return seealso
 #' 
-#' @details Rdistance's \code{triangle} likelihood is a mixture of a 
+#' @details Rdistance's `triangle` likelihood is a mixture of a 
 #' triangle and uniform distribution. The 'triangle' density function
 #' is  
 #' \deqn{f(d|\theta, p) = (1 - \frac{1-p}{\theta}d) I(0 \leq d \leq \theta) + 
@@ -17,7 +17,7 @@
 #' where 
 #' \eqn{I(x)} is the indicator function for event \eqn{x}, 
 #' and \eqn{w} is the nominal strip width 
-#' (i.e., \code{w.hi - w.lo} in Rdistance). 
+#' (i.e., `w.hi - w.lo` in Rdistance). 
 #' The unknown parameters to be estimated 
 #' are \eqn{\theta}{T} and \eqn{p} 
 #' (\eqn{w} is fixed - given by the user). 

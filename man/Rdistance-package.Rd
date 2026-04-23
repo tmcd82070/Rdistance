@@ -10,30 +10,29 @@
 \title{Rdistance - Distance Sampling Analyses for Abundance Estimation}
 \description{
 \code{Rdistance} contains functions and associated routines to analyze
-distance-sampling data collected on point or line transects. 
+distance-sampling data collected on point or line transects.
 Some of \code{Rdistance}'s features include:
 \itemize{
-   \item Accommodation of both point and line transect analyses 
-    in one routine (\code{\link{dfuncEstim}}).
-   \item Regression-like formula for inclusion of distance function
-   covariates (\code{\link{dfuncEstim}}).
-   \item Automatic bootstrap confidence intervals 
-   (\code{\link{abundEstim}}).
-   \item Availability of both study-area and site-level abundance
-   estimates (\code{help("predict.dfunc")}).
-   \item Classical, parametric distance functions
-   (\code{\link{halfnorm.like}}, \code{\link{hazrate.like}}, 
-   \code{\link{negexp.like}}), and
-   expansion functions (\code{\link{cosine.expansion}}, 
-   \code{\link{hermite.expansion}}, \code{\link{simple.expansion}}).
-   
-   
-   \item Automated distance function fits and selection 
-   \code{\link{autoDistSamp}}.
-   
-   \item \code{print}, \code{plot}, \code{predict}, \code{coef}, 
-   and \code{summary} methods for distance function objects and 
-   abundance classes.
+\item Accommodation of both point and line transect analyses
+in one routine (\code{\link[=dfuncEstim]{dfuncEstim()}}).
+\item Regression-like formula for inclusion of distance function
+covariates (\code{\link[=dfuncEstim]{dfuncEstim()}}).
+\item Automatic bootstrap confidence intervals
+(\code{\link[=abundEstim]{abundEstim()}}).
+\item Availability of both study-area and site-level abundance
+estimates (\code{help("predict.dfunc")}).
+\item Classical, parametric distance functions
+(\code{\link[=halfnorm.like]{halfnorm.like()}}, \code{\link[=hazrate.like]{hazrate.like()}},
+\code{\link[=negexp.like]{negexp.like()}}), and
+expansion functions (\code{\link[=cosine.expansion]{cosine.expansion()}},
+\code{\link[=hermite.expansion]{hermite.expansion()}}, \code{\link[=simple.expansion]{simple.expansion()}}).
+
+\item Automated distance function fits and selection
+\code{\link[=autoDistSamp]{autoDistSamp()}}.
+
+\item \code{print}, \code{plot}, \code{predict}, \code{coef},
+and \code{summary} methods for distance function objects and
+abundance classes.
 }
 }
 \section{Background}{
@@ -45,44 +44,43 @@ sighting animals and estimating density or abundance.  Data collected
 during line transect surveys consists of sighting records for
 \emph{targets}, usually either individuals or groups of individuals.  Among
 the collected data, off-transect distances are recorded or computed from
-other information (see \code{\link{perpDists}}).  Off-transect distances 
-are the perpendicular distances from the transect to the location of 
+other information (see \code{\link[=perpDists]{perpDists()}}).  Off-transect distances
+are the perpendicular distances from the transect to the location of
 the initial sighting cue.
 When groups are the target, the number of individuals in the group is
 recorded.
 
-Point transect surveys are similar except that observers stop one 
-or more times along the transect to observe targets.  This is a 
-popular method for avian surveys where detections are often auditory 
+Point transect surveys are similar except that observers stop one
+or more times along the transect to observe targets.  This is a
+popular method for avian surveys where detections are often auditory
 cues, but is also appropriate when automated detectors are placed along
-a route.  Point transect surveys collect distances from the observer to 
-the target and are sometimes called \emph{radial} distances.   
+a route.  Point transect surveys collect distances from the observer to
+the target and are sometimes called \emph{radial} distances.
 
-
-A fundamental characteristic of both line and point-based 
+A fundamental characteristic of both line and point-based
 distance sampling analyses is that
 probability of detecting a target declines as
-off-transect or radial distances increase. Targets far from 
-the observer are usually 
+off-transect or radial distances increase. Targets far from
+the observer are usually
 harder to detect than closer targets.  In most
 classical line transect studies, targets on the transect (off-transect
-distance = 0) are assume to be sighted with 100\% probability.  This
+distance = 0) are assume to be sighted with 100\\% probability.  This
 assumption allows estimation of the proportion of targets missed during the
-survey, and thus it is possible to adjust the actual number of 
-sighted targets for the proportion of targets missed. 
+survey, and thus it is possible to adjust the actual number of
+sighted targets for the proportion of targets missed.
 Some studies utilize two observers searching the same areas to
 estimate the proportion of individuals missed and thereby eliminating the
 assumption that all individuals on the line have been observed.
 }
 
 \section{Relationship to other software}{
- 
+
 A detailed comparison of
 \code{Rdistance} to other options for distance sampling analysis (e.g.,
 Program DISTANCE, R package \code{Distance}, and R package \code{unmarked})
-is forthcoming.  While some of the functionality in \code{Rdistance} 
+is forthcoming.  While some of the functionality in \code{Rdistance}
 is not unique, our aim is to provide an easy-to-use, rigorous,
-and flexible analysis option for distance-sampling data.  
+and flexible analysis option for distance-sampling data.
 We understand that beginning
 users often need software that is both easy to use and easy to understand,
 and that advanced users often require greater flexibility and customization.
@@ -94,17 +92,17 @@ requests, etc. through the package's GitHub website
 
 \section{Data sets}{
 
- \code{Rdistance} contains four example data sets: two collected using 
-line-transect methods (i.e., \code{\link{sparrowDetectionData}} and
-\code{\link{sparrowSiteData}}) and two collected using point-transect
+\code{Rdistance} contains four example data sets: two collected using
+line-transect methods (i.e., \code{\link[=sparrowDetectionData]{sparrowDetectionData()}} and
+\code{\link[=sparrowSiteData]{sparrowSiteData()}}) and two collected using point-transect
 methods (i.e.,
-\code{\link{thrasherDetectionData}} and \code{\link{thrasherSiteData}}).
+\code{\link[=thrasherDetectionData]{thrasherDetectionData()}} and \code{\link[=thrasherSiteData]{thrasherSiteData()}}).
 }
 
 \references{
 Buckland, S.T., Anderson, D.R., Burnham, K.P. and Laake, J.L.
-  1993. \emph{Distance Sampling: Estimating Abundance of Biological
-  Populations}. Chapman and Hall, London.
+1993. \emph{Distance Sampling: Estimating Abundance of Biological
+Populations}. Chapman and Hall, London.
 }
 \seealso{
 Useful links:
@@ -116,12 +114,12 @@ Useful links:
 }
 \author{
 Main author and maintainer: Trent McDonald
-<trent@mcdonalddatasciences.com>
+\href{mailto:trent@mcdonalddatasciences.com}{trent@mcdonalddatasciences.com}
 
 Coauthors: Ryan Nielson, Jason Carlisle, and Aidan McDonald
 
 Contributors: Ben Augustine, James Griswald, Joel Reynolds, Pham Quang, Earl
-Becker, Aaron Christ, Brook Russelland, Patrick McKann, Lacey Jeroue, 
+Becker, Aaron Christ, Brook Russelland, Patrick McKann, Lacey Jeroue,
 Abigail Hoffman, Michael Kleinsasser, and Ried Olson
 }
 \keyword{package}

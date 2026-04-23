@@ -1,8 +1,8 @@
 #' @title Abundance point estimates
 #' 
 #' @description Estimate abundance from an Rdistance fitted model. 
-#' This function is called internally by \code{abundEstim}.  Most users will call 
-#' \code{abundEstim} to estimate abundance unless they are running simulations or 
+#' This function is called internally by `abundEstim`.  Most users will call 
+#' `abundEstim` to estimate abundance unless they are running simulations or 
 #' bootstrapping.
 #' 
 #' @inheritParams predict.dfunc 
@@ -41,7 +41,7 @@
 #'    
 #'         
 #'    
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{abundEstim}}
+#' @seealso [dfuncEstim()], [abundEstim()]
 #' 
 #' @export 
 

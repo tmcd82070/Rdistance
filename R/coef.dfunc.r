@@ -13,7 +13,7 @@
 #' Length and interpretation of values vary 
 #' depending on the form of the detection function and expansion terms.
 #'   
-#' @seealso \code{\link{AIC}}, \code{\link{dfuncEstim}}
+#' @seealso [AIC()], [dfuncEstim()]
 #' 
 #' @examples
 #' data(sparrowDfuncObserver) # pre-estimated dfunc

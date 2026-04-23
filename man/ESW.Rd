@@ -8,51 +8,51 @@ ESW(object, newdata = NULL)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{newdata}{A data frame containing new values for 
+\item{newdata}{A data frame containing new values for
 covariates at which either
-ESW's or EDR's will be computed. If NULL and 
-  \code{object} contains covariates, the  
-  covariates stored in
-  \code{object} are used (like \code{\link{predict.lm}}).
-  If not NULL, covariate values in \code{newdata}
-  are used. 
-  See \bold{Value} section for more information.}
+ESW's or EDR's will be computed. If NULL and
+\code{object} contains covariates, the
+covariates stored in
+\code{object} are used (like \code{\link[=predict.lm]{predict.lm()}}).
+If not NULL, covariate values in \code{newdata}
+are used.
+See \strong{Value} section for more information.}
 }
 \value{
-If \code{newdata} is present, the returned value is 
-a vector of effective sampling distances associated with 
-covariate values in \code{newdata}. Length of return 
-in this case is the number of rows in \code{newdata}. 
-If \code{newdata} is NULL, the returned value is a vector 
-of effective sampling distances associated with covariate 
-values in \code{object}. Length of return in this case 
-is the number of detected groups.  The returned vector 
+If \code{newdata} is present, the returned value is
+a vector of effective sampling distances associated with
+covariate values in \code{newdata}. Length of return
+in this case is the number of rows in \code{newdata}.
+If \code{newdata} is NULL, the returned value is a vector
+of effective sampling distances associated with covariate
+values in \code{object}. Length of return in this case
+is the number of detected groups.  The returned vector
 has measurement units, i.e., \code{object$outputUnits}.
 }
 \description{
-Returns effective strip width (ESW) for 
-  line-transect detection functions. 
-  See \code{\link{EDR}} is for point transects.
+Returns effective strip width (ESW) for
+line-transect detection functions.
+See \code{\link[=EDR]{EDR()}} is for point transects.
 }
 \details{
-ESW is area under 
-  a scaled distance function between its
-  left-truncation limit (\code{obj$w.lo}) and its right-truncation 
-  limit (\code{obj$w.hi}). \if{latex}{I.e., 
+ESW is area under
+a scaled distance function between its
+left-truncation limit (\code{obj$w.lo}) and its right-truncation
+limit (\code{obj$w.hi}). \if{latex}{I.e., 
     \deqn{ESW = \int_{w.lo}^{w.hi} g(x)dx,} 
   where \eqn{g(x)} is the distance
   function scaled so that \eqn{g(x.scl) = g.x.scl}
   and \eqn{w.lo} and \eqn{w.hi} are the lower
   and upper truncation limits.  }
-  
-  If detection does not decline with distance, 
-  the detection function is flat (horizontal), and 
-  area under the detection  
-  function is  \eqn{g(0)(w.hi - w.lo)}.  
-  If, in this case, \eqn{g(0) = 1}, effective sampling distance is 
-  the half-width of the surveys, \eqn{(w.hi - w.lo)}
+
+If detection does not decline with distance,
+the detection function is flat (horizontal), and
+area under the detection
+function is  \eqn{g(0)(w.hi - w.lo)}.
+If, in this case, \eqn{g(0) = 1}, effective sampling distance is
+the half-width of the surveys, \eqn{(w.hi - w.lo)}
 }
 \examples{
 data(sparrowDfuncObserver)
@@ -63,6 +63,6 @@ ESW(sparrowDfuncObserver, newdata = data.frame(observer =
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{EDR}}, 
-\code{\link{effectiveDistance}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=EDR]{EDR()}},
+\code{\link[=effectiveDistance]{effectiveDistance()}}
 }

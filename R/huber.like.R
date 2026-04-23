@@ -18,7 +18,7 @@
 #' Huber loss function, mixed with a uniform at the upper end, and contains
 #' three canonical parameters. 
 #' The 'huber' distance function is a negative quadratic 
-#' between \code{0} and its first parameter \eqn{\theta_1}{T1},
+#' between `0` and its first parameter \eqn{\theta_1}{T1},
 #' linear between \eqn{\theta_1}{T1} and \eqn{\theta_1 + \theta_2}{T1 + T2}, and 
 #' constant  after \eqn{\theta_1 + \theta_2}{T1 + T2}.
 #' Specifically, the 'huber' likelihood is, 
@@ -27,13 +27,13 @@
 #'      I(0 \leq d \leq \Theta) \  + \  p \, I(\Theta < d \leq w)
 #' }
 #' where
-#' \eqn{\Theta = \theta_1 + \theta_2}{T = T1 + T2}, \eqn{w} = \code{w.hi - w.lo},
+#' \eqn{\Theta = \theta_1 + \theta_2}{T = T1 + T2}, \eqn{w} = `w.hi - w.lo`,
 #' \eqn{
 #'  m = \theta_1(\Theta - 0.5\theta_1)
 #' }{
 #'  m = T1(T - 0.5(T1))
 #' }
-#' and \emph{h(d)} is Huber loss between 0 and \eqn{\Theta}{T}, i.e.,
+#' and *h(d)* is Huber loss between 0 and \eqn{\Theta}{T}, i.e.,
 #' \deqn{
 #'  h(d)  = 0.5d^2\, I(0 \leq d \leq \theta_1) \ + \ 
 #'          \theta_1(d - 0.5\theta_1)\, I(\theta_1 < d \leq \Theta).
@@ -44,7 +44,7 @@
 #' log(T_1) = B_0 + B_1(x_1) + ... + B_q(x_q)}.  \eqn{\theta_2}{T2} and \eqn{p} 
 #' are constant across covariate values.
 #' 
-#' @seealso See \href{https://mcdonalddatasciences.com/Rdistance.html}{Rdistance tutorials}
+#' @seealso See [Rdistance tutorials](https://mcdonalddatasciences.com/Rdistance.html)
 #' for a method to generate random observations from the Huber likelihood.
 #' 
 #' @examples

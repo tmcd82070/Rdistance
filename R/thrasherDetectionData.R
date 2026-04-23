@@ -11,15 +11,15 @@
 #' @format A data.frame containing 193 rows and 3 columns.  Each row represents
 #' a detected group of thrashers.  Column descriptions: 
 #' \enumerate{ 
-#'   \item \code{siteID}: Factor (120 levels), the site or point where the detection
+#'   \item `siteID`: Factor (120 levels), the site or point where the detection
 #'   was made.  
-#'   \item \code{groupsize}: Number, the number of individuals within
+#'   \item `groupsize`: Number, the number of individuals within
 #'   the detected group.  
-#'   \item \code{dist}: Number, the radial distance (m) from
+#'   \item `dist`: Number, the radial distance (m) from
 #'   the transect to the detected group.  This is the distance used in analysis.
 #' }
 #' 
-#' @seealso \code{\link{thrasherSiteData}}
+#' @seealso [thrasherSiteData()]
 #' 
 #' @source The Sage Thrasher data are a subset of the data collected 
 #' by Jason Carlisle and various field technicians for his Ph.D. from the 
@@ -35,7 +35,7 @@
 #' Carlisle, J. D., A. D. Chalfoun, K. T. Smith, and J. L. Beck. 2018. 
 #' Nontarget effects on songbirds from habitat manipulation for Greater 
 #' Sage-Grouse: Implications for the umbrella species concept. 
-#' \emph{The Condor: Ornithological Applications} 120:439–455. 
+#' *The Condor: Ornithological Applications* 120:439–455. 
 #' \doi{10.1650/CONDOR-17-200.1}
 #' 
 NULL

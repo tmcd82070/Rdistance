@@ -7,17 +7,17 @@
 checkUnits(ml)
 }
 \arguments{
-\item{ml}{An \code{Rdistance} model list produced by 
-\code{\link{parseModel}} containing a list
+\item{ml}{An \code{Rdistance} model list produced by
+\code{\link[=parseModel]{parseModel()}} containing a list
 of parameters for the distance model.}
 }
 \value{
-The input \code{ml} list, with units of various 
-quantities converted to common units.  If a check fails, for example, 
+The input \code{ml} list, with units of various
+quantities converted to common units.  If a check fails, for example,
 a quantity does not have units, an error is thrown.
 }
 \description{
 Check for the presence of physical measurement units on key
-columns of  
+columns of
 an \code{RdistDf} data frame.
 }

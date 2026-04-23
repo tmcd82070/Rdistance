@@ -9,19 +9,19 @@
 #' @details There are, in general, several expansions that can be called Hermite. Let \eqn{w = 4x - 2}{w = 4*x - 2}. 
 #' Rdistance's Hermite expansions are:
 #'   \itemize{
-#'     \item \bold{First term}: \deqn{h_1(w) = w + 2,}{h1(w) = w + 2,}
-#'     \item \bold{Second term}: \deqn{h_2(w) = w^2 - 4,}{h2(w) = w^2 - 4,}
-#'     \item \bold{Third term}: \deqn{h_3(w) = w^3 - 3w + 2,}{h3(w) = w^3 - 3*w + 2,}
-#'     \item \bold{Fourth term}: \deqn{h_4(w) = w^4 - 6w^2 + 8,}{h4(w) = w^4 - 6*w^2 + 8,}
+#'     \item **First term**: \deqn{h_1(w) = w + 2,}{h1(w) = w + 2,}
+#'     \item **Second term**: \deqn{h_2(w) = w^2 - 4,}{h2(w) = w^2 - 4,}
+#'     \item **Third term**: \deqn{h_3(w) = w^3 - 3w + 2,}{h3(w) = w^3 - 3*w + 2,}
+#'     \item **Fourth term**: \deqn{h_4(w) = w^4 - 6w^2 + 8,}{h4(w) = w^4 - 6*w^2 + 8,}
 #'   }
 #'   The maximum number of expansion terms computed is 4.
 #'   
 #' @inherit cosine.expansion return
 #'   
-#' @seealso \code{\link{dfuncEstim}}
-#' , \code{\link{cosine.expansion}}
-#' , \code{\link{sine.expansion}}
-#' , \code{\link{simple.expansion}}.
+#' @seealso [dfuncEstim()]
+#' , [cosine.expansion()]
+#' , [sine.expansion()]
+#' , [simple.expansion()].
 #'   
 #' @examples 
 #' x <- matrix(seq(0, 1, length = 200), ncol = 1)

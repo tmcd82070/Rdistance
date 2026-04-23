@@ -2,13 +2,13 @@
 #' 
 #' @description Find the x coordinate that maximizes g(x).
 #' 
-#' @param fit An estimated 'dfunc' object produced by \code{dfuncEstim}.
+#' @param fit An estimated 'dfunc' object produced by `dfuncEstim`.
 #' 
 #' @param covars Covariate values to calculate g(x).
 #' 
-#' @return The value of x that maximizes g(x) in \code{fit}.
+#' @return The value of x that maximizes g(x) in `fit`.
 #' 
-#' @seealso \code{\link{dfuncEstim}}
+#' @seealso [dfuncEstim()]
 #' 
 #' @examples \dontrun{
 #' # Fake data

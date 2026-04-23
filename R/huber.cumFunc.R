@@ -10,19 +10,19 @@
 #' (i.e., regular numeric). 
 #' 
 #' @param t1 A vector of values for the \eqn{\theta_1}{T1} parameter 
-#' of the `huber` likelihood. If \code{x} has units, \code{t1} must have 
+#' of the `huber` likelihood. If `x` has units, `t1` must have 
 #' compatible units.
 #' 
 #' @param t2 A vector of values for the \eqn{\theta_2}{T2} parameter 
-#' of the `huber` likelihood. If \code{x} has units, \code{t2} must have 
+#' of the `huber` likelihood. If `x` has units, `t2` must have 
 #' compatible units.
 #' 
 #' @param p A vector of values for the \eqn{p} parameter of the 
-#' `huber` likelihood. If \code{x} has units, \code{p} must have 
-#' units of '[1]' (i.e., \code{setUnits(p,1)}). 
+#' `huber` likelihood. If `x` has units, `p` must have 
+#' units of `[1]` (i.e., `setUnits(p,1)`). 
 #' 
 #' @param w A vector of maximum strip widths, the maximum distance. 
-#' If \code{x} has units, \code{x} must have 
+#' If `x` has units, `x` must have 
 #' compatible units.
 #'  
 #' @return A vector of values from the `huber` cumulative function. 
@@ -32,13 +32,13 @@
 #' F(x|T1,T2,p) = Area Under f(y|T1,T2,p) from 0 to x,
 #' }
 #' where \eqn{f(y|\theta_1,\theta_2,p)}{f(y|T1,T2,p)} is Rdistance's `huber` 
-#' likelihood. The only difference between this \emph{cumulative function}, 
-#' and the \emph{cumulative distribution function}
-#' is the scaling constant. That is, the maximum of the \emph{cumulative 
-#' function} is greater than 1 while the maximum \emph{cumulative distribution function}
+#' likelihood. The only difference between this *cumulative function*, 
+#' and the *cumulative distribution function*
+#' is the scaling constant. That is, the maximum of the *cumulative 
+#' function* is greater than 1 while the maximum *cumulative distribution function*
 #' is exactly 1.
 #' 
-#' @seealso \code{\link{huber.like}}
+#' @seealso [huber.like()]
 #' 
 #' @examples 
 #' d <- -10:210

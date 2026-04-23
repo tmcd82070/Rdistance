@@ -12,7 +12,7 @@
 #' R's user-defined infix 
 #' operator, and as such they require two arguments. 
 #' Their syntax must be 
-#' \code{x \%<units>\% <something>}; but, the second argument is ignored
+#' `x \%<units>\% <something>`; but, the second argument is ignored
 #' and '.' is suggested. See Examples.  
 #' 
 #' @returns 

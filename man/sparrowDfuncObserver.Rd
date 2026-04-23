@@ -5,14 +5,14 @@
 \alias{sparrowDfuncObserver}
 \title{Brewer's Sparrow detection function}
 \format{
-An estimated distance function object with 
-class 'dfunc'. See 'Value' section of 
-\code{\link{dfuncEstim}} for 
+An estimated distance function object with
+class 'dfunc'. See 'Value' section of
+\code{\link[=dfuncEstim]{dfuncEstim()}} for
 description of components.
 }
 \description{
-Pre-estimated Brewer's sparrow detection function that 
-includes an 'observer' effect.  Included to speed up 
+Pre-estimated Brewer's sparrow detection function that
+includes an 'observer' effect.  Included to speed up
 example execution times. See 'Examples'.
 }
 \examples{
@@ -27,6 +27,6 @@ sparrowDfuncObserver <- sparrowDf |>
 
 }
 \seealso{
-\code{\link{sparrowSiteData}} and 
-\code{\link{sparrowDetectionData}} for description of the data
+\code{\link[=sparrowSiteData]{sparrowSiteData()}} and
+\code{\link[=sparrowDetectionData]{sparrowDetectionData()}} for description of the data
 }

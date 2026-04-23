@@ -18,23 +18,23 @@
 #' @section Numeric Integration: 
 #' Rdistance uses Simpson's composite 1/3 rule to numerically 
 #' integrate distance functions from 0 to the maximum sighting distance
-#' (\code{w.hi - w.lo}). The number of points evaluated 
+#' (`w.hi - w.lo`). The number of points evaluated 
 #' during numerical integration is controlled by 
-#' \code{options(Rdistance_intEvalPts)} (default 101).
-#' Option 'Rdistance_intEvalPts' must be odd because Simpson's rule
+#' `options(Rdistance_intEvalPts)` (default 101).
+#' Option `Rdistance_intEvalPts` must be odd because Simpson's rule
 #' requires an even number of intervals. 
-#' Lower values of 'Rdistance_intEvalPts' increase calculation speeds; 
+#' Lower values of `Rdistance_intEvalPts` increase calculation speeds; 
 #' but, decrease accuracy.
-#' 'Rdistance_intEvalPts' must be >= 5.  A warning is thrown if 
-#' 'Rdistance_intEvalPts' < 29. Empirical tests by the author 
-#' suggest 'Rdistance_intEvalPts' values >= 30 are accurate 
+#' `Rdistance_intEvalPts` must be >= 5.  A warning is thrown if 
+#' `Rdistance_intEvalPts` < 29. Empirical tests by the author 
+#' suggest `Rdistance_intEvalPts` values >= 30 are accurate 
 #' to several decimal points for smooth distance functions
 #' (e.g., hazrate, halfnorm, negexp)
-#' and that all 'Rdistance_intEvalPts' >= 101 produce 
+#' and that all `Rdistance_intEvalPts` >= 101 produce 
 #' identical results if the distance function is not smooth. 
 #'   
-#' \emph{Details}: Let \code{n} = \code{options(Rdistance_intEvalPts)}.
-#' Evaluate the distance function at \code{n} equal-spaced 
+#' *Details*: Let `n` = `options(Rdistance_intEvalPts)`.
+#' Evaluate the distance function at `n` equal-spaced 
 #' locations \{f(x0), f(x1), ..., f(xn)\} between 0 and (w.hi - w.lo). 
 #' Simpson's composite approximation to the area under the curve is
 #' \deqn{\frac{1}{3}h(f(x_0) + 4f(x_1) + 2f(x_2) + 
@@ -44,9 +44,9 @@
 #' where \eqn{h} is the interval size (w.hi - w.lo) / n.
 #' 
 #' Physical units on the return values
-#' are the original (linear) units if \code{object} contains line-transect data
-#' (e.g., [m]), or square of the original units if \code{object} contains
-#' point-transect data (e.g., [m^2]). Point-transect units are squared because
+#' are the original (linear) units if `object` contains line-transect data
+#' (e.g., \[m\]), or square of the original units if `object` contains
+#' point-transect data (e.g., \[m^2\]). Point-transect units are squared because
 #' the likelihood is the product of the detection function (which is unitless) 
 #' and distances (which have units).  
 #' 

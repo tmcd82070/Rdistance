@@ -9,17 +9,17 @@ GammaReparam(shp, scl)
 \arguments{
 \item{shp}{Rdistance's shape parameter}
 
-\item{scl}{Rdistance's scale parameter.  This parameter 
+\item{scl}{Rdistance's scale parameter.  This parameter
 is related to covariates via exp(x'B).}
 }
 \value{
-A list with components $shp and $scl, which are the 
-re-parameterized versions of the input parameters suitable for 
+A list with components $shp and $scl, which are the
+re-parameterized versions of the input parameters suitable for
 us in R::dgamma().
 }
 \description{
 Transform Rdistance's version of the Gamma distribution
-parameters, which is that of Becker and Quan, into the version for 
+parameters, which is that of Becker and Quan, into the version for
 use in R::dgamma() and elsewhere.
 }
 \examples{
@@ -46,6 +46,6 @@ plot(x, g, type = "l")
 
 }
 \seealso{
-'Details' section of \code{\link{Gamma.like}}  
+'Details' section of \code{\link[=Gamma.like]{Gamma.like()}}
 for Rdistance's Gamma distribution
 }

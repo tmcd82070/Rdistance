@@ -7,81 +7,81 @@
 huber.like(a, dist, covars, w.hi = NULL)
 }
 \arguments{
-\item{a}{A vector or matrix of covariate 
-and expansion term 
-coefficients. If matrix, dimension is 
-\emph{k} X \emph{p}, where 
+\item{a}{A vector or matrix of covariate
+and expansion term
+coefficients. If matrix, dimension is
+\emph{k} X \emph{p}, where
 \emph{k} = \code{nrow(a)}) is the number of coefficient
-vectors to evaluate (cases) and \emph{p} 
+vectors to evaluate (cases) and \emph{p}
 = \code{ncol(a)})
-is the number of covariate and expansion 
-coefficients in the likelihood (i.e., rows are 
-cases and columns are covariates). If \code{a} is a 
-dimensionless vector, it is interpreted as a 
-single row with \emph{k} = 1. 
-Covariate coefficients in \code{a} are the first 
-\emph{q} values (\emph{q} <= \emph{p}), and must 
+is the number of covariate and expansion
+coefficients in the likelihood (i.e., rows are
+cases and columns are covariates). If \code{a} is a
+dimensionless vector, it is interpreted as a
+single row with \emph{k} = 1.
+Covariate coefficients in \code{a} are the first
+\emph{q} values (\emph{q} <= \emph{p}), and must
 be on a log scale.}
 
-\item{dist}{A numeric vector of length \emph{n} or 
-a single-column matrix (dimension \emph{n}X1) containing 
+\item{dist}{A numeric vector of length \emph{n} or
+a single-column matrix (dimension \emph{n}X1) containing
 detection distances at which to evaluate the likelihood.}
 
 \item{covars}{A numeric vector of length \emph{q} or a
-matrix of dimension \emph{n}X\emph{q} containing 
-covariate values 
+matrix of dimension \emph{n}X\emph{q} containing
+covariate values
 associated with distances in argument \code{dist}.}
 
-\item{w.hi}{A numeric scalar containing maximum 
-distance. The right-hand cutoff or upper limit. 
-Ignored by some likelihoods (such as halfnorm, 
+\item{w.hi}{A numeric scalar containing maximum
+distance. The right-hand cutoff or upper limit.
+Ignored by some likelihoods (such as halfnorm,
 negexp, and hazrate), but is a fixed parameter
-in other likelihoods (such as oneStep 
+in other likelihoods (such as oneStep
 and uniform).}
 }
 \value{
 A list containing the following two components:
 \itemize{
-  \item \bold{L.unscaled}: A matrix of size 
-   \emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
-   cases = \code{nrow(a)})
-   containing likelihood values evaluated at 
-   distances in \code{dist}.
-   Each row is associated with 
-   a single distance, and each column is associated with 
-   a single case (row of \code{a}).  Values in this matrix are  
-   the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
-   These values are "unscaled" likelihood values; they must be 
-   scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi  
-   to form proper likelihood values. 
-   
- \item \bold{params}: A \emph{n}X\emph{b}X\emph{k}  array 
- of the likelihood's (canonical) parameters in link space (i.e., on 
- log scale; \emph{b} = number of canonical parameters in 
- the likelihood; \emph{k} = number of cases). 
- Rows correspond to distances in \code{dist}. Columns 
- correspond to parameters (columns of \code{a}), 
- and pages correspond to cases (rows of \code{a}). 
+\item \strong{L.unscaled}: A matrix of size
+\emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
+cases = \code{nrow(a)})
+containing likelihood values evaluated at
+distances in \code{dist}.
+Each row is associated with
+a single distance, and each column is associated with
+a single case (row of \code{a}).  Values in this matrix are
+the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
+These values are "unscaled" likelihood values; they must be
+scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi
+to form proper likelihood values.
+
+\item \strong{params}: A \emph{n}X\emph{b}X\emph{k}  array
+of the likelihood's (canonical) parameters in link space (i.e., on
+log scale; \emph{b} = number of canonical parameters in
+the likelihood; \emph{k} = number of cases).
+Rows correspond to distances in \code{dist}. Columns
+correspond to parameters (columns of \code{a}),
+and pages correspond to cases (rows of \code{a}).
 }
 }
 \description{
-Computes the Huber likelihood for use as a distance function. 
-The Huber likelihood is a mixture of an inverted Huber loss 
-and a uniform distribution.  
-The distance function is quadratic from the lowest distance to 
+Computes the Huber likelihood for use as a distance function.
+The Huber likelihood is a mixture of an inverted Huber loss
+and a uniform distribution.
+The distance function is quadratic from the lowest distance to
 its first parameter, linear from the first parameter
-to the sum of its first and second parameter, and constant 
+to the sum of its first and second parameter, and constant
 after that.
 }
 \details{
-The 'huber' likelihood is an inverted version of the 
+The 'huber' likelihood is an inverted version of the
 Huber loss function, mixed with a uniform at the upper end, and contains
-three canonical parameters. 
-The 'huber' distance function is a negative quadratic 
+three canonical parameters.
+The 'huber' distance function is a negative quadratic
 between \code{0} and its first parameter \eqn{\theta_1}{T1},
-linear between \eqn{\theta_1}{T1} and \eqn{\theta_1 + \theta_2}{T1 + T2}, and 
+linear between \eqn{\theta_1}{T1} and \eqn{\theta_1 + \theta_2}{T1 + T2}, and
 constant  after \eqn{\theta_1 + \theta_2}{T1 + T2}.
-Specifically, the 'huber' likelihood is, 
+Specifically, the 'huber' likelihood is,
 \deqn{
    f(d|\theta_1,\theta_2, p) = \left(1 - \frac{(1-p)h(d)}{m}\right) \,
      I(0 \leq d \leq \Theta) \  + \  p \, I(\Theta < d \leq w)
@@ -99,9 +99,9 @@ and \emph{h(d)} is Huber loss between 0 and \eqn{\Theta}{T}, i.e.,
          \theta_1(d - 0.5\theta_1)\, I(\theta_1 < d \leq \Theta).
 }
 
-The first parameter, \eqn{\theta_1}{T1}, is related to covariates, 
+The first parameter, \eqn{\theta_1}{T1}, is related to covariates,
 i.e., \eqn{log(\theta_1) = \beta_0 + \beta_1x_1 + \ldots + \beta_qx_q}{
-log(T_1) = B_0 + B_1(x_1) + ... + B_q(x_q)}.  \eqn{\theta_2}{T2} and \eqn{p} 
+log(T_1) = B_0 + B_1(x_1) + ... + B_q(x_q)}.  \eqn{\theta_2}{T2} and \eqn{p}
 are constant across covariate values.
 }
 \examples{

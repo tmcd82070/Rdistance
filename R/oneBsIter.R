@@ -4,13 +4,13 @@
 #' Performs density and abundance estimation for one bootstrap iteration. 
 #' 
 #' 
-#' @param pb A progress bar created with \code{progress::progress_bar$new()}.
+#' @param pb A progress bar created with `progress::progress_bar$new()`.
 #' 
 #' @param plot.bs Logical. Whether to plot bootstrap estimate of detection function.
-#' A plot must already exist because this uses \code{lines}.
+#' A plot must already exist because this uses `lines`.
 #' 
 #' @param plotCovValues Data frame containing values of covariates to plot.
-#' Ignored if \code{plot.bs} is FALSE.
+#' Ignored if `plot.bs` is FALSE.
 #' 
 #' @inheritParams dE.single
 #' 
@@ -20,7 +20,7 @@
 #' and other relevant statistics for 
 #' one iteration of the bootstrap. 
 #' 
-#' @seealso \code{\link{bootstrap}}; \code{\link{abundEstim}}
+#' @seealso [bootstrap()]; [abundEstim()]
 #' 
 #' @export
 oneBsIter <- function(  object

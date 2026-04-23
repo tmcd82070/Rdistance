@@ -7,21 +7,21 @@
 effort(x, ...)
 }
 \arguments{
-\item{x}{Either an estimated distance function, output by 
-\code{dfuncEstim}, or an Rdistance nested data frame, output by 
+\item{x}{Either an estimated distance function, output by
+\code{dfuncEstim}, or an Rdistance nested data frame, output by
 \code{RdistDf}.}
 
 \item{...}{Ignored}
 }
 \value{
-A vector containing effort. If line-transects, return is 
-length of transects, with units.  If point-transects, return is 
+A vector containing effort. If line-transects, return is
+length of transects, with units.  If point-transects, return is
 number of points (integers, no units).  Vector length is
 number of transects. If input is not an RdistDf or estimated distance
 function, return is NULL.
 }
 \description{
-Extract effort information from an Rdistance data frame. Effort is 
+Extract effort information from an Rdistance data frame. Effort is
 length of line-transects or number of points on point-transects.
 }
 \examples{

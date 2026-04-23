@@ -8,37 +8,37 @@ predDfuncs(object, params, distances, isSmooth)
 }
 \arguments{
 \item{object}{An Rdistance model frame or fitted distance function,
-normally produced by a call to \code{\link{dfuncEstim}}.}
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{params}{A matrix of distance function parameters. 
+\item{params}{A matrix of distance function parameters.
 Rows are observations, columns contain the set of parameters
 (canonical and expansion) for each observation.}
 
-\item{distances}{A vector or 1-column matrix of 
-distances at which to evaluate 
-distance functions, when distance functions 
-are requested.  \code{distances} must have measurement units. 
-Any distances outside the observation 
-strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If 
-\code{distances} is NULL, a sequence 
-of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly 
-spaced distances between 
+\item{distances}{A vector or 1-column matrix of
+distances at which to evaluate
+distance functions, when distance functions
+are requested.  \code{distances} must have measurement units.
+Any distances outside the observation
+strip (\code{object$w.lo} to \code{object$w.hi}) are discarded.  If
+\code{distances} is NULL, a sequence
+of \code{getOption("Rdistance_intEvalPts")} (default 101) evenly
+spaced distances between
 \code{object$w.lo} and \code{object$w.hi} (inclusive) is used.}
 
-\item{isSmooth}{Logical.  TRUE if the distance function 
+\item{isSmooth}{Logical.  TRUE if the distance function
 is smoothed (and hence has no parameters).}
 }
 \value{
-A matrix of distance function values, of size 
+A matrix of distance function values, of size
 length(distances) X nrow(params).  Each row of params
-is associated with a column, i.e., a different distance 
-function.  Distances are associated with rows, 
-i.e., use matplot(d,return) to plot values on separate distance 
+is associated with a column, i.e., a different distance
+function.  Distances are associated with rows,
+i.e., use matplot(d,return) to plot values on separate distance
 functions specified by rows of params.
 }
 \description{
-An internal prediction function to predict a distance 
-function.  This version allows for matrix inputs and 
+An internal prediction function to predict a distance
+function.  This version allows for matrix inputs and
 uses matrix operations, and is thus faster than earlier
 looping versions.
 }

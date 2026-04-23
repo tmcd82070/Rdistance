@@ -31,5 +31,5 @@ fit$x.scl            # same thing
 
 }
 \seealso{
-\code{\link{dfuncEstim}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}
 }

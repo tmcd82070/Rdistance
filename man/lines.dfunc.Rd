@@ -7,39 +7,39 @@
 \method{lines}{dfunc}(x, newdata = NULL, prob = NULL, ...)
 }
 \arguments{
-\item{x}{An estimated detection function object, normally 
-produced by calling \code{\link{dfuncEstim}}.}
+\item{x}{An estimated detection function object, normally
+produced by calling \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
-\item{newdata}{A data frame containing new values of 
-the covariates at which to evaluate the distance functions. 
+\item{newdata}{A data frame containing new values of
+the covariates at which to evaluate the distance functions.
 If \code{newdata}
-is NULL, distance functions are evaluated at values of 
-the observed covariates and results in one prediction 
-per distance or transect (see parameter \code{type}). 
-If \code{newdata} is not NULL and the model does not contains covariates, 
-this routine returns one prediction for each row in \code{newdata}, but 
+is NULL, distance functions are evaluated at values of
+the observed covariates and results in one prediction
+per distance or transect (see parameter \code{type}).
+If \code{newdata} is not NULL and the model does not contains covariates,
+this routine returns one prediction for each row in \code{newdata}, but
 columns and values in \code{newdata} are ignored.}
 
-\item{prob}{Logical scalar for whether to scale the distance function 
-to be a density function (integrates to one). Default behavior is designed 
-to be compatible with the plot method for distance functions 
-(\code{\link{plot.dfunc}}). By default, line transect distance 
-functions are not scaled to a density and integrate to the effective strip width. 
-In contrast, point transects distance functions are scaled to be densities 
+\item{prob}{Logical scalar for whether to scale the distance function
+to be a density function (integrates to one). Default behavior is designed
+to be compatible with the plot method for distance functions
+(\code{\link[=plot.dfunc]{plot.dfunc()}}). By default, line transect distance
+functions are not scaled to a density and integrate to the effective strip width.
+In contrast, point transects distance functions are scaled to be densities
 by default.}
 
-\item{\dots}{Parameters passed to \code{lines.default} that control attributes like 
+\item{\dots}{Parameters passed to \code{lines.default} that control attributes like
 color, line width, line type, etc.}
 }
 \value{
-A data frame containing the x and y coordinates of the 
-plotted line(s) is returned invisibly.  X coordinates in the 
-return are names \code{x}. Y coordinates in the return are named 
-\code{y1, y2, ..., yn}, i.e., one column per returned 
+A data frame containing the x and y coordinates of the
+plotted line(s) is returned invisibly.  X coordinates in the
+return are names \code{x}. Y coordinates in the return are named
+\verb{y1, y2, ..., yn}, i.e., one column per returned
 distance function.
 }
 \description{
-Line plot method for objects of class '\code{dfunc}' 
+Line plot method for objects of class '\code{dfunc}'
 that adds distance functions to an existing plot.
 }
 \examples{
@@ -84,6 +84,6 @@ head(y) # values returned, with distances as column
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, \code{\link{plot.dfunc}},
-  \code{\link{print.abund}}
+\code{\link[=dfuncEstim]{dfuncEstim()}}, \code{\link[=plot.dfunc]{plot.dfunc()}},
+\code{\link[=print.abund]{print.abund()}}
 }

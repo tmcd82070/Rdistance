@@ -20,8 +20,8 @@
 #' threshold for the i-th observed distance, and \eqn{p}{p} is the estimated 
 #' one-step proportion. 
 #' 
-#' @seealso \code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
-#' \code{\link{integrateHalfnormLines}} 
+#' @seealso [integrateNumeric()]; [integrateNegexpLines()]; 
+#' [integrateHalfnormLines()] 
 #' 
 #' @examples
 #' 

@@ -7,69 +7,69 @@
 negexp.like(a, dist, covars, w.hi = NULL)
 }
 \arguments{
-\item{a}{A vector or matrix of covariate 
-and expansion term 
-coefficients. If matrix, dimension is 
-\emph{k} X \emph{p}, where 
+\item{a}{A vector or matrix of covariate
+and expansion term
+coefficients. If matrix, dimension is
+\emph{k} X \emph{p}, where
 \emph{k} = \code{nrow(a)}) is the number of coefficient
-vectors to evaluate (cases) and \emph{p} 
+vectors to evaluate (cases) and \emph{p}
 = \code{ncol(a)})
-is the number of covariate and expansion 
-coefficients in the likelihood (i.e., rows are 
-cases and columns are covariates). If \code{a} is a 
-dimensionless vector, it is interpreted as a 
-single row with \emph{k} = 1. 
-Covariate coefficients in \code{a} are the first 
-\emph{q} values (\emph{q} <= \emph{p}), and must 
+is the number of covariate and expansion
+coefficients in the likelihood (i.e., rows are
+cases and columns are covariates). If \code{a} is a
+dimensionless vector, it is interpreted as a
+single row with \emph{k} = 1.
+Covariate coefficients in \code{a} are the first
+\emph{q} values (\emph{q} <= \emph{p}), and must
 be on a log scale.}
 
-\item{dist}{A numeric vector of length \emph{n} or 
-a single-column matrix (dimension \emph{n}X1) containing 
+\item{dist}{A numeric vector of length \emph{n} or
+a single-column matrix (dimension \emph{n}X1) containing
 detection distances at which to evaluate the likelihood.}
 
 \item{covars}{A numeric vector of length \emph{q} or a
-matrix of dimension \emph{n}X\emph{q} containing 
-covariate values 
+matrix of dimension \emph{n}X\emph{q} containing
+covariate values
 associated with distances in argument \code{dist}.}
 
-\item{w.hi}{A numeric scalar containing maximum 
-distance. The right-hand cutoff or upper limit. 
-Ignored by some likelihoods (such as halfnorm, 
+\item{w.hi}{A numeric scalar containing maximum
+distance. The right-hand cutoff or upper limit.
+Ignored by some likelihoods (such as halfnorm,
 negexp, and hazrate), but is a fixed parameter
-in other likelihoods (such as oneStep 
+in other likelihoods (such as oneStep
 and uniform).}
 }
 \value{
 A list containing the following two components:
 \itemize{
-  \item \bold{L.unscaled}: A matrix of size 
-   \emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
-   cases = \code{nrow(a)})
-   containing likelihood values evaluated at 
-   distances in \code{dist}.
-   Each row is associated with 
-   a single distance, and each column is associated with 
-   a single case (row of \code{a}).  Values in this matrix are  
-   the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
-   These values are "unscaled" likelihood values; they must be 
-   scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi  
-   to form proper likelihood values. 
-   
- \item \bold{params}: A \emph{n}X\emph{b}X\emph{k}  array 
- of the likelihood's (canonical) parameters in link space (i.e., on 
- log scale; \emph{b} = number of canonical parameters in 
- the likelihood; \emph{k} = number of cases). 
- Rows correspond to distances in \code{dist}. Columns 
- correspond to parameters (columns of \code{a}), 
- and pages correspond to cases (rows of \code{a}). 
+\item \strong{L.unscaled}: A matrix of size
+\emph{n}X\emph{k} (\emph{n} = length \code{dist}; \emph{k} = number of
+cases = \code{nrow(a)})
+containing likelihood values evaluated at
+distances in \code{dist}.
+Each row is associated with
+a single distance, and each column is associated with
+a single case (row of \code{a}).  Values in this matrix are
+the distance function \eqn{g(d)} which generally have \eqn{g(0) = 1}.
+These values are "unscaled" likelihood values; they must be
+scaled (divided by) with the area under \eqn{g(x)} between w.lo and w.hi
+to form proper likelihood values.
+
+\item \strong{params}: A \emph{n}X\emph{b}X\emph{k}  array
+of the likelihood's (canonical) parameters in link space (i.e., on
+log scale; \emph{b} = number of canonical parameters in
+the likelihood; \emph{k} = number of cases).
+Rows correspond to distances in \code{dist}. Columns
+correspond to parameters (columns of \code{a}),
+and pages correspond to cases (rows of \code{a}).
 }
 }
 \description{
 Computes the negative exponential distance function.
 }
 \details{
-The negative exponential likelihood is 
-\deqn{f(x|\alpha) = \exp(-\alpha x)}{f(x|a) = exp( -a*x )} where \eqn{\alpha}{a} is the 
+The negative exponential likelihood is
+\deqn{f(x|\alpha) = \exp(-\alpha x)}{f(x|a) = exp( -a*x )} where \eqn{\alpha}{a} is the
 slope parameter.
 }
 \examples{
@@ -83,7 +83,7 @@ lines(d, negexp.like(log(0.05), d, covs)$L.unscaled, col="blue")
 
 }
 \seealso{
-\code{\link{dfuncEstim}}, 
-         \code{\link{abundEstim}},
-         other \code{<likelihood>.like} functions
+\code{\link[=dfuncEstim]{dfuncEstim()}},
+\code{\link[=abundEstim]{abundEstim()}},
+other \verb{<likelihood>.like} functions
 }

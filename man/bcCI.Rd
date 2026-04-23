@@ -11,7 +11,7 @@ bcCI(x.bs, x, ci = 0.95)
 
 \item{x}{A scalar of the original estimate of the quantity.}
 
-\item{ci}{A scalar of the desired confidence interval 
+\item{ci}{A scalar of the desired confidence interval
 coverage.}
 }
 \value{

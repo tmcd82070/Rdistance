@@ -8,14 +8,14 @@
 #' 
 #' @inherit halfnorm.like return seealso
 #' 
-#' @details Rdistance's \code{oneStep} likelihood is a mixture of two 
+#' @details Rdistance's `oneStep` likelihood is a mixture of two 
 #' non-overlapping uniform distributions. The 'oneStep' density function
 #' is  
 #' \deqn{f(d|p, \theta) = \frac{p}{\theta}I(0 \leq d \leq \theta) + 
 #'        \frac{1 - p}{w - \theta}I(\theta \le d \leq w),}{
 #'        f(d|p,T) = (p/T)I(0<=d<=T) + ((1-p)/(w-T))I(T<d<=w),}
 #' where \eqn{I(x)} is the indicator function for event \eqn{x}, 
-#' and \eqn{w} is the nominal strip width (i.e., \code{w.hi - w.lo} in Rdistance). 
+#' and \eqn{w} is the nominal strip width (i.e., `w.hi - w.lo` in Rdistance). 
 #' The unknown parameters to be estimated 
 #' are \eqn{\theta}{T} and \eqn{p}{p}
 #' (\eqn{w} is fixed - given by the user). 

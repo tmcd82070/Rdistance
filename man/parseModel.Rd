@@ -19,116 +19,116 @@ parseModel(
 )
 }
 \arguments{
-\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames 
+\item{data}{An \code{RdistDf} data frame. \code{RdistDf} data frames
 contain one line per transect and a list-based column. The list-based
-column contains a data frame with detection information. 
-The detection information data frame on each row contains (at least) distances 
+column contains a data frame with detection information.
+The detection information data frame on each row contains (at least) distances
 and group sizes of all targets detected on the transect.
-Function \code{\link{RdistDf}} creates \code{RdistDf} data frames 
-from separate transect and detection data frames. 
-\code{\link{is.RdistDf}} checks whether data frames
+Function \code{\link[=RdistDf]{RdistDf()}} creates \code{RdistDf} data frames
+from separate transect and detection data frames.
+\code{\link[=is.RdistDf]{is.RdistDf()}} checks whether data frames
 are \code{RdistDf}'s.}
 
-\item{formula}{A standard formula object.  For example, \code{dist ~ 1}, 
+\item{formula}{A standard formula object.  For example, \code{dist ~ 1},
 \code{dist ~ covar1 + covar2}). The left-hand side (before \code{~})
-is the name of the vector containing off-transect or radial detection distances.  
-The right-hand side contains the names of covariate 
+is the name of the vector containing off-transect or radial detection distances.
+The right-hand side contains the names of covariate
 vectors to fit in the detection
-function, and potentially group sizes. Group sizes are specified 
-by including \code{+ groupsize(<variable>)} in the RHS 
+function, and potentially group sizes. Group sizes are specified
+by including \verb{+ groupsize(<variable>)} in the RHS
 (see 'Group Sizes' section).
-Covariates can be either detection level 
-or transect level and can appear in  \code{data} or exist in the 
-global working environment. Regular R scoping 
+Covariates can be either detection level
+or transect level and can appear in  \code{data} or exist in the
+global working environment. Regular R scoping
 rules apply.}
 
-\item{likelihood}{String specifying the likelihood to fit. Built-in 
+\item{likelihood}{String specifying the likelihood to fit. Built-in
 likelihoods at present are "halfnorm", "hazrate", and "negexp".}
 
-\item{w.lo}{Lower or left-truncation limit of the distances in distance data. 
-This is the minimum possible off-transect distance. Default is 0.  If 
-\code{w.lo} is greater than 0, it must have measurement units. 
+\item{w.lo}{Lower or left-truncation limit of the distances in distance data.
+This is the minimum possible off-transect distance. Default is 0.  If
+\code{w.lo} is greater than 0, it must have measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{w.hi}{Upper or right-truncation limit of the distances 
-in \code{dist}. This is the maximum off-transect distance that 
-could be observed. If unspecified (i.e., NULL), 
-right-truncation is set to the maximum of the observed 
-distances.  If \code{w.hi} is specified, it must have  
-measurement units.  
+\item{w.hi}{Upper or right-truncation limit of the distances
+in \code{dist}. This is the maximum off-transect distance that
+could be observed. If unspecified (i.e., NULL),
+right-truncation is set to the maximum of the observed
+distances.  If \code{w.hi} is specified, it must have
+measurement units.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{expansions}{A scalar specifying the number of terms 
-in \code{series} to compute. Depending on the series, 
-this could be 0 through 5.  The default of 0 equates 
-to no expansion terms of any type.  No expansion terms 
-are allowed (i.e., \code{expansions} is forced to 0) if 
-covariates are present in the detection function 
+\item{expansions}{A scalar specifying the number of terms
+in \code{series} to compute. Depending on the series,
+this could be 0 through 5.  The default of 0 equates
+to no expansion terms of any type.  No expansion terms
+are allowed (i.e., \code{expansions} is forced to 0) if
+covariates are present in the detection function
 (i.e., right-hand side of \code{formula} includes
 something other than \code{1}).}
 
-\item{series}{If \code{expansions} > 0, this string 
-specifies the type of expansion to use. Valid values at 
+\item{series}{If \code{expansions} > 0, this string
+specifies the type of expansion to use. Valid values at
 present are 'simple', 'hermite', and 'cosine'.}
 
-\item{x.scl}{The x coordinate (a distance) at which the 
+\item{x.scl}{The x coordinate (a distance) at which the
 detection function will be scaled.  \code{g.x.scl} can be a distance
-or the string "max".  
-When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement 
-units assigned. 
+or the string "max".
+When \code{x.scl} is specified (i.e., not 0 or "max"), it must have measurement
+units assigned.
 See \code{help(unitHelpers)} for assistance assigning units.}
 
-\item{g.x.scl}{Height of the distance function at coordinate \code{x}. 
-The distance function 
-will be scaled so that g(\code{x.scl}) = \code{g.x.scl}. 
-If \code{g.x.scl} is not 
-a data frame, it must be a numeric value (vector of length 1) 
+\item{g.x.scl}{Height of the distance function at coordinate \code{x}.
+The distance function
+will be scaled so that g(\code{x.scl}) = \code{g.x.scl}.
+If \code{g.x.scl} is not
+a data frame, it must be a numeric value (vector of length 1)
 between 0 and 1.}
 
-\item{outputUnits}{A string specifying the symbolic measurement 
+\item{outputUnits}{A string specifying the symbolic measurement
 units for results. Valid units are listed in \code{units::valid_udunits()}.
-The strings for common distance symbolic units are: 
-"m" - meters, "ft" - feet, "cm" - centimeters, "mm" - 
-millimeters, "mi" - miles, "nmile" - 
-nautical miles ("nm" is nano meters), "in" - inches, 
-"yd" - yards, "km" - kilometers, "fathom" - fathoms, 
-"chains" - chains, and "furlong" - furlongs.  
+The strings for common distance symbolic units are:
+"m" - meters, "ft" - feet, "cm" - centimeters, "mm" -
+millimeters, "mi" - miles, "nmile" -
+nautical miles ("nm" is nano meters), "in" - inches,
+"yd" - yards, "km" - kilometers, "fathom" - fathoms,
+"chains" - chains, and "furlong" - furlongs.
 If \code{outputUnits} is unspecified (NULL),
-output units will be the same as those on 
+output units will be the same as those on
 distances in \code{data}.}
 
-\item{asymptoticSE}{Logical variable for whether to calculate 
+\item{asymptoticSE}{Logical variable for whether to calculate
 asymptotic standard errors. The default (TRUE) estimates an
-asymptotic variance-covariance matrix for parameters based on the 
-likelihood's Hessian (2nd derivative). If maximization 
-has been performed by Nlminb or HookesJeeves, the asymptotic 
-Hessian is estimated using numeric second deriviatives 
-of the likelihood at the maximum likelihood solution. If 
-maximization was performed by Optim, the last Hessian of 
-the maximization is returned 
+asymptotic variance-covariance matrix for parameters based on the
+likelihood's Hessian (2nd derivative). If maximization
+has been performed by Nlminb or HookesJeeves, the asymptotic
+Hessian is estimated using numeric second derivatives
+of the likelihood at the maximum likelihood solution. If
+maximization was performed by Optim, the last Hessian of
+the maximization is returned
 by Optim and used
-(see \code{\link{varcovarEstim}} and \code{\link{secondDeriv}}). 
-Asymptotic standard errors will not be estimated if 
-\code{asymptoticSE = FALSE}. If not estimated, 
-bootstrap iterations will run faster because the numeric Hessian, 
+(see \code{\link[=varcovarEstim]{varcovarEstim()}} and \code{\link[=secondDeriv]{secondDeriv()}}).
+Asymptotic standard errors will not be estimated if
+\code{asymptoticSE = FALSE}. If not estimated,
+bootstrap iterations will run faster because the numeric Hessian,
 which is discarded during bootstrapping,
 will not be calculated every iteration.}
 }
 \value{
-An Rdistance model frame, which is an object of class 
-"dfunc". 
-Rdistance model frames are lists containing distance 
-model components but not estimates.  Model frames contain 
-everything necessary to fit an Rdistance mode, such as covariates, 
-minimum and maximum distances, the form of the likelihood, 
-number of expansions, etc.  Rdistance model frames contain a 
+An Rdistance model frame, which is an object of class
+"dfunc".
+Rdistance model frames are lists containing distance
+model components but not estimates.  Model frames contain
+everything necessary to fit an Rdistance mode, such as covariates,
+minimum and maximum distances, the form of the likelihood,
+number of expansions, etc.  Rdistance model frames contain a
 subset of fitted Rdistance model components.
 }
 \description{
-Parse an 'Rdistance' formula and produce a list containing all model 
+Parse an 'Rdistance' formula and produce a list containing all model
 parameters.
-This routine is not normally called directly by the user, but 
-it might be helpful in simulations.  It is called 
+This routine is not normally called directly by the user, but
+it might be helpful in simulations.  It is called
 internally from the model estimation routines.
 }
 \examples{
@@ -151,8 +151,8 @@ print.default(ml)
 
 }
 \seealso{
-\code{\link{RdistDf}}, which returns an 
+\code{\link[=RdistDf]{RdistDf()}}, which returns an
 Rdistance \emph{data} frame;
-\code{\link{dfuncEstim}}, which returns an 
+\code{\link[=dfuncEstim]{dfuncEstim()}}, which returns an
 Rdistance \emph{fitted} model.
 }

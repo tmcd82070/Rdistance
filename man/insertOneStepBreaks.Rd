@@ -9,19 +9,19 @@ insertOneStepBreaks(obj, newData, xseq)
 \arguments{
 \item{obj}{A fitted Rdistance model object}
 
-\item{newData}{A data frame containing covariate values to 
+\item{newData}{A data frame containing covariate values to
 use in prediction.}
 
-\item{xseq}{A vector of distances into which the break points 
+\item{xseq}{A vector of distances into which the break points
 are inserted.}
 }
 \value{
-A vector like \code{xseq}, but with the break points 
+A vector like \code{xseq}, but with the break points
 inserted.
 }
 \description{
-Compute break points in a onestep likelihood
-and insert them into a sequence of distances.  The idea 
-is to insert a point just left and just right of the breaks 
+Compute break points in a oneStep likelihood
+and insert them into a sequence of distances.  The idea
+is to insert a point just left and just right of the breaks
 so that they plot as vertical lines.
 }

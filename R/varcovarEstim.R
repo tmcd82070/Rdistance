@@ -14,8 +14,8 @@
 #' @inheritParams print.dfunc
 #' 
 #' @return A square symmetric matrix estimating the 
-#' variance-covariance matrix of parameters in \code{x}. 
-#' Dimension of return is p X p, where p = \code{length(x$par)}.
+#' variance-covariance matrix of parameters in `x`. 
+#' Dimension of return is p X p, where p = `length(x$par)`.
 #' 
 #' @export
 #' 

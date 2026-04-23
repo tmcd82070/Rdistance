@@ -9,39 +9,39 @@ is.RdistDf(df, verbose = FALSE)
 \arguments{
 \item{df}{A data frame to check}
 
-\item{verbose}{If TRUE, an explanation of the check that fails is printed. 
+\item{verbose}{If TRUE, an explanation of the check that fails is printed.
 Otherwise, no information on checks is provided.}
 }
 \value{
-TRUE or FALSE invisibly. TRUE means all checks passed. FALSE implies 
+TRUE or FALSE invisibly. TRUE means all checks passed. FALSE implies
 at least one check failed. Use \code{verbose} = TRUE to see which.
 }
 \description{
-Checks the validity of \code{Rdistance} nested data frames. 
-\code{Rdistance} data frames 
-are a particular implementation of rowwise \code{tibbles} 
-that contain detections in a list column, and extra attributes 
+Checks the validity of \code{Rdistance} nested data frames.
+\code{Rdistance} data frames
+are a particular implementation of rowwise \code{tibbles}
+that contain detections in a list column, and extra attributes
 specifying types.
 }
 \details{
 The following checks are performed (in this order):
 \itemize{
-  \item \code{attr(df, "detectionColumn")} exists and points to a valid 
-  list-based column in the data frame. 
-  \item \code{attr(df, "obsType")} exists and is one of the valid values.
-  \item \code{attr(df, "transType")} exists and is one of the valid values.
-  \item The data frame is either a 'rowwise_df' or 'grouped_df' 
-  \code{tibble}.
-  \item The data frame has only one row per group. One row per group 
-  is implied by 'rowwise_df', but not a 'grouped_df', and both are allowed
-  in \code{Rdistance}. One row per group ensures rows are uniquely identified 
-  and hence represents one transect. 
-  \item No column names in the list-column are duplicated in the non-list 
-  columns of the data frame. This check ensures that \code{tidyr::unnest}
-  executes. 
+\item \code{attr(df, "detectionColumn")} exists and points to a valid
+list-based column in the data frame.
+\item \code{attr(df, "obsType")} exists and is one of the valid values.
+\item \code{attr(df, "transType")} exists and is one of the valid values.
+\item The data frame is either a 'rowwise_df' or 'grouped_df'
+\code{tibble}.
+\item The data frame has only one row per group. One row per group
+is implied by 'rowwise_df', but not a 'grouped_df', and both are allowed
+in \code{Rdistance}. One row per group ensures rows are uniquely identified
+and hence represents one transect.
+\item No column names in the list-column are duplicated in the non-list
+columns of the data frame. This check ensures that \code{tidyr::unnest}
+executes.
 }
-Other data checks, e.g., for measurement units, are performed 
-later in \code{\link{dfuncEstim}}, after the model is specified.
+Other data checks, e.g., for measurement units, are performed
+later in \code{\link[=dfuncEstim]{dfuncEstim()}}, after the model is specified.
 }
 \examples{
 

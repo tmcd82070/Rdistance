@@ -14,72 +14,72 @@ integrateHalfnormLines(
 }
 \arguments{
 \item{object}{Either an Rdistance fitted distance function
-(an object that inherits from class "dfunc"; usually produced 
-by a call to \code{\link{dfuncEstim}}), or a matrix of canonical 
-distance function parameters (e.g., \code{matrix(exp(fit$par),1)}). 
-If a matrix, each row corresponds to a 
-distance function and each column is a parameter. The first column is 
-the parameter related to sighting covariates and must be transformed 
-to the "real" space (i.e., inverse link, which is \eqn{exp()}, must 
-be applied outside this routine).  If \code{object} is a matrix, 
+(an object that inherits from class "dfunc"; usually produced
+by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}), or a matrix of canonical
+distance function parameters (e.g., \code{matrix(exp(fit$par),1)}).
+If a matrix, each row corresponds to a
+distance function and each column is a parameter. The first column is
+the parameter related to sighting covariates and must be transformed
+to the "real" space (i.e., inverse link, which is \eqn{exp()}, must
+be applied outside this routine).  If \code{object} is a matrix,
 it should not have measurement units because
-only derived quantities (e.g., ESW) have units; Rdistance function 
+only derived quantities (e.g., ESW) have units; Rdistance function
 parameters themselves never have units.}
 
-\item{newdata}{A data frame containing new values for 
-the distance function covariates. If NULL and 
-\code{object} is a fitted distance function, the  
+\item{newdata}{A data frame containing new values for
+the distance function covariates. If NULL and
+\code{object} is a fitted distance function, the
 observed covariates stored in
-\code{object} are used (behavior similar to \code{\link{predict.lm}}).
+\code{object} are used (behavior similar to \code{\link[=predict.lm]{predict.lm()}}).
 Argument \code{newdata} is ignored if \code{object} is a matrix.}
 
 \item{w.lo}{Minimum sighting distance or left-truncation value
 if \code{object} is a matrix.
-Ignored if \code{object} 
-is a fitted distance function. 
+Ignored if \code{object}
+is a fitted distance function.
 Must have physical measurement units.}
 
 \item{w.hi}{Maximum sighting distance or right-truncation value
 if \code{object} is a matrix.
-Ignored if \code{object} 
+Ignored if \code{object}
 is a fitted distance function.
 Must have physical measurement units.}
 
-\item{Units}{Physical units of sighting distances if 
-\code{object} is a matrix. Sighting distance units can differ from units 
+\item{Units}{Physical units of sighting distances if
+\code{object} is a matrix. Sighting distance units can differ from units
 of \code{w.lo} or \code{w.hi}.   Ignored if \code{object}
 is a fitted distance function.}
 }
 \value{
-A vector of areas under the distance functions represented in 
-\code{object}. 
-If \code{object} is a distance function and 
-\code{newdata} is specified, the returned vector's length is 
-\code{nrow(newdata)}.  If \code{object} is a distance function and 
-\code{newdata} is NULL, 
-returned vector's length is \code{length(distances(object))}. If 
-\code{object} is a matrix, return's length is 
+A vector of areas under the distance functions represented in
+\code{object}.
+If \code{object} is a distance function and
+\code{newdata} is specified, the returned vector's length is
+\code{nrow(newdata)}.  If \code{object} is a distance function and
+\code{newdata} is NULL,
+returned vector's length is \code{length(distances(object))}. If
+\code{object} is a matrix, return's length is
 \code{nrow(object)}.
 }
 \description{
-Compute integral of the half-normal distance function for 
+Compute integral of the half-normal distance function for
 line-transect surveys.
 }
 \details{
 Returned integrals are
 \deqn{\int_0^{w} e^{-x^2/2\sigma_i^2} dx = \sqrt{2\pi}\sigma_i (\Phi(w) - 0.5),}{
 Integral(e^{-x^2/(2s^2)}) = sqrt(2*pi)*s*(Pnorm(w) - 0.5),}
-where \eqn{w = w.hi - w.lo}, \eqn{\sigma_i}{s} is the estimated half-normal distance 
-function parameter for the 
-i-th observed distance, and \eqn{\Phi}{Pnorm} is the standard normal 
-cumulative probability function. 
-Rdistance uses R's base 
+where \eqn{w = w.hi - w.lo}, \eqn{\sigma_i}{s} is the estimated half-normal distance
+function parameter for the
+i-th observed distance, and \eqn{\Phi}{Pnorm} is the standard normal
+cumulative probability function.
+Rdistance uses R's base
 function \code{pnorm()}, which for all intents and purposes is exact.
 }
 \section{Note}{
 
-Users will not normally call this function. It is called 
-internally by \code{\link{nLL}} and \code{\link{effectiveDistance}}.
+Users will not normally call this function. It is called
+internally by \code{\link[=nLL]{nLL()}} and \code{\link[=effectiveDistance]{effectiveDistance()}}.
 }
 
 \examples{
@@ -109,6 +109,6 @@ intgral
 
 }
 \seealso{
-\code{\link{integrateNumeric}}; \code{\link{integrateNegexpLines}}; 
-\code{\link{integrateOneStepLines}}
+\code{\link[=integrateNumeric]{integrateNumeric()}}; \code{\link[=integrateNegexpLines]{integrateNegexpLines()}};
+\code{\link[=integrateOneStepLines]{integrateOneStepLines()}}
 }

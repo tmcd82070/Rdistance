@@ -13,37 +13,37 @@
 #' 
 #' @format A rowwise tibble containing 72 rows and 9 columns, one of which 
 #' is nested data frame of detections.  Each row represents
-#' one transect.  The embedded data frame in column \code{detections} 
+#' one transect.  The embedded data frame in column `detections` 
 #' contains the detections made on the transect represented on that row. 
 #' 
 #' Column descriptions: 
 #' \enumerate{ 
-#'   \item \code{siteID}: Factor (72 levels), the transect identifier 
+#'   \item `siteID`: Factor (72 levels), the transect identifier 
 #'   for that row of the data frame. 
-#'   \item \code{length}: The length, in meters [m], of each transect.  
-#'   \item \code{observer}: Identity of the observer who surveyed the transect.
-#'   \item \code{bare}: The mean bare ground cover (\%) within 100 [m] of the transect.
-#'   \item \code{herb}: The mean herbaceous cover (\%) within 100 [m] of the transect.
-#'   \item \code{shrub}: The mean shrub cover (\%) within 100 [m] of the transect.
-#'   \item \code{height}: The mean shrub height [cm] within 100 [m] of the transect.
-#'   \item \code{shrubclass}: Shrub class factor.  Either "Low"" when 
+#'   \item `length`: The length, in meters \[m\], of each transect.  
+#'   \item `observer`: Identity of the observer who surveyed the transect.
+#'   \item `bare`: The mean bare ground cover (\%) within 100 \[m\] of the transect.
+#'   \item `herb`: The mean herbaceous cover (\%) within 100 \[m\] of the transect.
+#'   \item `shrub`: The mean shrub cover (\%) within 100 \[m\] of the transect.
+#'   \item `height`: The mean shrub height \[cm\] within 100 \[m\] of the transect.
+#'   \item `shrubclass`: Shrub class factor.  Either "Low"" when 
 #'   shrub cover is < 10\%, or "High" if cover >= 10\%.  
 #' }
 #'  
-#' The embedded data frame in column \code{detections} contains the following
+#' The embedded data frame in column `detections` contains the following
 #' variables:
 #' \enumerate{
-#'   \item \code{groupsize}: The number of individuals in the detected group.  
-#'   \item \code{sightdist}: Distance [m] from observer to the detected group.  
-#'   \item \code{sightangle}: Angle [degrees] from the transect 
-#'   line to the detected group. Not bearing. Range 0 [degrees] to 90 [degrees].
-#'   \item \code{dist}: Perpendicular, off-transect distance [m], from the
+#'   \item `groupsize`: The number of individuals in the detected group.  
+#'   \item `sightdist`: Distance \[m\] from observer to the detected group.  
+#'   \item `sightangle`: Angle \[degrees\] from the transect 
+#'   line to the detected group. Not bearing. Range 0 \[degrees\] to 90 \[degrees\].
+#'   \item `dist`: Perpendicular, off-transect distance \[m\], from the
 #'   transect to the detected group.  This is the distance used in analysis.
-#'   Calculated using \code{\link{perpDists}}.  
+#'   Calculated using [perpDists()].  
 #' }
 #' 
-#' @seealso \code{\link{sparrowSiteData}}, \code{\link{sparrowDetectionData}},
-#' \code{\link{RdistDf}}
+#' @seealso [sparrowSiteData()], [sparrowDetectionData()],
+#' [RdistDf()]
 #' 
 #' @source The Brewer's sparrow data are a subset of data collected 
 #' by Jason Carlisle and various field technicians for his Ph.D. from the 
@@ -78,7 +78,7 @@
 #' 
 #' Carlisle, J. D., and A. D. Chalfoun. 2020. The abundance of Greater 
 #' Sage-Grouse as a proxy for the abundance of sagebrush-associated songbirds 
-#' in Wyoming, USA. \emph{Avian Conservation and Ecology} 15(2):16. 
+#' in Wyoming, USA. *Avian Conservation and Ecology* 15(2):16. 
 #' \doi{10.5751/ACE-01702-150216}
 #' 
 NULL

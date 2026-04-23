@@ -13,7 +13,9 @@
 #' 
 #' @return An integer scalar
 #' 
-#' # do not export
+#'
+ 
+# do not export
 nCovars <- function(X){
   
   if( is.matrix(X) ){

@@ -11,7 +11,7 @@ integrateKey(ml, key, f0, plot = FALSE)
 
 \item{key}{The scaled distance function.}
 
-\item{f0}{The value of f(0) when integrating line transects. 
+\item{f0}{The value of f(0) when integrating line transects.
 This should be the ESW for the case.}
 
 \item{plot}{Logical scalar.  If TRUE, plot a diagnostic consisting
@@ -21,9 +21,9 @@ of the distance function and approximating points we use for quadrature.}
 Nothing.  Prints information on integrals to the screen.
 }
 \description{
-Check several integration characteristics, 
-and report them to screen.  This was designed to print 
+Check several integration characteristics,
+and report them to screen.  This was designed to print
 info when user asks for higher verbose level. The scaled
-distance function should integrate to 1.0 every iteration of 
+distance function should integrate to 1.0 every iteration of
 maximization, and this function checks that.
 }

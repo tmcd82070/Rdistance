@@ -15,6 +15,6 @@ errDataUnk(txt, attri)
 A descriptive string, suitable for warning or error.
 }
 \description{
-Constructs a string stating what is "unknown" that is 
+Constructs a string stating what is "unknown" that is
 suitable for use in warning and error functions.
 }

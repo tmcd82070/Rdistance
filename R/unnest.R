@@ -6,8 +6,8 @@
 #' 
 #' @inheritParams dfuncEstim
 #' 
-#' @param ... Additional arguments passed to \code{tidyr::unnest} if
-#' \code{data} is not an RdistDf.  
+#' @param ... Additional arguments passed to `tidyr::unnest` if
+#' `data` is not an RdistDf.  
 #' 
 #' @return An expanded data frame, without embedded data frames. Rows 
 #' in the return represent with one detection or one transect.  If multiple

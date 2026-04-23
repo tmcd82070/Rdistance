@@ -7,28 +7,28 @@
 setOptimizer(ml)
 }
 \arguments{
-\item{ml}{Either a Rdistance 'model frame' or an Rdistance 
-'fitted object'.  Both are of class "dfunc". 
-Rdistance 'model frames' are lists containing components 
-necessary to estimate a distance function, but no estimates. 
+\item{ml}{Either a Rdistance 'model frame' or an Rdistance
+'fitted object'.  Both are of class "dfunc".
+Rdistance 'model frames' are lists containing components
+necessary to estimate a distance function, but no estimates.
 Rdistance 'model frames' are typically
-produced by calls to \code{\link{parseModel}}. 
+produced by calls to \code{\link[=parseModel]{parseModel()}}.
 Rdistance 'fitted objects'
-are typically produced by calls to \code{\link{dfuncEstim}}.
+are typically produced by calls to \code{\link[=dfuncEstim]{dfuncEstim()}}.
 'Fitted objects' are 'model frames'
-with additional components such as the parameters estimates, 
+with additional components such as the parameters estimates,
 log likelihood value, convergence information, and the variance-
 covariance matrix of the parameters.}
 }
 \value{
-If Rdistance options are changed, a list of the options and 
-their original values.  The return can be used outside this routine 
-to set options back to their state when this routine was entered.  
+If Rdistance options are changed, a list of the options and
+their original values.  The return can be used outside this routine
+to set options back to their state when this routine was entered.
 If no options changed, the return in NULL.
 }
 \description{
-Checks that the maximum likelihood optimizing routine is appropriate 
-for the requested likelihood function. That is, checks that gradient 
-based maximization routines are only applied to smooth likelihoods, 
+Checks that the maximum likelihood optimizing routine is appropriate
+for the requested likelihood function. That is, checks that gradient
+based maximization routines are only applied to smooth likelihoods,
 and that gradient-free methods are used for non-smooth likelihoods.
 }

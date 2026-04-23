@@ -7,69 +7,69 @@
 expansionTerms(a, d, series, nexp, w)
 }
 \arguments{
-\item{a}{A vector or matrix of (estimated) coefficients. 
+\item{a}{A vector or matrix of (estimated) coefficients.
 \code{a} has length \eqn{p} + \code{nexp} (if a vector) or dimension
-(\eqn{k}, \eqn{p} + \code{nexp}), where \eqn{p} is the number 
-of canonical parameters in the likelihood and \eqn{k} is the 
-number of 'cases' (coefficient vectors = \code{nrow(a)}) to evaluate. 
+(\eqn{k}, \eqn{p} + \code{nexp}), where \eqn{p} is the number
+of canonical parameters in the likelihood and \eqn{k} is the
+number of 'cases' (coefficient vectors = \code{nrow(a)}) to evaluate.
 The first \eqn{p}
 elements of \code{a}, or the first \eqn{p} columns if \code{a}
-is a matrix, are ignored. I.e., Expansion 
-term coefficients are the last \code{nexp} elements or columns 
+is a matrix, are ignored. I.e., Expansion
+term coefficients are the last \code{nexp} elements or columns
 of \code{a}.}
 
-\item{d}{A vector or 1-column matrix of 
-distances at which to evaluate 
-the expansion terms.  \code{d} should be distances 
-above w.lo, i.e., distances - w.lo. 
+\item{d}{A vector or 1-column matrix of
+distances at which to evaluate
+the expansion terms.  \code{d} should be distances
+above w.lo, i.e., distances - w.lo.
 Parameters \code{d} and \code{w}
 must have compatible measurement units.}
 
-\item{series}{If \code{expansions} > 0, this string 
-specifies the type of expansion to use. Valid values at 
+\item{series}{If \code{expansions} > 0, this string
+specifies the type of expansion to use. Valid values at
 present are 'simple', 'hermite', and 'cosine'.}
 
 \item{nexp}{Number of expansion terms.  Integer from 0 to 5.}
 
-\item{w}{A vector specifying strip width for every 'case' 
-in \code{a}.  Vector must have length \code{length(a)} or \code{nrow(a)}. 
-In general, this is constant vector containing the range 
-of sighting distances, i.e., \code{rep(w.hi - w.low, nrow(a))}. 
-But, for some likelihoods (e.g., 'oneStep') this vector allows the user to 
-restrict application of the expansion terms to less than the full range 
-of distances. For the 'oneStep' likelihood, expansion terms are only 
-applied between 0 and \eqn{\Theta}{T}, the boundary of the two uniforms, 
-which varies by 'case' when covariates are present.  
-Parameters \code{d} and \code{w} must 
+\item{w}{A vector specifying strip width for every 'case'
+in \code{a}.  Vector must have length \code{length(a)} or \code{nrow(a)}.
+In general, this is constant vector containing the range
+of sighting distances, i.e., \code{rep(w.hi - w.low, nrow(a))}.
+But, for some likelihoods (e.g., 'oneStep') this vector allows the user to
+restrict application of the expansion terms to less than the full range
+of distances. For the 'oneStep' likelihood, expansion terms are only
+applied between 0 and \eqn{\Theta}{T}, the boundary of the two uniforms,
+which varies by 'case' when covariates are present.
+Parameters \code{d} and \code{w} must
 have compatible measurement units.}
 }
 \value{
-If \code{nexp} equals 0, 1 is returned. 
-If \code{nexp} is greater than 0, a matrix of 
-size \eqn{n}X\eqn{k} containing expansion terms, 
-where \eqn{n} = \code{length(d)} and \eqn{k} = \code{nrow(a)}. The 
-expansion series associated with row \eqn{j} of \code{a} 
-are in column \eqn{j} of the return. i.e., 
-element (\eqn{i},\eqn{j}) of the return is 
-  \deqn{1 + \sum_{k=1}^{m} a_{jk} h_{k}(x_{i}/w).}{(1 + a(j1) h_1(x(i)/w) + ... + a(jm) h_m(x(i)/w)).}
+If \code{nexp} equals 0, 1 is returned.
+If \code{nexp} is greater than 0, a matrix of
+size \eqn{n}X\eqn{k} containing expansion terms,
+where \eqn{n} = \code{length(d)} and \eqn{k} = \code{nrow(a)}. The
+expansion series associated with row \eqn{j} of \code{a}
+are in column \eqn{j} of the return. i.e.,
+element (\eqn{i},\eqn{j}) of the return is
+\deqn{1 + \sum_{k=1}^{m} a_{jk} h_{k}(x_{i}/w).}{(1 + a(j1) h_1(x(i)/w) + ... + a(jm) h_m(x(i)/w)).}
 }
 \description{
-Compute "expansion" terms that modify the shape of 
+Compute "expansion" terms that modify the shape of
 a base distance function.
 }
 \details{
 Expansion terms modify the base likelihood function
 and are used to incorporate "wiggle".  The modified distance function is,
 \code{key * expTerms} where \code{key} is a vector of values in
-the base likelihood function (e.g., \code{halfnorm.like()$L.unscaled}) 
-and \code{expTerms} is the 
-matrix returned by this routine. In equation form, 
-  \deqn{f(x_i|\beta,a_1,a_2,\dots,a_m) = 
+the base likelihood function (e.g., \code{halfnorm.like()$L.unscaled})
+and \code{expTerms} is the
+matrix returned by this routine. In equation form,
+\deqn{f(x_i|\beta,a_1,a_2,\dots,a_m) = 
    f(x_i|\beta)(1 + \sum_{k=1}^{m} a_k h_{k}(x_i/w)).}{f(x(i)|beta,a_1,a_2,...,a_k) = 
    f(x(i)|beta)(1 + a(1) h_1(x(i)/w) + a(2) h_2(x(i)/w) + ... + a(m) h_m(x(i)/w)). },
-where \eqn{m} = the the number of expansions (\code{nexp}), \eqn{h_{j}(x)}{h_j(x)} 
-are expansion terms for distance \eqn{x}, and  
-\eqn{a_1, a_2, \dots, a_m}{a(1), a(2), ..., a(m)} are the (estimated) 
+where \eqn{m} = the the number of expansions (\code{nexp}), \eqn{h_{j}(x)}{h_j(x)}
+are expansion terms for distance \eqn{x}, and
+\eqn{a_1, a_2, \dots, a_m}{a(1), a(2), ..., a(m)} are the (estimated)
 expansion term coefficients.
 }
 \examples{

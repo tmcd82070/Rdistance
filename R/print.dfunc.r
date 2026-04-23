@@ -1,17 +1,17 @@
 #' @title Print method for distance function object
 #' 
 #' @description Print method for distance function objects produced 
-#' by \code{dfuncEstim}.
+#' by `dfuncEstim`.
 #' 
 #' @param x An estimated detection function object, normally 
-#' produced by calling \code{\link{dfuncEstim}}.
+#' produced by calling [dfuncEstim()].
 #' 
 #' @param \dots Included for compatibility with other print methods.  Ignored here.
 #' 
-#' @return The input distance function (\code{x}) is returned invisibly.
+#' @return The input distance function (`x`) is returned invisibly.
 #' 
-#' @seealso \code{\link{dfuncEstim}}, \code{\link{plot.dfunc}}, 
-#' \code{\link{print.abund}}, \code{\link{summary.dfunc}}
+#' @seealso [dfuncEstim()], [plot.dfunc()], 
+#' [print.abund()], [summary.dfunc()]
 #' 
 #' @examples
 #' # Load example sparrow data (line transect survey type)

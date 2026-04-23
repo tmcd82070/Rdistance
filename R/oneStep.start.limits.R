@@ -7,7 +7,7 @@
 #' 
 #' @inherit startLimits return
 #' 
-#' @seealso \code{\link{oneStep.like}}
+#' @seealso [oneStep.like()]
 #' 
 #' @examples
 #' # make 'model list' object
