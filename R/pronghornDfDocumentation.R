@@ -80,6 +80,10 @@
 #' | D | 145 \[m\] | 210 \[m\] |
 #' | E | 210 \[m\] | 265 \[m\] |
 #' 
+#' **Blind Spot**:
+#' Aerial survey crews cannot see directly below
+#' the aircraft.  At AGL 300\[ft\], the blind spot beneath the aircraft is 
+#' 65 \[m\]. 
 #' 
 #' @source These data are a subset of annual pronghorn aerial line transect 
 #' surveys conducted by the Wyoming Game and Fish Department.  Included 
