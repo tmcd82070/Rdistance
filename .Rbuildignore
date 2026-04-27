@@ -19,3 +19,4 @@ README_files
 ^CRAN-SUBMISSION$
 ^\.positai$
 ^\.claude$
+^data-raw$
