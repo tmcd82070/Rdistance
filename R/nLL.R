@@ -109,6 +109,7 @@ nLL <- function(a
     # Parameters are out of bounds.  Happens when using optim.
     # Save a bunch of computation by doing this...
     key <- matrix(fuzz, nrow = nrow(key), ncol = ncol(key))
+    outArea <- NA
     if( verbosity >= 4 ){
       # for later
       exp.terms <- rep(NA, 5)
