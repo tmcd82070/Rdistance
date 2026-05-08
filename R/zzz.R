@@ -11,8 +11,7 @@
   
   op <- options()
   op.Rdist <- list(
-      Rdistance_optimizer = "default"
-    , Rdistance_evalMax   = 2000
+      Rdistance_evalMax   = 2000
     , Rdistance_maxIters  = 1000
     , Rdistance_likeTol   = (.Machine$double.eps)^(1/1.75)
     , Rdistance_coefTol   = (.Machine$double.eps)^(1/2)
@@ -48,8 +47,7 @@
   # un-option Rdist options by full name, not just grep("Rdistance_", names(op))
   # in case user has an option starting with "Rdistance_".
   op.Rdist <- list(
-      "Rdistance_optimizer" = NULL
-    , "Rdistance_evalMax"   = NULL
+      "Rdistance_evalMax"   = NULL
     , "Rdistance_maxIters"  = NULL 
     , "Rdistance_likeTol"   = NULL
     , "Rdistance_coefTol"   = NULL

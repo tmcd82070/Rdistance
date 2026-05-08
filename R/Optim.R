@@ -18,7 +18,7 @@ Optim <- function(ml, strt.lims){
   )
   
   verboseLevel <- getOption("Rdistance_verbosity")
-  optimMeth <- getOption("Rdistance_optimizer")
+  optimMeth <- ml$optimizer
   optimSubMeth <- sub("^.+_", "", optimMeth)
   
   if( verboseLevel >= 1 ){

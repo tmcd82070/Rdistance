@@ -25,7 +25,7 @@ mlEstimates <- function( ml
   #  (2) There are missing group sized in the model frame for transects with missing lengths. 
   #      These don't matter here.
   
-  optimFunc <- getOption("Rdistance_optimizer")
+  optimFunc <- ml$optimizer
   optimFunc <- gsub("_.+$", "", optimFunc)
 
   fit <- switch( optimFunc

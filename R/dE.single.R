@@ -326,7 +326,7 @@ dE.single <- function( data
   }
 
   # Check whether need to use non-gradient optimizer ----
-  changedOptions <- setOptimizer(modelList)
+  modelList$optimizer <- setOptimizer(modelList)
   
   # Perform optimization
   fit <- mlEstimates( ml = modelList
@@ -335,11 +335,7 @@ dE.single <- function( data
 
   # Assemble results
   ans <- c(fit, modelList)
-  ans$optimizer <- getOption("Rdistance_optimizer")
   class(ans) <- "dfunc"
-
-  # Put original options back if needed ----
-  options(changedOptions)
 
   if ( ans$likelihood != "Gamma" ){
     # not absolutely necessary. 
