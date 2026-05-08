@@ -88,6 +88,13 @@ bootstrap <- function(
     strtTime <- Sys.time()
   } 
   
+  # --- Check we have a RdistDf inside object ----
+  if(!is.RdistDf(object$data)){
+    stop(paste("Input 'object$data' must be an RdistDf."
+             , "Check that 'object' is a valid Rdistance fitted"
+             ,"distance function."))
+  }
+  
   # --- Apply estimation to each ID group ----
   B <- bsData |> 
     dplyr::summarise(
