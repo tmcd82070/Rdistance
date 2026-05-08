@@ -28,37 +28,30 @@
 #' by less than this amount between iterations, 
 #' optimization stops and a solution is declared. 
 #'
-#'   \item `Rdistance_optimizer`: A string specifying the optimizer 
-#' to use.  Results do not often, but can vary among optimizers, so 
-#' switching algorithms sometimes makes a poorly 
-#' behaved distance function converge, particularly when 
-#' parameters are near their boundaries.  Gradient based methods 
-#' are only appropriate for smooth likelihoods. Valid 
-#' values are: 
-#' \itemize{
-#'    \item "default": If the likelihood is smooth, i.e., listed in the 
-#'    output of `differentiableLikelihoods()`, optimization defaults to
-#'    the gradient-based method in [stats::nlminb()]. If the 
-#'    likelihood is not smooth, optimization defaults to the Nelder-Mead 
-#'    method in [stats::optim()]. 
-#'    \item "optim_<method>": Uses the "<method>" method in stats::optim. 
+#'   \item `Rdistance_optimizer`: Normally, this option is not set and 
+#'   the default optimzer routines are used. The default optimization 
+#'   routine for smooth likelihoods (i.e., listed by 
+#'   [differentiableLikelihoods()]) is the gradient-based 
+#'   method in [stats::nlminb()]. The default routine for
+#'   non-smooth likelihoods is the Nelder-Mead method 
+#'   in [stats::optim()]. 
+#'   
+#'   Not often, but occasionally optimizers fail on problem. Switching 
+#'   algorithms can make a poorly behaved distance function converge, 
+#'   particularly when parameters are near their boundaries.  
+#'   If users wish to override the default optimization routine, 
+#'   set this option to one of the following: 
+#'   \itemize{
+#'    \item "optim_<method>": Use the "<method>" method in stats::optim. 
 #'    For example, "optim_Nelder-Mead" uses 
-#'    the Nelder-Mead method in optim. See [stats::optim()] for 
+#'    the Nelder-Mead. See [stats::optim()] for 
 #'    documentation of the six available methods. 
 #'    \item "nlminb": Uses [stats::nlminb()], a finite-difference
 #'    gradient based approach. 
 #'    \item "hookeJeeves": Uses [dfoptim::hjkb()], a 
 #'    derivative-free approach for continuous and discontinuous 
 #'    likelihoods.
-#' }
-#' The authors recommend "nlminb" 
-#' when likelihoods are differentiable (i.e. smooth). 
-#' "optim_Nelder-Mead" is recommended for non-smooth likelihoods. 
-#' "optim_Nelder-Mead" also performs better when solutions are near, 
-#' but not on, parameter boundaries. "hookeJeeves" works well in 
-#' all cases but can be slower than the others. All methods can be applied
-#' to smooth likelihoods, but only gradient-free methods can be applied to 
-#' discontinuous likelihoods (such as oneStep and triangle).
+#'   }
 #'
 #'   \item `Rdistance_hessEps`: A vector of parameter distances used during 
 #' computation of numeric second derivatives. These distances control
