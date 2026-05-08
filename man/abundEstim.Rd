@@ -16,7 +16,7 @@ abundEstim(
 )
 }
 \arguments{
-\item{object}{An Rdistance model frame or fitted distance function,
+\item{object}{A fitted Rdistance distance function (class \code{dfunc})
 normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
 
 \item{area}{A scalar containing the total area of inference. Usually, this is

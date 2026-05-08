@@ -5,9 +5,8 @@
 #'   lengths, area surveyed, etc.  Computes confidence intervals on
 #'   abundance (or density) using a the bias corrected bootstrap method.
 #'   
-#' @inheritParams dfuncEstim 
-#' 
-#' @inheritParams predict.dfunc 
+#' @param object A fitted Rdistance distance function (class `dfunc`)
+#' normally produced by a call to [dfuncEstim()]. 
 #' 
 #' @param area A scalar containing the total area of inference. Usually, this is 
 #' study area size.  If `area` is NULL (the default), 
