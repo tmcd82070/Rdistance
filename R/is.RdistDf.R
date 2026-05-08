@@ -18,6 +18,8 @@
 #'   list-based column in the data frame. 
 #'   \item `attr(df, "obsType")` exists and is one of the valid values.
 #'   \item `attr(df, "transType")` exists and is one of the valid values.
+#'   \item `attr(df, "effortColumn")` exists and points to a column in the 
+#'   data frame with 1 dimensional units attached.
 #'   \item The data frame is either a 'rowwise_df' or 'grouped_df' 
 #'   `tibble`.
 #'   \item The data frame has only one row per group. One row per group 
@@ -39,7 +41,7 @@
 #' data(sparrowDf)
 #' is.RdistDf(sparrowDf)
 #' 
-#' # Data frame okay, but no attributes
+#' # Data frame is okay, but no attributes
 #' data(sparrowDetectionData)
 #' data(sparrowSiteData)
 #' sparrowDf <- sparrowDetectionData |> 
@@ -48,33 +50,19 @@
 #'   dplyr::right_join(sparrowSiteData, by = "siteID")
 #' is.RdistDf(sparrowDf, verbose = TRUE)
 #' 
+#' # Manually add required attributes
+#' attr(sparrowDf, "detectionColumn") <- "distances"
+#' attr(sparrowDf, "effortColumn") <- "length"
+#' attr(sparrowDf, "obsType") <- "single"
+#' attr(sparrowDf, "transType" ) <- "line"
+#' is.RdistDf(sparrowDf, verbose = TRUE)
 #' 
 #' @export
 #' 
 is.RdistDf <- function(df, verbose = FALSE){
   
   dfName <- deparse(substitute(df))
-  
-  # Check for 'RdistDf' class 
-  # if(!inherits(df, "RdistDf")){
-  #   if(verbose){
-  #     cat(paste(
-  #       crayon::red(dfName)
-  #       , "does not inherit from class 'RdistDf'."
-  #       , "Assign class using", 
-  #       crayon::red(paste0("class("
-  #                          , dfName
-  #                          , ") <- c('RdistDf', class("
-  #                          , dfName
-  #                          , ")),"
-  #                          ))
-  #       , "or execute function Rdistance::RdistDf()."
-  #       , "\n"
-  #       ))
-  #   }
-  #   return(FALSE)
-  # }
-  
+
   # Check for list column name attribute ----
   distColName <- attr(df, "detectionColumn")[1]  # could be NULL
   hasListColName <- !is.null(distColName)

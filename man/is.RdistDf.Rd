@@ -30,6 +30,8 @@ The following checks are performed (in this order):
 list-based column in the data frame.
 \item \code{attr(df, "obsType")} exists and is one of the valid values.
 \item \code{attr(df, "transType")} exists and is one of the valid values.
+\item \code{attr(df, "effortColumn")} exists and points to a column in the
+data frame with 1 dimensional units attached.
 \item The data frame is either a 'rowwise_df' or 'grouped_df'
 \code{tibble}.
 \item The data frame has only one row per group. One row per group
@@ -48,7 +50,7 @@ later in \code{\link[=dfuncEstim]{dfuncEstim()}}, after the model is specified.
 data(sparrowDf)
 is.RdistDf(sparrowDf)
 
-# Data frame okay, but no attributes
+# Data frame is okay, but no attributes
 data(sparrowDetectionData)
 data(sparrowSiteData)
 sparrowDf <- sparrowDetectionData |> 
@@ -57,5 +59,11 @@ sparrowDf <- sparrowDetectionData |>
   dplyr::right_join(sparrowSiteData, by = "siteID")
 is.RdistDf(sparrowDf, verbose = TRUE)
 
+# Manually add required attributes
+attr(sparrowDf, "detectionColumn") <- "distances"
+attr(sparrowDf, "effortColumn") <- "length"
+attr(sparrowDf, "obsType") <- "single"
+attr(sparrowDf, "transType" ) <- "line"
+is.RdistDf(sparrowDf, verbose = TRUE)
 
 }
