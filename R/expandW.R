@@ -40,7 +40,7 @@ expandW <- function(ml
 
   } else { 
     # Most likelihoods: expansions constant across params
-    W <- ml$w.hi - ml$w.lo
+    W <- rep(ml$w.hi - ml$w.lo, k)
   }
 
   W
