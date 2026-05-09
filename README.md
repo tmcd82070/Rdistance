@@ -1,5 +1,5 @@
 
-<img src="README_files/RdistanceTopBanner.PNG" width="100%" />
+<img src="README_files/RdistanceTopBanner.PNG" alt="" width="100%" />
 
 <!-- badges: start -->
 
@@ -40,7 +40,7 @@ the *Example* sections of help files `?RdistDf`, `?dfuncEstim`, and
 `?abundEstim` contain enough information to get you started and explain
 a few details of analysis in **Rdistance**.
 
-<img src="README_files/RdistanceSeparator.PNG" width="100%" />
+<img src="README_files/RdistanceSeparator.PNG" alt="" width="100%" />
 
 ## Features
 
@@ -66,7 +66,7 @@ a few details of analysis in **Rdistance**.
 - Help and wiki content taught at multiple workshops and reviewed by
   multiple authors
 
-<img src="README_files/RdistanceSeparator.PNG" width="100%" />
+<img src="README_files/RdistanceSeparator.PNG" alt="" width="100%" />
 
 ## Installation
 
@@ -119,10 +119,10 @@ the development release with the following commands:
 install.packages("Rdistance")
 ```
 
-2.  ***Development version***: `Rdistance` is under active development,
-    and the ‘development’ version often contains patches between
-    official releases. Inspect commit messages for commits following the
-    most recent release for a description of the patches. Install the
+2.  ***Development version***: `Rdistance` is under active development.
+    The development version often contains patches between official
+    releases. Inspect commit messages for commits following the most
+    recent release for a description of the patches. Install the
     development version from
     [GitHub](https://github.com/tmcd82070/Rdistance) using:
 
@@ -133,14 +133,14 @@ if( !require("devtools") ){
 devtools::install_github("tmcd82070/Rdistance")
 ```
 
-<img src="README_files/RdistanceSeparator.PNG" width="100%" />
+<img src="README_files/RdistanceSeparator.PNG" alt="" width="100%" />
 
 ## Tutorials
 
 Beginner, intermediate, and advanced `Rdistance` tutorials are
 [here](https://mcdonalddatasciences.com/Rdistance.html).
 
-<img src="README_files/RdistanceSeparator.PNG" width="100%" />
+<img src="README_files/RdistanceSeparator.PNG" alt="" width="100%" />
 
 # RECENT CHANGES
 
