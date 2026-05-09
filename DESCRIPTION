@@ -3,6 +3,7 @@ Type: Package
 Title: Density and Abundance from Distance-Sampling Surveys
 Version: 4.4.1
 Date: 2026-05-06
+Language: en-US
 Maintainer: Trent McDonald <trent@mcdonalddatasciences.com>
 Authors@R: c(person("Trent", "McDonald", role=c("cre","aut"), email="trent@mcdonalddatasciences.com"), 
   person("Jason", "Carlisle", role="aut", email="jason.carlisle@wyo.gov"), 
