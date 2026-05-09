@@ -44,7 +44,7 @@ particularly when parameters are near their boundaries.
 If users wish to override the default optimization routine,
 set this option to one of the following:
 \itemize{
-\item "optim_\if{html}{\out{<method>}}": Use the "\if{html}{\out{<method>}}" method in stats::optim.
+\item "optim_\<method\>": Use the "\<method\>" method in stats::optim.
 For example, "optim_Nelder-Mead" uses
 the Nelder-Mead. See \code{\link[stats:optim]{stats::optim()}} for
 documentation of the six available methods.

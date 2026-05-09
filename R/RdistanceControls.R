@@ -42,7 +42,7 @@
 #'   If users wish to override the default optimization routine, 
 #'   set this option to one of the following: 
 #'   \itemize{
-#'    \item "optim_<method>": Use the "<method>" method in stats::optim. 
+#'    \item "optim_\<method\>": Use the "\<method\>" method in stats::optim. 
 #'    For example, "optim_Nelder-Mead" uses 
 #'    the Nelder-Mead. See [stats::optim()] for 
 #'    documentation of the six available methods. 

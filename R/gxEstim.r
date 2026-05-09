@@ -36,7 +36,7 @@
 #'   is unknown. 
 #'   
 #'   \item **Double observer system**: Inputs are 
-#'   `x.scl`="max", `g.x.scl` = <a data frame>. 
+#'   `x.scl`="max", `g.x.scl` = \<a data frame\>. 
 #'   In this case, g(*x*) = *h*, where *x* is the distance that 
 #'   maximizes g and *h* is the height of g() at *x* 
 #'   computed from the double observer data frame (see below for 

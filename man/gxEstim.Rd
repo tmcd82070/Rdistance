@@ -50,7 +50,7 @@ off the transect, but the distance at which the maximum occurs
 is unknown.
 
 \item \strong{Double observer system}: Inputs are
-\code{x.scl}="max", \code{g.x.scl} = \if{html}{\out{<a data frame>}}.
+\code{x.scl}="max", \code{g.x.scl} = \<a data frame\>.
 In this case, g(\emph{x}) = \emph{h}, where \emph{x} is the distance that
 maximizes g and \emph{h} is the height of g() at \emph{x}
 computed from the double observer data frame (see below for
