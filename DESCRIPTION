@@ -1,7 +1,7 @@
 Package: Rdistance
 Type: Package
 Title: Density and Abundance from Distance-Sampling Surveys
-Version: 4.4.1
+Version: 4.4.2
 Date: 2026-05-09
 Language: en-US
 Maintainer: Trent McDonald <trent@mcdonalddatasciences.com>
