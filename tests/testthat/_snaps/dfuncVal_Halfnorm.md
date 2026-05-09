@@ -3,413 +3,444 @@
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~
-         groupsize(groupsize), likelihood = lhood)
+      Call: dfuncEstim(data = dataDf, formula = dist ~ groupsize(groupsize),
+         likelihood = lhood)
       Coefficients:
-                   Estimate  SE          z         p(>|z|)
-      (Intercept)  3.959313  0.03767961  105.0784  0      
+                   Estimate  SE       z      p(>|z|)
+      (Intercept)  3.959     0.03768  105.1  0      
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 65.69518 [m] 
-      Probability of detection: 0.317368
+      Effective strip width (ESW): 65.7 [m] 
+      Probability of detection: 0.3174
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1667.639 
-      AICc: 3337.289
+      Log likelihood: -1668 
+      AICc: 3337
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 7.906888e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 324577.7
+      Density in sampled area: 7.907e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 324578
 
 # halfnorm-NoCovar
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, w.lo = w.lo, w.hi = w.hi,
          expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1,
          outputUnits = "m")
       Coefficients:
-                   Estimate  SE          z         p(>|z|)
-      (Intercept)  3.9095    0.04038592  96.80353  0      
+                   Estimate  SE       z     p(>|z|)
+      (Intercept)  3.909     0.04039  96.8  0      
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 150 [m] 
-      Effective strip width (ESW): 62.34318 [m] 
-      Probability of detection: 0.4156212
+      Effective strip width (ESW): 62.34 [m] 
+      Probability of detection: 0.4156
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1630.716 
-      AICc: 3263.443
+      Log likelihood: -1631 
+      AICc: 3263
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 371 in 353 groups 
-       Average group size: 1.050992 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 8.265183e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 339285.8
+      Density in sampled area: 8.265e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 339286
 
 # halfnorm-ContinuousCovar
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ bare +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ bare +
          groupsize(groupsize), likelihood = lhood, w.lo = w.lo, w.hi = w.hi,
          expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1,
          outputUnits = "m")
       Coefficients:
-                   Estimate     SE           z          p(>|z|)      
-      (Intercept)  3.346183910  0.155241297  21.554728  4.780716e-103
-      bare         0.009715925  0.002720183   3.571791   3.545479e-04
+                   Estimate  SE       z       p(>|z|)   
+      (Intercept)  3.346184  0.15524  21.555  4.781e-103
+      bare         0.009716  0.00272   3.572   3.545e-04
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 150 [m] 
-      Average effective strip width (ESW): 61.99663 [m] (range 47.95033 [m] to 76.9778 [m]) 
-      Average probability of detection: 0.4133109 (range 0.3196689 to 0.5131854)
+      Average effective strip width (ESW): 62 [m] (range 47.95 [m] to 76.98 [m]) 
+      Average probability of detection: 0.4133 (range 0.3197 to 0.5132)
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1624.351 
-      AICc: 3252.736
+      Log likelihood: -1624 
+      AICc: 3253
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 371 in 353 groups 
-       Average group size: 1.050992 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 8.470704e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 347722.4
+      Density in sampled area: 8.471e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 347722
 
 # halfnorm-FactorCovar
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ observer +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ observer +
          groupsize(groupsize), likelihood = lhood, w.lo = w.lo, w.hi = w.hi,
          expansions = 0, series = "cosine", x.scl = 0, g.x.scl = 1,
          outputUnits = "m")
       Coefficients:
-                    Estimate     SE          z           p(>|z|)   
-      (Intercept)    3.92800543  0.08793471  44.6695675  0.00000000
-      observerobs2   0.17073246  0.14604669   1.1690265  0.24239295
-      observerobs3  -0.01647247  0.11923776  -0.1381481  0.89012337
-      observerobs4  -0.26739638  0.12897924  -2.0731737  0.03815612
-      observerobs5  -0.02839298  0.12345494  -0.2299866  0.81810216
+                    Estimate  SE       z        p(>|z|)
+      (Intercept)    3.92801  0.08793  44.6696  0.00000
+      observerobs2   0.17073  0.14605   1.1690  0.24239
+      observerobs3  -0.01647  0.11924  -0.1381  0.89012
+      observerobs4  -0.26740  0.12898  -2.0732  0.03816
+      observerobs5  -0.02839  0.12345  -0.2300  0.81810
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 0 [m] to 150 [m] 
-      Average effective strip width (ESW): 62.19478 [m] (range 48.72956 [m] to 74.5625 [m]) 
-      Average probability of detection: 0.4146318 (range 0.3248637 to 0.4970833)
+      Average effective strip width (ESW): 62.19 [m] (range 48.73 [m] to 74.56 [m]) 
+      Average probability of detection: 0.4146 (range 0.3249 to 0.4971)
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1626.142 
-      AICc: 3262.456
+      Log likelihood: -1626 
+      AICc: 3262
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 371 in 353 groups 
-       Average group size: 1.050992 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 8.387749e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 344317.1
+      Density in sampled area: 8.388e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 344317
 
 # halfnorm-NoCovarWloWhi
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, w.lo = w.20, w.hi = w.hi,
          expansions = 0, series = "cosine", x.scl = w.20, g.x.scl = 1,
          outputUnits = "m")
       Coefficients:
-                   Estimate  SE          z         p(>|z|)
-      (Intercept)  3.783568  0.05013421  75.46878  0      
+                   Estimate  SE       z      p(>|z|)
+      (Intercept)  3.784     0.05013  75.47  0      
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 20 [m] to 150 [m] 
       Effective strip width (ESW): 54.94 [m] 
-      Probability of detection: 0.4226154
+      Probability of detection: 0.4226
       Scaling: g(20 [m]) = 1
-      Log likelihood: -1046.467 
-      AICc: 2094.952
+      Log likelihood: -1046 
+      AICc: 2095
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 241 in 233 groups 
-       Average group size: 1.034335 
+       Average group size: 1.034 
          Group size range: 1 to 2 
-      Density in sampled area: 6.092505e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 250097.3
+      Density in sampled area: 6.093e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 250097
 
 # halfnorm-NoCovarWlo
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, w.lo = w.20, expansions =
          0, series = "cosine", x.scl = w.20, g.x.scl = 1, outputUnits = "m")
       Coefficients:
-                   Estimate  SE          z         p(>|z|)
-      (Intercept)  3.864711  0.04630146  83.46845  0      
+                   Estimate  SE      z      p(>|z|)
+      (Intercept)  3.865     0.0463  83.47  0      
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
       Strip: 20 [m] to 207 [m] 
-      Effective strip width (ESW): 59.76463 [m] 
-      Probability of detection: 0.3195969
+      Effective strip width (ESW): 59.76 [m] 
+      Probability of detection: 0.3196
       Scaling: g(20 [m]) = 1
-      Log likelihood: -1083.168 
-      AICc: 2168.354
+      Log likelihood: -1083 
+      AICc: 2168
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 244 in 236 groups 
-       Average group size: 1.033898 
+       Average group size: 1.034 
          Group size range: 1 to 2 
-      Density in sampled area: 5.670392e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 232769.6
+      Density in sampled area: 5.67e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 232770
 
 # halfnorm-NoCovarsFt
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, outputUnits = "ft")
       Coefficients:
-                   Estimate  SE         z       p(>|z|)
-      (Intercept)  5.147412  0.0376796  136.61  0      
+                   Estimate  SE       z      p(>|z|)
+      (Intercept)  5.147     0.03768  136.6  0      
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM  
-      Strip: 0 [ft] to 679.1339 [ft] 
-      Effective strip width (ESW): 215.5353 [ft] 
-      Probability of detection: 0.317368
+      Strip: 0 [ft] to 679.1 [ft] 
+      Effective strip width (ESW): 215.5 [ft] 
+      Probability of detection: 0.3174
       Scaling: g(0 [ft]) = 1
-      Log likelihood: -2090.602 
-      AICc: 4183.216
+      Log likelihood: -2091 
+      AICc: 4183
       
-           Surveyed Units: 118110.2 [ft] 
+           Surveyed Units: 118110 [ft] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 7.345741e-06 [1/ft^2]
-      Abundance in 44185852261 [ft^2] study area: 324577.8
+      Density in sampled area: 7.346e-06 [1/ft^2]
+      Abundance in 4.419e+10 [ft^2] study area: 324578
 
 # halfnorm-NoCovarCosExpansions
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "cosine")
       Coefficients:
-                   Estimate   SE          z          p(>|z|)     
-      (Intercept)  4.0755827  0.05583971  72.987181  0.0000000000
-      a1           0.4586695  0.13026429   3.521068  0.0004298119
-      a2           0.1449905  0.10347736   1.401181  0.1611600646
+                   Estimate  SE       z       p(>|z|)  
+      (Intercept)  4.0756    0.05584  72.987  0.0000000
+      a1           0.4587    0.13026   3.521  0.0004298
+      a2           0.1450    0.10348   1.401  0.1611601
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 54.93086 [m] 
-      Probability of detection: 0.2653665
+      Effective strip width (ESW): 54.93 [m] 
+      Probability of detection: 0.2654
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1662.166 
-      AICc: 3330.4
+      Log likelihood: -1662 
+      AICc: 3330
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 9.456332e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 388182.4
+      Density in sampled area: 9.456e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 388182
 
 # halfnorm-NoCovarSinExpansions
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "sine")
       Coefficients:
-                   Estimate     SE          z          p(>|z|)   
-      (Intercept)   3.94297933  0.04184599  94.225969  0.00000000
-      a1           -0.46828903  0.24913668  -1.879647  0.06015619
-      a2            0.09272589  0.16466424   0.563121  0.57335248
+                   Estimate  SE       z        p(>|z|)
+      (Intercept)   3.94298  0.04185  94.2264  0.00000
+      a1           -0.46829  0.24914  -1.8797  0.06015
+      a2            0.09273  0.16466   0.5631  0.57335
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of SINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 56.55192 [m] 
-      Probability of detection: 0.2731977
+      Effective strip width (ESW): 56.55 [m] 
+      Probability of detection: 0.2732
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1665.683 
-      AICc: 3337.435
+      Log likelihood: -1666 
+      AICc: 3337
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 9.185266e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 377055.2
+      Density in sampled area: 9.185e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 377057
 
 # halfnorm-NoCovarHermExpansions
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "hermite")
       Coefficients:
-                   Estimate     SE         z         p(>|z|)     
-      (Intercept)   5.20519141  0.3870045  13.44995  3.080833e-41
-      a1           -0.23640284         NA        NA            NA
-      a2            0.09711706         NA        NA            NA
+                   Estimate  SE       z        p(>|z|)  
+      (Intercept)   5.19333  0.56795    9.144  6.018e-20
+      a1           -0.23634  0.01159  -20.399  1.723e-92
+      a2            0.09706  0.01059    9.167  4.863e-20
       
-      Message: VARIANCE FAILURE (singular variance-covariance matrix)
+      Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 53.21236 [m] 
-      Probability of detection: 0.2570645
+      Effective strip width (ESW): 53.2 [m] 
+      Probability of detection: 0.257
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1654.989 
-      AICc: 3316.045
+      Log likelihood: -1655 
+      AICc: 3316
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 9.761725e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 400718.8
+      Density in sampled area: 9.764e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 400823
 
 # halfnorm-NoCovarSimpExpansions
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "simple")
       Coefficients:
-                   Estimate   SE        z          p(>|z|)      
-      (Intercept)   3.993693  0.114389  34.913247  4.680116e-267
-      a1           -8.536728  3.372959  -2.530931   1.137601e-02
-      a2           15.366334  8.416604   1.825717   6.789294e-02
+                   Estimate  SE      z       p(>|z|)   
+      (Intercept)   3.994    0.1144  34.913  4.677e-267
+      a1           -8.537    3.3730  -2.531   1.138e-02
+      a2           15.366    8.4166   1.826   6.789e-02
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 64.74022 [m] 
-      Probability of detection: 0.3127547
+      Effective strip width (ESW): 64.74 [m] 
+      Probability of detection: 0.3128
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1662.79 
-      AICc: 3331.648
+      Log likelihood: -1663 
+      AICc: 3332
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 8.02352e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 329365.5
+      Density in sampled area: 8.024e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 329366
 
 # halfnorm-NoCovarBSplineExpansions
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ 1 +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ 1 +
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", series = "bspline")
       Coefficients:
-                   Estimate    SE          z          p(>|z|)      
-      (Intercept)   5.2053945  0.50797762   10.24729   1.217068e-24
-      a1           -1.2497467  0.04791432  -26.08295  5.692591e-150
-      a2           -0.9456234  0.03279225  -28.83680  7.418013e-183
+                   Estimate  SE   z    p(>|z|)
+      (Intercept)   5.1966   NaN  NaN  NaN    
+      a1           -1.2492   NaN  NaN  NaN    
+      a2           -0.9454   NaN  NaN  NaN    
       
-      Message: Success; Asymptotic SE's
+      Message: FAILURE (Exit code= 1, false convergence (8))
       Function: HALFNORM with 2 expansion(s) of BSPLINE series 
       Strip: 0 [m] to 207 [m] 
-      Effective strip width (ESW): 53.21257 [m] 
-      Probability of detection: 0.2570655
+      Effective strip width (ESW): 53.21 [m] 
+      Probability of detection: 0.2571
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1654.989 
-      AICc: 3316.045
+      Log likelihood: -1655 
+      AICc: 3316
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 9.761688e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 400717.3
+      Density in sampled area: NA
+      Abundance in 4105 [km^2] study area: NA
 
 # halfnorm-ContCovarExpansions
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ bare +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ bare +
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m")
       Coefficients:
-                   Estimate    SE           z          p(>|z|)     
-      (Intercept)  3.38598814  0.167121543  20.260632  2.862629e-91
-      bare         0.01105555  0.002704431   4.087941  4.352188e-05
-      a1           0.34055057  0.165192401   2.061539  3.925165e-02
-      a2           0.15481272  0.114443570   1.352743  1.761378e-01
+                   Estimate  SE        z       p(>|z|)  
+      (Intercept)  3.38599   0.167122  20.261  2.863e-91
+      bare         0.01106   0.002704   4.088  4.352e-05
+      a1           0.34055   0.165192   2.062  3.925e-02
+      a2           0.15481   0.114444   1.353  1.761e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 55.60095 [m] (range 43.29357 [m] to 69.32326 [m]) 
-      Average probability of detection: 0.2686036 (range 0.2091477 to 0.334895)
+      Average effective strip width (ESW): 55.6 [m] (range 43.29 [m] to 69.32 [m]) 
+      Average probability of detection: 0.2686 (range 0.2091 to 0.3349)
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1654.264 
-      AICc: 3316.642
+      Log likelihood: -1654 
+      AICc: 3317
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 9.517406e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 390689.5
+      Density in sampled area: 9.517e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 390690
 
----
+# halfnorm-ContCovarExpansionsWScaling
 
     Code
       summary(fit)
     Output
-      Call: dfuncEstim(data = sparrowDf, formula = dist ~ bare +
+      Call: dfuncEstim(data = dataDf, formula = dist ~ bare +
          groupsize(groupsize), likelihood = lhood, expansions = 2, outputUnits
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
-                   Estimate    SE           z          p(>|z|)     
-      (Intercept)  3.38598814  0.167121543  20.260632  2.862629e-91
-      bare         0.01105555  0.002704431   4.087941  4.352188e-05
-      a1           0.34055057  0.165192401   2.061539  3.925165e-02
-      a2           0.15481272  0.114443570   1.352743  1.761378e-01
+                   Estimate  SE        z       p(>|z|)  
+      (Intercept)  3.38599   0.167122  20.261  2.863e-91
+      bare         0.01106   0.002704   4.088  4.352e-05
+      a1           0.34055   0.165192   2.062  3.925e-02
+      a2           0.15481   0.114444   1.353  1.761e-01
       
       Message: Success; Asymptotic SE's
       Function: HALFNORM with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 207 [m] 
-      Average effective strip width (ESW): 55.60095 [m] (range 43.29357 [m] to 69.32326 [m]) 
-      Average probability of detection: 0.2686036 (range 0.2091477 to 0.334895)
+      Average effective strip width (ESW): 41.7 [m] (range 32.47 [m] to 51.99 [m]) 
+      Average probability of detection: 0.2015 (range 0.1569 to 0.2512)
       Scaling: g(0 [m]) = 0.75
-      Log likelihood: -1654.264 
-      AICc: 3316.642
+      Log likelihood: -1654 
+      AICc: 3317
       
            Surveyed Units: 36000 [m] 
          Individuals seen: 374 in 356 groups 
-       Average group size: 1.050562 
+       Average group size: 1.051 
          Group size range: 1 to 3 
-      Density in sampled area: 9.517406e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 390689.5
+      Density in sampled area: 0.0001269 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 520919
+
+# halfnorm-SerialBootstraps
+
+    Code
+      summary(abun)
+    Output
+      Call: dfuncEstim(data = dataDf, formula = dist ~ groupsize(groupsize),
+         likelihood = lhood)
+      Coefficients:
+                   Estimate  SE       z      p(>|z|)
+      (Intercept)  3.959     0.05118  77.35  0      
+      
+      Message: Success; Bootstrap SE's
+      Function: HALFNORM  
+      Strip: 0 [m] to 207 [m] 
+      Effective strip width (ESW): 65.7 [m] 
+      Probability of detection: 0.3174
+      Scaling: g(0 [m]) = 1
+      Log likelihood: -1668 
+      AICc: 3337
+      
+           Surveyed Units: 36000 [m] 
+         Individuals seen: 374 in 356 groups 
+       Average group size: 1.051 
+         Group size range: 1 to 3 
+      
+      Density in sampled area: 7.907e-05 [1/m^2]
+                       95% CI: 6.248e-05 [1/m^2] to 8.923e-05 [1/m^2]
+      
+      Abundance in 4.105e+09 [m^2] study area: 324578
+                                       95% CI: 256462 to 366306
 

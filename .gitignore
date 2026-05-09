@@ -36,12 +36,6 @@ Icon
 .Spotlight-V100
 .Trashes
 
-
-CodeParkingLot
-ExampleDataSets
-distance_old
-TestingFolder
-Testing
 Rdistance*.zip
 Rdistance*.tar.gz
 Rdistance*.piz
@@ -49,17 +43,8 @@ Rdistance*.piz
 Rdistance.Rproj
 .RData
 .Rhistory
-inst/doc
-R/prep.R
 data-raw
 
-vignettes/
-WorkshopScripts/
-doc
-Meta
-WyoGFPronghornSurveys/
-RTestLibrary/
-wiki/
 NOTES.html
 NOTES.Rmd
 .Renviron

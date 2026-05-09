@@ -1,4 +1,4 @@
-# oneStep-MinimumInputs
+# triangle-MinimumInputs
 
     Code
       summary(fit)
@@ -7,26 +7,26 @@
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
                    Estimate
-      (Intercept)  4.8520  
-      p            0.9146  
+      (Intercept)  5.07113 
+      p            0.02693 
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP  
+      Function: TRIANGLE  
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 145.2 [m] 
-      Probability of detection: 0.3002
+      Effective detection radius (EDR): 100.6 [m] 
+      Probability of detection: 0.1442
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1031 
-      AICc: 2067
+      Log likelihood: -1011 
+      AICc: 2026
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 2.466e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 101246
+      Density in sampled area: 5.133e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 210724
 
-# oneStep-NoCovar
+# triangle-NoCovar
 
     Code
       summary(fit)
@@ -37,15 +37,15 @@
          outputUnits = "m")
       Coefficients:
                    Estimate
-      (Intercept)  2.39790 
-      p            0.09457 
+      (Intercept)  3.434   
+      p            4.296   
       
-      Message: Success; SE's pending bootstrap
-      Function: ONESTEP  
+      Message: FAILURE (Exit code= -1, p parameter at upper boundary.)
+      Function: TRIANGLE  
       Strip: 0 [m] to 200 [m] 
-      Effective detection radius (EDR): 149.5 [m] 
-      Probability of detection: 0.5586
-      Scaling: g(0 [m]) = 1
+      Effective detection radius (EDR): 413.2 [m] 
+      Probability of detection: 4.269 > 1
+      Scaling: g(0 [m]) = 1 <- Check scaling
       Log likelihood: -1014 
       AICc: 2032
       
@@ -53,10 +53,10 @@
          Individuals seen: 188 in 185 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 2.232e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 91626
+      Density in sampled area: NA
+      Abundance in 4105 [km^2] study area: NA
 
-# oneStep-ContinuousCovar
+# triangle-ContinuousCovar
 
     Code
       summary(fit)
@@ -67,27 +67,27 @@
          outputUnits = "m")
       Coefficients:
                    Estimate
-      (Intercept)   3.0373 
-      bare         -1.5986 
-      p             0.8846 
+      (Intercept)  4.911120
+      bare         0.003643
+      p            0.051566
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP  
+      Function: TRIANGLE  
       Strip: 0 [m] to 200 [m] 
-      Average effective detection radius (EDR): 4.219e-11 [m] (range 3.094e-17 [m] to 1.238e-09 [m]) 
-      Average probability of detection: 5.622e-25 (range 2.393e-38 to 3.83e-23)
+      Average effective detection radius (EDR): 99.13 [m] (range 96.41 [m] to 102.7 [m]) 
+      Average probability of detection: 0.2457 (range 0.2324 to 0.2637)
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1014 
-      AICc: 2034
+      Log likelihood: -938.6 
+      AICc: 1883
       
            Surveyed Units: 120 
          Individuals seen: 188 in 185 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 5.086e+30 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 2.088e+40
+      Density in sampled area: 5.077e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 208399
 
-# oneStep-FactorCovar
+# triangle-FactorCovar
 
     Code
       summary(fit)
@@ -98,31 +98,31 @@
          outputUnits = "m")
       Coefficients:
                     Estimate
-      (Intercept)    2.9686 
-      observerobs2  -0.4097 
-      observerobs3   0.3222 
-      observerobs4   0.3272 
-      observerobs5  -0.5551 
-      observerobs6   0.7422 
-      p              0.1023 
+      (Intercept)   -3.90738
+      observerobs2  -3.15011
+      observerobs3  -4.51443
+      observerobs4   0.53759
+      observerobs5   6.72052
+      observerobs6   3.00600
+      p              0.06822
       
-      Message: FAILURE (Exit code= 1, )
-      Function: ONESTEP  
+      Message: Success; SE's pending bootstrap
+      Function: TRIANGLE  
       Strip: 0 [m] to 200 [m] 
-      Average effective detection radius (EDR): 203.5 [m] (range 144.4 [m] to 296.9 [m]) 
-      Average probability of detection: 1.091 88 of 185 P(detect) > 1
-      Scaling: g(0 [m]) = 1 <- Check scaling
+      Average effective detection radius (EDR): 52.36 [m] (range 52.24 [m] to 53.06 [m]) 
+      Average probability of detection: 0.06853 (range 0.06822 to 0.07038)
+      Scaling: g(0 [m]) = 1
       Log likelihood: -1013 
-      AICc: 2040
+      AICc: 2041
       
            Surveyed Units: 120 
          Individuals seen: 188 in 185 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: NA
-      Abundance in 4105 [km^2] study area: NA
+      Density in sampled area: 0.0001819 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 746759
 
-# oneStep-NoCovarWloWhi
+# triangle-NoCovarWloWhi
 
     Code
       summary(fit)
@@ -133,26 +133,26 @@
          outputUnits = "m")
       Coefficients:
                    Estimate
-      (Intercept)  4.3567  
-      p            0.8583  
+      (Intercept)  4.87368 
+      p            0.04122 
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP  
+      Function: TRIANGLE  
       Strip: 20 [m] to 200 [m] 
-      Effective detection radius (EDR): 96.99 [m] 
-      Probability of detection: 0.2904
+      Effective detection radius (EDR): 82.48 [m] 
+      Probability of detection: 0.21
       Scaling: g(20 [m]) = 1
-      Log likelihood: -933.2 
-      AICc: 1870
+      Log likelihood: -921.7 
+      AICc: 1847
       
            Surveyed Units: 120 
          Individuals seen: 187 in 184 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 5.273e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 216446
+      Density in sampled area: 7.291e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 299296
 
-# oneStep-NoCovarWlo
+# triangle-NoCovarWlo
 
     Code
       summary(fit)
@@ -162,26 +162,26 @@
          0, series = "cosine", x.scl = w.20, g.x.scl = 1, outputUnits = "m")
       Coefficients:
                    Estimate
-      (Intercept)  4.4308  
-      p            0.8796  
+      (Intercept)   5.4643 
+      p            -0.4484 
       
-      Message: Success; SE's pending bootstrap
-      Function: ONESTEP  
+      Message: FAILURE (Exit code= 10, )
+      Function: TRIANGLE  
       Strip: 20 [m] to 265 [m] 
-      Effective detection radius (EDR): 104.1 [m] 
-      Probability of detection: 0.1806
+      Effective detection radius (EDR): 1.07 [m] 
+      Probability of detection: 1.907e-05
       Scaling: g(20 [m]) = 1
-      Log likelihood: -1028 
-      AICc: 2060
+      Log likelihood: 5997 
+      AICc: -11991
       
            Surveyed Units: 120 
          Individuals seen: 195 in 192 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 4.773e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 195921
+      Density in sampled area: NA
+      Abundance in 4105 [km^2] study area: NA
 
-# oneStep-NoCovarsFt
+# triangle-NoCovarsFt
 
     Code
       summary(fit)
@@ -190,26 +190,26 @@
          groupsize(groupsize), likelihood = lhood, outputUnits = "ft")
       Coefficients:
                    Estimate
-      (Intercept)  6.040   
-      p            0.915   
+      (Intercept)  6.43337 
+      p            0.01765 
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP  
+      Function: TRIANGLE  
       Strip: 0 [ft] to 869.4 [ft] 
-      Effective detection radius (EDR): 476.1 [ft] 
-      Probability of detection: 0.2999
+      Effective detection radius (EDR): 374.4 [ft] 
+      Probability of detection: 0.1854
       Scaling: g(0 [ft]) = 1
-      Log likelihood: -1261 
-      AICc: 2525
+      Log likelihood: -1240 
+      AICc: 2485
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 2.294e-06 [1/ft^2]
-      Abundance in 4.419e+10 [ft^2] study area: 101347
+      Density in sampled area: 3.71e-06 [1/ft^2]
+      Abundance in 4.419e+10 [ft^2] study area: 163918
 
-# oneStep-NoCovarCosExpansions
+# triangle-NoCovarCosExpansions
 
     Code
       summary(fit)
@@ -219,28 +219,28 @@
          = "m", series = "cosine")
       Coefficients:
                    Estimate
-      (Intercept)   4.9628 
-      p             0.8593 
-      a1           -3.2430 
-      a2            0.5677 
+      (Intercept)   5.11159
+      p             0.09139
+      a1           -3.00411
+      a2           -0.12052
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP with 2 expansion(s) of COSINE series 
+      Function: TRIANGLE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 239.5 [m] 
-      Probability of detection: 0.8168
+      Effective detection radius (EDR): 188.6 [m] 
+      Probability of detection: 0.5064
       Scaling: g(0 [m]) = 1
       Log likelihood: -1004 
-      AICc: 2017
+      AICc: 2016
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 9.064e-06 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 37208
+      Density in sampled area: 1.462e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 60013
 
-# oneStep-NoCovarSinExpansions
+# triangle-NoCovarSinExpansions
 
     Code
       summary(fit)
@@ -250,28 +250,28 @@
          = "m", series = "sine")
       Coefficients:
                    Estimate
-      (Intercept)  5.0039  
-      p            0.9543  
-      a1           1.1397  
-      a2           0.2565  
+      (Intercept)   5.27897
+      p             0.01715
+      a1            0.66759
+      a2           -0.43614
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP with 2 expansion(s) of SINE series 
+      Function: TRIANGLE with 2 expansion(s) of SINE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 143.8 [m] 
-      Probability of detection: 0.2944
+      Effective detection radius (EDR): 117.3 [m] 
+      Probability of detection: 0.196
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1015 
-      AICc: 2039
+      Log likelihood: -999.6 
+      AICc: 2007
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 2.515e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 103233
+      Density in sampled area: 3.777e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 155048
 
-# oneStep-NoCovarHermExpansions
+# triangle-NoCovarHermExpansions
 
     Code
       summary(fit)
@@ -281,28 +281,28 @@
          = "m", series = "hermite")
       Coefficients:
                    Estimate
-      (Intercept)   5.0562 
-      p             0.9670 
-      a1           -0.2546 
-      a2           -0.1217 
+      (Intercept)   5.0058 
+      p             0.1920 
+      a1            0.4589 
+      a2           -1.3288 
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP with 2 expansion(s) of HERMITE series 
+      Function: TRIANGLE with 2 expansion(s) of HERMITE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 134.8 [m] 
-      Probability of detection: 0.2589
-      Scaling: g(0 [m]) = 1
-      Log likelihood: -1009 
-      AICc: 2027
+      Effective detection radius (EDR): 266.3 [m] 
+      Probability of detection: 1.01 > 1
+      Scaling: g(0 [m]) = 1 <- Check scaling
+      Log likelihood: -1004 
+      AICc: 2017
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 2.86e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 117384
+      Density in sampled area: 7.331e-06 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 30093
 
-# oneStep-NoCovarSimpExpansions
+# triangle-NoCovarSimpExpansions
 
     Code
       summary(fit)
@@ -312,28 +312,28 @@
          = "m", series = "simple")
       Coefficients:
                    Estimate
-      (Intercept)   5.0039 
-      p             0.9716 
-      a1           -3.3825 
-      a2            2.7147 
+      (Intercept)   5.08544
+      p             0.02714
+      a1           -0.11586
+      a2           -0.22096
       
       Message: Success; SE's pending bootstrap
-      Function: ONESTEP with 2 expansion(s) of SIMPLE series 
+      Function: TRIANGLE with 2 expansion(s) of SIMPLE series 
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 118.5 [m] 
-      Probability of detection: 0.2
+      Effective detection radius (EDR): 100.1 [m] 
+      Probability of detection: 0.1425
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1005 
-      AICc: 2018
+      Log likelihood: -1011 
+      AICc: 2030
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
-      Density in sampled area: 3.702e-05 [1/m^2]
-      Abundance in 4.105e+09 [m^2] study area: 151971
+      Density in sampled area: 5.194e-05 [1/m^2]
+      Abundance in 4.105e+09 [m^2] study area: 213206
 
-# oneStep-ContCovarExpansions
+# triangle-ContCovarExpansions
 
     Code
       summary(fit)
@@ -343,20 +343,20 @@
          = "m")
       Coefficients:
                    Estimate
-      (Intercept)   5.25606
-      bare         -0.00969
-      p             0.92983
-      a1           -0.84856
-      a2            0.28742
+      (Intercept)   5.56510
+      bare         -0.01307
+      p             0.01906
+      a1           -0.05885
+      a2            0.62259
       
-      Message: FAILURE (Exit code= 10, )
-      Function: ONESTEP with 2 expansion(s) of COSINE series 
+      Message: FAILURE (Exit code= 1, )
+      Function: TRIANGLE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 160.9 [m] (range 143.9 [m] to 176 [m]) 
-      Average probability of detection: 0.3694 (range 0.2948 to 0.4409)
+      Average effective detection radius (EDR): 82.66 [m] (range 72.99 [m] to 91.68 [m]) 
+      Average probability of detection: 0.09758 (range 0.07586 to 0.1197)
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1018 
-      AICc: 2047
+      Log likelihood: -1004 
+      AICc: 2019
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
@@ -375,20 +375,20 @@
          = "m", x.scl = xScl, g.x.scl = gXscl)
       Coefficients:
                    Estimate
-      (Intercept)   5.25606
-      bare         -0.00969
-      p             0.92983
-      a1           -0.84856
-      a2            0.28742
+      (Intercept)   5.56510
+      bare         -0.01307
+      p             0.01906
+      a1           -0.05885
+      a2            0.62259
       
-      Message: FAILURE (Exit code= 10, )
-      Function: ONESTEP with 2 expansion(s) of COSINE series 
+      Message: FAILURE (Exit code= 1, )
+      Function: TRIANGLE with 2 expansion(s) of COSINE series 
       Strip: 0 [m] to 265 [m] 
-      Average effective detection radius (EDR): 160.9 [m] (range 143.9 [m] to 176 [m]) 
-      Average probability of detection: 0.3694 (range 0.2948 to 0.4409)
+      Average effective detection radius (EDR): 82.66 [m] (range 72.99 [m] to 91.68 [m]) 
+      Average probability of detection: 0.09758 (range 0.07586 to 0.1197)
       Scaling: g(0 [m]) = 0.75
-      Log likelihood: -1018 
-      AICc: 2047
+      Log likelihood: -1004 
+      AICc: 2019
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
@@ -397,7 +397,7 @@
       Density in sampled area: NA
       Abundance in 4105 [km^2] study area: NA
 
-# oneStep-Bootstraps
+# triangle-Bootstraps
 
     Code
       summary(fit)
@@ -405,28 +405,35 @@
       Call: dfuncEstim(data = thrasherDf, formula = dist ~
          groupsize(groupsize), likelihood = lhood)
       Coefficients:
-                   Estimate  SE      z       p(>|z|)  
-      (Intercept)  4.8520    0.2838  17.096  1.584e-65
-      p            0.9146    0.3594   2.545  1.093e-02
+                   Estimate  SE      z        p(>|z|)  
+      (Intercept)  5.07113   0.2582  19.6387  7.221e-86
+      p            0.02693   0.2495   0.1079  9.141e-01
       
       Message: Success; Bootstrap SE's
-      Function: ONESTEP  
+      Function: TRIANGLE  
       Strip: 0 [m] to 265 [m] 
-      Effective detection radius (EDR): 145.2 [m] 
-      Probability of detection: 0.3002
+      Effective detection radius (EDR): 100.6 [m] 
+      Probability of detection: 0.1442
       Scaling: g(0 [m]) = 1
-      Log likelihood: -1031 
-      AICc: 2067
+      Log likelihood: -1011 
+      AICc: 2026
       
            Surveyed Units: 120 
          Individuals seen: 196 in 193 groups 
        Average group size: 1.016 
          Group size range: 1 to 2 
       
-      Density in sampled area: 2.466e-05 [1/m^2]
-                       95% CI: 1.761e-05 [1/m^2] to 3.547e-05 [1/m^2]
+      Density in sampled area: 5.133e-05 [1/m^2]
+                       95% CI: 3.803e-05 [1/m^2] to 6.051e-05 [1/m^2]
       
-      Abundance in 4.105e+09 [m^2] study area: 101246
-                                       95% CI: 72303 to 145592
-      CI based on 17 of 20 successful bootstrap iterations
+      Abundance in 4.105e+09 [m^2] study area: 210724
+                                       95% CI: 156121 to 248388
+      CI based on 12 of 20 successful bootstrap iterations
+    Condition
+      Warning in `summary.abund()`:
+      The proportion of non-convergent bootstrap iterations is high.
+    Output
+      The proportion of non-convergent bootstrap iterations exceeds 0.2.
+      It would be good to figure out why this happened (low detections, unstable dfunc form, etc.),
+      inspect the $B component of the abundance object (e.g., hist(object$B$density)), and decide whether the bootstrap CI is valid.
 

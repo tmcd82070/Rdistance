@@ -26,7 +26,7 @@ testthat::test_that("No bootstrapping",{
                    , showProgress = F
                    , plot.bs = T
                    )
-  testthat::expect_snapshot(summary(fit)
+  testthat::expect_snapshot(summary(abn)
                             , transform = scrub_environ)
 })
 
@@ -41,7 +41,7 @@ testthat::test_that("Serial BS; show T; plot T",{
                      , plot.bs = T
                      , parallel = F
   )
-  testthat::expect_snapshot(summary(fit)
+  testthat::expect_snapshot(summary(abn)
                             , transform = scrub_environ)
 })
 
@@ -55,7 +55,7 @@ testthat::test_that("Serial BS; show F; plot T",{
                      , plot.bs = T
                      , parallel = F
   )
-  testthat::expect_snapshot(summary(fit)
+  testthat::expect_snapshot(summary(abn)
                             , transform = scrub_environ)
 })
 
@@ -70,7 +70,7 @@ testthat::test_that("Serial BS; show T; plot F",{
                      , plot.bs = F
                      , parallel = F
   )
-  testthat::expect_snapshot(summary(fit)
+  testthat::expect_snapshot(summary(abn)
                             , transform = scrub_environ)
 })
 
@@ -84,7 +84,7 @@ testthat::test_that("Serial BS; show F; plot F",{
                      , plot.bs = F
                      , parallel = F
   )
-  testthat::expect_snapshot(summary(fit)
+  testthat::expect_snapshot(summary(abn)
                             , transform = scrub_environ)
 })
 
@@ -100,7 +100,7 @@ testthat::test_that("Parallel BS; Cores=Max-1",{
                      , plot.bs = F
                      , parallel = T
   )
-  testthat::expect_snapshot(summary(fit)
+  testthat::expect_snapshot(summary(abn)
                             , transform = scrub_environ)
 })
 
@@ -115,7 +115,7 @@ testthat::test_that("Parallel BS; Cores=2",{
                      , plot.bs = F
                      , parallel = 2
   )
-  testthat::expect_snapshot(summary(fit)
+  testthat::expect_snapshot(summary(abn)
                             , transform = scrub_environ)
 })
 

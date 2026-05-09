@@ -32,8 +32,6 @@
 #' test_dfuncEstim( p )               
 
 
-cat(crayon::green("Installed test_abundEstim function\n"))
-
 test_abundEstim <- function( abundParams, 
                              distFunc
                              ){
