@@ -1,6 +1,4 @@
-# Rdistance 4.4.2
-
-Changes in version 4.4.1 (2026-05-08)
+Changes in version 4.4.2 (2026-05-08)
 ==============
 
 *   **Bug Fix**: 'outArea' was undefined when likelihood returned NA or Inf
