@@ -29,7 +29,7 @@
 #' optimization stops and a solution is declared. 
 #'
 #'   \item `Rdistance_optimizer`: Normally, this option is not set and 
-#'   the default optimzer routines are used. The default optimization 
+#'   the default optimizer routines are used. The default optimization 
 #'   routine for smooth likelihoods (i.e., listed by 
 #'   [differentiableLikelihoods()]) is the gradient-based 
 #'   method in [stats::nlminb()]. The default routine for

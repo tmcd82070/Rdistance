@@ -1,4 +1,4 @@
-#' @title Reparameterise Gamma parameters for use in dgamma
+#' @title Reparameterize Gamma parameters for use in dgamma
 #' 
 #' @description Transform Rdistance's version of the Gamma distribution
 #' parameters, which is that of Becker and Quan, into the version for 

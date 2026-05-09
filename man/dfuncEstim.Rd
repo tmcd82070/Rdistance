@@ -169,7 +169,7 @@ physical measurement units used during estimation.
 \item \code{asymptoticSE}: A logical scalar indication whether the
 variance-covariance matrix in component \code{varcovar} is
 asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE;
-estimated by bootsrap resampling).
+estimated by bootstrap resampling).
 \item \code{optimizer}: The optimizing routine used.
 \item \code{call}: The original function call.
 \item \code{nCovars}: The number of exogenous covariates fitted in the

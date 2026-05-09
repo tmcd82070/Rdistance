@@ -31,7 +31,7 @@ by less than this amount between iterations,
 optimization stops and a solution is declared.
 
 \item \code{Rdistance_optimizer}: Normally, this option is not set and
-the default optimzer routines are used. The default optimization
+the default optimizer routines are used. The default optimization
 routine for smooth likelihoods (i.e., listed by
 \code{\link[=differentiableLikelihoods]{differentiableLikelihoods()}}) is the gradient-based
 method in \code{\link[stats:nlminb]{stats::nlminb()}}. The default routine for

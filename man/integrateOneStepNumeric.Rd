@@ -92,7 +92,7 @@ The \code{\link[=oneStep.like]{oneStep.like()}} function has an extremely large
 discontinuity at Theta. Accurate numeric integration requires
 inserting Theta and Theta+ (a value just larger than Theta)
 into the series of points being evaluated. Because this creates
-un-equal intervals, the Trapezoid rule must be used.
+variable sized intervals, the Trapezoid rule must be used.
 Rdistance's Simpson's rule routine
 (\code{\link[=integrateNumeric]{integrateNumeric()}}) will not work for oneStep likelihoods
 that have expansions.

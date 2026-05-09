@@ -2,7 +2,7 @@
 % Please edit documentation in R/GammaReparam.R
 \name{GammaReparam}
 \alias{GammaReparam}
-\title{Reparameterise Gamma parameters for use in dgamma}
+\title{Reparameterize Gamma parameters for use in dgamma}
 \usage{
 GammaReparam(shp, scl)
 }

@@ -1,4 +1,4 @@
-#' @usage x %m% .
+#' @usage x \%m\% .
 #'
 #' @param . Placeholder for the fixed unit assignment operators. Ignored.
 #' See Details.

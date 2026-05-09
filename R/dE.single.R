@@ -252,7 +252,7 @@
 #' *  `asymptoticSE`: A logical scalar indication whether the 
 #'   variance-covariance matrix in component `varcovar` is 
 #'   asymptotic (TRUE; estimated from the Hessian) or bootstrap (FALSE; 
-#'   estimated by bootsrap resampling).
+#'   estimated by bootstrap resampling).
 #' *  `optimizer`: The optimizing routine used.
 #' *  `call`: The original function call.
 #' *  `nCovars`: The number of exogenous covariates fitted in the 

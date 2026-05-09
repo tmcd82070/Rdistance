@@ -26,29 +26,29 @@
 \usage{
 x \%#\% u
 
-x %acre% .
+x \%acre\% .
 
-x %cm% .
+x \%cm\% .
 
-x %ft% .
+x \%ft\% .
 
-x %ha% .
+x \%ha\% .
 
-x %inches% .
+x \%inches\% .
 
-x %km% .
+x \%km\% .
 
-x %km^2% .
+x \%km^2\% .
 
-x %m% .
+x \%m\% .
 
-x %m^2% .
+x \%m^2\% .
 
-x %mi% .
+x \%mi\% .
 
-x %mi^2% .
+x \%mi^2\% .
 
-x %yd% .
+x \%yd\% .
 
 dropUnits(x)
 
