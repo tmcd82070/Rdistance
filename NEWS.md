@@ -1,3 +1,19 @@
+Changes in version 4.4.1 (2026-05-08)
+==============
+
+*   **Bug Fix**: 'outArea' was undefined when likelihood returned NA or Inf
+or NaN and this stopped execution.  'outArea' is now always defined. This bug 
+only effected the non-smooth likelihoods 'oneStep', 'triangle', and 'huber'. 
+*   **Bug Fix**: Fixed failing bootstraps.  Base function 'rbind' mysteriously
+began stripping attributes from its arguments.  Rdistance relies on these 
+attributes for bootstrapping.  Attributes restored now and bootstraps 
+run.
+*   **Bug Fix**: Fixed the width vector for smooth likelihoods that was too 
+small when expansions were present.  Ill-sized W vector caused failure when 
+expansions > 0 and likelihood was halfnormal, hazrate, negexp, or Gamma. 
+*   **Documentation Updates**: Updated and clarified sections of the 
+documentation of abundEstim and RdistanceControls.
+
 Changes in version 4.4.0 (2026-04-22)
 ==============
 
