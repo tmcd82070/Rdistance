@@ -73,6 +73,7 @@ integrateOneStepNumeric <- function(object
   # If there are covariates, Theta is potentially different on every row
   XIntOnly <- matrix(1, nrow = 2*nInts, ncol = 1) 
   outArea <- rep(NA, length(Theta))
+  outArea <- setUnits(outArea, Units)
   zero <- setUnits(0, Units)
   
   uniqueTheta <- unique(Theta)
