@@ -1,3 +1,13 @@
+Changes in version 4.4.3 (2026-05-13)
+==============
+
+*   **Bug Fix**: Bug fix in ESW when likelihood is oneStep and expansions > 0. 
+Before: `integrateOneStepNumeric` returned areas without units, which was okay 
+for optimization, but not okay for ESW. `integrateOneStepNumeric` now returns 
+a vector with the correct units and is consistent with the other integrate??? 
+functions.
+
+
 Changes in version 4.4.2 (2026-05-08)
 ==============
 

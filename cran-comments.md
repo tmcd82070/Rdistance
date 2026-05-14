@@ -1,14 +1,14 @@
 # Submission comments
 
-This submission (v4.4.1) contains critical bug fixes.  
+This submission (v4.4.3) contains a single critical bug fix.  
 
 # Current submission
 
-* 4.4.1
+* 4.4.3
 
 # Prior submission
 
-* 4.4.0   
+* 4.4.2   
 
 # Local Check
 
