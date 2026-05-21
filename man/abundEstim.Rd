@@ -16,8 +16,11 @@ abundEstim(
 )
 }
 \arguments{
-\item{object}{A fitted Rdistance distance function (class \code{dfunc})
-normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
+\item{object}{A fitted Rdistance distance function (class \code{c("dfunc")}),
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}, or an Rdistance abundance
+object (class \code{c("abund", "dfunc")}), normally produced by a call to
+\code{\link[=abundEstim]{abundEstim()}}.  If the latter, Rdistance adds bootstrap iterations to
+existing iterations in \code{object}.}
 
 \item{area}{A scalar containing the total area of inference. Usually, this is
 study area size.  If \code{area} is NULL (the default),
@@ -48,7 +51,9 @@ method. If \code{ci = NULL} or \code{ci == NA}, confidence intervals
 are not computed.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
-NULL.}
+NULL. If \code{object} is an abundance object, this is the number of \emph{additional}
+bootstrap iterations added to existing iterations (if any pre-existing
+iterations exist).}
 
 \item{plot.bs}{A logical scalar indicating whether to plot individual
 bootstrap iterations.
@@ -90,11 +95,9 @@ average effective detection distance.
 containing all bootstrap values of coefficients,
 density, abundance, groups seen, individuals seen,
 study area size, surveyed area size, average group size,
-and average effective detection distance.  The number of rows is always
-\code{R}, the requested number of bootstrap
-iterations.  If an iteration fails, the
+and average effective detection distance.  If an iteration fails, the
 corresponding row in \code{B} is \code{NA} (hence, use \code{na.rm = TRUE}
-when computing summaries). Columns 1 through \code{length(coef(dfunc))}
+when computing summaries). Columns 2 through \code{length(coef(dfunc))+1}
 contain bootstrap realizations of the distance function's coefficients.
 }
 
@@ -137,36 +140,35 @@ tibble containing density and abundance on the area surveyed by every
 transect.
 }
 \section{Bootstrap Confidence Intervals:}{
-Rdistance's nested data frames (produced by \code{\link[=RdistDf]{RdistDf()}})
-contain all information required to estimate bootstrap CIs.
-To compute bootstrap CIs, Rdistance resamples, with replacement,
-the rows of the \verb{$data} component contained in Rdistance
-fitted models. Rdistance assumes each row of \verb{$data}
-contains information on one transect.
+Rdistance's nested data frames (see \code{\link[=RdistDf]{RdistDf()}})
+contain all of the information required to estimate bootstrap CIs.
+Rdistance resamples, with replacement,
+rows of the \verb{$data} component contained in all Rdistance
+fitted models. Rdistance assumes all rows of \verb{$data}
+are independent and represent information from one transect.
 The \verb{$data} component also contains
 information on which observations inform the
 detection function, which observations should be counted as
 detected targets,
 and which transects count toward transect length.
+
 After resampling rows of \verb{$data}, Rdistance
 refits the distance function using non-missing distances,
 recomputes the detected number of targets using non-missing
 group sizes on transects with non-missing length,
 and re-computes total transect length from transects
 with non-missing lengths.
-By default, \code{R} = 500 bootstrap iterations are
-performed, after which bias
+After iterations, bias
 corrected confidence intervals are computed (Manly, 1997, section 3.4).
+Distance functions are not re-selected during bootstrap resampling. The
+model contained in the input object is re-fitted every iteration.
 
-The distance function is not re-selected during bootstrap resampling. The
-model of the input object is re-fitted every iteration.
-
-During bootstrap iterations, the distance function can fail.
+During bootstrap iterations, distance function estimation can fail.
 An iteration can fail for a two reasons:
 (1) no detections on the iteration, and (2) a bad configuration
 of distances that push the distance function's parameters to their
-limits. When an iteration fails, Rdistance
-skips the iteration and effectively ignores the
+boundaries. When an iteration fails, Rdistance
+skips the iteration, which effectively ignores
 failed iterations.
 If the proportion of failed iterations is small
 (less than 20\% by default), the resulting abundance confidence interval
@@ -176,7 +178,7 @@ is not small (exceeds 20\% by default), a warning is issued.
 The warning can be modified
 by re-setting option \code{"Rdistance_maxBSFailPropForWarning"} to
 the acceptable proportion of failures..
-Setting \code{options(Rdistance_masBSFailPropForWarning = 1.0)} will turn
+Setting \code{options(Rdistance_masBSFailPropForWarning = 1.0)} will
 suppress the warning.
 Setting \code{options(Rdistance_masBSFailPropForWarning = 0.0)} will
 warn if any iteration failed.  Results (density and effective

@@ -17,8 +17,11 @@ bootstrap(
 )
 }
 \arguments{
-\item{object}{A fitted Rdistance distance function (class \code{dfunc})
-normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
+\item{object}{A fitted Rdistance distance function (class \code{c("dfunc")}),
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}, or an Rdistance abundance
+object (class \code{c("abund", "dfunc")}), normally produced by a call to
+\code{\link[=abundEstim]{abundEstim()}}.  If the latter, Rdistance adds bootstrap iterations to
+existing iterations in \code{object}.}
 
 \item{area}{A scalar containing the total area of inference. Usually, this is
 study area size.  If \code{area} is NULL (the default),
@@ -44,7 +47,9 @@ the proportion of each circle that was observed. Length must either be
 1 or the total number of transects in \code{x}.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
-NULL.}
+NULL. If \code{object} is an abundance object, this is the number of \emph{additional}
+bootstrap iterations added to existing iterations (if any pre-existing
+iterations exist).}
 
 \item{plot.bs}{A logical scalar indicating whether to plot individual
 bootstrap iterations.

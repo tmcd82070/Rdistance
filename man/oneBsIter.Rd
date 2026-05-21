@@ -16,8 +16,11 @@ oneBsIter(
 )
 }
 \arguments{
-\item{object}{A fitted Rdistance distance function (class \code{dfunc})
-normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}.}
+\item{object}{A fitted Rdistance distance function (class \code{c("dfunc")}),
+normally produced by a call to \code{\link[=dfuncEstim]{dfuncEstim()}}, or an Rdistance abundance
+object (class \code{c("abund", "dfunc")}), normally produced by a call to
+\code{\link[=abundEstim]{abundEstim()}}.  If the latter, Rdistance adds bootstrap iterations to
+existing iterations in \code{object}.}
 
 \item{area}{A scalar containing the total area of inference. Usually, this is
 study area size.  If \code{area} is NULL (the default),

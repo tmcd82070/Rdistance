@@ -5,8 +5,11 @@
 #'   lengths, area surveyed, etc.  Computes confidence intervals on
 #'   abundance (or density) using a the bias corrected bootstrap method.
 #'   
-#' @param object A fitted Rdistance distance function (class `dfunc`)
-#' normally produced by a call to [dfuncEstim()]. 
+#' @param object A fitted Rdistance distance function (class `c("dfunc")`),
+#' normally produced by a call to [dfuncEstim()], or an Rdistance abundance
+#' object (class `c("abund", "dfunc")`), normally produced by a call to 
+#' [abundEstim()].  If the latter, Rdistance adds bootstrap iterations to 
+#' existing iterations in `object`.
 #' 
 #' @param area A scalar containing the total area of inference. Usually, this is 
 #' study area size.  If `area` is NULL (the default), 
@@ -28,7 +31,9 @@
 #'   are not computed.
 #'   
 #' @param R The number of bootstrap iterations to conduct when `ci` is not
-#'   NULL.
+#'   NULL. If `object` is an abundance object, this is the number of *additional*
+#'   bootstrap iterations added to existing iterations (if any pre-existing 
+#'   iterations exist).
 #'   
 #' @param plot.bs A logical scalar indicating whether to plot individual
 #'   bootstrap iterations.
@@ -92,36 +97,35 @@
 #'   
 #' # Bootstrap Confidence Intervals:
 #' 
-#'   Rdistance's nested data frames (produced by [RdistDf()])
-#'   contain all information required to estimate bootstrap CIs. 
-#'   To compute bootstrap CIs, Rdistance resamples, with replacement,
-#'   the rows of the `$data` component contained in Rdistance 
-#'   fitted models. Rdistance assumes each row of `$data` 
-#'   contains information on one transect.
+#'   Rdistance's nested data frames (see [RdistDf()])
+#'   contain all of the information required to estimate bootstrap CIs. 
+#'   Rdistance resamples, with replacement,
+#'   rows of the `$data` component contained in all Rdistance 
+#'   fitted models. Rdistance assumes all rows of `$data` 
+#'   are independent and represent information from one transect.
 #'   The `$data` component also contains 
 #'   information on which observations inform the 
 #'   detection function, which observations should be counted as 
 #'   detected targets, 
 #'   and which transects count toward transect length. 
+#'   
 #'   After resampling rows of `$data`, Rdistance 
 #'   refits the distance function using non-missing distances, 
 #'   recomputes the detected number of targets using non-missing 
 #'   group sizes on transects with non-missing length, 
 #'   and re-computes total transect length from transects 
 #'   with non-missing lengths. 
-#'   By default, `R` = 500 bootstrap iterations are 
-#'   performed, after which bias
+#'   After iterations, bias
 #'   corrected confidence intervals are computed (Manly, 1997, section 3.4).
+#'   Distance functions are not re-selected during bootstrap resampling. The 
+#'   model contained in the input object is re-fitted every iteration.  
 #'   
-#'   The distance function is not re-selected during bootstrap resampling. The 
-#'   model of the input object is re-fitted every iteration.  
-#'   
-#'   During bootstrap iterations, the distance function can fail. 
+#'   During bootstrap iterations, distance function estimation can fail. 
 #'   An iteration can fail for a two reasons:
 #'   (1) no detections on the iteration, and (2) a bad configuration 
 #'   of distances that push the distance function's parameters to their 
-#'   limits. When an iteration fails, Rdistance 
-#'   skips the iteration and effectively ignores the 
+#'   boundaries. When an iteration fails, Rdistance 
+#'   skips the iteration, which effectively ignores  
 #'   failed iterations. 
 #'   If the proportion of failed iterations is small 
 #'   (less than 20% by default), the resulting abundance confidence interval 
@@ -131,7 +135,7 @@
 #'   The warning can be modified  
 #'   by re-setting option `"Rdistance_maxBSFailPropForWarning"` to
 #'   the acceptable proportion of failures.. 
-#'   Setting `options(Rdistance_masBSFailPropForWarning = 1.0)` will turn 
+#'   Setting `options(Rdistance_masBSFailPropForWarning = 1.0)` will  
 #'   suppress the warning. 
 #'   Setting `options(Rdistance_masBSFailPropForWarning = 0.0)` will 
 #'   warn if any iteration failed.  Results (density and effective 
@@ -184,11 +188,9 @@
 #'   containing all bootstrap values of coefficients, 
 #'   density, abundance, groups seen, individuals seen, 
 #'   study area size, surveyed area size, average group size, 
-#'   and average effective detection distance.  The number of rows is always 
-#'   `R`, the requested number of bootstrap 
-#'   iterations.  If an iteration fails, the
+#'   and average effective detection distance.  If an iteration fails, the
 #'   corresponding row in `B` is `NA` (hence, use `na.rm = TRUE` 
-#'   when computing summaries). Columns 1 through `length(coef(dfunc))`
+#'   when computing summaries). Columns 2 through `length(coef(dfunc))+1`
 #'   contain bootstrap realizations of the distance function's coefficients. 
 #'   }
 #'   
@@ -245,6 +247,30 @@ abundEstim <- function(object
   
   bootstrapping <- !is.null(ci) && !is.na(ci)
   
+  # Check whether we are adding iterations ----
+  Bprev <- object$B  # if B not there, this is null
+  if( inherits(object, "abund") ){
+    # if we are here, object must have a $estimates component
+    if( !is.null(area) && (object$estimates$area != area) ){
+      # trying to change areas
+      warning(paste("Cannot change area of previous abundance object."
+                    , "Area =", format(area), "was requested."
+                    , "Proceeding with area =", format(object$estimates$area), "from object."
+                   ))
+    }
+    area <- object$estimates$area
+
+    if( object$estimates$propUnitSurveyed != propUnitSurveyed ){
+      # trying to change proportion of unit surveyed
+      warning(paste("Cannot change proportion of unit surveyed from previously estimate abundance object."
+                    , "propUnitSurveyed =", format(propUnitSurveyed), "was requested."
+                    , "Proceeding with propUnitSurveyed =", format(object$estimates$propUnitSurveyed), "from object."
+                   ))
+    }
+    propUnitSurveyed <- object$estimates$propUnitSurveyed
+    
+  }
+  
   # Initial setup for parallel session ----
   parallelRequest <- getNCores( parallel )
   parallel <- parallelRequest$parallel  # T or F
@@ -272,17 +298,9 @@ abundEstim <- function(object
   ests <- estimateN(object = object
                   , area = area
                   , propUnitSurveyed = propUnitSurveyed
-                    )
-  ests$id <- "Original"
-  
-  # ---- Prelims: constants for bootstrapping ----
+                    ) |> 
+    dplyr::mutate(id = "Original") 
 
-  # pb <- list(tick = function(){}) # NULL tick function for not bootstrapping
-
-  # ---- Add bootstrap indices if called for ----
-  # This is essentially what rsample::bootstraps does, but rsample stores the 
-  # entire data frame in each 'rsample'.  This saves space. But, entire 
-  # (R*nrow(x$data)+1) X 2 data frame must be constructable in memory.
   if ( bootstrapping ) {
     
     B <- bootstrap(
@@ -297,24 +315,21 @@ abundEstim <- function(object
                   , cores = parallelRequest$cores
                 ) 
     
-    # Replace varcovar with bootstrap varcovar
-    bsCoefs <- B |> 
-      dplyr::ungroup() |> 
-      dplyr::select(dplyr::all_of(names(stats::coef(object))))
-    object$varcovar <- stats::var(bsCoefs)
-    object$asymptoticSE <- FALSE
-    
-
   } else {
     ci <- NA
     B <- NULL
   }
+
+  # ---- Add B to previous if needed ----
+  if( !is.null(Bprev) ){
+    B <- dplyr::bind_rows(Bprev, B)
+  }
   
   # ---- Construct output object ----
-  ans <- c(object
-          , estimates = list(ests)
-          , B = list(B)
-          )
+  ans <- object
+  ans$estimates = ests  # overwrite exsiting estimates if there
+  ans$B = B # again, overwrite if B is there
+          
   
   # ---- Plot original fit again (over bs lines) ----
   if (bootstrapping && plot.bs) {
@@ -344,14 +359,7 @@ abundEstim <- function(object
       dplyr::bind_cols( dnCI ) |> 
       dplyr::bind_cols( efCI ) 
 
-    # rearrange columns    
-    ans$estimates <- ans$estimates |> 
-      dplyr::select("id"
-                  , dplyr::all_of(names(stats::coef(object)))  
-                  , dplyr::starts_with("density")
-                  , dplyr::starts_with("abundance")
-                  , dplyr::starts_with("avgEffDistance")
-                  , dplyr::everything())
+    # rearrange columns of B
     B <- B |> 
       dplyr::select("id"
                   , dplyr::all_of(names(stats::coef(object)))  
@@ -363,14 +371,31 @@ abundEstim <- function(object
     if ((object$LhoodType == "parametric") && 
         (any(is.na(B$density))) && 
         showProgress){
-      cat(paste( sum(is.na(B$density)), "of", R
+      cat(paste( sum(is.na(B$density)), "of", nrow(B)
                  , "iterations did not converge.\n"))
     }
+    
+    # ---- Recalculate varcovar with bootstrap varcovar ----
+    bsCoefs <- B |> 
+      dplyr::ungroup() |> 
+      dplyr::select(dplyr::all_of(names(stats::coef(object))))
+    ans$varcovar <- stats::var(bsCoefs)
+    ans$asymptoticSE <- FALSE
+
   }
 
-  # Output
+  # ---- Clean up ----
+  ans$estimates <- ans$estimates |> 
+    dplyr::select("id"
+                  , dplyr::all_of(names(stats::coef(object)))  
+                  , dplyr::starts_with("density")
+                  , dplyr::starts_with("abundance")
+                  , dplyr::starts_with("avgEffDistance")
+                  , dplyr::everything())
+  
   ans$ci <- ci
-  class(ans) <- c("abund", class(object))
-    
+  if( !inherits(object, "abund") ){
+    class(ans) <- c("abund", class(object))
+  }  
   return(ans)
 } 

@@ -148,7 +148,9 @@ method. If \code{ci = NULL} or \code{ci == NA}, confidence intervals
 are not computed.}
 
 \item{R}{The number of bootstrap iterations to conduct when \code{ci} is not
-NULL.}
+NULL. If \code{object} is an abundance object, this is the number of \emph{additional}
+bootstrap iterations added to existing iterations (if any pre-existing
+iterations exist).}
 
 \item{plot.bs}{A logical scalar indicating whether to plot individual
 bootstrap iterations.
@@ -200,11 +202,9 @@ average effective detection distance.
 containing all bootstrap values of coefficients,
 density, abundance, groups seen, individuals seen,
 study area size, surveyed area size, average group size,
-and average effective detection distance.  The number of rows is always
-\code{R}, the requested number of bootstrap
-iterations.  If an iteration fails, the
+and average effective detection distance.  If an iteration fails, the
 corresponding row in \code{B} is \code{NA} (hence, use \code{na.rm = TRUE}
-when computing summaries). Columns 1 through \code{length(coef(dfunc))}
+when computing summaries). Columns 2 through \code{length(coef(dfunc))+1}
 contain bootstrap realizations of the distance function's coefficients.
 }
 
