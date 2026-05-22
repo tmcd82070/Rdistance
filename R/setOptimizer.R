@@ -36,7 +36,10 @@ setOptimizer <- function(ml){
     if( !(ml$likelihood %in% differentiableLikelihoods()) ){
       
       # Non-smooth likelihood case 
-      if( !(optimizerAlgo %in% c("optim_Nelder-Mead", "optim_SANN", "hookeJeeves")) ){
+      if( !(optimizerAlgo %in% c("optim_Nelder-Mead"
+                               , "optim_SANN"
+                               , "hookeJeeves"
+                               , "OSCARS")) ){
             stop(paste("Gradient based optimization method"
                        , optimizerAlgo
                        , "cannot be used because likelihood"
