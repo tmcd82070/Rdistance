@@ -13,28 +13,27 @@
 
 Oscars <- function(ml, strt.lims){
   
-  here!!!
     
-  contRl <- list(info = getOption("Rdistance_trace") > 0
-                 , maximize = FALSE
-                 , target = Inf
-                 , maxfeval = getOption("Rdistance_evalMax")
-                 , tol = getOption("Rdistance_likeTol")
+  contRl <- list(infol = getOption("Rdistance_trace") 
+                 , DoMax = FALSE
+                 , nfmax = getOption("Rdistance_evalMax")
+                 , fTol = getOption("Rdistance_likeTol")
+                 , xTol = getOption("Rdistance_coefTol") 
   )
   
   verboseLevel <- getOption("Rdistance_verbosity")
   if( verboseLevel >= 1 ){
-    cat(colorize("HOOKEJEEVES non-gradient maximization ----\n", col = "red"))
+    cat(colorize("OSCARS non-gradient maximization ----\n", col = "red"))
   }
   
   fit <- OSCARS::oscars(
-      par = strt.lims$start
-    , fn = nLL
-    , lower = strt.lims$low
-    , upper = strt.lims$high
-    , control = contRl
-    , verbosity = verboseLevel
+      fname = nLL
+    , n = length(strt.lims$start)
+    , lwr = strt.lims$low
+    , upr = strt.lims$high
     , ml = ml
+    , start = strt.lims$start
+    , controls = contRl
   )
   
   names(fit$par) <- strt.lims$names
@@ -52,7 +51,7 @@ Oscars <- function(ml, strt.lims){
   fit$loglik <- -fit$loglik  
   
   names(fit)[names(fit) == "feval"] <- "evaluations"
-  names(fit)[names(fit) == "niter"] <- "iterations"
+  names(fit)[names(fit) == "niter"] <- NA_integer_
   
   if( fit$convergence == 0 ){
     fit$message <- "converged"
