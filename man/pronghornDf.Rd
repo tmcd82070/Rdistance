@@ -105,6 +105,12 @@ surveyInfo <- transectInfo |>
                  , totIndividuals = sum(individuals)
                  , zeroTransects = sum(groups == 0)
   )
+  
+phDists <- unnest(pronghornDf) # no zero transects: okay for histo
+hist(phDists$adjustedMidpoint
+  , breaks = c(65,85,110,145,210,265,375)
+  , prob = TRUE
+  , xlab = "Offtransect distance")
 
 }
 \references{
