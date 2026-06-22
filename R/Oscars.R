@@ -53,7 +53,7 @@ Oscars <- function(ml, strt.lims){
   names(fit)[names(fit) == "feval"] <- "evaluations"
   names(fit)[names(fit) == "niter"] <- NA_integer_
   
-  if( fit$convergence == 0 ){
+  if( fit$convergence == 0 & fit$evaluations < contRl$nfmax ){
     fit$message <- "converged"
   } else {
     fit$message <- "did not converge"
