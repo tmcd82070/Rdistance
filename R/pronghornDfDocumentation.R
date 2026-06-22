@@ -57,7 +57,8 @@
 #' **Study Areas**:
 #' Researchers placed transects systematically over polygons outlining habitable
 #' areas within each herd unit's boundaries.
-#' Habitable areas within each herd unit had the following sizes:
+#' Habitable areas within each herd unit had the following sizes 
+#' (available in `data(pronghornAreas)`):
 #' 
 #' | Herd    |	Area        |
 #' | :------:| ------------:|
@@ -83,7 +84,7 @@
 #' | E | 210 \[m\] | 265 \[m\] |
 #' 
 #' 
-#' @source These data come from routine pronghorn population monitoring 
+#' @source These data arise from routine pronghorn population monitoring 
 #' conducted by the Wyoming Game and Fish Department.  Included with permission.
 #' Contact: Dr. Jason Carlisle (Rdistance author).  
 #' 
@@ -104,6 +105,12 @@
 #'                  , totIndividuals = sum(individuals)
 #'                  , zeroTransects = sum(groups == 0)
 #'   )
+#'   
+#' phDists <- unnest(pronghornDf) # no zero transects: okay for histo
+#' hist(phDists$adjustedMidpoint
+#'   , breaks = c(65,85,110,145,210,265,375)
+#'   , prob = TRUE
+#'   , xlab = "Offtransect distance")
 #' 
 #' @references 
 #' Johnson, B. K., F. G. Lindzey, and R. J. Guenzel. 1991
