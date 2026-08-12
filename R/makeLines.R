@@ -1,528 +1,280 @@
-#' @title Draw random transect lines in a polygon
+#' @title makeLines - Place random transects at a given spacing
 #'
-#' @description This function optimizes the placement and spacing of
-#' line transects in a polygon given a desired total
-#' transect length.
+#' @description
+#' Place line transects inside one or more polygons at a supplied `spacing`,
+#' using a random start. For each polygon a random offset between 0 and
+#' `spacing` is drawn, then transects are generated and clipped to the
+#' polygon. This routine does the placement only; [findSpacing()] computes a
+#' spacing that yields a target survey length, and [drawTransects()] chains
+#' the two. Optionally, `R` independent random replicates can be returned.
 #'
-#' @param sPoly \code{sf} object, the input polygon within which line transects
-#' will be generated. The coordinate system must use meters as the 
-#' linear unit (e.g. EPSG=26913)
-#' 
-#' @param totalLengthKm Total length of transects to generate (in kilometers)
-#' 
-#' @param angle Orientation of the transects. \code{angle = 0} produces
-#' transects oriented North-South (the default), \code{angle = 90} produces
-#' East-West transects.
-#' 
-#' @param minLengthKm Minimum length (km) required for an individual transect
-#' line to be surveyed.
-#' 
-#' @param offset An offset, in km, perpendicular to transect direction 
-#' to use when placing transects. By default the central
-#' transect is aligned with the center of the polygon. This parameter moves 
-#' the central transect one direction or the other. 
-#' 
-#' @param considerHuntArea Breaks transects as they cross over hunt areas
-#' (defaults to TRUE).
-#' 
-#' @param huntAreaBuffer Buffer by which to break transects when considerHuntArea
-#' is TRUE (defaults to 1000 km).
-#' 
-#' @param breakLongLines Splits longer transects into more digestible pieces
-#' (defaults to TRUE).
-#' 
-#' @param breakLongLineLength Limit for maximum line length (in km) if
-#' breakLongLines is TRUE (defaults to 40 km).
-#' 
-#' @param minSpace Optional minimal line spacing (in km) to consider when
-#' optimizing transect placement (default is NULL).
-#' 
-#' @param maxSpace Optional maximum line spacing (in km) to consider when
-#' optimizing transect placement (default is NULL).
-#' 
-#' @param optimTol Optional tolerance value indicating the maximum allowable
-#' deviation from \code{totalLengthKm} expressed as a proportion (default is 0.01).
-#' When the function fails to find a solution within the specified tolerance an
-#' error is returned.
-#' 
-#' @param optimQuick if TRUE, the initial optimization is used. Helpful for when
-#' calculations need to fail quickly.
+#' @param sPoly An `sf` or `sfc` object containing the polygon(s) 
+#' (`MULTIPOLYGON` or `POLYGON` geometries) within which
+#' transects will be placed. `sPoly` must be projected to a planar
+#' coordinate system whose linear unit is meters (ideally an equal-area
+#' projection so areas are undistorted). Geographic coordinates are rejected.
 #'
-#' @return Returns a list object containing the transect lines and
-#' a summary dataframe:
-#' \describe{
-#'   \item{lines}{\code{sf} object, simple feature collection of transect lines}
-#'   \item{summary}{\code{data.frame} summary of transect lines}
-#' }
+#' @param type The transect layout, one of:
+#' - `"rectangular"` (the default): parallel, equally spaced straight lines.
+#' - `"zigzag"`: a path that zig-zags between opposite edges of the polygon
+#'   along a baseline.
 #'
-#' @author Tom Prebyl, Jason Carlisle, and Garrett Catlin
-#' 
-#' @export
+#' @param angle Orientation of `"rectangular"` transects, in degrees.
+#' `angle = 0` (the default) produces North-South transects; `angle = 90`
+#' produces East-West transects. Ignored when `type = "zigzag"`.
+#'
+#' @param spacing The distance between adjacent transects, as a
+#' `units` length object. For `"rectangular"` transects this is the
+#' perpendicular spacing between the parallel lines.  For `"zigzag"` transects
+#' it is the leg-to-leg distance along the baseline. Typically obtained
+#' from [findSpacing()].
+#'
+#' @param baseline Optional `sf`/`sfc` `LINESTRING` giving the reference line
+#' for the transects. For `"zigzag"` transects the baseline is the line along
+#' which pivots are spaced; when `NULL` (the default) a curved centerline is
+#' estimated from the polygon. For `"rectangular"` transects the baseline is
+#' only used for reporting and plotting; when `NULL` it is a straight line
+#' through the polygon centroid perpendicular to the transects. Supplying a
+#' baseline is only allowed when `sPoly` contains a single polygon.
+#'
+#' @param combine Logical controlling the shape of the returned object.
+#' - `TRUE` (the default): return one continuous `LINESTRING` per polygon
+#'   (parallel legs joined into a mow-the-grass route; zigzags are already
+#'   continuous).
+#' - `FALSE`: return one row per transect leg; for rectangular transects each
+#'   leg's `totalLength` then includes the off-effort distance to the next leg.
+#'
+#' @param R Number of independent random replicates to generate. Defaults to 1.
+#' The returned object stacks `R` complete transect sets, one per replicate,
+#' and always carries an `id` column labelling each set `"Replicate0001"`,
+#' `"Replicate0002"`, and so on. Replicate numbers are zero-padded to at least
+#' four digits (more if `R > 9999`).
+#'
+#' @param minSolidity For `"zigzag"` transects with an estimated baseline, a
+#' warning is issued when a polygon's solidity (area divided by convex-hull
+#' area) falls below this value; the warning recommends splitting the polygon
+#' with [convexPartition()] and re-running on the pieces. Set to 0 to disable.
+#' Defaults to 0.75.
+#'
+#' @param plot Logical. If `TRUE`, the polygons, baselines, and generated
+#' transects are drawn on the current graphics device. When `R > 1`, each
+#' replicate is drawn in a different colour (`rainbow(min(R, 50))`, cycling if
+#' `R > 50`). Defaults to `FALSE`.
+#'
+#' @details
+#' The returned transects distinguish *on-effort* length (the survey lines)
+#' from *total* length (on-effort plus off-effort transit between legs). The
+#' two are equal for `"zigzag"` transects, which are continuous and have no
+#' transit; for `"rectangular"` transects the total additionally includes the
+#' connectors joining successive parallel legs.
+#'
+#' @return An `sf` data frame of transect lines (geometries are
+#' either `LINESTRING` or `MULTILINESTRING`) with columns:
+#' \item{transectType}{The layout used, `"rectangular"` or `"zigzag"`.}
+#' \item{id}{Replicate label, e.g. `"Replicate0001"`.}
+#' \item{polygon}{Integer index of the source polygon. Source polygons and 
+#' indices are 
+#' given in attribute "summary". }
+#' \item{leg}{Integer identifier of the leg within its polygon (1 when
+#' `combine = TRUE`, in which case the route is one long line with connectors).}
+#' \item{onEffortLength}{On-effort length of the row's geometry, with units.}
+#' \item{totalLength}{Total transect length of the segment(s) represented on
+#' the row. Total transect length includes the on-effort segment as well as 
+#' the off-effort segment connecting to the next on-effort leg. With units.}
+#'
+#' A summary of the design is attached as
+#' an attribute `attr(x, "summary")`, a list with the layout
+#' `type`, the number of polygons `nPolygons`, the number of replicates
+#' `nReplicates`, the `spacing` used, `targetLength` (`NA` unless set by
+#' [drawTransects()]), and `polygons`.  The `polygons` element is an 
+#' `sf` `LINESTRING` data frame whose
+#' geometry column, `baseline`, holds each polygon's baseline, with columns
+#' `polygon` (integer index), `area` (with units), and `solidity` (measure of 
+#' concavity; 1 = concave; <1 = less concave).
+#'
+#' @author Original version in pronghornLT: Tom Prebyl, 
+#' Jason Carlisle, and Garrett Catlin.  
+#' Updated and generalized for Rdistance:  Trent McDonald
+#'
+#' @seealso [findSpacing()], [drawTransects()].
 #'
 #' @examples
-#' \dontrun{
-#' # Read in herd unit polygon
-#' hu <- sf::st_read("W:/My Drive/Projects/Pronghorn_ltds/herd_units/Rattlesnake_HU.shp")
+#' # A simple tapered survey polygon (Alaska Albers, meters).
+#' poly <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(rbind(
+#'   c(0, 0), c(60000, 0), c(60000, 25000), c(0, 10000), c(0, 0)))),
+#'   crs = 3338))
 #'
-#' # Make lines
-#' testLines <- makeLines(sPoly = hu,
-#'      totalLengthKm = 1000,
-#'      angle = 0,
-#'      minSpace = NULL,
-#'      maxSpace = NULL)
+#' # Rectangular transects at a 5 km spacing 
+#' set.seed(243579)
+#' rec <- makeLines(poly, type = "rectangular", spacing = units::set_units(5, "km"))
+#' c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
+#' plot(poly$geometry)
+#' plot(rec$geometry, add=T, col="red")
 #'
-#' # View output summary
-#' print(testLines$summary)
+#' # Zigzag transects at a 4 km pivot spacing.
+#' zz <- makeLines(poly, type = "zigzag", spacing = units::set_units(4, "km"))
+#' sum(zz$totalLength)
+#' plot(poly$geometry)
+#' plot(zz$geometry, add=T, col="red")
 #'
-#' # Plot output
-#' plot(hu["geometry"])
-#' plot(testLines$lines['lineID'], add = T, col = 'red')
-#' }
+#' @export
 makeLines <- function(sPoly,
-                      totalLengthKm,
+                      type = c("rectangular", "zigzag"),
                       angle = 0,
-                      minLengthKm = 2.0,
-                      offset = 0,
-                      considerHuntArea = TRUE,
-                      huntAreaBuffer = 1000,
-                      breakLongLines = TRUE,
-                      breakLongLineLength = 40,
-                      minSpace = NULL,
-                      maxSpace = NULL,
-                      optimTol = 0.01,
-                      optimQuick = FALSE) {
+                      spacing,
+                      baseline = NULL,
+                      combine = TRUE,
+                      R = 1,
+                      minSolidity = 0.75,
+                      plot = FALSE) {
 
-  # Functions below interpret angle = 90 to be North-South and 0 East-West
-  # Convert so user inputs are more intuitive 0 = N-S, 90 = E-W
-  angle <- (angle*-1)-90
-
-  # Convert km to m
-  targLenM <- totalLengthKm*1000
-  minLength <- minLengthKm*1000
-
-  # extract HUNTNAME for considerHuntArea
-  sHUNTNAMES <- unique(sPoly$HUNTNAME)
-
-  # union sPoly with itself
-  sPoly <- st_union(sPoly)
-
-  # create spatstat window using owinList
-  polyWin <- as.owin(sPoly)
-
-  # Estimate approx line spacing (using area)
-  totSqKM <- as.numeric(st_area(sPoly)*1e-06)
-  targKmPerSqKm <- totalLengthKm/totSqKM
-  approxSpace <- exp(-1*log(targKmPerSqKm))*1000  # approximate line spacing (m)
-
-
-  # Set spacing optimization bounds (if not supplied by user)
-  if(is.null(minSpace)) {
-    minSpace <- approxSpace*0.75
+  if (!requireNamespace("sf", quietly = TRUE)) {
+    stop("Package 'sf' is required. Please install it with install.packages('sf').")
   }
-  if(is.null(maxSpace)) {
-    maxSpace <- approxSpace*1.1
+  type <- match.arg(type)
+  makeLinesRequireLength(spacing, "spacing")
+  R <- as.integer(R)
+  if (is.na(R) || R < 1L) stop("'R' must be a positive integer.")
+
+  polys <- makeLinesPolygons(sPoly)
+  if (length(polys) == 0) {
+    stop("'sPoly' contains no POLYGON or MULTIPOLYGON geometries.")
+  }
+  if (isTRUE(sf::st_is_longlat(polys[[1]]))) {
+    stop("'sPoly' must be projected to a planar CRS whose linear unit is ",
+         "meters (ideally an equal-area projection).")
+  }
+  if (!is.null(baseline) && length(polys) > 1) {
+    stop("Supply 'baseline' only when 'sPoly' contains a single polygon.")
   }
 
-  optimSpace <- optimize(
-    f = evalLines,
-    lower = minSpace,
-    upper = maxSpace,
-    # tol = 0.1,
-    angle = angle,
-    win = polyWin,
-    minLength = minLength,
-    targLenM = targLenM,
-    offset = offset
-  )
+  sM      <- makeLinesAsMeters(spacing)
+  minLenM <- makeLinesAsMeters(units::set_units(100, "m"))
+  uStr    <- units::deparse_unit(spacing)
+  toOut   <- function(xm) units::set_units(units::set_units(xm, "m"),
+                                           value = uStr, mode = "standard")
 
-  # If quick optim failed, try more intensive manual search
-  if(optimSpace$objective > targLenM*optimTol && !(optimQuick)) {
-    op <- options("warn")
-    on.exit(options(op))
-    options(warn=1)
-    warning("Quick optimization failed, trying intensive search")
-    optimSpace <- manualOptim(
-      minSpace = minSpace,
-      maxSpace = maxSpace,
-      angle = angle,
-      win = polyWin,
-      minLength = minLength,
-      targLenM = targLenM,
-      offset = offset,
-      optimTol = optimTol
-    )
-  }
+  prep <- makeLinesPrep(polys, baseline, type, angle,
+                        needStations = type == "zigzag")
+  nP   <- length(prep)
 
-
-  if(optimSpace$objective > targLenM*optimTol && !(optimQuick)) {
-    stop(paste0("Optimization failed to generate lines with supplied parameters\n",
-                "Consider setting minSpace and maxSpace parameters\n",
-                "or increasing optimTol.",
-                "The best spacing found was: ", round(optimSpace$minimum/1000), "km\n"))
-  }
-
-  # print(approxSpace / optimSpace$minimum)
-
-  # Make lines using the optimization results
-  keepLines <- genLines(
-    angle = angle,
-    spacing = optimSpace$minimum,
-    win = polyWin,
-    offset = offset,
-    minLength = minLength)
-
-  # Convert lines to sf object
-  matLines <- as.matrix(keepLines)
-  lines <- lapply(1:nrow(matLines), function(x) {
-    st_linestring(matrix(matLines[x,],ncol=2, byrow = TRUE))
-  })
-  sfLines <- st_sfc(lines, crs = st_crs(sPoly))
-
-  # Add attributes
-  sfLines <- st_sf(sfLines)
-  sfLines <- st_combine(sfLines)
-  sfLines <- st_cast(sfLines, "LINESTRING")
-
-  # split transects at hunt areas?
-  if (considerHuntArea) {
-
-    # get relevant hunt areas
-    huntAreasIn <- huntAreas %>%
-      filter(HUNTNAME %in% sHUNTNAMES)
-
-    # If needed, project hunt area object to same crs as sPoly
-    if (st_crs(huntAreas) != st_crs(sPoly)) {
-      huntAreasIn <- st_transform(huntAreasIn, crs = st_crs(sPoly))
-    }
-
-    # create outline of herd unit & cast
-    outline <- st_cast(st_union(huntAreasIn), "MULTILINESTRING")
-
-    # buffer this outline (to avoid placing pts on hu border)
-    outlineBuffer <- st_buffer(outline, set_units(50, "m"))
-
-    # cast borders to multilinestring
-    haBorders <- st_cast(huntAreasIn$geometry, "MULTILINESTRING")
-
-    # remove outer borders
-    haBorders <- st_difference(haBorders, outlineBuffer)
-    haBorders <- st_cast(haBorders, "MULTILINESTRING")
-
-    # get intersections as points
-    intersectPoints <- st_intersection(sfLines, haBorders)
-    intersectPoints <- st_combine(intersectPoints)
-
-    # if isn't empty
-    if (!st_is_empty(intersectPoints)) {
-      # cast points
-      intersectPoints <- st_cast(intersectPoints, "POINT")
-
-      # add buffer to points
-      intersectPoints <- st_buffer(intersectPoints, set_units(huntAreaBuffer, "m"))
-
-      # add buffer to points
-      intersectPoints <- st_buffer(intersectPoints, set_units(1000, "m"))
-
-      # get intersections
-      lineCutouts <- st_combine(st_intersection(sfLines, intersectPoints))
-
-      # add buffer (weird sf error handling)
-      lineCutouts <- st_buffer(lineCutouts, 50)
-
-      # new lines
-      sfLines <- st_difference(sfLines, lineCutouts)
-      sfLines <- st_combine(sfLines)
-      sfLines <- st_cast(sfLines, "LINESTRING")
-    }
-  }
-
-  # split long transects?
-  if (breakLongLines) {
-    # add length to sfLines
-    sfLines <- addLength(sfLines)
-
-    # loop
-    while (nrow(sfLines[lengthKm > breakLongLineLength]) > 0) {
-
-      # if transect km > X, split at centers
-      sfLinesKeep <- sfLines[lengthKm <= breakLongLineLength]
-      sfLinesChange <- sfLines[lengthKm > breakLongLineLength]
-
-      # get centroids to change
-      changeCentroids <- st_centroid(sfLinesChange$x)
-
-      # add buffer to centers
-      changeCentroids <- st_buffer(changeCentroids, set_units(1000, "m"))
-
-      # get intersections
-      lineCutouts <- st_combine(st_intersection(sfLinesChange$x, changeCentroids))
-
-      # add buffer (weird sf error handling)
-      lineCutouts <- st_buffer(lineCutouts, 50)
-
-      # get new lines
-      sfLinesChange <- st_difference(sfLinesChange$x, lineCutouts)
-      sfLinesChange <- st_combine(sfLinesChange)
-      sfLinesChange <- st_cast(sfLinesChange, "LINESTRING")
-
-      # create sf/data.table object, add length
-      sfLinesChange <- addLength(sfLinesChange)
-
-      # rbind
-      sfLines <- rbind(sfLinesKeep, sfLinesChange)
-    }
-  }
-
-  # add length to sfLines
-  sfLines <- addLength(sfLines)
-
-  # remove any less than minlengthKm
-  sfLines <- sfLines[lengthKm >= minLengthKm]
-
-  # get centroid of all lines (to see which ha they are in)
-  lineCenters <- st_centroid(sfLines$x)
-
-  # set agr to remove warning message
-  huntAreasAGR <- huntAreas
-  st_agr(huntAreasAGR) = "constant"
-
-  # add info to centroids
-  lineCenters <- st_intersection(huntAreasAGR, lineCenters)
-
-  # add info to transects
-  sfLines[, HuntName := lineCenters$HUNTNAME]
-  sfLines[, HerdName := lineCenters$HERDNAME]
-  sfLines[, HuntNo := lineCenters$HUNTAREA]
-  sfLines[, HerdNo := lineCenters$HERDUNIT]
-
-  # add prefix
-  sfLines[, TransectPrefix := paste0(HerdName, "_", HuntName,"_")]
-  sfLines[, TransectPrefix := gsub(" ", "", TransectPrefix)]
-  sfLines[, TransectPrefix := gsub("-", "", TransectPrefix)]
-
-  # sort from w-e, n-s
-  sortCoords <- st_coordinates(st_centroid(sfLines$x))
-  sfLines <- sfLines[order(sortCoords[,"X"], -sortCoords[,"Y"]),]
-
-  # make ID based on sort & key
-  sfLines[, ID := 1:.N, by = .(HerdName, HuntName)]
-  setkey(sfLines, TransectPrefix, ID)
-
-  # add line ID and remove prefix and ID
-  sfLines[, LineID := paste0(TransectPrefix, ID)]
-  sfLines[, LineShortID := paste0(HuntNo, "_", ID)]
-  sfLines[, c("TransectPrefix", "ID") := NULL]
-
-  # finally, transform to sf again
-  sfLines <- st_as_sf(sfLines)
-
-  # Make summary info
-  outSumm <- list(
-    nLines = nrow(sfLines),
-    genTotalLengthKm = sum(sfLines$lengthKm),
-    spacingKm = optimSpace$minimum/1000
-    # approxRatio = optimSpace$minimum/approxSpace
-  )
-
-
-  # Return sf object and summary
-  print(outSumm)
-  return(list(lines = sfLines, summary = outSumm))
-}
-
-# Helper Functions--------------------------------------------------------------
-# Define a function to generate lines (modified from spatstat.geom::rlinegrid())
-genLines <- function (spacing,
-                      win,
-                      offset,
-                      minLength,
-                      angle = 0) {
-  # TODO validate inputs
-  win <- as.owin(win)
-  width <- diff(win$xrange)
-  height <- diff(win$yrange)
-  rmax <- sqrt(width ^ 2 + height ^ 2) / 2 #length of diagonal divided by 2
-  xmid <- mean(win$xrange)
-  ymid <- mean(win$yrange)
-  # u <- runif(1, min = 0, max = spacing) - rmax
-  u <- offset - rmax
-  if (u >= rmax)
-    return(
-      psp(
-        numeric(0),
-        numeric(0),
-        numeric(0),
-        numeric(0),
-        window = win,
-        check = FALSE
-      )
-    )
-  p <- seq(from = u, to = rmax, by = spacing)
-  q <- sqrt(rmax ^ 2 - p ^ 2)
-  theta <- pi * ((angle - 90) / 180)
-  co <- cos(theta)
-  si <- sin(theta)
-  X <- psp(
-    x0 = xmid + p * co + q * si,
-    y0 = ymid + p * si - q * co,
-    x1 = xmid + p * co - q * si,
-    y1 = ymid + p * si + q * co,
-    window = owin(xmid + c(-1, 1) * rmax, ymid + c(-1, 1) * rmax),
-    check = FALSE
-  )
-  X <- X[win]$ends
-  xlengths <- eval(expression(sqrt((x1 - x0) ^ 2 + (y1 - y0) ^ 2)), envir = X)
-  subX <- X[xlengths >= minLength, ]
-  return(subX)
-}
-
-# Define a function to evaluate generated line length with respect to target length
-evalLines <- function(spacing, angle, win, targLenM, offset, minLength){
-  tlines <- genLines(
-    angle = angle,
-    spacing = spacing,
-    win = win,
-    offset = offset,
-    minLength = minLength
-  )
-  tlengths <- eval(expression(sqrt((x1 - x0)^2 + (y1 - y0)^2)), envir = tlines)
-  totLen <- sum(tlengths)
-  err <- abs(targLenM-totLen)
-  # print(paste0(spacing, ":", err))
-  return(err)
-}
-
-
-# Manual optimization function to run if stats::optim fails.
-# Identifies local minimums in spacing-error curve and iteratively searches
-# each minima for acceptable spacing solution. Explores different offsets
-# if necessary.
-manualOptim <- function(minSpace, maxSpace,
-                        angle, win, targLenM,
-                        offset, minLength,
-                        optimTol,
-                        roughIter = 50,
-                        fineIter = 150) {
-
-  # Initialize output
-  optimMan <- list(objective = Inf,
-                   minimum = mean(c(minSpace, maxSpace)))
-
-  # Run rough optimization
-  tryOffs <- c(0, 500, 1000, 1500) #offsets to try if necessary
-  minInd <- NA
-  for(offInd in 1:length(tryOffs)) {
-    if(offInd > 1) {
-      warning("Failed to find solution with supplied offset, trying: ",
-              "offset = ", tryOffs[offInd])
-      offset <- tryOffs[offInd]
-      fineIter = fineIter+100
-    }
-    while(any(c(is.na(minInd),
-                minInd==1,
-                minInd==roughIter))) {
-      roughSpace <- seq(minSpace, maxSpace, length.out = roughIter)
-      roughRes <- sapply(roughSpace, function(x) {
-        evalLines(spacing = x,
-                  angle = angle,
-                  win = win,
-                  targLenM = targLenM,
-                  offset = offset,
-                  minLength = minLength)})
-      if(any(roughRes < targLenM*optimTol)){
-        roughOptim <- list(minimum = roughSpace[which.min(roughRes)],
-                           objective = min(roughRes))
-        return(roughOptim) # return if satisfies criteria
-      }
-      # get rough local minima
-      roughlocMins <- localmin(roughRes)$ind
-      roughlocMins <- sort(unique(c(roughlocMins, which.min(roughRes))))
-      minInd <- min(roughlocMins)
-      if(minInd == 1) {
-        minSpace <- minSpace*0.75
-      }
-      else if(minInd == length(roughSpace)) {
-        maxSpace <- maxSpace*0.25
+  if (type == "zigzag" && is.null(baseline) && minSolidity > 0) {
+    for (k in seq_len(nP)) {
+      if (!is.na(prep[[k]]$solidity) && prep[[k]]$solidity < minSolidity) {
+        warning(sprintf(paste0(
+          "Polygon %d is markedly non-convex (solidity %.2f < %.2f); a single ",
+          "zigzag baseline may not cover it well, and coverage may be uneven. ",
+          "Consider splitting it into more-convex pieces with ",
+          "convexPartition(), then returning to drawTransects()/makeLines() ",
+          "with the resulting pieces. Alternatively, supply your own ",
+          "'baseline', or set minSolidity = 0 to silence this warning."),
+          k, prep[[k]]$solidity, minSolidity))
       }
     }
-    # plot(roughSpace, roughRes)
-    # points(roughSpace[roughlocMins], roughRes[roughlocMins],
-    # pch = 16, col = 'red')
+  }
 
-    # run fine optimization on each local minima
-    fineOut <- do.call(rbind, lapply(roughlocMins, function(roughInd) {
-      roughOptim <- roughSpace[roughInd]
-      # roughMin <- max(roughOptim*0.2, roughSpace[max(c(1,(roughInd-2)))])
-      # roughMax <- min(roughOptim*2, roughSpace[min(c(length(roughSpace),(roughInd+2)))])
-      roughMin <- roughSpace[max(c(1,(roughInd-4)))]
-      roughMax <- roughSpace[min(c(length(roughSpace),(roughInd+4)))]
+  nDigits     <- max(4L, floor(log10(R)) + 1L)   # >= 4 digits, e.g. "Replicate0001"
+  rowsList    <- list()
+  producedAny <- logical(nP)
+  warned      <- logical(nP)
 
-      # Run fine optimization
-      fineSpace <- seq(roughMin, roughMax, length.out = fineIter)
-      fineRes <- sapply(fineSpace, function(y) {
-        evalLines(spacing = y,
-                  angle = angle,
-                  win = win,
-                  targLenM = targLenM,
-                  offset = offset,
-                  minLength = minLength)
-      })
-      # plot(fineSpace, fineRes)
-      tempOptim <- list(minimum = fineSpace[which.min(fineRes)],
-                        objective = min(fineRes))
-      return(tempOptim)
-    }))
+  for (rep in seq_len(R)) {
+    idVal <- paste0("Replicate", formatC(rep, width = nDigits, flag = "0"))
+    for (k in seq_len(nP)) {
+      pp   <- prep[[k]]
+      geom <- NULL; legCol <- NULL; onECol <- NULL; totCol <- NULL
 
-    fineOut <- fineOut[which.min(fineOut[,2]),]
-    fineOptim <- list(minimum = fineOut$minimum,
-                      objective = fineOut$objective)
-    if(fineOptim$objective < targLenM*optimTol) {
-      optimMan <- fineOptim
-      return(fineOptim) # return if satisfies criteria
+      if (type == "rectangular") {
+        offM <- stats::runif(1, 0, sM)                 # random start
+        g    <- makeLinesRectGen(pp$poly, angle, sM, offM, minLenM)
+        if (length(g$legs) == 0) {
+          if (!warned[k]) { warning("Polygon ", k, " produced no transects."); warned[k] <- TRUE }
+          next
+        }
+        asm <- makeLinesAssemble(g$legs, g$lineId, g$sortDir)
+        if (combine) {
+          onE  <- sum(asm$onEff)
+          tot  <- as.numeric(sf::st_length(asm$route))
+          geom <- asm$route; legCol <- 1L; onECol <- onE; totCol <- tot
+        } else {
+          onEv <- asm$onEff
+          totv <- onEv + asm$internal + c(asm$connectorBefore[-1], 0)
+          geom <- asm$geom; legCol <- seq_along(asm$geom); onECol <- onEv; totCol <- totv
+        }
+      } else {
+        # The zigzag is a continuous flight line between boundary waypoints; it
+        # is not clipped, so it stays connected (one long zigzag) and its length
+        # is entirely on-effort (no connectors). total == on-effort.
+        path <- makeLinesZigzagPath(pp$stations, makeLinesNZags(pp$baseLen, sM),
+                                    sample(c(TRUE, FALSE), 1), stats::runif(1))
+        if (is.null(path)) {
+          if (!warned[k]) { warning("Polygon ", k, " produced no transects."); warned[k] <- TRUE }
+          next
+        }
+        if (combine) {
+          route <- sf::st_sfc(sf::st_linestring(path), crs = sf::st_crs(pp$poly))
+          onEv  <- as.numeric(sf::st_length(route))
+          geom  <- route; legCol <- 1L; onECol <- onEv; totCol <- onEv
+        } else {
+          legs <- makeLinesSplitPath(path, sf::st_crs(pp$poly))
+          keep <- as.numeric(sf::st_length(legs)) >= minLenM
+          if (any(keep)) legs <- legs[keep]
+          onEv <- as.numeric(sf::st_length(legs))
+          geom <- legs; legCol <- seq_along(legs); onECol <- onEv; totCol <- onEv
+        }
+      }
+
+      n  <- length(geom)
+      df <- data.frame(transectType = rep(type, n),
+                       id            = rep(idVal, n),
+                       polygon       = rep(k, n),
+                       leg           = legCol,
+                       stringsAsFactors = FALSE)
+      df$onEffortLength <- toOut(onECol)
+      df$totalLength    <- toOut(totCol)
+      rowsList[[length(rowsList) + 1L]] <- sf::st_sf(df, geometry = geom)
+      producedAny[k] <- TRUE
     }
-    # update best solution
-    if(fineOptim$objective < optimMan$objective) {
-      optimMan <- fineOptim
+  }
+
+  if (length(rowsList) == 0) {
+    stop("No transect lines were generated for any polygon.")
+  }
+  out <- do.call(rbind, rowsList)
+
+  # Per-polygon summary as an sf LINESTRING data frame whose geometry column is
+  # the baseline. On-effort and total lengths vary by replicate, so they are not
+  # summarized here; the user aggregates the output columns (e.g. by 'id').
+  kk  <- which(producedAny)
+  pdf <- data.frame(polygon = kk)
+  pdf$area     <- units::set_units(
+                    units::set_units(vapply(prep[kk], function(p) p$areaM2, numeric(1)), "m^2"),
+                    "km^2")
+  pdf$solidity <- vapply(prep[kk], function(p) p$solidity, numeric(1))
+  baseSfc      <- do.call(c, lapply(prep[kk], function(p) p$base))
+  polygonsSf   <- sf::st_sf(pdf, baseline = baseSfc)
+
+  attr(out, "summary") <- list(
+      type         = type,
+      nPolygons    = nP,
+      nReplicates  = R,
+      spacing      = toOut(sM),
+      targetLength = NA,
+      polygons     = polygonsSf)
+
+  if (plot) {
+    plot(sf::st_geometry(do.call(c, polys)), col = "grey90", border = "grey40")
+    for (p in prep) plot(p$base, add = TRUE, col = "blue", lty = 2)
+    if (R > 1L) {
+      # One rainbow colour per replicate, cycling if there are more than 50.
+      cols   <- grDevices::rainbow(min(R, 50L))
+      repIdx <- match(out$id, sort(unique(out$id)))
+      colVec <- cols[((repIdx - 1L) %% length(cols)) + 1L]
+      plot(sf::st_geometry(out), add = TRUE, col = colVec, lwd = 1.5)
+    } else {
+      plot(sf::st_geometry(out), add = TRUE, col = "red", lwd = 2)
     }
-
-  } # end offset loop
-  return(optimMan)
-}
-
-
-# Local minima function (modified from R package erpR)
-localmin <- function (x, n.points = 2) {
-  vet = x
-  dat = data.frame(index = 1:length(vet))
-  test = function(i, vet, n.points) {
-    indices = c((i - n.points):(i - 1), (i + 1):(i + n.points))
-    indices = indices[indices > 0 & indices < (length(vet))]
-    response = ((!any(vet[indices] <= vet[i])) & length(indices) ==
-                  (n.points * 2))
-    return(response)
   }
-  candidates.indices = apply(dat, 1, function(k) {
-    test(i = k, vet, n.points)
-  })
-  if (any(candidates.indices)) {
-    candidates = vet[candidates.indices]
-    out <- list(ind = which(candidates.indices),
-                vals = candidates)
-    # return(min(candidates))
-    return(out)
-  }
-  else {
-    return(NA)
-  }
-}
 
-# helper function for adding length to sfLines
-addLength <- function(dt) {
-  dt <- st_as_sf(dt)
-  dt <- as.data.table(dt)
-  dt[, length := st_length(x)]
-  dt[, lengthKm := set_units(length, "km")]
-  dt[, lengthMi := set_units(length, "mi")]
-  dt[, length := NULL]
-  dt[, c("lengthKm", "lengthMi") := lapply(.SD, as.numeric), .SDcols = c("lengthKm", "lengthMi")]
+  out
 }

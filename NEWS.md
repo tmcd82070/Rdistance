@@ -1,3 +1,51 @@
+Changes in version 4.5.0 (2026-08-13)
+==============
+
+*   **Functionality change**: Added a family of functions for designing 
+random line-transect surveys inside study-area polygons. `drawTransects()` 
+is the main entry point; it calls `findSpacing()` to compute the transect 
+spacing that yields a target survey length, then `makeLines()` to place the 
+transects with a random start. `calcLineLength()` converts a target number of 
+detected groups into a target length of transect. Both parallel 
+("rectangular", or "mow-the-grass") and "zigzag" layouts are supported, over 
+one or several polygons at once, with optional random replicates (`R`). 
+Transects can be returned as one continuous route per polygon or as individual 
+legs (`combine`), and `targetLength` can refer to total or on-effort length 
+(`target`). Optimization of spacing is performed by `OSCARS::oscars`.
+*   **Functionality change**: Added `convexPartition()`, which splits a 
+strongly concave polygon into a few more-convex pieces using Approximate 
+Convex Decomposition (Lien & Amato 2006). Splitting improves the coverage of 
+zigzag transects on bent, arc-, or L-shaped polygons.
+*   **New data set**: Added `exampleSurveyPoly`, two non-convex Aleutian tern 
+survey strata projected to an equal-area CRS (NAD83 / Alaska Albers), used to 
+demonstrate the survey-design functions.
+*   **Update**: Added `sf` and `grDevices` to Imports, required by the new 
+survey-design functions.
+
+
+Changes in version 4.4.5 (2026-06-22)
+==============
+
+*   **New data set**: Added `pronghornDf`, aerial line-transect data for 
+pronghorn (*Antilocapra americana*) collected by the Wyoming Game and Fish 
+Department in southeast Wyoming, 2012-2019. 
+*   **New data set**: Added `pronghornAreas`, the study-area (herd-unit) 
+polygons associated with the pronghorn line-transect data. 
+*   **Update**: Added `data-raw` scripts documenting construction of the 
+bundled data sets.
+
+
+Changes in version 4.4.4 (2026-05-21)
+==============
+
+*   **Functionality change**: `abundEstim()` now accepts a previously fitted 
+abundance object in addition to a distance function. This lets users add 
+bootstrap iterations to an existing fit, for example by fitting with 
+`ci = NULL` first and running (or extending) the bootstrap later. 
+*   **Documentation Updates**: Updated documentation of `abundEstim()`, 
+`autoDistSamp()`, and related functions.
+
+
 Changes in version 4.4.3 (2026-05-13)
 ==============
 
