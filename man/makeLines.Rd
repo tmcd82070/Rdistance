@@ -26,8 +26,8 @@ projection so areas are undistorted). Geographic coordinates are rejected.}
 \item{type}{The transect layout, one of:
 \itemize{
 \item \code{"rectangular"} (the default): parallel, equally spaced straight lines.
-\item \code{"zigzag"}: a path that zig-zags between opposite edges of the polygon
-along a baseline.
+\item \code{"zigzag"}: a single continuous path that zig-zags between opposite edges
+of the polygon, crossing a baseline between successive pivots.
 }}
 
 \item{angle}{Orientation of \code{"rectangular"} transects, in degrees.
@@ -36,25 +36,42 @@ produces East-West transects. Ignored when \code{type = "zigzag"}.}
 
 \item{spacing}{The distance between adjacent transects, as a
 \code{units} length object. For \code{"rectangular"} transects this is the
-perpendicular spacing between the parallel lines.  For \code{"zigzag"} transects
-it is the leg-to-leg distance along the baseline. Typically obtained
-from \code{\link[=findSpacing]{findSpacing()}}.}
+perpendicular distance between the parallel lines. For \code{"zigzag"} transects
+it is the distance along the baseline between the points where \emph{adjacent}
+legs cross it, i.e., between adjacent crossings of the baseline; one
+complete zig-zag cycle (out and back) therefore covers \code{2 * spacing} of
+baseline. Under both layouts, \code{spacing} is the distance between neighboring
+transects, so the two are directly comparable. Typically obtained from
+\code{\link[=findSpacing]{findSpacing()}}.}
 
 \item{baseline}{Optional \code{sf}/\code{sfc} \code{LINESTRING} giving the reference line
-for the transects. For \code{"zigzag"} transects the baseline is the line along
-which pivots are spaced; when \code{NULL} (the default) a curved centerline is
-estimated from the polygon. For \code{"rectangular"} transects the baseline is
+for the transects. For \code{"zigzag"} transects the baseline is the line the
+route crosses between pivots: pivots are placed where perpendiculars to the
+baseline, spaced \code{spacing} apart with a random start, meet the polygon
+boundary. When \code{NULL} (the default) a straight baseline is estimated from
+the polygon (see Details). For \code{"rectangular"} transects the baseline is
 only used for reporting and plotting; when \code{NULL} it is a straight line
 through the polygon centroid perpendicular to the transects. Supplying a
-baseline is only allowed when \code{sPoly} contains a single polygon.}
+baseline is only allowed when \code{sPoly} contains a single polygon. A supplied
+baseline is extended past the polygon's bounding box before use, so that
+pivots are placed all the way through the polygon, but it is reported back
+in the \code{summary} attribute exactly as given.}
 
-\item{combine}{Logical controlling the shape of the returned object.
+\item{combine}{Logical controlling the shape of the returned object. Both
+forms carry the same \code{onEffortLength} and \code{totalLength} totals; they differ
+in the geometry returned.
 \itemize{
-\item \code{TRUE} (the default): return one continuous \code{LINESTRING} per polygon
-(parallel legs joined into a mow-the-grass route; zigzags are already
-continuous).
-\item \code{FALSE}: return one row per transect leg; for rectangular transects each
-leg's \code{totalLength} then includes the off-effort distance to the next leg.
+\item \code{TRUE} (the default): return the route actually flown, one continuous
+\code{LINESTRING} per polygon (parallel legs joined into a mow-the-grass route;
+zigzags are already continuous). The route is \emph{not} clipped, so it includes
+the off-effort transit, and the sum of the returned lengths is the total
+length. A route through a concave polygon can therefore run outside it.
+\item \code{FALSE}: return one row per transect leg, clipped to the polygon so that no
+geometry falls outside it, and the sum of the returned lengths is the
+on-effort length. A leg that a concavity breaks into several pieces is
+returned as a single \code{MULTILINESTRING} row, so there is still exactly one
+row per leg. For rectangular transects each leg's \code{totalLength} still
+includes the off-effort distance to the next leg.
 }}
 
 \item{R}{Number of independent random replicates to generate. Defaults to 1.
@@ -76,7 +93,8 @@ replicate is drawn in a different colour (\code{rainbow(min(R, 50))}, cycling if
 }
 \value{
 An \code{sf} data frame of transect lines (geometries are
-either \code{LINESTRING} or \code{MULTILINESTRING}) with columns:
+either \code{LINESTRING} or \code{MULTILINESTRING}; a leg that clipping broke into
+pieces is one \code{MULTILINESTRING} row) with columns:
 \item{transectType}{The layout used, \code{"rectangular"} or \code{"zigzag"}.}
 \item{id}{Replicate label, e.g. \code{"Replicate0001"}.}
 \item{polygon}{Integer index of the source polygon. Source polygons and
@@ -84,7 +102,9 @@ indices are
 given in attribute "summary". }
 \item{leg}{Integer identifier of the leg within its polygon (1 when
 \code{combine = TRUE}, in which case the route is one long line with connectors).}
-\item{onEffortLength}{On-effort length of the row's geometry, with units.}
+\item{onEffortLength}{On-effort (surveyed) length of the transect(s)
+represented on the row, i.e., the part inside the polygon. With units.
+Equals the length of the row's geometry when \code{combine = FALSE}.}
 \item{totalLength}{Total transect length of the segment(s) represented on
 the row. Total transect length includes the on-effort segment as well as
 the off-effort segment connecting to the next on-effort leg. With units.}
@@ -108,11 +128,36 @@ spacing that yields a target survey length, and \code{\link[=drawTransects]{draw
 the two. Optionally, \code{R} independent random replicates can be returned.
 }
 \details{
-The returned transects distinguish \emph{on-effort} length (the survey lines)
-from \emph{total} length (on-effort plus off-effort transit between legs). The
-two are equal for \code{"zigzag"} transects, which are continuous and have no
-transit; for \code{"rectangular"} transects the total additionally includes the
-connectors joining successive parallel legs.
+The returned transects distinguish \emph{on-effort} length (the parts of the
+lines inside the polygon) from \emph{total} length (on-effort plus off-effort
+transit). For \code{"rectangular"} transects the total includes the connectors
+joining successive parallel legs. A \code{"zigzag"} route has no connectors: it
+is one continuous line whose pivots sit on the polygon boundary, so its
+total equals its on-effort length unless a concavity pushes part of a leg
+outside the polygon.
+
+\code{combine} chooses which of the two the geometry represents. With
+\code{combine = TRUE} the geometry is the route as flown, unclipped, so that it
+stays connected; across a concave polygon it can leave the polygon, and those
+excursions are counted as off-effort transit. With \code{combine = FALSE} each leg
+is clipped to the polygon, so nothing is drawn outside it and the returned
+geometry is the surveyed line only. Summing the length of the returned
+geometry therefore gives the total length when \code{combine = TRUE} and the
+on-effort length when \code{combine = FALSE}; the \code{onEffortLength} and
+\code{totalLength} columns are computed the same way under both, so either form
+reports both quantities.
+
+When \code{type = "zigzag"} and no \code{baseline} is supplied, the baseline is
+estimated in three steps. First the polygon's centerline is traced by
+sweeping cross sections along its principal axis and keeping the midpoint of
+each. Those midpoints wander with every bend in the boundary, so, second,
+they are straightened by regressing their Y coordinates on their X
+coordinates and keeping only the slope of that regression. Third, the
+resulting direction is translated to pass through the polygon's centroid
+(even when the centroid falls outside the polygon) and drawn well past the
+polygon's bounding box in both directions. The baseline is therefore always
+straight; strongly bent polygons are better handled by splitting them with
+\code{\link[=convexPartition]{convexPartition()}} (see \code{minSolidity}) than by a curved baseline.
 }
 \examples{
 # A simple tapered survey polygon (Alaska Albers, meters).
@@ -127,11 +172,16 @@ c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
 plot(poly$geometry)
 plot(rec$geometry, add=T, col="red")
 
-# Zigzag transects at a 4 km pivot spacing.
+# Zigzag transects, adjacent legs crossing the baseline 4 km apart.
 zz <- makeLines(poly, type = "zigzag", spacing = units::set_units(4, "km"))
 sum(zz$totalLength)
 plot(poly$geometry)
 plot(zz$geometry, add=T, col="red")
+
+# combine = FALSE returns one row per leg, clipped to the polygon.
+zzLegs <- makeLines(poly, type = "zigzag", spacing = units::set_units(4, "km"),
+                    combine = FALSE)
+sum(zzLegs$onEffortLength)
 
 }
 \seealso{

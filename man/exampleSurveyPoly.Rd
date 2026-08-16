@@ -18,11 +18,12 @@ reprojected from Web Mercator to Alaska Albers equal-area.
 }
 \description{
 Two markedly non-convex survey polygons used to illustrate transect
-placement with \code{\link[=makeLines]{makeLines()}} and \code{\link[=drawTransects]{drawTransects()}}, including the
-curved-baseline centerline that lets \code{"zigzag"} transects follow a bent,
-elongated shape "around the corner", and the allocation of effort across
-multiple polygons. The polygons are arc-shaped coastal survey strata with
-solidities (area divided by convex-hull area) of about 0.66 and 0.80.
+placement with \code{\link[=makeLines]{makeLines()}} and \code{\link[=drawTransects]{drawTransects()}}, including estimation of
+a \code{"zigzag"} baseline for a bent, elongated shape, the solidity warning that
+suggests splitting such shapes with \code{\link[=convexPartition]{convexPartition()}}, and the allocation
+of effort across multiple polygons. The polygons are arc-shaped coastal
+survey strata with solidities (area divided by convex-hull area) of about
+0.66 and 0.80.
 }
 \examples{
 data(exampleSurveyPoly)

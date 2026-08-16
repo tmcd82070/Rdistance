@@ -18,10 +18,12 @@
 #'
 #' @param target Character string selecting what `targetLength` measures:
 #' `"total"` (the default) is the total transect length including off-effort
-#' transit between legs; `"onEffort"` is the on-effort survey length only. The
-#' two differ only for `"rectangular"` transects (zigzags have no off-effort
-#' transit, so total equals on-effort). Use `"onEffort"` when `targetLength`
-#' comes from a survey-effort calculation such as [calcLineLength()].
+#' transit; `"onEffort"` is the on-effort survey length only. The two differ by
+#' the connectors between parallel legs for `"rectangular"` transects, and for
+#' `"zigzag"` transects only by whatever part of the continuous route a
+#' concavity pushes outside the polygon (nothing, when the polygon is convex).
+#' Use `"onEffort"` when `targetLength` comes from a survey-effort calculation
+#' such as [calcLineLength()].
 #'
 #' @param minLength Minimum length for an individual transect leg to be
 #' counted, as a `units` length object. Legs shorter than `minLength` are
@@ -35,11 +37,21 @@
 #' [OSCARS::oscars()]. Defaults to 50.
 #'
 #' @details
-#' `spacing` is interpreted as the perpendicular distance between parallel
-#' lines for `"rectangular"` transects, and as the pivot-to-pivot distance
-#' along the baseline for `"zigzag"` transects. Because a smaller spacing packs
-#' more transect into each polygon, the total length is a decreasing function
-#' of spacing, which [OSCARS::oscars()] searches over a single scalar.
+#' The returned `spacing` is the distance between adjacent transects: the
+#' perpendicular distance between the parallel lines for `"rectangular"`
+#' transects, and the baseline distance between adjacent crossings of the
+#' baseline for `"zigzag"` transects (one complete zig-zag cycle covers twice
+#' that). Because a smaller spacing packs more transect into each polygon, the
+#' total length is a decreasing function of spacing, which [OSCARS::oscars()]
+#' searches over a single scalar.
+#'
+#' Realized zigzag length depends on the random start: on where the pivots fall
+#' along the baseline, and on which side of the baseline the route starts,
+#' which decides whether a given station gets the far pivot or the near one. On
+#' a polygon that is not symmetric about its baseline both matter, so the
+#' objective averages the length over several starts of each kind and targets
+#' the expectation. The single random draw taken later by [makeLines()]
+#' therefore lands near, but not exactly on, `targetLength`.
 #'
 #' @return A `units` length object: the approximate spacing that yields
 #' `targetLength`. Pass it to [makeLines()] to place transects.
@@ -89,8 +101,7 @@ findSpacing <- function(sPoly,
   targetM <- makeLinesAsMeters(targetLength)
   minLenM <- makeLinesAsMeters(minLength)
 
-  prep <- makeLinesPrep(polys, baseline, type, angle,
-                        needStations = type == "zigzag")
+  prep <- makeLinesPrep(polys, baseline, type, angle)
 
   if (type == "zigzag" && is.null(baseline) && minSolidity > 0) {
     for (k in seq_along(prep)) {
@@ -107,39 +118,56 @@ findSpacing <- function(sPoly,
     }
   }
 
-  # Expected total length across all polygons at spacing s. Rectangular
-  # on-effort is exact in closed form (A/s), so a single representative offset
-  # suffices. Zigzag length depends on the (random) pivot phase, so the
-  # objective averages the realized length over several phases to target the
-  # expectation and keep makeLines()'s single random draw unbiased.
-  sumAt <- function(s, off, phase) {
-    sum(vapply(prep, function(pp)
-      makeLinesPolyTotal(pp, type, angle, s, off, minLenM, phase), numeric(1)))
-  }
-  totalAt <- function(s) {
-    if (type == "rectangular") {
-      sumAt(s, s * 0.5, 0.5)
-    } else {
-      mean(vapply(c(0.3, 0.7), function(ph) sumAt(s, 0, ph), numeric(1)))
-    }
-  }
-  # 'target' selects whether targetLength refers to total length (on-effort plus
-  # off-effort transit) or on-effort length only. They differ only for
-  # rectangular transects; for zigzags total == on-effort. Rectangular on-effort
-  # is A/s in closed form (Cauchy-Crofton).
+  # Expected length across all polygons at spacing s. Rectangular on-effort is
+  # exact in closed form (A/s), so a single representative offset suffices.
+  # Zigzag length depends on the (random) start of the pivots along the
+  # baseline, so the objective averages the realized length over several starts
+  # to target the expectation and keep makeLines()'s single random draw
+  # unbiased.
+  onEff     <- target == "onEffort"
   totalArea <- sum(vapply(prep, function(pp) pp$areaM2, numeric(1)))
+  sumAt <- function(s, off, phase, startSide = TRUE) {
+    sum(vapply(prep, function(pp)
+      makeLinesPolyTotal(pp, type, angle, s, off, minLenM, phase, startSide,
+                         onEff),
+      numeric(1)))
+  }
   quantAt <- function(s) {
-    if (type == "rectangular" && target == "onEffort") totalArea / s else totalAt(s)
+    if (type == "rectangular") {
+      # 'target' selects whether targetLength refers to total length (on-effort
+      # plus off-effort transit) or on-effort length only. Rectangular on-effort
+      # is A/s in closed form (Cauchy-Crofton).
+      if (onEff) totalArea / s else sumAt(s, s * 0.5, 0.5)
+    } else {
+      # makeLines() draws both the phase and the starting side at random, and on
+      # a polygon that is not symmetric about its baseline the starting side
+      # changes the realized length, so average over both to target the
+      # expectation of what makeLines() will draw.
+      grd <- expand.grid(phase = c(0.3, 0.7), side = c(TRUE, FALSE))
+      mean(vapply(seq_len(nrow(grd)),
+                  function(i) sumAt(s, 0, grd$phase[i], grd$side[i]),
+                  numeric(1)))
+    }
   }
   obj <- function(par) abs(quantAt(par[1]) - targetM)
 
-  # Search bounds for the scalar spacing.
+  # Search bounds for the scalar spacing, anchored on the Cauchy-Crofton
+  # spacing A/L: the spacing at which parallel lines cover 'targetLength' of the
+  # area. That is exact for rectangular on-effort, and for a zigzag it is a good
+  # lower bound on the answer, because oblique legs cover more ground per unit
+  # of baseline than perpendicular ones. Anchoring the zigzag search this way
+  # matters: its objective steps down as each new leg enters the polygon, and a
+  # search started far from the answer can exhaust 'nfmax' before reaching it.
+  s0 <- totalArea / targetM
   if (type == "rectangular") {
-    s0  <- sum(vapply(prep, function(pp) pp$areaM2, numeric(1))) / targetM
     lwr <- s0 * 0.15; upr <- s0 * 3; start <- s0
   } else {
-    blen <- vapply(prep, function(pp) pp$baseLen, numeric(1))
-    lwr  <- min(blen) / 256; upr <- max(blen); start <- max(blen) / 4
+    # A spacing wider than the polygon holds no zigzag at all, so never look
+    # past it.
+    maxSpan <- max(vapply(prep, function(pp) pp$span, numeric(1)))
+    upr     <- min(4 * s0, maxSpan)
+    lwr     <- min(s0 / 2, upr / 4)
+    start   <- min(s0, upr)
   }
 
   o <- OSCARS::oscars(

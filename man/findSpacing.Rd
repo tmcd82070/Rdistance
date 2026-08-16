@@ -34,8 +34,8 @@ in proportion to area.}
 \item{type}{The transect layout, one of:
 \itemize{
 \item \code{"rectangular"} (the default): parallel, equally spaced straight lines.
-\item \code{"zigzag"}: a path that zig-zags between opposite edges of the polygon
-along a baseline.
+\item \code{"zigzag"}: a single continuous path that zig-zags between opposite edges
+of the polygon, crossing a baseline between successive pivots.
 }}
 
 \item{angle}{Orientation of \code{"rectangular"} transects, in degrees.
@@ -43,28 +43,43 @@ along a baseline.
 produces East-West transects. Ignored when \code{type = "zigzag"}.}
 
 \item{baseline}{Optional \code{sf}/\code{sfc} \code{LINESTRING} giving the reference line
-for the transects. For \code{"zigzag"} transects the baseline is the line along
-which pivots are spaced; when \code{NULL} (the default) a curved centerline is
-estimated from the polygon. For \code{"rectangular"} transects the baseline is
+for the transects. For \code{"zigzag"} transects the baseline is the line the
+route crosses between pivots: pivots are placed where perpendiculars to the
+baseline, spaced \code{spacing} apart with a random start, meet the polygon
+boundary. When \code{NULL} (the default) a straight baseline is estimated from
+the polygon (see Details). For \code{"rectangular"} transects the baseline is
 only used for reporting and plotting; when \code{NULL} it is a straight line
 through the polygon centroid perpendicular to the transects. Supplying a
-baseline is only allowed when \code{sPoly} contains a single polygon.}
+baseline is only allowed when \code{sPoly} contains a single polygon. A supplied
+baseline is extended past the polygon's bounding box before use, so that
+pivots are placed all the way through the polygon, but it is reported back
+in the \code{summary} attribute exactly as given.}
 
-\item{combine}{Logical controlling the shape of the returned object.
+\item{combine}{Logical controlling the shape of the returned object. Both
+forms carry the same \code{onEffortLength} and \code{totalLength} totals; they differ
+in the geometry returned.
 \itemize{
-\item \code{TRUE} (the default): return one continuous \code{LINESTRING} per polygon
-(parallel legs joined into a mow-the-grass route; zigzags are already
-continuous).
-\item \code{FALSE}: return one row per transect leg; for rectangular transects each
-leg's \code{totalLength} then includes the off-effort distance to the next leg.
+\item \code{TRUE} (the default): return the route actually flown, one continuous
+\code{LINESTRING} per polygon (parallel legs joined into a mow-the-grass route;
+zigzags are already continuous). The route is \emph{not} clipped, so it includes
+the off-effort transit, and the sum of the returned lengths is the total
+length. A route through a concave polygon can therefore run outside it.
+\item \code{FALSE}: return one row per transect leg, clipped to the polygon so that no
+geometry falls outside it, and the sum of the returned lengths is the
+on-effort length. A leg that a concavity breaks into several pieces is
+returned as a single \code{MULTILINESTRING} row, so there is still exactly one
+row per leg. For rectangular transects each leg's \code{totalLength} still
+includes the off-effort distance to the next leg.
 }}
 
 \item{target}{Character string selecting what \code{targetLength} measures:
 \code{"total"} (the default) is the total transect length including off-effort
-transit between legs; \code{"onEffort"} is the on-effort survey length only. The
-two differ only for \code{"rectangular"} transects (zigzags have no off-effort
-transit, so total equals on-effort). Use \code{"onEffort"} when \code{targetLength}
-comes from a survey-effort calculation such as \code{\link[=calcLineLength]{calcLineLength()}}.}
+transit; \code{"onEffort"} is the on-effort survey length only. The two differ by
+the connectors between parallel legs for \code{"rectangular"} transects, and for
+\code{"zigzag"} transects only by whatever part of the continuous route a
+concavity pushes outside the polygon (nothing, when the polygon is convex).
+Use \code{"onEffort"} when \code{targetLength} comes from a survey-effort calculation
+such as \code{\link[=calcLineLength]{calcLineLength()}}.}
 
 \item{minLength}{Minimum length for an individual transect leg to be
 counted, as a \code{units} length object. Legs shorter than \code{minLength} are
@@ -102,11 +117,21 @@ their area. \code{\link[=findSpacing]{findSpacing()}} performs the calculation; 
 the random placement; \code{\link[=drawTransects]{drawTransects()}} chains the two.
 }
 \details{
-\code{spacing} is interpreted as the perpendicular distance between parallel
-lines for \code{"rectangular"} transects, and as the pivot-to-pivot distance
-along the baseline for \code{"zigzag"} transects. Because a smaller spacing packs
-more transect into each polygon, the total length is a decreasing function
-of spacing, which \code{\link[OSCARS:oscars]{OSCARS::oscars()}} searches over a single scalar.
+The returned \code{spacing} is the distance between adjacent transects: the
+perpendicular distance between the parallel lines for \code{"rectangular"}
+transects, and the baseline distance between adjacent crossings of the
+baseline for \code{"zigzag"} transects (one complete zig-zag cycle covers twice
+that). Because a smaller spacing packs more transect into each polygon, the
+total length is a decreasing function of spacing, which \code{\link[OSCARS:oscars]{OSCARS::oscars()}}
+searches over a single scalar.
+
+Realized zigzag length depends on the random start: on where the pivots fall
+along the baseline, and on which side of the baseline the route starts,
+which decides whether a given station gets the far pivot or the near one. On
+a polygon that is not symmetric about its baseline both matter, so the
+objective averages the length over several starts of each kind and targets
+the expectation. The single random draw taken later by \code{\link[=makeLines]{makeLines()}}
+therefore lands near, but not exactly on, \code{targetLength}.
 }
 \examples{
 poly <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(rbind(

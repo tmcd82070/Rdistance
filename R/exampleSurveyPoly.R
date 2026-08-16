@@ -4,11 +4,12 @@
 #'
 #' @description
 #' Two markedly non-convex survey polygons used to illustrate transect
-#' placement with [makeLines()] and [drawTransects()], including the
-#' curved-baseline centerline that lets `"zigzag"` transects follow a bent,
-#' elongated shape "around the corner", and the allocation of effort across
-#' multiple polygons. The polygons are arc-shaped coastal survey strata with
-#' solidities (area divided by convex-hull area) of about 0.66 and 0.80.
+#' placement with [makeLines()] and [drawTransects()], including estimation of
+#' a `"zigzag"` baseline for a bent, elongated shape, the solidity warning that
+#' suggests splitting such shapes with [convexPartition()], and the allocation
+#' of effort across multiple polygons. The polygons are arc-shaped coastal
+#' survey strata with solidities (area divided by convex-hull area) of about
+#' 0.66 and 0.80.
 #'
 #' @docType data
 #'

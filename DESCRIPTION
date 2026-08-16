@@ -60,7 +60,8 @@ Imports: graphics,
          dfoptim,
          expint,
          multidplyr,
-         sf
+         sf,
+         OSCARS
 RoxygenNote: 7.3.3
 Encoding: UTF-8
 Config/testthat/edition: 3
