@@ -43,6 +43,16 @@ centerline is no longer used: strongly bent polygons should be split with
 strongly concave polygon into a few more-convex pieces using Approximate 
 Convex Decomposition (Lien & Amato 2006). Splitting improves the coverage of 
 zigzag transects on bent, arc-, or L-shaped polygons.
+*   **Functionality change**: `convexPartition()` gained `nPieces` and 
+`method`. `nPieces` is either an integer, in which case exactly that many 
+pieces are returned, or `"optimum"` (the default), in which case the count is 
+chosen automatically. `method = "fast"` (the default) cuts greedily at the 
+most concave vertex, as before; `method = "optimum"` searches the cut vertices 
+with `OSCARS::oscars` to maximize the minimum solidity of the pieces, and with 
+`nPieces = "optimum"` searches the number of pieces (capped at 10) as well. 
+The default call is unchanged: it is still the deterministic, 
+`concavityTol`-driven decomposition. `nStarts`, `nfmax`, and `solidityTol` 
+control the search; a progress bar appears once a search passes 10 seconds.
 *   **New data set**: Added `exampleSurveyPoly`, two non-convex Aleutian tern 
 survey strata projected to an equal-area CRS (NAD83 / Alaska Albers), used to 
 demonstrate the survey-design functions.
