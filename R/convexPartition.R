@@ -2,140 +2,101 @@
 #'
 #' @description
 #' Splits a concave (non-convex) polygon into several more-convex sub-polygons
-#' using *Approximate Convex Decomposition* (ACD). Survey-design routines such
-#' as [makeLines()] and [drawTransects()] place transects most efficiently
-#' inside reasonably convex polygons; a strongly concave polygon (e.g., a
-#' banana-shaped arc, or a coastline wrapping a bay) is better surveyed as a
-#' handful of convex pieces. This function recommends *where* and *how* to cut.
-#'
-#' The number of pieces is either left to a concavity tolerance, fixed by the
-#' caller (`nPieces`), or chosen automatically; and the cut locations are found
-#' either greedily (`method = "fast"`) or by direct search with
-#' [OSCARS::oscars()] (`method = "optimum"`).
+#' using *Approximate Convex Decomposition* (ACD) (`method = "fast"`) or 
+#' by maximizing the 
+#' minimum solidity of sub-polygons  (`method = "optimum"`)
+#' The number of sub-polygons is specified by either 
+#' a concavity tolerance, fixed by the
+#' caller (`nPieces`), or chosen automatically.
 #'
 #' @details
 #' Convex decomposition of a polygon is a classical problem in computational
 #' geometry. Exact minimum-piece methods (Keil & Snoeyink; Chazelle & Dobkin
-#' 1985) produce the fewest convex pieces but, on real, densely-digitized
-#' boundaries, generate hundreds of sliver polygons because every digitizing
-#' wiggle is a true reflex vertex. This routine instead implements *Approximate
+#' 1985) produce the fewest convex pieces but in practice often 
+#' generate many sliver polygons. This routine implements *Approximate
 #' Convex Decomposition* (Lien & Amato 2006), which is governed by a concavity
-#' tolerance and therefore yields a small number of meaningful cuts.
+#' tolerance and tends to yield a small number of realistic but sub-optimal cuts.
 #'
-#' ## The greedy ("fast") algorithm
+#' ## The greedy algorithm (`method = "fast"`)
 #'
-#' The fast algorithm is the top-down, one-cut-at-a-time hierarchical
-#' decomposition of Lien & Amato (2006), in the fixed-component-count form
-#' popularized by Mamou & Ghorbel (2009). Starting from the whole polygon it
+#' Here, the "fast" algorithm is the top-down, one-cut-at-a-time hierarchical
+#' decomposition of Lien & Amato (2006) using the fixed-component-count form
+#' of Mamou & Ghorbel (2009). Starting from the whole polygon it
 #' repeatedly:
 #'
-#' 1. computes each vertex's *concavity* --- its straight-line distance to its
-#'    piece's convex hull;
-#' 2. selects the piece holding the single most concave vertex anywhere;
-#' 3. resolves that vertex with the shortest *interior chord* (a diagonal that
-#'    stays inside the piece and splits it into two pieces of non-trivial
-#'    area), replacing the piece with the two halves.
+#' 1. computes each vertex's *concavity*.  A vertex's concavity is 
+#'    its straight-line distance to its piece's convex hull;
+#' 2. selects the piece containing the vertex with maximum concavity;
+#' 3. cuts the polygon at that vertex using the shortest 
+#'    *interior chord*.  An interior chord is a diagonal that
+#'    stays inside the piece and splits it into two non-trivial pieces.
 #'
-#' For a banana-shaped arc the first cut lands straight across the "waist" at
-#' the apex --- exactly where one would cut by hand.
+#' Splitting stops when no vertex has concavity greater than `concavityTol`
+#' (`nPieces = "optimum"`), or as soon as `nPieces` pieces exist. 
 #'
-#' Splitting stops when no vertex anywhere is more concave than `concavityTol`
-#' (`nPieces = "optimum"`), or as soon as `nPieces` pieces exist (`nPieces` an
-#' integer). Because the two rules use the same machinery, a fixed-count run is
-#' simply a tolerance run halted early.
+#' ## The optimization algorithm (`method = "optimum"`)
 #'
-#' ## The direct-search ("optimum") algorithm
+#' The "fast" algorithm is fast but does not necessarily lead to 
+#' a set of pieces that all have high solidity. The 
+#' `method = "optimum"` algorithm maximizes the minimum solidity 
+#' of pieces by passing a candidate set of vertices at which to 
+#' cut the polygon to [OSCARS::oscars()], a
+#' derivative-free optimization method (Prine et al ????). 
+#' 
+#' For a fixed number of pieces, \eqn{k}, the "optimum" algorithm searches 
+#' from `nStarts` starting points and completes `nfmax` [OSCARS::oscars()] 
+#' iterations. The first
+#' start point is the `method = "fast"` solution, and this ensures 
+#' that `method = "optimum"` only ever improves solidity.  The 
+#' other `nStarts` starting points are random vertices (use [set.seed()] 
+#' for reproducibility).
 #'
-#' The greedy rule is myopic: the shortest chord at the most concave vertex is
-#' locally sensible but need not lead to the best *set* of pieces. With
-#' `method = "optimum"` the cut locations are instead searched over. Making
-#' \eqn{k} pieces takes \eqn{k - 1} cuts, and each cut is identified by the
-#' boundary vertex it starts from, so a candidate decomposition is a vector of
-#' \eqn{k - 1} vertex indices. That vector is handed to [OSCARS::oscars()],
-#' whose derivative-free pattern search (Hooke & Jeeves 1961) is well suited to
-#' the resulting piecewise-constant objective, and the search
-#'
-#' \deqn{\max_{v_1,\dots,v_{k-1}} \; \min_j \; \mathrm{solidity}_j}
-#'
-#' maximizes the solidity of the *worst* piece, i.e. it makes the least convex
-#' piece as convex as possible. Configurations that fail to produce \eqn{k}
-#' pieces (a chosen vertex admits no legal chord) are penalized by the number
-#' of pieces they fall short.
-#'
-#' Each value of \eqn{k} is searched from `nStarts` starting points. The first
-#' is the greedy answer for that \eqn{k}, so `method = "optimum"` can never do
-#' worse than `method = "fast"`; the rest are random vertices. Randomness means
-#' repeated calls can differ --- use [set.seed()] for reproducibility.
-#'
-#' The best point OSCARS returns is then polished: each cut in turn is moved to
-#' every other candidate vertex and any improvement is kept, repeating until a
-#' full sweep finds none. The objective is flat between vertices, so a pattern
-#' search can stop on a plateau with a strictly better vertex sitting next to
-#' it; the polish is cheap, can only improve the answer, and makes the result
-#' much less sensitive to where the random starts landed.
+#' The best cut points returned by the `nStarts` OSCARS runs is then 
+#' polished because OSCARS operates on a continuous scale and the 
+#' objective function is flat between vertices. Polishing entails 
+#' moving vertices in the solution to
+#' all other candidate vertices, computing solidity, and keeping the
+#' best. 
 #'
 #' When `nPieces = "optimum"` and `method = "optimum"`, the number of pieces is
-#' searched too, over \eqn{k = 1, 2, \dots, 10} (the uncut polygon competes, so
-#' an already-convex polygon is returned whole). Minimum solidity is almost
-#' always weakly increasing in \eqn{k} --- enough small pieces are always
-#' convex --- so taking the strict maximum would nearly always return 10
-#' pieces. Instead the *smallest* \eqn{k} whose best minimum solidity comes
-#' within `solidityTol` of the overall best is returned: the fewest pieces that
-#' buy essentially all of the achievable convexity. The cap of 10 is
-#' deliberate; to obtain more pieces than that, pass an integer `nPieces`.
-#'
-#' ## Common machinery
-#'
-#' Cuts are *decided* on a lightly simplified copy of the boundary (via
-#' Douglas-Peucker, [sf::st_simplify()]) so the concavity measure is not fooled
-#' by digitizing noise, but they are *applied* to the original full-resolution
-#' boundary, so the returned pieces retain the true coastline. Because
-#' Douglas-Peucker retains a subset of the original vertices, every cut joins
-#' two original vertices and the pieces tile the input exactly (total area is
-#' conserved). No triangulation is required.
-#'
-#' A typical workflow is to run [drawTransects()], see its low-solidity
-#' warning, split the offending polygon with `convexPartition()`, and re-run
-#' [drawTransects()] on the resulting pieces.
-#'
-#' Distances (and hence `concavityTol` and `simplifyTol`) are measured in the
-#' units of `x`'s coordinate reference system, so `x` should be projected to a
-#' planar CRS (ideally equal-area) whose linear unit is meters, the same
-#' requirement as [makeLines()].
-#'
-#' `method = "optimum"` evaluates the objective up to `nfmax` times per start,
-#' `nStarts` times per candidate piece count, and each evaluation re-cuts the
-#' polygon, so it is orders of magnitude slower than `method = "fast"`. Once a
-#' run has been going for 10 seconds a [progress::progress_bar] appears (the
-#' same mechanism [abundEstim()] uses for bootstrap iterations); shorter runs
-#' finish silently.
+#' is optimized over \eqn{k = 1, 2, \dots, 10}. The *smallest* \eqn{k} 
+#' whose minimum piece solidity comes
+#' within `solidityTol` of the overall best from the entire set of \eqn{k} 
+#' is returned.  
+#' 
+#' A progress bar is provided once the optimization has been running for 10 
+#' seconds.  `method = "optimum"` can require orders of magnitude more time
+#' than `method = "fast"`. 
 #'
 #' @param x An `sf`, `sfc`, or `sfg` `POLYGON`, or a two-column matrix of
 #' coordinates. If `x` contains several polygons only the first is used (with a
 #' message); call the function once per feature otherwise. Holes are ignored.
+#' Distances (and hence `concavityTol` and `simplifyTol`) are measured in the
+#' units of `x`'s coordinate reference system, so `x` should be projected to a
+#' planar CRS (ideally equal-area) whose linear unit is meters.
 #'
 #' @param nPieces Number of pieces to produce. Either an integer `>= 2`, in
 #' which case exactly that many pieces are returned, or the string `"optimum"`
-#' (the default), in which case the count is chosen for you: by `concavityTol`
-#' when `method = "fast"`, and by maximizing minimum solidity over
+#' (the default), in which case the count is chosen either by `concavityTol`
+#' when `method = "fast"`, or by maximizing minimum solidity over
 #' `2, 3, ..., 10` pieces when `method = "optimum"`. Values above 10 are
 #' reachable only by passing an integer.
 #'
 #' @param method Character string selecting how the cut locations are chosen:
 #' \describe{
-#'   \item{`"fast"`}{(default) Greedy, deterministic hierarchical ACD: cut at
-#'     the most concave vertex, using the shortest interior chord.}
-#'   \item{`"optimum"`}{Search the cut vertices with [OSCARS::oscars()] to
-#'     maximize the minimum solidity of the resulting pieces. Much slower.}
+#'   \item{`"fast"`}{(default) Greedy, deterministic hierarchical ACD. For 
+#'     each cut, the polygon(s) is cut at
+#'     the most concave vertex using the shortest interior chord.}
+#'   \item{`"optimum"`}{Maximize the minimum solidity across cut vertices using
+#'     [OSCARS::oscars()]. Much slower.}
 #' }
 #'
 #' @param concavityTol Concavity tolerance, in the linear unit of `x`'s CRS
-#' (e.g., meters). A piece is accepted as convex enough when no vertex lies
+#' (e.g., meters). A piece is "convex enough" when no vertex lies
 #' farther than this from its convex hull. Larger values give fewer, less
-#' convex pieces; smaller values give more, tighter pieces. When `NA` (the
+#' convex pieces; smaller values yield more convex pieces. When `NA` (the
 #' default) it is set to 5% of the hull "width" (`sqrt(hull area)`). Used only
-#' when `nPieces = "optimum"` and `method = "fast"`; the other combinations
-#' fix or search the piece count directly and ignore it.
+#' when `nPieces = "optimum"` and `method = "fast"`.
 #'
 #' @param simplifyTol Douglas-Peucker tolerance (same units as `concavityTol`)
 #' used only to decide *where* to cut, not to alter the returned boundary. When
@@ -147,34 +108,34 @@
 #'
 #' @param minPieceFrac A candidate cut is rejected if it would create a piece
 #' smaller than this fraction of the parent's area. Guards against sliver
-#' pieces. Defaults to 0.02.
+#' pieces. Defaults to 0.10.
 #'
 #' @param maxPieces Safety cap on the number of pieces produced. Defaults
 #' to 200. Raised automatically when `nPieces` is a larger integer.
 #'
 #' @param nStarts Number of starting points per candidate piece count when
-#' `method = "optimum"`. The first start is always the greedy solution; the
-#' remainder are random vertices. Defaults to 3. Ignored when
-#' `method = "fast"`.
+#' `method = "optimum"`. The first start is always the "fast" solution while the
+#' remainder are random vertices. Defaults to 3. Ignored when `method = "fast"`.
 #'
 #' @param nfmax Maximum objective evaluations per start, passed to
 #' [OSCARS::oscars.control()]. Defaults to 100. Larger values search harder and
 #' take proportionally longer. Ignored when `method = "fast"`.
 #'
 #' @param solidityTol Slack used to break ties when both `nPieces` and `method`
-#' are `"optimum"`: the fewest pieces whose best minimum solidity is within
-#' `solidityTol` of the overall best wins. Defaults to 0.01. Larger values
+#' are `"optimum"`. The fewest pieces whose minimum solidity is within
+#' `solidityTol` of the overall best is returned. Defaults to 0.03. Larger values
 #' favor fewer, larger pieces. Ignored otherwise.
 #'
-#' @return An `sf` `POLYGON` data frame with one row per piece and columns:
-#' \item{piece}{Integer piece id, ordered largest-area first.}
+#' @return An `sf` `POLYGON` data frame with one row per piece. Attributes 
+#' of the polygons are:
+#' \item{piece}{Piece id (an integer), ordered largest-area first.}
 #' \item{solidity}{Area divided by convex-hull area; `1` for a convex piece,
-#' smaller for a concave one.}
+#' smaller for concave pieces.}
 #' \item{area}{Piece area, with units (from [sf::st_area()]).}
 #'
-#' The pieces tile the input polygon (their union equals `x` and their areas
-#' sum to the area of `x`). The CRS of `x` is carried through. When `x` is
-#' already convex enough, a one-row data frame containing the (unchanged)
+#' The pieces partition the input polygon (their union equals `x` and their areas
+#' sum to the area of `x`). The CRS of `x` is carried through. If `x` is
+#' "convex enough", a one-row data frame containing the (unchanged)
 #' polygon is returned.
 #'
 #' @references
@@ -182,9 +143,7 @@
 #' G. T. Toussaint (ed.), *Computational Geometry*, pages 63-133. North-Holland,
 #' Amsterdam.
 #'
-#' Hooke, R. and Jeeves, T. A. (1961) "Direct search" solution of numerical and
-#' statistical problems. *Journal of the ACM* 8(2):212-229.
-#' \doi{10.1145/321062.321069}
+#' put in reference to OSCARS, Chris Prine et al 
 #'
 #' Keil, J. M. (2000) Polygon decomposition. In J.-R. Sack and J. Urrutia
 #' (eds.), *Handbook of Computational Geometry*, pages 491-518. Elsevier,
@@ -201,9 +160,7 @@
 #'
 #' @author Trent McDonald.
 #'
-#' @seealso [drawTransects()] and [makeLines()], which warn when an input
-#' polygon's solidity is low and recommend this routine; [OSCARS::oscars()],
-#' which performs the `method = "optimum"` search.
+#' @seealso [drawTransects()], [makeLines()], [OSCARS::oscars()],
 #'
 #' @examples
 #' # A banana-shaped (concave) polygon in a planar CRS (meters).
@@ -243,11 +200,11 @@ convexPartition <- function(x,
                             method       = c("fast", "optimum"),
                             concavityTol = NA,
                             simplifyTol  = NA,
-                            minPieceFrac = 0.02,
+                            minPieceFrac = 0.10,
                             maxPieces    = 200,
                             nStarts      = 3,
                             nfmax        = 100,
-                            solidityTol  = 0.01) {
+                            solidityTol  = 0.03) {
 
   if (!requireNamespace("sf", quietly = TRUE)) {
     stop("Package 'sf' is required. Please install it with install.packages('sf').")
@@ -286,7 +243,10 @@ convexPartition <- function(x,
 
   ## --- coerce input to a single sfc POLYGON --------------------------------
   crs <- sf::NA_crs_
-  if (inherits(x, "sf"))  { crs <- sf::st_crs(x); x <- sf::st_geometry(x) }
+  if (inherits(x, "sf"))  { 
+    crs <- sf::st_crs(x)
+    x <- sf::st_geometry(x) 
+  }
   if (inherits(x, "sfc")) {
     crs <- sf::st_crs(x)
     if (length(x) > 1) message("'x' has ", length(x),
@@ -294,7 +254,9 @@ convexPartition <- function(x,
     x <- x[[1]]
   }
   if (is.matrix(x)) {
-    if (!all(x[1, ] == x[nrow(x), ])) x <- rbind(x, x[1, ])
+    if (!all(x[1, ] == x[nrow(x), ])) { 
+      x <- rbind(x, x[1, ])
+    }
     x <- sf::st_polygon(list(x))
   }
   if (!inherits(x, "POLYGON")) {
@@ -542,17 +504,24 @@ convexPartition <- function(x,
         starts[[s]] <- as.numeric(sample.int(nSimp, n, replace = TRUE))
       }
     }
-    bestVal <- Inf; bestPar <- starts[[1]]
+    bestVal <- Inf
+    bestPar <- starts[[1]]
+    # Make this loop parallel.  Set nStarts to nProcessors - 1
+    # drop progress bar if parallel
     for (st in starts) {
       addBudget(nfmax)
       o <- OSCARS::oscars(obj, n = n,
-                          lwr = rep(0.5, n), upr = rep(nSimp + 0.5, n),
+                          lwr = rep(0.5, n), 
+                          upr = rep(nSimp + 0.5, n),
                           start = st,
                           controls = OSCARS::oscars.control(nfmax = nfmax,
                                                             infol = 0,
                                                             fTol  = 1e-4))
       endRun()
-      if (o$value < bestVal) { bestVal <- o$value; bestPar <- o$par }
+      if (o$value < bestVal) { 
+        bestVal <- o$value
+        bestPar <- o$par 
+      }
     }
 
     # Discrete polish. OSCARS searches a continuous box, but the objective only
@@ -569,9 +538,14 @@ convexPartition <- function(x,
       for (i in seq_len(n)) {
         for (u in seq_len(nSimp)) {
           if (u == v[i]) next
-          w <- v; w[i] <- u
+          w <- v
+          w[i] <- u
           f <- fOf(w)
-          if (f < bestVal - 1e-12) { v <- w; bestVal <- f; improved <- TRUE }
+          if (f < bestVal - 1e-12) { 
+            v <- w
+            bestVal <- f
+            improved <- TRUE 
+          }
         }
       }
       if (!improved) break
