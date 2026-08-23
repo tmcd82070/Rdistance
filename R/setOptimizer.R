@@ -23,7 +23,7 @@ setOptimizer <- function(ml){
     if( ml$likelihood %in% differentiableLikelihoods() ){
       optimizerAlgo <- "nlminb"
     } else {
-      optimizerAlgo <- "hookeJeeves"
+      optimizerAlgo <- "OSCARS"
       nInts <- getOption("Rdistance_intEvalPts")
       if(nInts < 301){
         # bump up integral points

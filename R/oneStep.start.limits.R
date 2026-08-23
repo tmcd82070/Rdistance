@@ -68,7 +68,7 @@ oneStep.start.limits <- function (ml){
   w.lo <- dropUnits(w.lo)
   w.hi <- dropUnits(w.hi)
   
-  # scale so 0 <= xx <= 1
+  # scale so 0 <= x <= 1
   x <- x - w.lo
   x <- x[x >= 0]
   
@@ -77,7 +77,7 @@ oneStep.start.limits <- function (ml){
   
   x <- x[!is.na(x)]
 
-  # Remember: 0 <= xx < 1
+  # Remember: 0 <= x < 1
   # But: values == 0 or 1 are not useful. Remove them.
   x <- x[ fuzz <= x & x <= (1 - fuzz) ]
   n <- length(x)
@@ -138,6 +138,12 @@ oneStep.start.limits <- function (ml){
   names(low) <- nms
   names(high) <- nms
   
-  list( start=start, low=low, high=high, names=nms )
+  strtLims <- list( start=start, low=low, high=high, names=nms )
+  
+  if( toupper(ml$optimizer) == "OSCARS" ){
+    strtLims <- oscarsLimits(strtLims, ml)
+  } 
+  
+  strtLims
   
 }

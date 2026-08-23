@@ -313,6 +313,27 @@ dE.single <- function( data
                           , outputUnits = outputUnits
                           , asymptoticSE = asymptoticSE
                         )
+  
+  # Check whether need to use non-gradient optimizer ----
+  modelList$optimizer <- setOptimizer(modelList)
+
+  if(toupper(modelList$optimizer) == "OSCARS"){
+    mess <- paste0(colorize("NOTE:", "red")
+                   , " OSCARS maximization is accurate but relatively "
+                   , colorize("slow.")
+                   , " Patience required.")
+    cat(paste0(mess, "\n"))
+  }
+  if(modelList$expansions > 0){
+    mess <- paste0(colorize("NOTE:", "red")
+                   , "Maximization of distance functions with expansions is "
+                   , "relatively "
+                   , colorize("slow")
+                   , " due to numerical integration. "
+                   , " Patience required.")
+    cat(paste0(mess, "\n"))
+  }
+  
   strt.lims <- Rdistance::startLimits(modelList)
   
   if(verboseLevel >= 2){
@@ -325,15 +346,12 @@ dE.single <- function( data
     cat(paste(paste(names(strt.lims$high), "=", colorize(strt.lims$high)), collapse=", "), "\n")
   }
 
-  # Check whether need to use non-gradient optimizer ----
-  modelList$optimizer <- setOptimizer(modelList)
-  
-  # Perform optimization
+  # Perform optimization ----
   fit <- mlEstimates( ml = modelList
                     , strt.lims = strt.lims
                     )
 
-  # Assemble results
+  # Assemble results ----
   ans <- c(fit, modelList)
   class(ans) <- "dfunc"
 
@@ -346,7 +364,7 @@ dE.single <- function( data
     ans$g.x.scl <- gx$g.x.scl
   } 
 
-  # ---- Check parameter boundaries ----
+  # Check parameter boundaries ----
   fuzz <- getOption("Rdistance_fuzz")
   if (ans$convergence != 0) {
     if (warn) warning(ans$message)

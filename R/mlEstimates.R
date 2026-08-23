@@ -27,7 +27,7 @@ mlEstimates <- function( ml
   
   optimFunc <- ml$optimizer
   optimFunc <- gsub("_.+$", "", optimFunc)
-
+  
   fit <- switch( optimFunc
       , "optim" = Optim(ml, strt.lims)
       , "nlminb" = Nlminb(ml, strt.lims)

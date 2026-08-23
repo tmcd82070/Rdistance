@@ -16,8 +16,8 @@ Oscars <- function(ml, strt.lims){
     
   contRl <- list(infol = getOption("Rdistance_trace") 
                  , DoMax = FALSE
-                 , nfmax = getOption("Rdistance_evalMax")
-                 , fTol = getOption("Rdistance_likeTol")
+                 , nfmax = getOption("Rdistance_oscarEvals")
+                 , fTol = getOption("Rdistance_oscarTol")
                  , xTol = getOption("Rdistance_coefTol") 
   )
   
@@ -45,6 +45,8 @@ Oscars <- function(ml, strt.lims){
 
   # final few things ----
   fit$limits <- strt.lims[c("low", "high")]
+  fit$limits$startConvergence = strt.lims$convergence
+  fit$limits$startLogLik = strt.lims$loglik
   
   # Flip over objective: object$logLike is true logLike, -LL was minimized
   names(fit)[names(fit) == "value"] <- "loglik"
@@ -54,7 +56,13 @@ Oscars <- function(ml, strt.lims){
   names(fit)[names(fit) == "niter"] <- NA_integer_
   
   if( fit$convergence == 0 & fit$evaluations < contRl$nfmax ){
-    fit$message <- "converged"
+    fit$message <- "converged (Oscars)"
+  } else if( strt.lims$convergence == 0 && strt.lims$loglik >= fit$loglik ) {
+    fit$message <- "converged (NR)"
+    fit$convergence <- 0
+  } else if( strt.lims$convergence == 0 && strt.lims$loglik < fit$loglik ) {
+    fit$message <- "converged (Oscars improved)"
+    fit$convergence <- 0
   } else {
     fit$message <- "did not converge"
   }
