@@ -10,40 +10,43 @@ convexPartition(
   method = c("fast", "optimum"),
   concavityTol = NA,
   simplifyTol = NA,
-  minPieceFrac = 0.02,
+  minPieceFrac = 0.1,
   maxPieces = 200,
   nStarts = 3,
   nfmax = 100,
-  solidityTol = 0.01
+  solidityTol = 0.03
 )
 }
 \arguments{
 \item{x}{An \code{sf}, \code{sfc}, or \code{sfg} \code{POLYGON}, or a two-column matrix of
 coordinates. If \code{x} contains several polygons only the first is used (with a
-message); call the function once per feature otherwise. Holes are ignored.}
+message); call the function once per feature otherwise. Holes are ignored.
+Distances (and hence \code{concavityTol} and \code{simplifyTol}) are measured in the
+units of \code{x}'s coordinate reference system, so \code{x} should be projected to a
+planar CRS (ideally equal-area) whose linear unit is meters.}
 
 \item{nPieces}{Number of pieces to produce. Either an integer \verb{>= 2}, in
 which case exactly that many pieces are returned, or the string \code{"optimum"}
-(the default), in which case the count is chosen for you: by \code{concavityTol}
-when \code{method = "fast"}, and by maximizing minimum solidity over
+(the default), in which case the count is chosen either by \code{concavityTol}
+when \code{method = "fast"}, or by maximizing minimum solidity over
 \verb{2, 3, ..., 10} pieces when \code{method = "optimum"}. Values above 10 are
 reachable only by passing an integer.}
 
 \item{method}{Character string selecting how the cut locations are chosen:
 \describe{
-\item{\code{"fast"}}{(default) Greedy, deterministic hierarchical ACD: cut at
-the most concave vertex, using the shortest interior chord.}
-\item{\code{"optimum"}}{Search the cut vertices with \code{\link[OSCARS:oscars]{OSCARS::oscars()}} to
-maximize the minimum solidity of the resulting pieces. Much slower.}
+\item{\code{"fast"}}{(default) Greedy, deterministic hierarchical ACD. For
+each cut, the polygon(s) is cut at
+the most concave vertex using the shortest interior chord.}
+\item{\code{"optimum"}}{Maximize the minimum solidity across cut vertices using
+\code{\link[OSCARS:oscars]{OSCARS::oscars()}}. Much slower.}
 }}
 
 \item{concavityTol}{Concavity tolerance, in the linear unit of \code{x}'s CRS
-(e.g., meters). A piece is accepted as convex enough when no vertex lies
+(e.g., meters). A piece is "convex enough" when no vertex lies
 farther than this from its convex hull. Larger values give fewer, less
-convex pieces; smaller values give more, tighter pieces. When \code{NA} (the
+convex pieces; smaller values yield more convex pieces. When \code{NA} (the
 default) it is set to 5\% of the hull "width" (\verb{sqrt(hull area)}). Used only
-when \code{nPieces = "optimum"} and \code{method = "fast"}; the other combinations
-fix or search the piece count directly and ignore it.}
+when \code{nPieces = "optimum"} and \code{method = "fast"}.}
 
 \item{simplifyTol}{Douglas-Peucker tolerance (same units as \code{concavityTol})
 used only to decide \emph{where} to cut, not to alter the returned boundary. When
@@ -55,148 +58,105 @@ boundary's vertices.}
 
 \item{minPieceFrac}{A candidate cut is rejected if it would create a piece
 smaller than this fraction of the parent's area. Guards against sliver
-pieces. Defaults to 0.02.}
+pieces. Defaults to 0.10.}
 
 \item{maxPieces}{Safety cap on the number of pieces produced. Defaults
 to 200. Raised automatically when \code{nPieces} is a larger integer.}
 
 \item{nStarts}{Number of starting points per candidate piece count when
-\code{method = "optimum"}. The first start is always the greedy solution; the
-remainder are random vertices. Defaults to 3. Ignored when
-\code{method = "fast"}.}
+\code{method = "optimum"}. The first start is always the "fast" solution while the
+remainder are random vertices. Defaults to 3. Ignored when \code{method = "fast"}.}
 
 \item{nfmax}{Maximum objective evaluations per start, passed to
 \code{\link[OSCARS:oscars.control]{OSCARS::oscars.control()}}. Defaults to 100. Larger values search harder and
 take proportionally longer. Ignored when \code{method = "fast"}.}
 
 \item{solidityTol}{Slack used to break ties when both \code{nPieces} and \code{method}
-are \code{"optimum"}: the fewest pieces whose best minimum solidity is within
-\code{solidityTol} of the overall best wins. Defaults to 0.01. Larger values
+are \code{"optimum"}. The fewest pieces whose minimum solidity is within
+\code{solidityTol} of the overall best is returned. Defaults to 0.03. Larger values
 favor fewer, larger pieces. Ignored otherwise.}
 }
 \value{
-An \code{sf} \code{POLYGON} data frame with one row per piece and columns:
-\item{piece}{Integer piece id, ordered largest-area first.}
+An \code{sf} \code{POLYGON} data frame with one row per piece. Attributes
+of the polygons are:
+\item{piece}{Piece id (an integer), ordered largest-area first.}
 \item{solidity}{Area divided by convex-hull area; \code{1} for a convex piece,
-smaller for a concave one.}
+smaller for concave pieces.}
 \item{area}{Piece area, with units (from \code{\link[sf:geos_measures]{sf::st_area()}}).}
 
-The pieces tile the input polygon (their union equals \code{x} and their areas
-sum to the area of \code{x}). The CRS of \code{x} is carried through. When \code{x} is
-already convex enough, a one-row data frame containing the (unchanged)
+The pieces partition the input polygon (their union equals \code{x} and their areas
+sum to the area of \code{x}). The CRS of \code{x} is carried through. If \code{x} is
+"convex enough", a one-row data frame containing the (unchanged)
 polygon is returned.
 }
 \description{
 Splits a concave (non-convex) polygon into several more-convex sub-polygons
-using \emph{Approximate Convex Decomposition} (ACD). Survey-design routines such
-as \code{\link[=makeLines]{makeLines()}} and \code{\link[=drawTransects]{drawTransects()}} place transects most efficiently
-inside reasonably convex polygons; a strongly concave polygon (e.g., a
-banana-shaped arc, or a coastline wrapping a bay) is better surveyed as a
-handful of convex pieces. This function recommends \emph{where} and \emph{how} to cut.
-
-The number of pieces is either left to a concavity tolerance, fixed by the
-caller (\code{nPieces}), or chosen automatically; and the cut locations are found
-either greedily (\code{method = "fast"}) or by direct search with
-\code{\link[OSCARS:oscars]{OSCARS::oscars()}} (\code{method = "optimum"}).
+using \emph{Approximate Convex Decomposition} (ACD) (\code{method = "fast"}) or
+by maximizing the
+minimum solidity of sub-polygons  (\code{method = "optimum"})
+The number of sub-polygons is specified by either
+a concavity tolerance, fixed by the
+caller (\code{nPieces}), or chosen automatically.
 }
 \details{
 Convex decomposition of a polygon is a classical problem in computational
 geometry. Exact minimum-piece methods (Keil & Snoeyink; Chazelle & Dobkin
-1985) produce the fewest convex pieces but, on real, densely-digitized
-boundaries, generate hundreds of sliver polygons because every digitizing
-wiggle is a true reflex vertex. This routine instead implements \emph{Approximate
+1985) produce the fewest convex pieces but in practice often
+generate many sliver polygons. This routine implements \emph{Approximate
 Convex Decomposition} (Lien & Amato 2006), which is governed by a concavity
-tolerance and therefore yields a small number of meaningful cuts.
-\subsection{The greedy ("fast") algorithm}{
+tolerance and tends to yield a small number of realistic but sub-optimal cuts.
+\subsection{The greedy algorithm (\code{method = "fast"})}{
 
-The fast algorithm is the top-down, one-cut-at-a-time hierarchical
-decomposition of Lien & Amato (2006), in the fixed-component-count form
-popularized by Mamou & Ghorbel (2009). Starting from the whole polygon it
+The "fast" algorithm is the top-down, one-cut-at-a-time hierarchical
+decomposition of Lien & Amato (2006) using the fixed-component-count form
+of Mamou & Ghorbel (2009). Starting from the whole polygon it
 repeatedly:
 \enumerate{
-\item computes each vertex's \emph{concavity} --- its straight-line distance to its
-piece's convex hull;
-\item selects the piece holding the single most concave vertex anywhere;
-\item resolves that vertex with the shortest \emph{interior chord} (a diagonal that
-stays inside the piece and splits it into two pieces of non-trivial
-area), replacing the piece with the two halves.
+\item computes each vertex's \emph{concavity}.  A vertex's concavity is
+its straight-line distance to its piece's convex hull;
+\item selects the piece containing the vertex with maximum concavity;
+\item cuts the polygon at that vertex using the shortest
+\emph{interior chord}.  An interior chord is a diagonal that
+stays inside the piece and splits it into two non-trivial pieces.
 }
 
-For a banana-shaped arc the first cut lands straight across the "waist" at
-the apex --- exactly where one would cut by hand.
-
-Splitting stops when no vertex anywhere is more concave than \code{concavityTol}
-(\code{nPieces = "optimum"}), or as soon as \code{nPieces} pieces exist (\code{nPieces} an
-integer). Because the two rules use the same machinery, a fixed-count run is
-simply a tolerance run halted early.
+Splitting stops when no vertex has concavity greater than \code{concavityTol}
+(\code{nPieces = "optimum"}), or as soon as \code{nPieces} pieces exist.
 }
 
-\subsection{The direct-search ("optimum") algorithm}{
+\subsection{The optimization algorithm (\code{method = "optimum"})}{
 
-The greedy rule is myopic: the shortest chord at the most concave vertex is
-locally sensible but need not lead to the best \emph{set} of pieces. With
-\code{method = "optimum"} the cut locations are instead searched over. Making
-\eqn{k} pieces takes \eqn{k - 1} cuts, and each cut is identified by the
-boundary vertex it starts from, so a candidate decomposition is a vector of
-\eqn{k - 1} vertex indices. That vector is handed to \code{\link[OSCARS:oscars]{OSCARS::oscars()}},
-whose derivative-free pattern search (Hooke & Jeeves 1961) is well suited to
-the resulting piecewise-constant objective, and the search
+The "fast" algorithm is fast but does not necessarily lead to
+a set of pieces that all have high solidity. The
+\code{method = "optimum"} algorithm maximizes the minimum solidity
+of pieces by passing a candidate set of vertices at which to
+cut the polygon to \code{\link[OSCARS:oscars]{OSCARS::oscars()}}, a
+derivative-free optimization method (Price et al ????).
 
-\deqn{\max_{v_1,\dots,v_{k-1}} \; \min_j \; \mathrm{solidity}_j}
+For a fixed number of pieces, \eqn{k}, the "optimum" algorithm searches
+from \code{nStarts} starting points and completes \code{nfmax} \code{\link[OSCARS:oscars]{OSCARS::oscars()}}
+iterations. The first
+start point is the \code{method = "fast"} solution, and this ensures
+that \code{method = "optimum"} only ever improves solidity.  The
+other \code{nStarts} starting points are random vertices (use \code{\link[=set.seed]{set.seed()}}
+for reproducibility).
 
-maximizes the solidity of the \emph{worst} piece, i.e. it makes the least convex
-piece as convex as possible. Configurations that fail to produce \eqn{k}
-pieces (a chosen vertex admits no legal chord) are penalized by the number
-of pieces they fall short.
-
-Each value of \eqn{k} is searched from \code{nStarts} starting points. The first
-is the greedy answer for that \eqn{k}, so \code{method = "optimum"} can never do
-worse than \code{method = "fast"}; the rest are random vertices. Randomness means
-repeated calls can differ --- use \code{\link[=set.seed]{set.seed()}} for reproducibility.
-
-The best point OSCARS returns is then polished: each cut in turn is moved to
-every other candidate vertex and any improvement is kept, repeating until a
-full sweep finds none. The objective is flat between vertices, so a pattern
-search can stop on a plateau with a strictly better vertex sitting next to
-it; the polish is cheap, can only improve the answer, and makes the result
-much less sensitive to where the random starts landed.
+The best cut points returned by the \code{nStarts} OSCARS runs is then
+polished because OSCARS operates on a continuous scale and the
+objective function is flat between vertices. Polishing entails
+moving vertices in the solution to
+all other candidate vertices, computing solidity, and keeping the
+best.
 
 When \code{nPieces = "optimum"} and \code{method = "optimum"}, the number of pieces is
-searched too, over \eqn{k = 1, 2, \dots, 10} (the uncut polygon competes, so
-an already-convex polygon is returned whole). Minimum solidity is almost
-always weakly increasing in \eqn{k} --- enough small pieces are always
-convex --- so taking the strict maximum would nearly always return 10
-pieces. Instead the \emph{smallest} \eqn{k} whose best minimum solidity comes
-within \code{solidityTol} of the overall best is returned: the fewest pieces that
-buy essentially all of the achievable convexity. The cap of 10 is
-deliberate; to obtain more pieces than that, pass an integer \code{nPieces}.
-}
+is optimized over \eqn{k = 1, 2, \dots, 10}. The \emph{smallest} \eqn{k}
+whose minimum piece solidity comes
+within \code{solidityTol} of the overall best from the entire set of \eqn{k}
+is returned.
 
-\subsection{Common machinery}{
-
-Cuts are \emph{decided} on a lightly simplified copy of the boundary (via
-Douglas-Peucker, \code{\link[sf:geos_unary]{sf::st_simplify()}}) so the concavity measure is not fooled
-by digitizing noise, but they are \emph{applied} to the original full-resolution
-boundary, so the returned pieces retain the true coastline. Because
-Douglas-Peucker retains a subset of the original vertices, every cut joins
-two original vertices and the pieces tile the input exactly (total area is
-conserved). No triangulation is required.
-
-A typical workflow is to run \code{\link[=drawTransects]{drawTransects()}}, see its low-solidity
-warning, split the offending polygon with \code{convexPartition()}, and re-run
-\code{\link[=drawTransects]{drawTransects()}} on the resulting pieces.
-
-Distances (and hence \code{concavityTol} and \code{simplifyTol}) are measured in the
-units of \code{x}'s coordinate reference system, so \code{x} should be projected to a
-planar CRS (ideally equal-area) whose linear unit is meters, the same
-requirement as \code{\link[=makeLines]{makeLines()}}.
-
-\code{method = "optimum"} evaluates the objective up to \code{nfmax} times per start,
-\code{nStarts} times per candidate piece count, and each evaluation re-cuts the
-polygon, so it is orders of magnitude slower than \code{method = "fast"}. Once a
-run has been going for 10 seconds a \link[progress:progress_bar]{progress::progress_bar} appears (the
-same mechanism \code{\link[=abundEstim]{abundEstim()}} uses for bootstrap iterations); shorter runs
-finish silently.
+A progress bar is provided once the optimization has been running for 10
+seconds.  \code{method = "optimum"} can require orders of magnitude more time
+than \code{method = "fast"}.
 }
 }
 \examples{
@@ -237,9 +197,7 @@ Chazelle, B. and Dobkin, D. P. (1985) Optimal convex decompositions. In
 G. T. Toussaint (ed.), \emph{Computational Geometry}, pages 63-133. North-Holland,
 Amsterdam.
 
-Hooke, R. and Jeeves, T. A. (1961) "Direct search" solution of numerical and
-statistical problems. \emph{Journal of the ACM} 8(2):212-229.
-\doi{10.1145/321062.321069}
+put in reference to OSCARS, Chris Prine et al
 
 Keil, J. M. (2000) Polygon decomposition. In J.-R. Sack and J. Urrutia
 (eds.), \emph{Handbook of Computational Geometry}, pages 491-518. Elsevier,
@@ -255,9 +213,7 @@ Image Processing (ICIP)}, pages 3501-3504.
 \doi{10.1109/ICIP.2009.5414068}
 }
 \seealso{
-\code{\link[=drawTransects]{drawTransects()}} and \code{\link[=makeLines]{makeLines()}}, which warn when an input
-polygon's solidity is low and recommend this routine; \code{\link[OSCARS:oscars]{OSCARS::oscars()}},
-which performs the \code{method = "optimum"} search.
+\code{\link[=drawTransects]{drawTransects()}}, \code{\link[=makeLines]{makeLines()}}, \code{\link[OSCARS:oscars]{OSCARS::oscars()}},
 }
 \author{
 Trent McDonald.

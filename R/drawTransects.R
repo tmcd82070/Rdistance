@@ -22,8 +22,9 @@
 #' transects (including connectors) is computed using [findSpacing()].
 #' 
 #' @param R Number of independent random replicates to generate, passed to
-#' [makeLines()]. Defaults to 1. When `R > 1` the output stacks `R` sets
-#' or realized replicates identified by the `id` column.
+#' [makeLines()]. Defaults to 1. When `R > 1` the return contains `R` 
+#' realized transects, each with its own random start.  Replicates are 
+#' identified by the `id` column.
 #'
 #' @param minSolidity For `"zigzag"` transects with an estimated baseline, a
 #' warning is issued when a polygon's solidity (area divided by convex-hull

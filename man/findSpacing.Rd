@@ -35,7 +35,7 @@ in proportion to area.}
 \itemize{
 \item \code{"rectangular"} (the default): parallel, equally spaced straight lines.
 \item \code{"zigzag"}: a single continuous path that zig-zags between opposite edges
-of the polygon, crossing a baseline between successive pivots.
+of the polygon.
 }}
 
 \item{angle}{Orientation of \code{"rectangular"} transects, in degrees.
@@ -43,33 +43,42 @@ of the polygon, crossing a baseline between successive pivots.
 produces East-West transects. Ignored when \code{type = "zigzag"}.}
 
 \item{baseline}{Optional \code{sf}/\code{sfc} \code{LINESTRING} giving the reference line
-for the transects. For \code{"zigzag"} transects the baseline is the line the
-route crosses between pivots: pivots are placed where perpendiculars to the
-baseline, spaced \code{spacing} apart with a random start, meet the polygon
-boundary. When \code{NULL} (the default) a straight baseline is estimated from
-the polygon (see Details). For \code{"rectangular"} transects the baseline is
-only used for reporting and plotting; when \code{NULL} it is a straight line
-through the polygon centroid perpendicular to the transects. Supplying a
-baseline is only allowed when \code{sPoly} contains a single polygon. A supplied
-baseline is extended past the polygon's bounding box before use, so that
-pivots are placed all the way through the polygon, but it is reported back
-in the \code{summary} attribute exactly as given.}
+for \code{"zigzag"} transects. Relevant only to \code{"zigzag"} transect.
+To construct zig-zag transects, the routine places points along
+the baseline spaced \code{spacing} apart (with a random start), then draws
+segments perpendicular to this baseline that span the polygon.
+The routine then connects
+every other point on the polygon boundary where the perpendicular segment
+intersects the boundary and this forms the zig-zag transect.
+Points along the boundary where \code{"zigzag"}
+transect legs meet are called "pivots".
+When \code{NULL} (the default) a straight baseline is estimated from
+the polygon (see Details). For \code{"rectangular"} transects the baseline does
+not influence construction (see \code{angle}). Supplying a
+baseline is only allowed when \code{sPoly} contains a single polygon. User supplied
+baselines are extended past the polygon's bounding box before use, so that
+pivots can be placed across the entire polygon.}
 
-\item{combine}{Logical controlling the shape of the returned object. Both
-forms carry the same \code{onEffortLength} and \code{totalLength} totals; they differ
+\item{combine}{Logical controlling the geometry(ies) in the returned object. Both
+forms have the same \code{onEffortLength} and \code{totalLength} totals but differ
 in the geometry returned.
 \itemize{
 \item \code{TRUE} (the default): return the route actually flown, one continuous
-\code{LINESTRING} per polygon (parallel legs joined into a mow-the-grass route;
-zigzags are already continuous). The route is \emph{not} clipped, so it includes
-the off-effort transit, and the sum of the returned lengths is the total
-length. A route through a concave polygon can therefore run outside it.
-\item \code{FALSE}: return one row per transect leg, clipped to the polygon so that no
-geometry falls outside it, and the sum of the returned lengths is the
-on-effort length. A leg that a concavity breaks into several pieces is
-returned as a single \code{MULTILINESTRING} row, so there is still exactly one
-row per leg. For rectangular transects each leg's \code{totalLength} still
-includes the off-effort distance to the next leg.
+\code{LINESTRING} per polygon.  Parallel legs for \code{"rectangular"} transects
+are joined by transit legs to form a back-and-forth type route.
+\code{"zigzag"} transects do not have transit legs between on-effort legs.
+The route is \emph{not} clipped to the polygon,
+so off-effort transit legs can run outside the polygon.
+Sum of the returned lengths is \code{totalLength}.
+\item \code{FALSE}: return one row per transect leg, with no transit legs.
+Sum of the returned lengths is \code{onEffortLength} in the returned object.
+Transit legs are clipped to the polygon so a leg that crosses a concavity
+will be broken into several pieces and is
+returned as a single \code{MULTILINESTRING}, so the returned geometries can be
+a mix of \code{MULTILINGSTRING} and \code{LINESTRING}.
+When \code{combine == FALSE} and \code{type == "rectangular"}, the \code{totalLength}
+attribute \emph{includes} the off-effort transit leg to the next on-effort leg,
+even though the transit leg is not returned in the geometry.
 }}
 
 \item{target}{Character string selecting what \code{targetLength} measures:
@@ -94,14 +103,13 @@ dropped when measuring the realized length. Defaults to
 
 \item{minSolidity}{For \code{"zigzag"} transects with an estimated baseline, a
 warning is issued when a polygon's solidity (area divided by convex-hull
-area) falls below this value; the warning recommends splitting the polygon
+area) falls below this value. The warning recommends splitting the polygon
 with \code{\link[=convexPartition]{convexPartition()}} and re-running on the pieces. Set to 0 to disable.
 Defaults to 0.75.}
 
 \item{plot}{Logical. If \code{TRUE}, the polygons, baselines, and generated
 transects are drawn on the current graphics device. When \code{R > 1}, each
-replicate is drawn in a different colour (\code{rainbow(min(R, 50))}, cycling if
-\code{R > 50}). Defaults to \code{FALSE}.}
+replicate is drawn in a different color. Defaults to \code{FALSE}.}
 }
 \value{
 A \code{units} length object: the approximate spacing that yields

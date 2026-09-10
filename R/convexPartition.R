@@ -19,7 +19,7 @@
 #'
 #' ## The greedy algorithm (`method = "fast"`)
 #'
-#' Here, the "fast" algorithm is the top-down, one-cut-at-a-time hierarchical
+#' The "fast" algorithm is the top-down, one-cut-at-a-time hierarchical
 #' decomposition of Lien & Amato (2006) using the fixed-component-count form
 #' of Mamou & Ghorbel (2009). Starting from the whole polygon it
 #' repeatedly:
@@ -41,7 +41,7 @@
 #' `method = "optimum"` algorithm maximizes the minimum solidity 
 #' of pieces by passing a candidate set of vertices at which to 
 #' cut the polygon to [OSCARS::oscars()], a
-#' derivative-free optimization method (Prine et al ????). 
+#' derivative-free optimization method (Price et al ????). 
 #' 
 #' For a fixed number of pieces, \eqn{k}, the "optimum" algorithm searches 
 #' from `nStarts` starting points and completes `nfmax` [OSCARS::oscars()] 
