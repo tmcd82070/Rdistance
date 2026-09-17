@@ -21,10 +21,14 @@
 
 # ---- units and input checks ------------------------------------------------
 
-# Convert a length 'units' object to a numeric number of meters. All public
+# Convert 'units' object to numeric numbers in the corrrect units. All public
 # length arguments are required to carry units (see makeLinesRequireLength).
 makeLinesAsMeters <- function(x) {
   as.numeric(units::set_units(x, "m"))
+}
+
+makeLinesAsDegrees <- function(x) {
+  as.numeric(units::set_units(x, "degrees"))
 }
 
 # Validate that a length argument carries units convertible to meters.
@@ -37,6 +41,22 @@ makeLinesRequireLength <- function(x, nm) {
   ok <- tryCatch({ units::set_units(x, "m"); TRUE }, error = function(e) FALSE)
   if (!ok) {
     stop("'", nm, "' must have length units convertible to meters.",
+         call. = FALSE)
+  }
+  invisible()
+}
+
+# Validate that angle argument carries units convertible to degrees.
+makeLinesRequireDegrees <- function(x, nm) {
+  if (is.null(x)) return(invisible())
+  if (!inherits(x, "units")) {
+    stop("'", nm, "' must be an angle with measurement units attached by the 'units' ",
+         "package that are convertible to degrees, e.g. units::set_units(0, \"degrees\").", 
+         call. = FALSE)
+  }
+  ok <- tryCatch({ units::set_units(x, "degrees"); TRUE }, error = function(e) FALSE)
+  if (!ok) {
+    stop("'", nm, "' must be an angle with units convertible to degrees.",
          call. = FALSE)
   }
   invisible()

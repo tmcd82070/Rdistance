@@ -35,6 +35,12 @@
 #'
 #' @param nfmax Maximum number of objective-function evaluations for
 #' [OSCARS::oscars()]. Defaults to 50.
+#' 
+#' @param plot Logical. If `TRUE`, the polygon(s) and baseline(s) are plotted
+#' on the current graphics device to show their relative orientation. 
+#' Baselines are dashed blue lines. Spacing in call to [makeLines()] is 
+#' distance along this line between transects. Rectangular type transects
+#' are perpendicular to this baseline.  Defaults to `FALSE`.
 #'
 #' @details
 #' The returned `spacing` is the distance between adjacent transects: the
@@ -68,7 +74,7 @@
 findSpacing <- function(sPoly,
                         targetLength,
                         type = c("rectangular", "zigzag"),
-                        angle = 0,
+                        angle = units::set_units(0, "degrees"),
                         baseline = NULL,
                         combine = TRUE,
                         target = c("total", "onEffort"),
@@ -85,6 +91,7 @@ findSpacing <- function(sPoly,
   target <- match.arg(target)
   makeLinesRequireLength(targetLength, "targetLength")
   makeLinesRequireLength(minLength, "minLength")
+  makeLinesRequireDegrees(angle, "angle")
 
   polys <- makeLinesPolygons(sPoly)
   if (length(polys) == 0) {
@@ -100,6 +107,7 @@ findSpacing <- function(sPoly,
 
   targetM <- makeLinesAsMeters(targetLength)
   minLenM <- makeLinesAsMeters(minLength)
+  angle   <- makeLinesAsDegrees(angle)
 
   prep <- makeLinesPrep(polys, baseline, type, angle)
 
@@ -107,7 +115,7 @@ findSpacing <- function(sPoly,
     for (k in seq_along(prep)) {
       if (!is.na(prep[[k]]$solidity) && prep[[k]]$solidity < minSolidity) {
         warning(sprintf(paste0(
-          "Polygon %d is markedly non-convex (solidity %.2f < %.2f); a single ",
+          "Polygon %d is markedly concave (solidity %.2f < %.2f); a single ",
           "zigzag baseline may not cover it well, and coverage may be uneven. ",
           "Consider splitting it into more-convex pieces with ",
           "convexPartition(), then returning to drawTransects()/makeLines() ",

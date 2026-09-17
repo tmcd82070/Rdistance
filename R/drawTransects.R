@@ -101,7 +101,7 @@
 drawTransects <- function(sPoly,
                           targetLength,
                           type = c("rectangular", "zigzag"),
-                          angle = 0,
+                          angle = units::set_units(0, "degrees"),
                           spacing = NULL,
                           baseline = NULL,
                           combine = TRUE,
@@ -136,7 +136,7 @@ drawTransects <- function(sPoly,
   # realized on-effort/total lengths vary by replicate and are left for the user
   # to aggregate from the output columns.
   summ <- attr(out, "summary")
-  uStr <- units::deparse_unit(summ$spacing)
+  uStr <- units::deparse_unit(out$spacing)
   tgtM <- makeLinesAsMeters(targetLength)
   summ$targetLength <- units::set_units(units::set_units(tgtM, "m"),
                                         value = uStr, mode = "standard")

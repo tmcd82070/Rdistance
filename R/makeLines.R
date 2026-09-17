@@ -19,17 +19,19 @@
 #' - `"zigzag"`: a single continuous path that zig-zags between opposite edges
 #'   of the polygon.
 #'
-#' @param angle Orientation of `"rectangular"` transects, in degrees.
-#' `angle = 0` (the default) produces North-South transects; `angle = 90`
+#' @param angle Orientation of `"rectangular"` transects.  Must have 
+#' units convertible to 'degrees' (i.e., either 'degrees' or 'radians').
+#' `angle = 0 \[°\]` (the default) produces North-South transects; `angle = 90 \[°\]`
 #' produces East-West transects. Ignored when `type = "zigzag"`.
 #'
-#' @param spacing The distance between adjacent transects, as a
-#' `units` length object. For `"rectangular"` transects this is the
+#' @param spacing The distance between adjacent transects.  Must have units 
+#' convertible to meters (e.g., 'ft', 'km', 'mi', etc.). 
+#' For `"rectangular"` transects this is the
 #' perpendicular distance between the parallel lines. For `"zigzag"` transects
 #' it is the distance along the baseline between *adjacent*
 #' legs. I.e., one complete zig-zag cycle (one side of polygon to the other and back) 
 #' crosses the baseline twice, and the distance between those crossings is `spacing`.
-#' `spacing` is typically obtained from
+#' `spacing` that produces a specified total transect length can be obtained from
 #' [findSpacing()].
 #'
 #' @param baseline Optional `sf`/`sfc` `LINESTRING` giving the reference line
@@ -126,6 +128,7 @@
 #' given in attribute "summary". }
 #' \item{leg}{Integer identifier of the leg within its polygon (1 when
 #' `combine = TRUE`, in which case the route is one long line with connectors).}
+#' \item{spacing}{The actual spacing used.}
 #' \item{onEffortLength}{On-effort (surveyed) length of the transect(s)
 #' represented on the row, i.e., the part inside the polygon. With units.
 #' Equals the length of the row's geometry when `combine = FALSE`.}
@@ -136,16 +139,16 @@
 #' A summary of the design is attached as
 #' an attribute `attr(x, "summary")`, a list with the layout
 #' `type`, the number of polygons `nPolygons`, the number of replicates
-#' `nReplicates`, the `spacing` used, `targetLength` (`NA` unless set by
+#' `nReplicates`,  `targetLength` (`NA` unless set by
 #' [drawTransects()]), and `polygons`.  The `polygons` element is an 
 #' `sf` `LINESTRING` data frame whose
 #' geometry column, `baseline`, holds each polygon's baseline, with columns
 #' `polygon` (integer index), `area` (with units), and `solidity` (measure of 
 #' concavity; 1 = concave; <1 = less concave).
 #'
-#' @author Original version in pronghornLT: Tom Prebyl, 
+#' @author Original version included in pronghornLT: Tom Prebyl, 
 #' Jason Carlisle, and Garrett Catlin.  
-#' Updated and generalized for Rdistance:  Trent McDonald
+#' Updated and generalized for Rdistance by Trent McDonald
 #'
 #' @seealso [findSpacing()], [drawTransects()].
 #'
@@ -161,7 +164,15 @@
 #' c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
 #' plot(poly$geometry)
 #' plot(rec$geometry, add=T, col="red")
+#' plot(attr(rec, "summary")$polygons$baseline, add=T, col="blue")
 #'
+#' # Angled rectangular transects with 5 km spacing
+#' rec <- makeLines(poly, spacing = units::set_units(5, "km"), angle = units::set_units(pi/4,"rad"))
+#' c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
+#' plot(poly$geometry)
+#' plot(rec$geometry, add=T, col="red")
+#' plot(attr(rec, "summary")$polygons$baseline, add=T, col="blue")
+#' 
 #' # Zigzag transects, adjacent legs crossing the baseline 4 km apart.
 #' zz <- makeLines(poly, type = "zigzag", spacing = units::set_units(4, "km"))
 #' sum(zz$totalLength)
@@ -176,7 +187,7 @@
 #' @export
 makeLines <- function(sPoly,
                       type = c("rectangular", "zigzag"),
-                      angle = 0,
+                      angle = units::set_units(0, "degrees"),
                       spacing,
                       baseline = NULL,
                       combine = TRUE,
@@ -189,6 +200,7 @@ makeLines <- function(sPoly,
   }
   type <- match.arg(type)
   makeLinesRequireLength(spacing, "spacing")
+  makeLinesRequireDegrees(angle, "angle")
   R <- as.integer(R)
   if (is.na(R) || R < 1L) stop("'R' must be a positive integer.")
 
@@ -206,6 +218,7 @@ makeLines <- function(sPoly,
 
   sM      <- makeLinesAsMeters(spacing)
   minLenM <- makeLinesAsMeters(units::set_units(100, "m"))
+  angle   <- makeLinesAsDegrees(angle)
   uStr    <- units::deparse_unit(spacing)
   toOut   <- function(xm) units::set_units(units::set_units(xm, "m"),
                                            value = uStr, mode = "standard")
@@ -294,6 +307,7 @@ makeLines <- function(sPoly,
                        polygon       = rep(k, n),
                        leg           = legCol,
                        stringsAsFactors = FALSE)
+      df$spacing <- toOut(sM)
       df$onEffortLength <- toOut(onECol)
       df$totalLength    <- toOut(totCol)
       rowsList[[length(rowsList) + 1L]] <- sf::st_sf(df, geometry = geom)
@@ -322,7 +336,6 @@ makeLines <- function(sPoly,
       type         = type,
       nPolygons    = nP,
       nReplicates  = R,
-      spacing      = toOut(sM),
       targetLength = NA,
       polygons     = polygonsSf)
 
