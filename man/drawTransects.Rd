@@ -8,7 +8,7 @@ drawTransects(
   sPoly,
   targetLength,
   type = c("rectangular", "zigzag"),
-  angle = 0,
+  angle = units::set_units(0, "degrees"),
   spacing = NULL,
   baseline = NULL,
   combine = TRUE,
@@ -40,8 +40,9 @@ in proportion to area.}
 of the polygon.
 }}
 
-\item{angle}{Orientation of \code{"rectangular"} transects, in degrees.
-\code{angle = 0} (the default) produces North-South transects; \code{angle = 90}
+\item{angle}{Orientation of \code{"rectangular"} transects.  Must have
+units convertible to 'degrees' (i.e., either 'degrees' or 'radians').
+\verb{angle = 0 \[°\]} (the default) produces North-South transects; \verb{angle = 90 \[°\]}
 produces East-West transects. Ignored when \code{type = "zigzag"}.}
 
 \item{spacing}{Optional transect spacing, as a \code{units} length object. When
@@ -121,9 +122,11 @@ a strongly concave polygon. The warning recommends splitting the polygon
 into more-convex pieces with \code{\link[=convexPartition]{convexPartition()}} and re-running
 \code{drawTransects()} on the pieces. Set to 0 to disable. Defaults to 0.75.}
 
-\item{plot}{Logical. If \code{TRUE}, the polygons, baselines, and generated
-transects are drawn on the current graphics device. When \code{R > 1}, each
-replicate is drawn in a different color. Defaults to \code{FALSE}.}
+\item{plot}{Logical. If \code{TRUE}, the polygon(s) and baseline(s) are plotted
+on the current graphics device to show their relative orientation.
+Baselines are dashed blue lines. Spacing in call to \code{\link[=makeLines]{makeLines()}} is
+distance along this line between transects. Rectangular type transects
+are perpendicular to this baseline.  Defaults to \code{FALSE}.}
 }
 \value{
 An \code{sf} data frame of transect lines (geometries are
@@ -136,6 +139,7 @@ indices are
 given in attribute "summary". }
 \item{leg}{Integer identifier of the leg within its polygon (1 when
 \code{combine = TRUE}, in which case the route is one long line with connectors).}
+\item{spacing}{The actual spacing used.}
 \item{onEffortLength}{On-effort (surveyed) length of the transect(s)
 represented on the row, i.e., the part inside the polygon. With units.
 Equals the length of the row's geometry when \code{combine = FALSE}.}
@@ -146,7 +150,7 @@ the off-effort segment connecting to the next on-effort leg. With units.}
 A summary of the design is attached as
 an attribute \code{attr(x, "summary")}, a list with the layout
 \code{type}, the number of polygons \code{nPolygons}, the number of replicates
-\code{nReplicates}, the \code{spacing} used, \code{targetLength} (\code{NA} unless set by
+\code{nReplicates},  \code{targetLength} (\code{NA} unless set by
 \code{\link[=drawTransects]{drawTransects()}}), and \code{polygons}.  The \code{polygons} element is an
 \code{sf} \code{LINESTRING} data frame whose
 geometry column, \code{baseline}, holds each polygon's baseline, with columns

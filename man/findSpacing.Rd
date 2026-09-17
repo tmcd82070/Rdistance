@@ -8,7 +8,7 @@ findSpacing(
   sPoly,
   targetLength,
   type = c("rectangular", "zigzag"),
-  angle = 0,
+  angle = units::set_units(0, "degrees"),
   baseline = NULL,
   combine = TRUE,
   target = c("total", "onEffort"),
@@ -38,8 +38,9 @@ in proportion to area.}
 of the polygon.
 }}
 
-\item{angle}{Orientation of \code{"rectangular"} transects, in degrees.
-\code{angle = 0} (the default) produces North-South transects; \code{angle = 90}
+\item{angle}{Orientation of \code{"rectangular"} transects.  Must have
+units convertible to 'degrees' (i.e., either 'degrees' or 'radians').
+\verb{angle = 0 \[°\]} (the default) produces North-South transects; \verb{angle = 90 \[°\]}
 produces East-West transects. Ignored when \code{type = "zigzag"}.}
 
 \item{baseline}{Optional \code{sf}/\code{sfc} \code{LINESTRING} giving the reference line
@@ -107,9 +108,11 @@ area) falls below this value. The warning recommends splitting the polygon
 with \code{\link[=convexPartition]{convexPartition()}} and re-running on the pieces. Set to 0 to disable.
 Defaults to 0.75.}
 
-\item{plot}{Logical. If \code{TRUE}, the polygons, baselines, and generated
-transects are drawn on the current graphics device. When \code{R > 1}, each
-replicate is drawn in a different color. Defaults to \code{FALSE}.}
+\item{plot}{Logical. If \code{TRUE}, the polygon(s) and baseline(s) are plotted
+on the current graphics device to show their relative orientation.
+Baselines are dashed blue lines. Spacing in call to \code{\link[=makeLines]{makeLines()}} is
+distance along this line between transects. Rectangular type transects
+are perpendicular to this baseline.  Defaults to \code{FALSE}.}
 }
 \value{
 A \code{units} length object: the approximate spacing that yields

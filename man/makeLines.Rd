@@ -7,7 +7,7 @@
 makeLines(
   sPoly,
   type = c("rectangular", "zigzag"),
-  angle = 0,
+  angle = units::set_units(0, "degrees"),
   spacing,
   baseline = NULL,
   combine = TRUE,
@@ -30,17 +30,19 @@ projection so areas are undistorted). Geographic coordinates are rejected.}
 of the polygon.
 }}
 
-\item{angle}{Orientation of \code{"rectangular"} transects, in degrees.
-\code{angle = 0} (the default) produces North-South transects; \code{angle = 90}
+\item{angle}{Orientation of \code{"rectangular"} transects.  Must have
+units convertible to 'degrees' (i.e., either 'degrees' or 'radians').
+\verb{angle = 0 \[°\]} (the default) produces North-South transects; \verb{angle = 90 \[°\]}
 produces East-West transects. Ignored when \code{type = "zigzag"}.}
 
-\item{spacing}{The distance between adjacent transects, as a
-\code{units} length object. For \code{"rectangular"} transects this is the
+\item{spacing}{The distance between adjacent transects.  Must have units
+convertible to meters (e.g., 'ft', 'km', 'mi', etc.).
+For \code{"rectangular"} transects this is the
 perpendicular distance between the parallel lines. For \code{"zigzag"} transects
 it is the distance along the baseline between \emph{adjacent}
 legs. I.e., one complete zig-zag cycle (one side of polygon to the other and back)
 crosses the baseline twice, and the distance between those crossings is \code{spacing}.
-\code{spacing} is typically obtained from
+\code{spacing} that produces a specified total transect length can be obtained from
 \code{\link[=findSpacing]{findSpacing()}}.}
 
 \item{baseline}{Optional \code{sf}/\code{sfc} \code{LINESTRING} giving the reference line
@@ -108,6 +110,7 @@ indices are
 given in attribute "summary". }
 \item{leg}{Integer identifier of the leg within its polygon (1 when
 \code{combine = TRUE}, in which case the route is one long line with connectors).}
+\item{spacing}{The actual spacing used.}
 \item{onEffortLength}{On-effort (surveyed) length of the transect(s)
 represented on the row, i.e., the part inside the polygon. With units.
 Equals the length of the row's geometry when \code{combine = FALSE}.}
@@ -118,7 +121,7 @@ the off-effort segment connecting to the next on-effort leg. With units.}
 A summary of the design is attached as
 an attribute \code{attr(x, "summary")}, a list with the layout
 \code{type}, the number of polygons \code{nPolygons}, the number of replicates
-\code{nReplicates}, the \code{spacing} used, \code{targetLength} (\code{NA} unless set by
+\code{nReplicates},  \code{targetLength} (\code{NA} unless set by
 \code{\link[=drawTransects]{drawTransects()}}), and \code{polygons}.  The \code{polygons} element is an
 \code{sf} \code{LINESTRING} data frame whose
 geometry column, \code{baseline}, holds each polygon's baseline, with columns
@@ -177,6 +180,14 @@ rec <- makeLines(poly, type = "rectangular", spacing = units::set_units(5, "km")
 c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
 plot(poly$geometry)
 plot(rec$geometry, add=T, col="red")
+plot(attr(rec, "summary")$polygons$baseline, add=T, col="blue")
+
+# Angled rectangular transects with 5 km spacing
+rec <- makeLines(poly, spacing = units::set_units(5, "km"), angle = units::set_units(pi/4,"rad"))
+c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
+plot(poly$geometry)
+plot(rec$geometry, add=T, col="red")
+plot(attr(rec, "summary")$polygons$baseline, add=T, col="blue")
 
 # Zigzag transects, adjacent legs crossing the baseline 4 km apart.
 zz <- makeLines(poly, type = "zigzag", spacing = units::set_units(4, "km"))
@@ -194,7 +205,7 @@ sum(zzLegs$onEffortLength)
 \code{\link[=findSpacing]{findSpacing()}}, \code{\link[=drawTransects]{drawTransects()}}.
 }
 \author{
-Original version in pronghornLT: Tom Prebyl,
+Original version included in pronghornLT: Tom Prebyl,
 Jason Carlisle, and Garrett Catlin.
-Updated and generalized for Rdistance:  Trent McDonald
+Updated and generalized for Rdistance by Trent McDonald
 }
