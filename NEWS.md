@@ -1,3 +1,88 @@
+Changes in version 4.5.0 (2026-08-13)
+==============
+
+*   **Functionality change**: Added a family of functions for designing 
+random line-transect surveys inside study-area polygons. `drawTransects()` 
+is the main entry point; it calls `findSpacing()` to compute the transect 
+spacing that yields a target survey length, then `makeLines()` to place the 
+transects with a random start. `calcLineLength()` converts a target number of 
+detected groups into a target length of transect. Both parallel 
+("rectangular", or "mow-the-grass") and "zigzag" layouts are supported, over 
+one or several polygons at once, with optional random replicates (`R`). 
+Transects can be returned as one continuous route per polygon or as individual 
+legs (`combine`), and `targetLength` can refer to total or on-effort length 
+(`target`). Optimization of spacing is performed by `OSCARS::oscars`.
+*   **Functionality change**: "zigzag" routes are constructed by the method of 
+`RUtilities::zigZagRoute()`, which was moved into this package. Pivots are 
+placed where perpendiculars to the baseline, regularly spaced with a random 
+start, cross the polygon boundary, so legs now run edge to edge and cover the 
+polygon completely. 
+*   **Functionality change**: `spacing` is the distance between adjacent 
+transects under both layouts, so the two are directly comparable. For a zigzag 
+it is the baseline distance between the points where adjacent legs cross the 
+baseline; one complete zig-zag cycle covers `2 * spacing`. 
+*   **Functionality change**: `combine` now controls clipping as well as the 
+shape of the returned object. `combine = TRUE` returns the route as flown, 
+unclipped, so that it stays connected; across a concave polygon it can run 
+outside the polygon, and the returned lengths sum to the total length. 
+`combine = FALSE` returns one row per leg, clipped to the polygon so that no 
+geometry falls outside it, and the returned lengths sum to the on-effort 
+length. A leg that a concavity breaks into pieces is returned as a single 
+`MULTILINESTRING` row, preserving one row per leg. The `onEffortLength` and 
+`totalLength` columns are computed the same way under both settings.
+*   **Functionality change**: zigzag baselines are now straight. When no 
+`baseline` is supplied, the polygon's centerline is computed as before, then 
+straightened by regressing Y on X; the slope of that regression sets the 
+baseline's direction, which is translated to run through the polygon's 
+centroid and extended past the polygon's bounding box so that transects are 
+placed all the way through the polygon. A user-supplied baseline is likewise 
+extended before use, but is reported back unchanged. The previous wiggly 
+centerline is no longer used: strongly bent polygons should be split with 
+`convexPartition()`.
+*   **Functionality change**: Added `convexPartition()`, which splits a 
+strongly concave polygon into a few more-convex pieces using Approximate 
+Convex Decomposition (Lien & Amato 2006). Splitting improves the coverage of 
+zigzag transects on bent, arc-, or L-shaped polygons.
+*   **Functionality change**: `convexPartition()` gained `nPieces` and 
+`method`. `nPieces` is either an integer, in which case exactly that many 
+pieces are returned, or `"optimum"` (the default), in which case the count is 
+chosen automatically. `method = "fast"` (the default) cuts greedily at the 
+most concave vertex, as before; `method = "optimum"` searches the cut vertices 
+with `OSCARS::oscars` to maximize the minimum solidity of the pieces, and with 
+`nPieces = "optimum"` searches the number of pieces (capped at 10) as well. 
+The default call is unchanged: it is still the deterministic, 
+`concavityTol`-driven decomposition. `nStarts`, `nfmax`, and `solidityTol` 
+control the search; a progress bar appears once a search passes 10 seconds.
+*   **New data set**: Added `exampleSurveyPoly`, two non-convex Aleutian tern 
+survey strata projected to an equal-area CRS (NAD83 / Alaska Albers), used to 
+demonstrate the survey-design functions.
+*   **Update**: Added `sf`, `grDevices`, and `OSCARS` to Imports, required by 
+the new survey-design functions.
+
+
+Changes in version 4.4.5 (2026-06-22)
+==============
+
+*   **New data set**: Added `pronghornDf`, aerial line-transect data for 
+pronghorn (*Antilocapra americana*) collected by the Wyoming Game and Fish 
+Department in southeast Wyoming, 2012-2019. 
+*   **New data set**: Added `pronghornAreas`, the study-area (herd-unit) 
+polygons associated with the pronghorn line-transect data. 
+*   **Update**: Added `data-raw` scripts documenting construction of the 
+bundled data sets.
+
+
+Changes in version 4.4.4 (2026-05-21)
+==============
+
+*   **Functionality change**: `abundEstim()` now accepts a previously fitted 
+abundance object in addition to a distance function. This lets users add 
+bootstrap iterations to an existing fit, for example by fitting with 
+`ci = NULL` first and running (or extending) the bootstrap later. 
+*   **Documentation Updates**: Updated documentation of `abundEstim()`, 
+`autoDistSamp()`, and related functions.
+
+
 Changes in version 4.4.3 (2026-05-13)
 ==============
 
