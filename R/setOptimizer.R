@@ -23,7 +23,7 @@ setOptimizer <- function(ml){
     if( ml$likelihood %in% differentiableLikelihoods() ){
       optimizerAlgo <- "nlminb"
     } else {
-      optimizerAlgo <- "optim_Nelder-Mead"
+      optimizerAlgo <- "OSCARS"
       nInts <- getOption("Rdistance_intEvalPts")
       if(nInts < 301){
         # bump up integral points
@@ -36,19 +36,23 @@ setOptimizer <- function(ml){
     if( !(ml$likelihood %in% differentiableLikelihoods()) ){
       
       # Non-smooth likelihood case 
-      if( !(optimizerAlgo %in% c("optim_Nelder-Mead", "optim_SANN", "hookeJeeves")) ){
+      if( !(optimizerAlgo %in% c("optim_Nelder-Mead"
+                               , "optim_SANN"
+                               , "hookeJeeves"
+                               , "OSCARS")) ){
             stop(paste("Gradient based optimization method"
                        , optimizerAlgo
                        , "cannot be used because likelihood"
                        , ml$likelihood
                        , "is not smooth (i.e., differentiable)."
-                       , "Use 'options('Rdistance_optimizer' = 'optim_Nelder-Mead')'."
+                       , "Use 'options('Rdistance_optimizer' = 'hookeJeeves')' or 'OSCARS' or 'optim_Nelder-Mead'."
             ))
       }
     } else {
       
       # Smooth likelihood case
-      # Check whether problem is univariate and Hooke-Jeeves is called for; HJ can't do univariate problems ----
+      # Check whether problem is univariate and Hooke-Jeeves is called for; 
+      # HJ can't do univariate problems ----
       termLabs <- attr(stats::terms(ml$formula), "term.labels")
       termLabs <- termLabs[!grepl("groupsize\\(", termLabs)]
       if( (length(termLabs) == 0) && 

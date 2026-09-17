@@ -37,6 +37,15 @@ bootstrap <- function(
                     , cores
                     ){
   
+  if( parallel ){
+    showProgress <- FALSE # no output in parallel mode.
+    plot.bs <- FALSE
+    verbo <- options("Rdistance_verbosity" = -1)
+  } else {
+    verbo <- getOption("Rdistance_verbosity")
+    verbo <- options(Rdistance_verbosity = verbo - 0.5)
+  }
+  
   nDigits <- ceiling(log10(R + 0.1))
   id <- 1:R
   bsData <-  data.frame(
@@ -84,7 +93,16 @@ bootstrap <- function(
     multidplyr::cluster_copy(cl, "plot.bs")  # known F
     cat("done.\n")
     
-    cat(paste0(R, " bootstrap iterations initiated. Standby..."))
+    if(!is.null(object$runTime)){
+      fudgeFactor <- 0.943 + 0.099*cores  # could be quadratic
+      estTime <- object$runTime * R * fudgeFactor / cores
+      cat(paste0(colorize(R), 
+                 " bootstrap iterations estimated run time ~",
+                 colorize(format(round(estTime, 3))), 
+                 ". Standby..."))
+    } else {
+      cat(paste0(R, " bootstrap iterations initiated. Standby..."))
+    }
     strtTime <- Sys.time()
   } 
   
@@ -116,22 +134,21 @@ bootstrap <- function(
 
   # compute run time    
   runTime <- as.numeric(difftime(Sys.time(), strtTime, units = "s"))
-  runTimeUnits <- "sec"
-  if(runTime > 60){
-    runTime <- runTime / 60
-    runTimeUnits <- "min"
+  runTime <- setUnits(runTime, "seconds")
+  if(runTime > setUnits(1, "minutes")){
+    runTime <- setUnits(runTime, "minutes")
   }
-  if(runTime > 60){
-    runTime <- runTime / 60
-    runTimeUnits <- "hrs"
+  if(runTime > setUnits(1, "hour")){
+    runTime <- setUnits(runTime, "hours")
   }
-  cat(paste0("Run Time: ", round(runTime,3), " ", runTimeUnits, "\n"))
+  cat(paste0("Actual run time: ", colorize(format(round(runTime,3))), "\n"))
 
   
   if(showProgress){
     pb$terminate()
   }
-  
+  options(verbo)
+
   B
   
 }

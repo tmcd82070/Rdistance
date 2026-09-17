@@ -193,6 +193,7 @@ estimated by bootstrap resampling).
 distance function. Does not include the intercept.
 \item \code{LhoodType}: The type of likelihood fitted. Currently, only 'parametric'
 types are fitted.
+\item \code{runTime}: Run time for model estimation.
 }
 }
 \description{

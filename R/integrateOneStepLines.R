@@ -39,13 +39,15 @@
 #' distDf <- RdistDf(siteDf, detectDf)
 #' 
 #' # Estimation
+#' \dontrun{
+#' # The following requires ~8 seconds > CRAN requirements
 #' fit <- dfuncEstim(distDf
 #'                  , formula = dist ~ 1
 #'                  , likelihood = "oneStep"
 #'                  , w.hi = setUnits(whi, "m")
 #'                  )
-#' table(integrateOneStepLines(fit))
-#' table(ESW(fit))
+#' integrateOneStepLines(fit)
+#' ESW(fit)
 #' 
 #' # Check:
 #' T.hat <- exp(fit$par[1])
@@ -61,6 +63,7 @@
 #' 
 #' # Equivalent
 #' T.hat / p.hat
+#' }
 #' 
 #' @export
 #' 

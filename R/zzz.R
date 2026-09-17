@@ -13,8 +13,10 @@
   op.Rdist <- list(
       Rdistance_evalMax   = 2000
     , Rdistance_maxIters  = 1000
+    , Rdistance_oscarEvals= 10000
     , Rdistance_likeTol   = (.Machine$double.eps)^(1/1.75)
     , Rdistance_coefTol   = (.Machine$double.eps)^(1/2)
+    , Rdistance_oscarTol  = (.Machine$double.eps)^(1/3.5)
     , Rdistance_hessEps   = (.Machine$double.eps)^(1/1.75)
     , Rdistance_trace     = 0
     , Rdistance_requireUnits = TRUE
@@ -49,7 +51,9 @@
   op.Rdist <- list(
       "Rdistance_evalMax"   = NULL
     , "Rdistance_maxIters"  = NULL 
+    , "Rdistance_oscarEvals"= NULL
     , "Rdistance_likeTol"   = NULL
+    , "Rdistance_oscarTol"  = NULL  
     , "Rdistance_coefTol"   = NULL
     , "Rdistance_hessEps"   = NULL
     , "Rdistance_trace"     = NULL

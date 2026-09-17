@@ -58,6 +58,12 @@ huber.start.limits <- function(ml){
   names(low) <- nms
   names(high) <- nms
   
-  list( start=start, low=low, high=high, names=nms )
+  strtLims <- list( start=start, low=low, high=high, names=nms )
+
+  if( toupper(ml$optimizer) == "OSCARS" ){
+    strtLims <- oscarsLimits(strtLims, ml)
+  } 
+ 
+  strtLims
   
 }
