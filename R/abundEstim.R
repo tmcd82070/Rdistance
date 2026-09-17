@@ -275,13 +275,10 @@ abundEstim <- function(object
   parallelRequest <- getNCores( parallel )
   parallel <- parallelRequest$parallel  # T or F
   
-  if( parallel ){
-    plot.bs <- FALSE
-    showProgress <- FALSE
-  }
-  
+  # if parallel == T, plot.bs and showProgress are set to FALSE in bootstrap()
+
   # Initial setup for plotting ----
-  if (bootstrapping && plot.bs) {
+  if (bootstrapping && plot.bs && !parallel) {
     graphics::par( xpd=TRUE )
     plotObj <- plot(object)
   } else {
@@ -332,7 +329,7 @@ abundEstim <- function(object
           
   
   # ---- Plot original fit again (over bs lines) ----
-  if (bootstrapping && plot.bs) {
+  if (bootstrapping && plot.bs && !parallel) {
     graphics::lines(object
           , newdata = plotObj$predCovValues
           , col = "red"
@@ -370,7 +367,8 @@ abundEstim <- function(object
     
     if ((object$LhoodType == "parametric") && 
         (any(is.na(B$density))) && 
-        showProgress){
+        showProgress &&
+        !parallel){
       cat(paste( sum(is.na(B$density)), "of", nrow(B)
                  , "iterations did not converge.\n"))
     }

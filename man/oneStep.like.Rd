@@ -103,6 +103,8 @@ siteDf <- data.frame(transect = 1:10
 distDf <- RdistDf(siteDf, detectDf)
 
 # Estimation
+\dontrun{
+# The following requires ~8 seconds > CRAN requirements
 fit <- dfuncEstim(distDf
                  , formula = dist ~ 1
                  , likelihood = "oneStep"
@@ -111,9 +113,10 @@ fit <- dfuncEstim(distDf
 plot(fit)
 thetaHat <- exp(coef(fit)[1]) 
 pHat <- coef(fit)[2]
-c(thetaHat, pHat) # should be close to c(100,0.85)
+data.frame(True = c(T, p), Estimated = c(thetaHat, pHat)) 
 
 summary(abundEstim(fit, ci=NULL)) 
+}
 
 }
 \references{

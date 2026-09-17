@@ -33,9 +33,11 @@
 #' 
 #' @export
 triangle.start.limits <- function (ml){
-  
+
+  verbo <- options("Rdistance_verbosity" = -1) # no print est exe time line
   strtLims <- oneStep.start.limits(ml)
-  
+  options(verbo)
+
   # Change theta high to allow it to exceed w
   ncovars <- nCovars(stats::model.matrix(ml))
   posInf <- getOption("Rdistance_posInf")

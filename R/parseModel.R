@@ -216,7 +216,9 @@ parseModel <- function(data
              , asymptoticSE = asymptoticSE
   )
   
-
+  # Check and set optimizer ----
+  ml$optimizer <- setOptimizer(ml)
+  
   # Check x.scl, and override x.scl for Gamma likelihood ----
   if ( length(ml$x.scl) > 1 ){
     # at this point in the process, x.scl can only be a scaler or "max"

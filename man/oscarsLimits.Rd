@@ -11,6 +11,8 @@ oscarsLimits(origLims, ml)
 that are vectors of the same length.  $start are the starting
 values, $low are the lower bounds, and $high are the upper bounds
 on the coefficients in the model.}
+
+\item{ml}{A "model list" containing the problem parameters.}
 }
 \value{
 A list just like \code{curLims} with improved start and

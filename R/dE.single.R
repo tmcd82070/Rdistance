@@ -259,6 +259,7 @@
 #'   distance function. Does not include the intercept. 
 #' * `LhoodType`: The type of likelihood fitted. Currently, only 'parametric' 
 #'   types are fitted.  
+#' * `runTime`: Run time for model estimation. 
 #'     
 #'     
 #'     
@@ -314,28 +315,27 @@ dE.single <- function( data
                           , asymptoticSE = asymptoticSE
                         )
   
-  # Check whether need to use non-gradient optimizer ----
-  modelList$optimizer <- setOptimizer(modelList)
-
-  if(toupper(modelList$optimizer) == "OSCARS"){
-    mess <- paste0(colorize("NOTE:", "red")
-                   , " OSCARS maximization is accurate but relatively "
-                   , colorize("slow.")
-                   , " Patience required.")
-    cat(paste0(mess, "\n"))
-  }
-  if(modelList$expansions > 0){
-    mess <- paste0(colorize("NOTE:", "red")
-                   , "Maximization of distance functions with expansions is "
-                   , "relatively "
-                   , colorize("slow")
-                   , " due to numerical integration. "
-                   , " Patience required.")
-    cat(paste0(mess, "\n"))
+  if (getOption("Rdistance_verbosity") >= 0) {
+    if(toupper(modelList$optimizer) == "OSCARS"){
+      mess <- paste0(colorize("NOTE:", "red")
+                     , " OSCARS maximization is accurate but relatively "
+                     , colorize("slow.")
+                     , " Patience required.")
+      cat(paste0(mess, "\n"))
+    }
+    if(modelList$expansions > 0){
+      mess <- paste0(colorize("NOTE:", "red")
+                     , "Maximization of distance functions with expansions is "
+                     , "relatively "
+                     , colorize("slow")
+                     , " due to numerical integration. "
+                     , " Patience required.")
+      cat(paste0(mess, "\n"))
+    }
   }
   
   strt.lims <- Rdistance::startLimits(modelList)
-  
+
   if(verboseLevel >= 2){
     cat(colorize("Starting values ----\n", col="red"))
     cat(colorize("   Start: "))
@@ -347,12 +347,15 @@ dE.single <- function( data
   }
 
   # Perform optimization ----
-  fit <- mlEstimates( ml = modelList
+  elp <- system.time( 
+    fit <- mlEstimates( ml = modelList
                     , strt.lims = strt.lims
                     )
+  )
 
   # Assemble results ----
   ans <- c(fit, modelList)
+  ans$runTime <- setUnits(elp["elapsed"] / 60.0, "minutes")
   class(ans) <- "dfunc"
 
   if ( ans$likelihood != "Gamma" ){

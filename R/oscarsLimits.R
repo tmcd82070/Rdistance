@@ -4,6 +4,8 @@
 #' limits for the OSCARS algorithm. OSCARS needs tighter bounds
 #' because of it's global nature. 
 #' 
+#' @param ml A "model list" containing the problem parameters. 
+#' 
 #' @param origLims A list of $start, $low, and $high components 
 #' that are vectors of the same length.  $start are the starting 
 #' values, $low are the lower bounds, and $high are the upper bounds
@@ -30,7 +32,10 @@ oscarsLimits <- function(origLims, ml){
   )
   secPerEval <- elp["elapsed"] / sum(fitNR$evaluations)
   estEvalTime <- getOption("Rdistance_oscarEvals") * secPerEval / 60.0
-  cat(paste0("Estimated OSCARS run time <= ", colorize(round(estEvalTime, 3)), " minutes.\n"))
+  estEvalTime <- setUnits(estEvalTime, "minutes")
+  if (getOption("Rdistance_verbosity") >= 0) {
+    cat(paste0("Estimated OSCARS run time <= ", colorize(format(round(estEvalTime, 3))), ".\n"))
+  }
   
   startNR <- fitNR$par
   
@@ -42,9 +47,13 @@ oscarsLimits <- function(origLims, ml){
     , verbosity = 0
   )
   seNR <- tryCatch(solve(hessian), error = function(e){NaN})
-  seNR <- diag(seNR)
-  seNR <- ifelse(is.na(seNR) | (seNR < 0), abs(startNR), seNR) # For missing SE's
-  seNR <- sqrt(seNR)
+  if( is.matrix(seNR) ){
+    seNR <- diag(seNR)
+    seNR <- ifelse(is.na(seNR) | (seNR < 0), abs(startNR), seNR) # For missing SE's
+    seNR <- sqrt(seNR)
+  } else {
+    seNR <- sqrt(abs(startNR))
+  }
   
   strtLims <- origLims
   strtLims$start <- startNR
@@ -55,6 +64,7 @@ oscarsLimits <- function(origLims, ml){
   # likelihoods.  Used later in Oscars()
   strtLims$loglik <- fitNR$loglik
   strtLims$convergence <- fitNR$convergence
+  strtLims$estEvalTime <- estEvalTime
   
   # hard limits at the incoming limits
   strtLims$low  <- pmax(strtLims$low, origLims$low)
