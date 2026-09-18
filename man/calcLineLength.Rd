@@ -23,7 +23,7 @@ strip width (ESW) is available, set \code{p} = \code{ESW/w}.}
 \item{w}{Scalar, nominal width of the survey strip.  Must have measurement
 units attached.}
 
-\item{targetGroups}{Scalar, the desired number of detecterd groups
+\item{targetGroups}{Scalar, the desired number of detected groups
 at the end of surveys.}
 
 \item{avgGroupSize}{Scalar, expected average number of individuals in each

@@ -73,7 +73,7 @@
 #'
 #' @param R Number of independent random replicates to generate. Defaults to 1.
 #' The returned object contains `R` complete transect sets, one per replicate,
-#' and always carries an `id` column labelling each set `"Replicate0001"`,
+#' and always carries an `id` column labeling each set `"Replicate0001"`,
 #' `"Replicate0002"`, and so on.
 #'
 #' @param minSolidity For `"zigzag"` transects with an estimated baseline, a
@@ -163,21 +163,22 @@
 #' rec <- makeLines(poly, type = "rectangular", spacing = units::set_units(5, "km"))
 #' c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
 #' plot(poly$geometry)
-#' plot(rec$geometry, add=T, col="red")
-#' plot(attr(rec, "summary")$polygons$baseline, add=T, col="blue")
+#' plot(rec$geometry, add=TRUE, col="red")
+#' plot(attr(rec, "summary")$polygons$baseline, add=TRUE, col="blue")
 #'
 #' # Angled rectangular transects with 5 km spacing
 #' rec <- makeLines(poly, spacing = units::set_units(5, "km"), angle = units::set_units(pi/4,"rad"))
 #' c(onEffort = sum(rec$onEffortLength), total = sum(rec$totalLength))
 #' plot(poly$geometry)
-#' plot(rec$geometry, add=T, col="red")
-#' plot(attr(rec, "summary")$polygons$baseline, add=T, col="blue")
+#' plot(rec$geometry, add=TRUE, col="red")
+#' plot(attr(rec, "summary")$polygons$baseline, add=TRUE, col="blue")
 #' 
 #' # Zigzag transects, adjacent legs crossing the baseline 4 km apart.
 #' zz <- makeLines(poly, type = "zigzag", spacing = units::set_units(4, "km"))
 #' sum(zz$totalLength)
 #' plot(poly$geometry)
-#' plot(zz$geometry, add=T, col="red")
+#' plot(zz$geometry, add=TRUE, col="red")
+#' plot(attr(zz, "summary")$polygons$baseline, add=TRUE, col="blue")
 #'
 #' # combine = FALSE returns one row per leg, clipped to the polygon.
 #' zzLegs <- makeLines(poly, type = "zigzag", spacing = units::set_units(4, "km"),

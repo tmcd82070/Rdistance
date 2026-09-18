@@ -17,7 +17,7 @@
 #' @param w Scalar, nominal width of the survey strip.  Must have measurement 
 #' units attached.  
 #' 
-#' @param targetGroups Scalar, the desired number of detecterd groups 
+#' @param targetGroups Scalar, the desired number of detected groups 
 #' at the end of surveys.  
 #' 
 #' @param avgGroupSize Scalar, expected average number of individuals in each

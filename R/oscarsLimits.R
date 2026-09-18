@@ -19,7 +19,7 @@
 #' @details
 #' Despite several likelihoods being discontinuous, gradient based
 #' methods do amazingly well.  We improve (tighten) the 
-#' uninformed start limites by estimating the model
+#' uninformed start limits by estimating the model
 #' using Newton-Raphson and constructing limits from those estimates. 
 #'  
 # Un-exported
